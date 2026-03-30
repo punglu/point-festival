@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>관리자 페이지</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+
+<body>
+  <div id="env-badge"
+    style="display:none; position:fixed; top:0; left:0; right:0; height:5px; background:#4ade80; z-index:9999;"></div>
+
+  <div id="notif-modal" class="modal" onclick="this.style.display='none'">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <h3>🔔 알림함</h3>
+      <div id="notif-list" style="margin:15px 0; max-height:400px; overflow-y:auto;"></div>
+      <button class="btn btn-primary" style="width:100%"
+        onclick="document.getElementById('notif-modal').style.display='none'">닫기</button>
+    </div>
+  </div>
+
+  <div id="login-history-modal" class="modal" onclick="this.style.display='none'">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <h3 style="color:var(--blue);">📊 로그인 기록</h3>
+      <div id="history-body" style="margin-top:15px; max-height:300px; overflow-y:auto;"></div>
+      <button class="btn btn-primary" style="width:100%; margin-top:15px;"
+        onclick="document.getElementById('login-history-modal').style.display='none'">닫기</button>
+    </div>
+  </div>
+
+  <div id="deduct-modal" class="modal" onclick="this.style.display='none'">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <h3>포인트 차감</h3>
+      <input type="hidden" id="deduct-pid">
+      <div style="margin-top:15px;">
+        <label>포인트:</label><input type="number" id="deduct-amount" style="margin-bottom:10px;">
+        <label>사유:</label><input type="text" id="deduct-reason">
+      </div>
+      <div style="display:flex; gap:10px; margin-top:20px;">
+        <button class="btn btn-ghost" style="flex:1"
+          onclick="document.getElementById('deduct-modal').style.display='none'">취소</button>
+        <button class="btn btn-primary" style="flex:1" onclick="submitDeduct()">차감</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-wrapper">
+    <header style="display:flex; justify-content:space-between; align-items:center;">
+      <h1>관리자 모드</h1>
+      <div style="display:flex; align-items:center; gap:15px;">
+        <button class="btn btn-ghost" onclick="showLoginHistory()">📊 기록</button>
+        <div class="notification-bell" onclick="openNotif()">🔔 <span id="notif-badge" class="notification-badge"
+            style="display:none;">0</span></div>
+      </div>
+    </header>
+
+    <div id="admin-auth" class="panel" style="max-width:400px; margin:50px auto;">
+      <h3>🔐 로그인</h3>
+      <input type="password" id="admin-pw" placeholder="비밀번호" style="margin:15px 0;">
+      <button class="btn btn-primary" style="width:100%" onclick="login()">접속</button>
+    </div>
+
+    <main id="admin-main" style="display:none;">
+      <div id="proposal-panel" class="proposal-panel" style="display:none;">
+        <h3 style="color:#d97706; margin-bottom:15px;">💡 도착한 제안</h3>
+        <div id="proposal-list"></div>
+      </div>
+
+      <div class="panel" style="text-align:center;">
+        <h2 id="date-display" style="color:var(--blue); font-family:'Black Han Sans';"></h2><input type="date"
+          id="view-date" onchange="changeDate(this.value)" style="width:auto; text-align:center;">
+      </div>
+
+      <div class="panel">
+        <h3>🛠 미션 관리</h3>
+        <div class="admin-input-group">
+          <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">대상 어린이</label>
+          <select id="targetKid" style="margin-bottom:10px;" onchange="renderMissionList()"></select>
+
+          <div class="admin-row">
+            <input type="text" id="missionText" placeholder="미션 내용" style="flex:2">
+            <input type="number" id="missionPoint" placeholder="P" style="flex:1">
+          </div>
+          <div class="admin-row" style="margin-top:10px; align-items:center;">
+            <select id="missionSender" style="width:100px;">
+              <option value="아빠">👨 아빠</option>
+              <option value="엄마">👩 엄마</option>
+            </select>
+            <input type="text" id="missionMsg" placeholder="응원 메시지(선택)" style="flex:1">
+            <button class="btn btn-primary" onclick="addMission()">하달하기</button>
+          </div>
+        </div>
+
+        <div id="mission-list-area"></div>
+
+        <div style="margin-top:20px; border-top:1px dashed #e2e8f0; padding-top:10px;">
+          <button class="btn btn-danger-sm" style="width:100%" onclick="openDeductDirect()">➖ 포인트 차감</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>📢 응원 메시지</h3>
+        <div class="cheer-container" style="margin-top:15px;">
+          <div class="cheer-box">
+            <div class="cheer-photo" onclick="upPh('dad')"><img id="img-dad"></div><input type="text" id="c-dad"
+              placeholder="아빠"><button class="btn btn-primary" onclick="svCh('dad')">저장</button>
+          </div>
+          <div class="cheer-box">
+            <div class="cheer-photo" onclick="upPh('mom')"><img id="img-mom"></div><input type="text" id="c-mom"
+              placeholder="엄마"><button class="btn btn-primary" onclick="svCh('mom')">저장</button>
+          </div>
+        </div><input type="file" id="ph-up" accept="image/*" style="display:none;" onchange="hPh(this)">
+      </div>
+
+      <div class="panel">
+        <h3>👥 사용자 관리</h3>
+        <div style="display:flex; gap:10px; margin-top:10px;"><input type="text" id="n-nm" placeholder="이름"
+            style="flex:2"><input type="text" id="n-pin" placeholder="PIN(4자리)" maxlength="4" style="flex:1"><button
+            class="btn btn-primary" onclick="addU()">등록</button></div>
+        <div id="u-list" style="margin-top:15px;"></div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue, push, update, remove, get, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    window.global = { editMissionId: null };
+
+    const isDev = window.location.hostname.includes("localhost") || window.location.hostname.includes("-dev");
+    if (isDev) document.getElementById('env-badge').style.display = 'block';
+
+    const config = isDev ? {
+      apiKey: "AIzaSyBVfTiYEHTeon2zdbXEZsaDzkV0",
+      authDomain: "mark-point-festivals-dev.firebaseapp.com",
+      databaseURL: "https://mark-point-festivals-dev-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "mark-point-festivals-dev",
+      storageBucket: "mark-point-festivals-dev.firebasestorage.app",
+      messagingSenderId: "876196518434",
+      appId: "1:876196518434:web:e60a09f47a910a9b79887b"
+    } : {
+      apiKey: "AIzaSyCuvaYFkKVQLFXZXtum8o7kD1XUyw_MQvE",
+      authDomain: "mark-point-festivals.firebaseapp.com",
+      databaseURL: "https://mark-point-festivals-default-rtdb.firebaseio.com",
+      projectId: "mark-point-festivals",
+      storageBucket: "mark-point-festivals.firebasestorage.app",
+      messagingSenderId: "87999590531",
+      appId: "1:87999590531:web:418d4fc2a7f175ea56ebb6"
+    };
+
+    const app = initializeApp(config);
+    const db = getDatabase(app);
+    let state = { players: {}, missions: {}, deductions: {}, notifications: {}, config: {}, cheers: {}, feedbacks: {} };
+    let phT = '';
+
+    const getToday = (d = new Date()) => new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+    document.getElementById('view-date').value = getToday();
+    document.getElementById('date-display').innerText = getToday();
+
+    onValue(ref(db, 'mc_players'), s => { state.players = s.val() || {}; updateKidSelect(); renU(); renderMissionList(); });
+    onValue(ref(db, 'mc_mission_data'), s => { state.missions = s.val() || {}; renderMissionList(); renP(); });
+    onValue(ref(db, 'mc_deductions'), s => { state.deductions = s.val() || {}; }); // Deductions are rendered in mission list logic now
+    onValue(ref(db, 'mc_notifications'), s => { state.notifications = s.val() || {}; updB(); });
+    onValue(ref(db, 'mc_config'), s => { state.config = s.val() || {}; updPh(); });
+    onValue(ref(db, 'mc_cheer_msgs'), s => { state.cheers = s.val() || {}; updCh(); });
+    onValue(ref(db, 'mc_feedbacks'), s => { state.feedbacks = s.val() || {}; renderMissionList(); });
+
+    window.login = () => { if (document.getElementById('admin-pw').value === 'admin1234') { document.getElementById('admin-auth').style.display = 'none'; document.getElementById('admin-main').style.display = 'block'; } else alert('오류'); };
+
+    function updateKidSelect() {
+      const sel = document.getElementById('targetKid');
+      const curr = sel.value;
+      sel.innerHTML = Object.entries(state.players).map(([id, p]) => `<option value="${id}">${p.name}</option>`).join('');
+      if (curr && state.players[curr]) sel.value = curr;
+      else if (Object.keys(state.players).length > 0) sel.value = Object.keys(state.players)[0];
+    }
+
+    // [복구] 미션 관리 로직 복구
+    window.addMission = () => {
+      const pId = document.getElementById('targetKid').value;
+      const date = document.getElementById('view-date').value;
+      const text = document.getElementById('missionText').value;
+      const point = document.getElementById('missionPoint').value;
+      if (!pId || !text) return alert("필수값 누락");
+
+      // Order calculation
+      const currentMissions = state.missions[pId]?.[date]?.missions || {};
+      const nextOrder = Object.keys(currentMissions).length;
+
+      push(ref(db, `mc_mission_data/${pId}/${date}/missions`), {
+        text,
+        point: parseInt(point) || 0,
+        sender: document.getElementById('missionSender').value,
+        msg: document.getElementById('missionMsg').value,
+        status: 'active',
+        order: nextOrder,
+        createdAt: Date.now()
+      }).then(() => {
+        document.getElementById('missionText').value = '';
+        document.getElementById('missionMsg').value = '';
+        document.getElementById('missionText').focus();
+      });
+    };
+
+    // [복구] 상태 변경 (TotalPoints 업데이트 부분은 일일초기화 원칙으로 제외)
+    window.setMissionStatus = (pId, date, mId, status, point = 0) => {
+      // NOTE: 일일 초기화 로직이므로 totalPoints 영구 누적은 하지 않습니다.
+      // 기존 코드: update(ref(db, `mc_players/${pId}`), { totalPoints: ... }) -> 제거됨
+      if (status === 'completed') confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+      update(ref(db, `mc_mission_data/${pId}/${date}/missions/${mId}`), { status });
+    };
+
+    window.toggleEdit = (mId) => {
+      global.editMissionId = (global.editMissionId === mId) ? null : mId;
+      renderMissionList();
+    };
+
+    window.saveMissionEdit = (pId, date, mId) => {
+      const text = document.getElementById(`edit-text-${mId}`).value;
+      const point = parseInt(document.getElementById(`edit-point-${mId}`).value);
+      update(ref(db, `mc_mission_data/${pId}/${date}/missions/${mId}`), { text, point });
+      global.editMissionId = null;
+    };
+
+    window.deleteMission = (pId, date, mId) => {
+      if (confirm('영구 삭제?')) remove(ref(db, `mc_mission_data/${pId}/${date}/missions/${mId}`));
+    };
+
+    window.moveOrder = (pId, date, mId, direction) => {
+      const mList = Object.entries(state.missions[pId]?.[date]?.missions || {}).sort((a, b) => (a[1].order || 0) - (b[1].order || 0));
+      const idx = mList.findIndex(x => x[0] === mId);
+
+      if (direction === 'up' && idx > 0) {
+        update(ref(db, `mc_mission_data/${pId}/${date}/missions/${mList[idx][0]}`), { order: mList[idx - 1][1].order });
+        update(ref(db, `mc_mission_data/${pId}/${date}/missions/${mList[idx - 1][0]}`), { order: mList[idx][1].order });
+      } else if (direction === 'down' && idx < mList.length - 1) {
+        update(ref(db, `mc_mission_data/${pId}/${date}/missions/${mList[idx][0]}`), { order: mList[idx + 1][1].order });
+        update(ref(db, `mc_mission_data/${pId}/${date}/missions/${mList[idx + 1][0]}`), { order: mList[idx][1].order });
+      }
+    };
+
+    window.renderMissionList = () => {
+      const pId = document.getElementById('targetKid').value;
+      const date = document.getElementById('view-date').value;
+      const container = document.getElementById('mission-list-area');
+      if (!pId) return container.innerHTML = '<div style="text-align:center; padding:20px; color:#999">아이를 선택하세요</div>';
+
+      const mList = Object.entries(state.missions[pId]?.[date]?.missions || {}).sort((a, b) => (a[1].order || 0) - (b[1].order || 0));
+      const deducts = state.deductions[pId]?.[date] || {};
+
+      let html = `<h4>📜 미션 목록 (${mList.length})</h4>`;
+
+      html += mList.map(([mId, m], idx) => {
+        if (m.status === 'proposed') return '';
+        const isEdit = global.editMissionId === mId;
+
+        let statusControls = '';
+        if (m.status === 'active') statusControls = `<button onclick="setMissionStatus('${pId}','${date}','${mId}','completed',${m.point})">완료 처리</button><button onclick="setMissionStatus('${pId}','${date}','${mId}','failed')">실패</button>`;
+        else if (m.status === 'pending_approval') statusControls = `<button class="btn-primary" onclick="setMissionStatus('${pId}','${date}','${mId}','completed',${m.point})">✅ 승인</button><button onclick="setMissionStatus('${pId}','${date}','${mId}','active')">반려(진행중)</button>`;
+        else if (m.status === 'completed') statusControls = `<button onclick="setMissionStatus('${pId}','${date}','${mId}','active',-${m.point})">진행중으로 복구</button>`;
+        else if (m.status === 'failed') statusControls = `<button onclick="setMissionStatus('${pId}','${date}','${mId}','active')">진행중으로 복구</button>`;
+
+        return `
+        <div class="m-item ${m.status}" style="flex-direction:column; align-items:flex-start; gap:5px;">
+          <div style="display:flex; justify-content:space-between; width:100%;">
+            <div style="display:flex; gap:5px; align-items:center;">
+              <span class="tag tag-${m.status}">${m.status}</span>
+              ${isEdit ?
+            `<input id="edit-text-${mId}" value="${m.text}" style="width:120px;">` :
+            `<b>${m.text}</b>`
+          }
+              ${isEdit ?
+            `<input id="edit-point-${mId}" type="number" value="${m.point}" style="width:50px;">` :
+            `(${m.point}P)`
+          }
+            </div>
+            <div>
+              <button onclick="moveOrder('${pId}','${date}','${mId}','up')" ${idx === 0 ? 'disabled' : ''}>▲</button>
+              <button onclick="moveOrder('${pId}','${date}','${mId}','down')" ${idx === mList.length - 1 ? 'disabled' : ''}>▼</button>
+            </div>
+          </div>
+          ${isEdit ?
+            `<button onclick="saveMissionEdit('${pId}','${date}','${mId}')">저장</button>` :
+            `<div style="font-size:0.8rem; color:#666;">${m.msg || ''}</div>`
+          }
+          <div style="margin-top:5px; display:flex; gap:5px; width:100%; justify-content:space-between;">
+             <div>${statusControls}</div>
+             <div>
+               <button onclick="toggleEdit('${mId}')">수정</button>
+               <button onclick="deleteMission('${pId}','${date}','${mId}')" style="color:red;">삭제</button>
+             </div>
+          </div>
+        </div>
+      `;
+      }).join('');
+
+      // 차감 내역 표시
+      html += '<h4 style="margin-top:20px;">💸 차감 내역</h4>';
+      html += Object.entries(deducts).map(([dId, d]) => `
+      <div style="display:flex; justify-content:space-between; border-bottom:1px dashed #eee; padding:5px;">
+        <span>${d.reason} (-${d.amount})</span>
+        <button onclick="delDeduct('${pId}','${dId}')" style="color:red; border:none; background:none; cursor:pointer;">삭제</button>
+      </div>
+    `).join('') || '<div style="color:#999; font-size:0.8rem;">차감 없음</div>';
+
+      container.innerHTML = html;
+    };
+
+    // 알림/제안/응원/기타 기능들... (이전 코드와 동일하게 유지)
+    function updB() { const c = Object.values(state.notifications).filter(n => !n.read).length; document.getElementById('notif-badge').innerText = c; document.getElementById('notif-badge').style.display = c > 0 ? 'flex' : 'none'; }
+    window.openNotif = () => { document.getElementById('notif-list').innerHTML = Object.entries(state.notifications).sort((a, b) => b[1].createdAt - a[1].createdAt).map(([id, n]) => `<div style="padding:10px; border-bottom:1px solid #eee; background:${n.read ? '#fff' : '#f0f9ff'}"><div>${n.message}</div><div style="font-size:0.7rem; color:#999;">${new Date(n.createdAt).toLocaleString()}</div>${!n.read ? `<button class=\"btn btn-ghost\" style=\"font-size:0.7rem\" onclick=\"mkR('${id}')\">읽음</button>` : ''}</div>`).join('') || '없음'; document.getElementById('notif-modal').style.display = 'flex'; };
+    window.mkR = (id) => update(ref(db, `mc_notifications/${id}`), { read: true });
+
+    function renP() {
+      const d = getToday();
+      const p = [];
+      Object.entries(state.players).forEach(([pId, pl]) => { Object.entries(state.missions[pId]?.[d]?.missions || {}).forEach(([mId, m]) => { if (m.status === 'proposed') p.push({ pId, mId, pl, m }); }); });
+      const pan = document.getElementById('proposal-panel');
+      if (p.length === 0) { pan.style.display = 'none'; return; }
+      pan.style.display = 'block';
+      document.getElementById('proposal-list').innerHTML = p.map(({ pId, mId, pl, m }) => `<div style="background:white; padding:10px; border-radius:10px; margin-bottom:5px;"><b>${pl.name}: ${m.text} (${m.point}P)</b><br><small>${m.proposalReason || ''}</small><div style="margin-top:5px; display:flex; gap:5px;"><button class="btn btn-primary" onclick="ap('${pId}','${mId}')">승인</button><button class="btn btn-ghost" onclick="ed('${pId}','${mId}','${m.text}','${m.point}')">수정</button><button class="btn btn-danger-sm" onclick="rj('${pId}','${mId}')">거절</button></div></div>`).join('');
+    }
+    window.ap = (pId, mId) => update(ref(db, `mc_mission_data/${pId}/${getToday()}/missions/${mId}`), { status: 'active', approvedAt: Date.now() });
+    window.ed = (pId, mId, t, p) => { const nt = prompt('제목', t), np = prompt('포인트', p); if (nt && np) update(ref(db, `mc_mission_data/${pId}/${getToday()}/missions/${mId}`), { text: nt, point: parseInt(np), status: 'active', approvedAt: Date.now() }); };
+    window.rj = (pId, mId) => { const r = prompt('사유'); if (r) update(ref(db, `mc_mission_data/${pId}/${getToday()}/missions/${mId}`), { status: 'rejected', rejectionReason: r }); };
+
+    function updCh() { const c = state.cheers[document.getElementById('view-date').value] || {}; document.getElementById('c-dad').value = c.dad || ''; document.getElementById('c-mom').value = c.mom || ''; }
+    window.svCh = (t) => { update(ref(db, `mc_cheer_msgs/${document.getElementById('view-date').value}`), { [t]: document.getElementById(`c-${t}`).value }); alert('저장'); };
+    function updPh() { const p = state.config.photos || {}; const is = "width:100%; height:100%; object-fit:cover; display:block;"; const d = document.getElementById('img-dad'), m = document.getElementById('img-mom'); if (p.dad) { d.src = p.dad; d.style.cssText = is; } if (p.mom) { m.src = p.mom; m.style.cssText = is; } }
+    window.upPh = (t) => { phT = t; document.getElementById('ph-up').click(); };
+    window.hPh = (i) => { const f = i.files[0]; if (f) { const r = new FileReader(); r.onload = e => update(ref(db, 'mc_config/photos'), { [phT]: e.target.result }); r.readAsDataURL(f); } };
+
+    window.changeDate = (v) => { document.getElementById('date-display').innerText = v; renderMissionList(); updCh(); };
+
+    window.openDeductDirect = () => { const pId = document.getElementById('targetKid').value; if (!pId) return alert('아이를 선택하세요'); document.getElementById('deduct-pid').value = pId; document.getElementById('deduct-amount').value = ''; document.getElementById('deduct-reason').value = ''; document.getElementById('deduct-modal').style.display = 'flex'; };
+    window.submitDeduct = () => { const pId = document.getElementById('deduct-pid').value, a = document.getElementById('deduct-amount').value, r = document.getElementById('deduct-reason').value; if (a && r) { push(ref(db, `mc_deductions/${pId}/${document.getElementById('view-date').value}`), { amount: parseInt(a), reason: r, timestamp: Date.now() }); document.getElementById('deduct-modal').style.display = 'none'; } };
+    window.delDeduct = (pId, dId) => { if (confirm('삭제?')) remove(ref(db, `mc_deductions/${pId}/${document.getElementById('view-date').value}/${dId}`)); };
+
+    window.addU = () => { const n = document.getElementById('n-nm').value, p = document.getElementById('n-pin').value; if (n && p.length === 4) push(ref(db, 'mc_players'), { name: n, pin: p }); };
+    window.delU = (id) => { if (confirm('삭제?')) remove(ref(db, `mc_players/${id}`)); };
+    function renU() { document.getElementById('u-list').innerHTML = Object.entries(state.players).map(([id, p]) => `<div>${p.name} (${p.pin}) <button onclick="delU('${id}')">X</button></div>`).join(''); }
+
+    window.showLoginHistory = async () => { const m = document.getElementById('login-history-modal'), b = document.getElementById('history-body'); b.innerHTML = '로딩...'; m.style.display = 'flex'; const q = query(ref(db, 'mc_login_history'), limitToLast(50)); const s = await get(q); const l = []; s.forEach(c => l.push(c.val())); b.innerHTML = l.reverse().map(x => `<div>${x.success ? '성공' : '실패'} ${x.name}</div>`).join(''); };
+  </script>
+</body>
+
+</html>

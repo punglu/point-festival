@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>마인크래프트 포인트 잔치</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .selector-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+    
+    .selector-box {
+      background: white;
+      border-radius: 32px;
+      padding: 50px 40px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .logo {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 2.5rem;
+      color: #1e293b;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 40px;
+    }
+    
+    .selector-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .selector-btn {
+      padding: 20px 30px;
+      border: none;
+      border-radius: 16px;
+      font-family: 'Pretendard', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .selector-btn.kids {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+    
+    .selector-btn.kids:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+    }
+    
+    .selector-btn.admin {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+    
+    .selector-btn.admin:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4);
+    }
+    
+    .icon {
+      font-size: 1.5rem;
+    }
+    
+    .version {
+      margin-top: 30px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      opacity: 0.6;
+    }
+    
+    @media (max-width: 600px) {
+      .selector-box {
+        padding: 40px 30px;
+      }
+      
+      .logo {
+        font-size: 2rem;
+      }
+      
+      .selector-btn {
+        padding: 18px 25px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="selector-container">
+    <div class="selector-box">
+      <h1 class="logo">🎮 포인트 잔치</h1>
+      <p class="subtitle">원하는 페이지를 선택하세요</p>
+      
+      <div class="selector-buttons">
+        <a href="/user.html" class="selector-btn kids">
+          <span class="icon">👦</span>
+          <span>아이들 보기</span>
+        </a>
+        
+        <a href="/admin.html" class="selector-btn admin">
+          <span class="icon">🛠️</span>
+          <span>관리자 페이지</span>
+        </a>
+      </div>
+      
+      <div class="version">v3.0 - Minecraft Point Festival</div>
+    </div>
+  </div>
+</body>
+</html>

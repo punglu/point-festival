@@ -1,0 +1,470 @@
+/* ==========================================
+   Minecraft Point Festival v4.3 - Final Styles
+   ========================================== */
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&display=swap');
+
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --accent: #10b981;
+  --blue: #3b82f6;
+  --text: #1e293b;
+  --muted: #64748b;
+  --gold: #f59e0b;
+  --danger: #ef4444;
+  --input-bg: #f1f5f9;
+  --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Pretendard', sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 2.2rem;
+}
+
+/* Components */
+.panel {
+  background: var(--card);
+  border-radius: 24px;
+  padding: 25px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(226, 232, 240, 0.5);
+  margin-bottom: 20px;
+}
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Pretendard';
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  padding: 12px 20px;
+}
+
+.btn-ghost {
+  background: var(--input-bg);
+  color: var(--muted);
+  padding: 8px 12px;
+  font-size: 0.8rem;
+}
+
+.btn-danger-sm {
+  background: #fee2e2;
+  color: #ef4444;
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+input,
+select,
+textarea {
+  background: var(--input-bg);
+  border: 2px solid transparent;
+  padding: 10px 14px;
+  border-radius: 12px;
+  outline: none;
+  transition: 0.2s;
+  width: 100%;
+  font-family: 'Pretendard';
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--accent);
+  background: #fff;
+}
+
+/* 응원 메시지 & 사진 (고정 스타일) */
+.cheer-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.cheer-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.cheer-photo {
+  width: 50px !important;
+  height: 50px !important;
+  min-width: 50px;
+  flex-shrink: 0;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 2px solid #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  background: #eee;
+}
+
+.cheer-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.bubble {
+  position: relative;
+  border-radius: 16px;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  flex: 1;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.bubble.dad {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #dbeafe;
+}
+
+.bubble.mom {
+  background: #fdf2f8;
+  color: #be185d;
+  border: 1px solid #fce7f3;
+}
+
+.bubble.player {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #dcfce7;
+}
+
+/* 미션 아이템 */
+.m-item {
+  background: #fff;
+  margin-bottom: 12px;
+  padding: 15px;
+  border-radius: 16px;
+  border: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.m-item.completed {
+  border-left: 5px solid var(--accent);
+  background: #f0fdf4;
+}
+
+.m-item.failed {
+  border-left: 5px solid var(--danger);
+  background: #fef2f2;
+  opacity: 0.8;
+}
+
+.m-item.pending_approval {
+  border-left: 5px solid var(--gold);
+  background: #fffbeb;
+}
+
+.tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+.tag-active {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.tag-done {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.tag-fail {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.tag-pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.tag-rejected {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* 신규 기능 UI */
+.notification-bell {
+  position: relative;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border: 2px solid #fff;
+}
+
+.proposal-panel {
+  background: #fffbeb;
+  border: 2px solid #fcd34d;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* [복구] 모두의 진행현황 (Shared Progress) */
+#progress-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.progress-card {
+  background: white;
+  border-radius: 16px;
+  padding: 15px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  transition: 0.2s;
+}
+
+.progress-card.current-user {
+  border: 2px solid var(--blue);
+  background: #f0f9ff;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.progress-name {
+  font-weight: 800;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.progress-badge {
+  font-size: 0.6rem;
+  background: var(--blue);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.progress-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.progress-stat {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 6px 4px;
+  text-align: center;
+}
+
+.progress-stat-value {
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.progress-stat-label {
+  font-size: 0.6rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.progress-missions {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.progress-mission-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.progress-mission-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.progress-mission-item.completed span:first-child {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.progress-mission-item.failed span:first-child {
+  color: var(--danger);
+  text-decoration: line-through;
+}
+
+/* [복구] Admin 입력폼 원복 스타일 */
+.admin-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: #f1f5f9;
+  padding: 15px;
+  border-radius: 16px;
+}
+
+.admin-row {
+  display: flex;
+  gap: 8px;
+}
+
+/* Stat Cards */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  padding: 10px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.stat-val {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.pin-input-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.pin-digit {
+  width: 50px;
+  height: 60px;
+  font-size: 2rem;
+  text-align: center;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+}
+
+.pin-digit:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+@media (max-width: 600px) {
+  .app-wrapper {
+    padding: 20px 15px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+}

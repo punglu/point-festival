@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>포인트 잔치 — User Dashboard (Instagram Style)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fafafa;
+  --card: #ffffff;
+  --accent: #10b981;
+  --accent-light: #d1fae5;
+  --blue: #3b82f6;
+  --text: #1a1a1a;
+  --muted: #8e8e93;
+  --border: #efefef;
+  --danger: #ef4444;
+  --gold: #f59e0b;
+  --radius: 16px;
+  --radius-sm: 12px;
+  --glass: rgba(255,255,255,0.72);
+  --glass-border: rgba(255,255,255,0.3);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.06);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.1);
+  --nav-height: 64px;
+  --header-height: 56px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  padding-bottom: calc(var(--nav-height) + 20px);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ====== HEADER (Instagram style) ====== */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  height: var(--header-height);
+  background: var(--glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px;
+}
+.header-title {
+  font-size: 1.1rem; font-weight: 800; letter-spacing: -0.3px;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.header-user { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+.header-btn {
+  background: none; border: none; font-size: 0.8rem; color: var(--danger);
+  font-weight: 600; cursor: pointer; padding: 6px 12px; border-radius: 8px;
+  transition: background 0.2s;
+}
+.header-btn:hover { background: rgba(239,68,68,0.08); }
+
+/* ====== BOTTOM NAV ====== */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  height: var(--nav-height);
+  background: var(--glass);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border-top: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-around;
+  padding: 0 8px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 6px 16px; border-radius: 12px; cursor: pointer;
+  transition: all 0.2s; background: none; border: none; font-family: inherit;
+}
+.nav-item.active { color: var(--accent); }
+.nav-item:not(.active) { color: var(--muted); }
+.nav-icon { font-size: 1.4rem; line-height: 1; }
+.nav-label { font-size: 0.65rem; font-weight: 700; }
+.nav-item.active .nav-icon { transform: scale(1.1); }
+
+/* ====== STORY CARDS (부모 응원) ====== */
+.story-row {
+  display: flex; gap: 14px; padding: 16px 16px 8px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.story-row::-webkit-scrollbar { display: none; }
+.story-card {
+  flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer;
+}
+.story-ring {
+  width: 64px; height: 64px; border-radius: 50%; padding: 3px;
+  background: linear-gradient(135deg, var(--gold), #ec4899, var(--blue));
+}
+.story-ring.empty { background: var(--border); }
+.story-avatar {
+  width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--card);
+  background: #f1f5f9; object-fit: cover; display: flex; align-items: center;
+  justify-content: center; font-size: 1.4rem;
+}
+.story-name { font-size: 0.7rem; font-weight: 600; color: var(--text); max-width: 64px;
+  text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ====== DATE SELECTOR ====== */
+.date-bar {
+  display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+}
+.date-chip {
+  flex: 1; text-align: center; padding: 8px; border-radius: 10px;
+  font-size: 0.8rem; font-weight: 700; cursor: pointer;
+  background: var(--card); border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+.date-chip.active {
+  background: var(--accent); color: white; border-color: var(--accent);
+  box-shadow: 0 2px 12px rgba(16,185,129,0.3);
+}
+.date-display {
+  padding: 4px 16px; font-size: 0.75rem; color: var(--muted); font-weight: 600;
+}
+
+/* ====== PROFILE CARD ====== */
+.profile-card {
+  margin: 8px 16px; padding: 20px;
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+}
+.profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.profile-photo {
+  width: 72px; height: 72px; border-radius: 50%; overflow: hidden;
+  border: 3px solid var(--accent-light); flex-shrink: 0;
+  background: #f1f5f9; display: flex; align-items: center; justify-content: center;
+}
+.profile-photo img { width: 100%; height: 100%; object-fit: cover; }
+.profile-name { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px; }
+.status-input {
+  width: 100%; padding: 8px 14px; border: 1.5px solid var(--border);
+  border-radius: 20px; font-size: 0.85rem; outline: none; transition: 0.2s;
+  background: #f8fafc; font-family: inherit; margin-top: 4px;
+}
+.status-input:focus { border-color: var(--accent); background: white; }
+
+/* ====== STAT PILLS ====== */
+.stat-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+.stat-pill {
+  padding: 12px 8px; border-radius: var(--radius-sm);
+  text-align: center; cursor: pointer; transition: all 0.2s;
+  border: 1px solid var(--border);
+}
+.stat-pill:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.stat-value { font-size: 1.2rem; font-weight: 800; }
+.stat-label { font-size: 0.65rem; font-weight: 700; color: var(--muted); margin-top: 2px; }
+.stat-earned { background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
+.stat-earned .stat-value { color: var(--accent); }
+.stat-balance { background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+.stat-balance .stat-value { color: var(--blue); }
+.stat-pending { background: linear-gradient(135deg, #fffbeb, #fef3c7); }
+.stat-pending .stat-value { color: var(--gold); }
+
+/* ====== TAB BAR ====== */
+.tab-bar {
+  display: flex; padding: 0 16px; margin-top: 12px; gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  flex: 1; text-align: center; padding: 10px 0; font-size: 0.82rem;
+  font-weight: 700; color: var(--muted); cursor: pointer;
+  border-bottom: 2.5px solid transparent; transition: all 0.2s;
+  background: none; border-top: none; border-left: none; border-right: none;
+  font-family: inherit;
+}
+.tab.active { color: var(--text); border-bottom-color: var(--text); }
+
+/* ====== MISSION LIST ====== */
+.tab-content { padding: 12px 16px; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.mission-card {
+  background: var(--card); border-radius: var(--radius);
+  padding: 16px; margin-bottom: 10px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+  position: relative;
+}
+.mission-card:hover { box-shadow: var(--shadow-md); }
+.mission-status {
+  display: inline-block; font-size: 0.68rem; font-weight: 800;
+  padding: 3px 10px; border-radius: 20px; margin-bottom: 8px;
+}
+.status-active { background: #eff6ff; color: #2563eb; }
+.status-completed { background: #ecfdf5; color: #059669; }
+.status-pending { background: #fef3c7; color: #d97706; }
+.status-failed { background: #fef2f2; color: #dc2626; }
+.status-rejected { background: #fee2e2; color: #991b1b; }
+.mission-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+.mission-points { font-size: 0.82rem; font-weight: 800; color: var(--accent); }
+.mission-msg {
+  margin-top: 8px; padding: 10px 14px; border-radius: 14px;
+  font-size: 0.82rem; line-height: 1.4;
+}
+.msg-dad { background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; }
+.msg-mom { background: #fdf2f8; color: #be185d; border: 1px solid #fce7f3; }
+.mission-action {
+  width: 100%; margin-top: 10px; padding: 10px; border-radius: 10px;
+  font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.2s;
+  border: none; font-family: inherit;
+}
+.action-approve {
+  background: var(--accent); color: white;
+}
+.action-approve:active { transform: scale(0.98); }
+
+/* ====== DEDUCTION SECTION ====== */
+.deduct-section { margin-top: 8px; }
+.deduct-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; cursor: pointer; font-size: 0.85rem; font-weight: 700;
+  color: var(--muted);
+}
+.deduct-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px; background: #fff5f5; border-radius: 10px;
+  margin-bottom: 6px; border: 1px solid #fee2e2;
+}
+.deduct-amount { font-weight: 800; color: var(--danger); }
+
+/* ====== PROPOSAL FORM ====== */
+.proposal-section {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #fbbf24; border-radius: var(--radius);
+  padding: 20px; margin-bottom: 12px;
+}
+.proposal-title { font-weight: 800; color: #92400e; margin-bottom: 4px; }
+.proposal-sub { font-size: 0.82rem; color: #a16207; margin-bottom: 16px; }
+.proposal-input {
+  width: 100%; padding: 12px; border: 2px solid #fbbf24;
+  border-radius: 10px; font-size: 0.9rem; outline: none;
+  margin-bottom: 10px; font-family: inherit; background: white;
+  transition: 0.2s;
+}
+.proposal-input:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+.proposal-btn {
+  width: 100%; padding: 12px; border-radius: 10px; border: none;
+  background: #f59e0b; color: white; font-weight: 800; font-size: 0.9rem;
+  cursor: pointer; font-family: inherit; transition: 0.2s;
+}
+.proposal-btn:active { transform: scale(0.98); }
+
+/* ====== FEEDBACK SECTION ====== */
+.feedback-card {
+  background: #f8fafc; padding: 12px 16px; border-radius: 14px;
+  margin-bottom: 8px; border: 1px solid #e2e8f0;
+}
+.feedback-input-row {
+  display: flex; gap: 8px; margin-top: 12px;
+}
+.feedback-input {
+  flex: 1; padding: 10px 14px; border: 1.5px solid var(--border);
+  border-radius: 20px; font-size: 0.85rem; outline: none; font-family: inherit;
+}
+.feedback-send {
+  padding: 10px 16px; border-radius: 20px; border: none;
+  background: var(--accent); color: white; font-weight: 700;
+  font-size: 0.82rem; cursor: pointer; font-family: inherit;
+}
+
+/* ====== SHARED PROGRESS ====== */
+.progress-section { padding: 12px 16px; }
+.progress-card {
+  background: var(--card); border-radius: var(--radius);
+  padding: 16px; margin-bottom: 10px;
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+  transition: 0.2s;
+}
+.progress-card.me {
+  border-color: var(--accent); background: linear-gradient(135deg, #f0fdf4, #fff);
+}
+.progress-name { font-weight: 800; font-size: 1rem; }
+.progress-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 6px;
+  font-size: 0.65rem; font-weight: 800;
+  background: var(--accent); color: white; margin-left: 8px;
+}
+.progress-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;
+}
+.progress-stat-item {
+  text-align: center; padding: 8px; background: #f9fafb; border-radius: 10px;
+}
+.progress-stat-val { font-weight: 800; font-size: 1rem; }
+.progress-stat-lbl { font-size: 0.6rem; color: var(--muted); font-weight: 600; }
+
+/* ====== LOGIN OVERLAY ====== */
+.login-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+}
+.login-card {
+  background: white; border-radius: 28px; padding: 40px 32px;
+  width: 90%; max-width: 380px; text-align: center;
+  box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.login-name { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+.login-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; }
+.pin-row { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
+.pin-dot {
+  width: 56px; height: 64px; border: 2.5px solid var(--border);
+  border-radius: 14px; font-size: 1.8rem; font-weight: 800;
+  text-align: center; outline: none; transition: 0.2s;
+  font-family: inherit; -webkit-text-security: disc;
+  background: #f8fafc;
+}
+.pin-dot:focus { border-color: var(--accent); background: #f0fdf4;
+  box-shadow: 0 0 0 4px rgba(16,185,129,0.1); }
+.pin-dot.filled { border-color: var(--accent); background: #ecfdf5; }
+.pin-dot.error { border-color: var(--danger); background: #fef2f2; animation: shake 0.4s; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+.login-error { background: #fef2f2; color: #dc2626; padding: 10px; border-radius: 10px;
+  font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; border: 1px solid #fecaca; }
+.login-locked { background: #fff7ed; color: #ea580c; padding: 12px; border-radius: 10px;
+  font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; border: 2px solid #fed7aa; }
+.login-check { display: flex; align-items: center; justify-content: center;
+  gap: 8px; margin-bottom: 16px; font-size: 0.85rem; color: var(--muted); }
+.login-btns { display: flex; gap: 10px; }
+.btn-login {
+  flex: 1; padding: 12px; border-radius: 12px; font-weight: 700;
+  font-size: 0.9rem; cursor: pointer; font-family: inherit; border: none; transition: 0.2s;
+}
+.btn-cancel { background: #f1f5f9; color: var(--muted); }
+.btn-confirm { background: var(--accent); color: white; }
+.btn-login:active { transform: scale(0.97); }
+
+/* ====== PLAYER SELECTOR ====== */
+.selector-section {
+  max-width: 420px; margin: 0 auto; padding: 60px 20px;
+}
+.selector-title { font-size: 0.9rem; font-weight: 800; color: var(--muted); margin-bottom: 14px; }
+.selector-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.selector-btn {
+  padding: 18px; border: 2px solid var(--border); border-radius: var(--radius);
+  background: white; cursor: pointer; text-align: center;
+  font-weight: 700; font-size: 1rem; color: var(--text); transition: all 0.2s;
+  font-family: inherit;
+}
+.selector-btn:hover { border-color: var(--accent); background: #f0fdf4; transform: translateY(-2px); }
+
+/* ====== MODAL ====== */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 5000;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: white; border-radius: 24px; padding: 28px;
+  width: 90%; max-width: 440px; max-height: 80vh; overflow-y: auto;
+  box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease;
+}
+
+/* ====== UTILITIES ====== */
+.hidden { display: none !important; }
+.fade-in { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 480px) {
+  .stat-value { font-size: 1rem; }
+  .profile-photo { width: 60px; height: 60px; }
+  .login-card { padding: 32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ====== HEADER ====== -->
+<div class="header">
+  <div class="header-title">포인트 잔치</div>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <span class="header-user" id="headerUser"></span>
+    <button class="header-btn hidden" id="logoutBtn" onclick="logout()">로그아웃</button>
+  </div>
+</div>
+
+<!-- ====== LOGIN OVERLAY ====== -->
+<div class="login-overlay hidden" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-name" id="loginPlayerName">유빈</div>
+    <div class="login-sub">PIN 번호를 입력하세요</div>
+    <div class="pin-row">
+      <input type="text" maxlength="1" class="pin-dot" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+      <input type="text" maxlength="1" class="pin-dot" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+      <input type="text" maxlength="1" class="pin-dot" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+      <input type="text" maxlength="1" class="pin-dot" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+    </div>
+    <div class="login-error hidden" id="loginError"></div>
+    <div class="login-locked hidden" id="loginLocked"></div>
+    <div class="login-check">
+      <input type="checkbox" id="rememberMe" checked>
+      <label for="rememberMe">로그인 상태 유지</label>
+    </div>
+    <div id="lastLoginInfo" style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;" class="hidden"></div>
+    <div class="login-btns">
+      <button class="btn-login btn-cancel" onclick="cancelLogin()">취소</button>
+      <button class="btn-login btn-confirm" onclick="submitPin()">로그인</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PLAYER SELECTOR ====== -->
+<div id="selectorSection" class="selector-section">
+  <div class="selector-title">👦 누구의 미션을 볼까요?</div>
+  <div class="selector-grid" id="selectorGrid">
+    <button class="selector-btn" onclick="selectPlayer('yubin')">유빈</button>
+    <button class="selector-btn" onclick="selectPlayer('yuhyun')">유현</button>
+  </div>
+</div>
+
+<!-- ====== MAIN CONTENT ====== -->
+<div id="mainContent" class="hidden">
+
+  <!-- Story Cards (부모 응원) -->
+  <div class="story-row" id="storyRow">
+    <div class="story-card" onclick="showCheer('dad')">
+      <div class="story-ring">
+        <div class="story-avatar">👨</div>
+      </div>
+      <div class="story-name">아빠</div>
+    </div>
+    <div class="story-card" onclick="showCheer('mom')">
+      <div class="story-ring">
+        <div class="story-avatar">👩</div>
+      </div>
+      <div class="story-name">엄마</div>
+    </div>
+    <div class="story-card">
+      <div class="story-ring empty">
+        <div class="story-avatar" style="font-size:1.6rem;">+</div>
+      </div>
+      <div class="story-name" style="color:var(--muted);">추가</div>
+    </div>
+  </div>
+
+  <!-- Date Selector -->
+  <div class="date-display" id="dateDisplay">2026년 3월 30일 (월)</div>
+  <div class="date-bar">
+    <button class="date-chip" onclick="quickDate(-1)">어제</button>
+    <button class="date-chip active" onclick="quickDate(0)">오늘</button>
+    <button class="date-chip" onclick="quickDate(1)">내일</button>
+  </div>
+
+  <!-- Profile Card -->
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="profile-photo" id="profilePhoto">
+        <span style="font-size:1.8rem;">👦</span>
+      </div>
+      <div style="flex:1;">
+        <div class="profile-name" id="profileName">유빈</div>
+        <input class="status-input" placeholder="오늘의 다짐!" value="열심히 하자!" id="statusInput">
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-pill stat-earned" onclick="showStatDetail('allocated')">
+        <div class="stat-value">45</div>
+        <div class="stat-label">오늘 배정</div>
+      </div>
+      <div class="stat-pill stat-balance" onclick="showStatDetail('balance')">
+        <div class="stat-value">30</div>
+        <div class="stat-label">오늘 보유</div>
+      </div>
+      <div class="stat-pill stat-pending" onclick="showStatDetail('remaining')">
+        <div class="stat-value">15</div>
+        <div class="stat-label">남은 미션</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('missions')">미션</button>
+    <button class="tab" onclick="switchTab('propose')">제안하기</button>
+    <button class="tab" onclick="switchTab('feedback')">답장</button>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+
+    <!-- Missions Tab -->
+    <div class="tab-panel active" id="tab-missions">
+
+      <!-- Deduction accordion -->
+      <div class="deduct-section">
+        <div class="deduct-header" onclick="toggleDeduct()">
+          <span>🔻 포인트 사용 내역</span>
+          <span style="color:var(--danger); font-size:0.8rem;">(총 -5P)</span>
+        </div>
+        <div id="deductBody" class="hidden">
+          <div class="deduct-item">
+            <div>
+              <div style="font-size:0.85rem; font-weight:600;">간식 교환</div>
+              <div style="font-size:0.7rem; color:var(--muted);">2026-03-30</div>
+            </div>
+            <div class="deduct-amount">-5P</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mission Cards -->
+      <div class="mission-card">
+        <div class="mission-status status-active">● 진행 중</div>
+        <div class="mission-title">방 청소하기</div>
+        <div class="mission-points">+15P</div>
+        <div class="mission-msg msg-dad">
+          💬 <b>아빠:</b> 깨끗하게 정리하면 보너스!
+        </div>
+        <button class="mission-action action-approve" onclick="requestApproval(this)">
+          ✅ 완료! 승인 요청
+        </button>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-status status-pending">⏳ 승인 대기</div>
+        <div class="mission-title">수학 문제 풀기</div>
+        <div class="mission-points">+20P</div>
+        <div style="margin-top:10px; text-align:center; color:#d97706; font-size:0.85rem; font-weight:600;">
+          승인 대기 중...
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-status status-completed">✅ 완료</div>
+        <div class="mission-title">독서 30분</div>
+        <div class="mission-points">+10P</div>
+      </div>
+
+      <div class="mission-card" style="opacity:0.7;">
+        <div class="mission-status status-failed">🚫 실패</div>
+        <div class="mission-title" style="text-decoration:line-through;">일찍 일어나기</div>
+        <div class="mission-points" style="color:var(--danger);">0P</div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-status status-rejected">❌ 거절됨</div>
+        <div class="mission-title">게임 1시간</div>
+        <div class="mission-points" style="color:var(--danger);">0P</div>
+        <div style="margin-top:8px; padding:8px 12px; background:white; border-radius:8px;
+          font-size:0.82rem; font-style:italic; border-left:3px solid var(--danger);">
+          💬 포인트로 교환할 수 없어요
+        </div>
+      </div>
+    </div>
+
+    <!-- Propose Tab -->
+    <div class="tab-panel" id="tab-propose">
+      <div class="proposal-section">
+        <div class="proposal-title">💡 미션 제안하기</div>
+        <div class="proposal-sub">하고 싶은 미션을 제안해보세요!</div>
+        <input class="proposal-input" placeholder="미션 이름 (예: 방 청소하기)">
+        <input class="proposal-input" type="number" placeholder="포인트 (예: 15)" min="1" max="100">
+        <textarea class="proposal-input" placeholder="이유 (선택)" rows="3" style="resize:vertical;"></textarea>
+        <button class="proposal-btn" onclick="alert('💡 미션 제안이 전송되었습니다!')">📤 제안하기</button>
+      </div>
+
+      <!-- 내 제안 현황 -->
+      <div style="margin-top:16px;">
+        <div style="font-weight:700; color:var(--muted); font-size:0.85rem; margin-bottom:10px;">📋 내 제안 현황</div>
+        <div class="mission-card" style="border-left:4px solid #fbbf24;">
+          <div style="font-weight:700;">운동 30분 (20P)</div>
+          <div style="font-size:0.82rem; font-style:italic; color:var(--muted); margin-top:4px;">이유: 건강해지고 싶어요</div>
+          <div style="display:inline-block; margin-top:6px; padding:3px 10px; border-radius:6px;
+            background:#fef3c7; color:#d97706; font-size:0.75rem; font-weight:700;">⏳ 검토 중</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback Tab -->
+    <div class="tab-panel" id="tab-feedback">
+      <div class="feedback-card">
+        <div><b>유빈:</b> 오늘 미션 너무 어려워요 😭</div>
+        <div style="margin-top:8px; padding:8px 12px; background:white; border-radius:8px; border:1px solid #f1f5f9;">
+          <div style="display:flex; gap:6px; align-items:flex-start;">
+            <span style="font-weight:800; font-size:0.75rem; color:var(--blue); white-space:nowrap;">아빠:</span>
+            <span style="font-size:0.85rem;">힘내! 할 수 있어!</span>
+          </div>
+        </div>
+      </div>
+      <div class="feedback-input-row">
+        <input class="feedback-input" placeholder="답장 보내기...">
+        <button class="feedback-send">전송</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SHARED PROGRESS (Bottom Nav: 순위 탭) ====== -->
+<div id="progressSection" class="hidden">
+  <div class="progress-section">
+    <div style="font-weight:800; color:#92400e; font-size:1rem; margin-bottom:12px;
+      padding:12px 16px; background:linear-gradient(135deg, #fef3c7, #fde68a);
+      border-radius:var(--radius);">
+      🏆 모두의 진행현황
+    </div>
+
+    <div class="progress-card me">
+      <div>
+        <span class="progress-name">유빈</span>
+        <span class="progress-badge">나</span>
+      </div>
+      <div class="progress-stats">
+        <div class="progress-stat-item">
+          <div class="progress-stat-val" style="color:var(--accent);">2</div>
+          <div class="progress-stat-lbl">완료</div>
+        </div>
+        <div class="progress-stat-item" style="background:#fffbeb;">
+          <div class="progress-stat-val" style="color:#d97706;">1</div>
+          <div class="progress-stat-lbl">승인대기</div>
+        </div>
+        <div class="progress-stat-item" style="background:#fef3c7;">
+          <div class="progress-stat-val" style="color:#d97706;">30</div>
+          <div class="progress-stat-lbl">보유P</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-card">
+      <div class="progress-name">유현</div>
+      <div class="progress-stats">
+        <div class="progress-stat-item">
+          <div class="progress-stat-val" style="color:var(--accent);">3</div>
+          <div class="progress-stat-lbl">완료</div>
+        </div>
+        <div class="progress-stat-item" style="background:#fffbeb;">
+          <div class="progress-stat-val" style="color:#d97706;">0</div>
+          <div class="progress-stat-lbl">승인대기</div>
+        </div>
+        <div class="progress-stat-item" style="background:#fef3c7;">
+          <div class="progress-stat-val" style="color:#d97706;">45</div>
+          <div class="progress-stat-lbl">보유P</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== STAT DETAIL MODAL ====== -->
+<div class="modal-overlay" id="statModal">
+  <div class="modal-box">
+    <h3 style="color:var(--blue); margin-bottom:12px;" id="statModalTitle">📊 상세 기록</h3>
+    <div id="statModalBody" style="font-size:0.9rem;"></div>
+    <button style="width:100%; margin-top:16px; padding:12px; border-radius:12px;
+      border:none; background:var(--accent); color:white; font-weight:700;
+      font-size:0.9rem; cursor:pointer; font-family:inherit;"
+      onclick="document.getElementById('statModal').classList.remove('show')">
+      닫기
+    </button>
+  </div>
+</div>
+
+<!-- ====== CHEER MODAL (스토리 클릭) ====== -->
+<div class="modal-overlay" id="cheerModal">
+  <div class="modal-box" style="text-align:center;">
+    <div style="font-size:3rem; margin-bottom:12px;" id="cheerEmoji">👨</div>
+    <h3 id="cheerTitle" style="margin-bottom:8px;">아빠의 응원</h3>
+    <div id="cheerMsg" style="padding:16px; background:#eff6ff; border-radius:14px;
+      color:#1d4ed8; font-size:0.95rem; line-height:1.6;">
+      오늘도 파이팅! 잘 하고 있어 👏
+    </div>
+    <button style="width:100%; margin-top:16px; padding:12px; border-radius:12px;
+      border:none; background:#f1f5f9; color:var(--muted); font-weight:700;
+      font-size:0.9rem; cursor:pointer; font-family:inherit;"
+      onclick="document.getElementById('cheerModal').classList.remove('show')">
+      닫기
+    </button>
+  </div>
+</div>
+
+<!-- ====== BOTTOM NAVIGATION ====== -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="nav-item active" onclick="switchPage('home')">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">홈</span>
+  </button>
+  <button class="nav-item" onclick="switchPage('progress')">
+    <span class="nav-icon">🏆</span>
+    <span class="nav-label">순위</span>
+  </button>
+</nav>
+
+<script>
+// ====== TAB SWITCHING ======
+function switchTab(tabId) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tabId).classList.add('active');
+}
+
+// ====== BOTTOM NAV ======
+function switchPage(page) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  const main = document.getElementById('mainContent');
+  const progress = document.getElementById('progressSection');
+
+  if (page === 'home') {
+    main.classList.remove('hidden');
+    progress.classList.add('hidden');
+  } else {
+    main.classList.add('hidden');
+    progress.classList.remove('hidden');
+    progress.classList.add('fade-in');
+  }
+}
+
+// ====== DATE ======
+function quickDate(offset) {
+  document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  const formatted = d.toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
+  document.getElementById('dateDisplay').textContent = formatted;
+}
+
+// ====== DEDUCTION TOGGLE ======
+function toggleDeduct() {
+  document.getElementById('deductBody').classList.toggle('hidden');
+}
+
+// ====== PLAYER SELECT + LOGIN ======
+function selectPlayer(id) {
+  const name = id === 'yubin' ? '유빈' : '유현';
+  document.getElementById('loginPlayerName').textContent = name;
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  const pins = document.querySelectorAll('.pin-dot');
+  pins.forEach(p => { p.value = ''; p.classList.remove('filled','error'); });
+  pins[0].focus();
+  setupPinInputs();
+}
+
+function setupPinInputs() {
+  const pins = document.querySelectorAll('.pin-dot');
+  pins.forEach((pin, i) => {
+    pin.oninput = (e) => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+      if (e.target.value) {
+        e.target.classList.add('filled');
+        if (i < 3) pins[i + 1].focus();
+        if (i === 3) setTimeout(() => submitPin(), 300);
+      } else {
+        e.target.classList.remove('filled');
+      }
+    };
+    pin.onkeydown = (e) => {
+      if (e.key === 'Backspace' && !e.target.value && i > 0) pins[i - 1].focus();
+    };
+  });
+}
+
+function submitPin() {
+  const pins = document.querySelectorAll('.pin-dot');
+  const pin = Array.from(pins).map(p => p.value).join('');
+  if (pin.length !== 4) return;
+
+  // Demo: 1234 = success
+  if (pin === '1234') {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('selectorSection').classList.add('hidden');
+    document.getElementById('mainContent').classList.remove('hidden');
+    document.getElementById('mainContent').classList.add('fade-in');
+    document.getElementById('headerUser').textContent = document.getElementById('loginPlayerName').textContent + '님';
+    document.getElementById('logoutBtn').classList.remove('hidden');
+    document.getElementById('profileName').textContent = document.getElementById('loginPlayerName').textContent;
+    document.getElementById('bottomNav').classList.remove('hidden');
+  } else {
+    pins.forEach(p => { p.value = ''; p.classList.remove('filled'); p.classList.add('error'); });
+    document.getElementById('loginError').textContent = '잘못된 PIN입니다.';
+    document.getElementById('loginError').classList.remove('hidden');
+    setTimeout(() => {
+      pins.forEach(p => p.classList.remove('error'));
+      document.getElementById('loginError').classList.add('hidden');
+      pins[0].focus();
+    }, 600);
+  }
+}
+
+function cancelLogin() {
+  document.getElementById('loginOverlay').classList.add('hidden');
+}
+
+function logout() {
+  document.getElementById('mainContent').classList.add('hidden');
+  document.getElementById('progressSection').classList.add('hidden');
+  document.getElementById('selectorSection').classList.remove('hidden');
+  document.getElementById('headerUser').textContent = '';
+  document.getElementById('logoutBtn').classList.add('hidden');
+  // Reset nav
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector('.nav-item').classList.add('active');
+}
+
+// ====== APPROVAL ======
+function requestApproval(btn) {
+  if (!confirm('미션을 완료했나요? 승인을 요청하시겠습니까?')) return;
+  const card = btn.closest('.mission-card');
+  card.querySelector('.mission-status').className = 'mission-status status-pending';
+  card.querySelector('.mission-status').textContent = '⏳ 승인 대기';
+  btn.outerHTML = '<div style="margin-top:10px; text-align:center; color:#d97706; font-size:0.85rem; font-weight:600;">승인 대기 중...</div>';
+  alert('✅ 승인 요청을 보냈습니다!');
+}
+
+// ====== STAT DETAIL ======
+function showStatDetail(type) {
+  const modal = document.getElementById('statModal');
+  const title = document.getElementById('statModalTitle');
+  const body = document.getElementById('statModalBody');
+
+  const titles = { allocated: '📋 오늘 배정된 미션', balance: '💰 오늘의 기록', remaining: '🔥 남은 미션' };
+  title.textContent = titles[type] || '상세';
+  body.innerHTML = '<div style="text-align:center; padding:20px; color:var(--muted);">상세 데이터는 API 연동 후 표시됩니다.</div>';
+  modal.classList.add('show');
+}
+
+// ====== CHEER MODAL ======
+function showCheer(who) {
+  const modal = document.getElementById('cheerModal');
+  const emojis = { dad: '👨', mom: '👩' };
+  const names = { dad: '아빠', mom: '엄마' };
+  const msgs = { dad: '오늘도 파이팅! 잘 하고 있어 👏', mom: '사랑해 우리 아이들 💕 오늘도 멋지게!' };
+  const colors = { dad: '#eff6ff', mom: '#fdf2f8' };
+  const textColors = { dad: '#1d4ed8', mom: '#be185d' };
+
+  document.getElementById('cheerEmoji').textContent = emojis[who];
+  document.getElementById('cheerTitle').textContent = names[who] + '의 응원';
+  const msgEl = document.getElementById('cheerMsg');
+  msgEl.textContent = msgs[who];
+  msgEl.style.background = colors[who];
+  msgEl.style.color = textColors[who];
+  modal.classList.add('show');
+}
+
+// Init date
+document.getElementById('dateDisplay').textContent =
+  new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
+</script>
+
+</body>
+</html>

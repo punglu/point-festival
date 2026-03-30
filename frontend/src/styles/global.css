@@ -1,0 +1,53 @@
+/* global.css — Gemini E-3: data-domain 테마 격리 */
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&display=swap');
+
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --accent: #10b981;
+  --blue: #3b82f6;
+  --text: #1e293b;
+  --muted: #64748b;
+  --gold: #f59e0b;
+  --danger: #ef4444;
+  --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  --input-bg: #f1f5f9;
+}
+
+[data-domain="home"] {
+  --bg: #0f0f0f;
+  --card: #1a1a1a;
+  --accent: #4CAF50;
+  --blue: #00B0FF;
+  --text: #efefef;
+  --muted: #666;
+  --gold: #FFD700;
+  --shadow: none;
+  --input-bg: #222;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Pretendard', sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3 { margin: 0; }
+
+input, select, textarea {
+  font-family: 'Pretendard', sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

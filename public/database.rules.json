@@ -1,0 +1,78 @@
+{
+  "rules": {
+
+    "mc_players": {
+      "$pId": {
+        ".read": true,
+        ".write": false,
+        "statusMsg":  { ".write": true },
+        "lastLogin":  { ".write": true },
+        "name":       { ".write": "auth != null" },
+        "photo":      { ".write": "auth != null" }
+      }
+    },
+
+    "mc_player_auth": {
+      "$pId": {
+        ".read":         true,
+        ".write":        false,
+        "pin":           { ".write": "auth != null" },
+        "loginAttempts": { ".write": true },
+        "lockUntil":     { ".write": true }
+      }
+    },
+
+    "mc_mission_data": {
+      ".read": true,
+      "$pId": {
+        ".write": "auth != null",
+        "$date": {
+          "missions": {
+            ".write": true
+          }
+        }
+      }
+    },
+
+    "mc_cheer_msgs": {
+      ".read":  true,
+      "$date":  { ".write": "auth != null" }
+    },
+
+    "mc_config": {
+      ".read":  true,
+      ".write": "auth != null"
+    },
+
+    "mc_feedbacks": {
+      ".read": true,
+      "$pId": {
+        "$date": { ".write": true }
+      }
+    },
+
+    "mc_deductions": {
+      ".read": true,
+      "$pId": {
+        ".write": "auth != null"
+      }
+    },
+
+    "mc_login_logs": {
+      ".read":  false,
+      ".write": true
+    },
+
+    "mc_daily_points": {
+      ".read": true,
+      "$pId": {
+        "$date": { ".write": true }
+      }
+    },
+
+    "mc_notifications": {
+      ".read":  true,
+      ".write": true
+    }
+  }
+}

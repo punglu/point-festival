@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>마인크래프트 포인트 잔치 v26.0</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&display=swap');
+
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --accent: #10b981;
+      --blue: #3b82f6;
+      --text: #1e293b;
+      --muted: #64748b;
+      --gold: #f59e0b;
+      --danger: #ef4444;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+      --input-bg: #f1f5f9;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Pretendard', sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    .app-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 2.5rem;
+      color: var(--text);
+      margin: 0;
+      letter-spacing: -1px;
+    }
+
+    /* 레이아웃 제어 */
+    .top-section {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 850px) {
+      .top-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 플레이어 2단 배열 (사용자 모드 핵심) */
+    .player-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      width: 100%;
+    }
+
+    @media (max-width: 850px) {
+      .player-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 패널 공통 */
+    .panel {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(226, 232, 240, 0.5);
+    }
+
+    /* 말풍선 UI */
+    .bubble {
+      position: relative;
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      border: 1px solid transparent;
+    }
+
+    .bubble.admin {
+      background: #f0f7ff;
+      color: #1d4ed8;
+      border-color: #dbeafe;
+    }
+
+    .bubble.player {
+      background: #f8fafc;
+      color: #475569;
+      border-color: #e2e8f0;
+      align-self: flex-start;
+    }
+
+    .bubble::after {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 20px;
+      border-width: 0 8px 8px;
+      border-style: solid;
+      border-color: transparent transparent inherit;
+    }
+
+    /* 미션 카드 스타일 */
+    .m-item {
+      background: #fff;
+      margin-bottom: 12px;
+      padding: 20px;
+      border-radius: 20px;
+      border: 1px solid #f1f5f9;
+      position: relative;
+      transition: 0.2s;
+    }
+
+    .m-item.completed {
+      border-left: 6px solid var(--accent);
+      background: #fafffd;
+    }
+
+    .m-item.failed {
+      border-left: 6px solid var(--danger);
+      background: #fffafb;
+    }
+
+    .m-item.editing {
+      border: 2px solid var(--gold);
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+
+    .tag-active {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    .tag-done {
+      background: #ecfdf5;
+      color: #059669;
+    }
+
+    .tag-fail {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    /* 버튼 & 입력 */
+    .btn {
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      padding: 12px 20px;
+    }
+
+    .btn-ghost {
+      background: var(--input-bg);
+      color: var(--muted);
+      padding: 8px 12px;
+      font-size: 0.8rem;
+    }
+
+    .photo-area {
+      width: 70px;
+      height: 70px;
+      border-radius: 20px;
+      background: #f1f5f9;
+      overflow: hidden;
+      border: 2px solid #fff;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+    }
+
+    .photo-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    input,
+    select {
+      background: var(--input-bg);
+      border: 2px solid transparent;
+      padding: 10px 14px;
+      border-radius: 12px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--blue);
+      background: #fff;
+    }
+
+    .order-btns {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .btn-updown {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    #login-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="login-overlay">
+    <div class="panel" style="width: 300px; text-align: center;">
+      <h3 style="margin-top: 0;">🛡️ 서버 인증</h3>
+      <input type="password" id="adminPwd" placeholder="비밀번호"
+        style="width: 100%; box-sizing: border-box; margin-bottom: 16px;">
+      <button class="btn btn-primary" style="width: 100%" onclick="tryLogin()">접속</button>
+    </div>
+  </div>
+
+  <div class="app-wrapper">
+    <header>
+      <h1>마인크래프트 포인트 잔치</h1>
+      <div id="mode-text" style="color: var(--muted); font-size: 0.9rem; margin-top: 8px; font-weight: 600;">
+        <span id="auth-btn" style="cursor:pointer; text-decoration: underline;"
+          onclick="document.getElementById('login-overlay').style.display='flex'">관리자 로그인</span>
+      </div>
+    </header>
+
+    <section class="top-section">
+      <div class="panel">
+        <div style="font-size: 0.75rem; font-weight: 800; color: var(--muted); margin-bottom: 10px;">DATE SELECTOR</div>
+        <div
+          style="position: relative; background: var(--input-bg); padding: 15px; border-radius: 16px; text-align: center;">
+          <span id="dateText" style="font-size: 1.2rem; font-weight: 800; color: var(--blue);">2026-02-15</span>
+          <input type="date" id="viewDate" onchange="handleDateChange(this.value)">
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 10px;">
+          <button class="btn btn-ghost" style="flex: 1" onclick="quickDateChange(-1)">어제</button>
+          <button class="btn btn-ghost" style="flex: 1" onclick="quickDateChange(0)">오늘</button>
+          <button class="btn btn-ghost" style="flex: 1" onclick="quickDateChange(1)">내일</button>
+        </div>
+      </div>
+
+      <div class="panel" style="background: #fffbeb; border: 1px solid #fef3c7;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #d97706;">📢 CHEER MESSAGE</span>
+          <button id="del-daily-btn"
+            style="display:none; color: var(--danger); border:none; background:none; font-size:0.7rem; cursor:pointer"
+            onclick="deleteDailyMsg()">삭제</button>
+        </div>
+        <div id="daily-msg-display" style="font-size: 1rem; font-weight: 600; color: #92400e;">오늘은 어떤 아이템을 얻어볼까?</div>
+        <div id="admin-daily-msg" style="display: none; margin-top: 10px; gap: 8px;">
+          <input type="text" id="newDailyMsg" placeholder="격려 메시지 입력..." style="flex: 1; border: 1px solid #fcd34d;">
+          <button class="btn btn-primary" style="padding: 0 15px; font-size: 0.8rem;"
+            onclick="saveDailyMsg()">저장</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="admin-panel" class="panel"
+      style="display: none; flex-direction: column; gap: 15px; border: 2px solid var(--accent);">
+      <div style="font-weight: 800; color: var(--accent);">🛠️ QUEST CONTROL PANEL</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+        <select id="targetKid"></select>
+        <select id="missionSender">
+          <option value="아빠">아빠</option>
+          <option value="엄마">엄마</option>
+        </select>
+        <input type="text" id="missionText" placeholder="수행 미션 내용">
+        <input type="number" id="missionPoint" placeholder="EXP" style="width: 80px">
+        <input type="text" id="missionMsg" placeholder="하달 메시지 (선택)">
+        <button class="btn btn-primary" onclick="addMission()">미션 하달</button>
+      </div>
+      <div id="kid-admin-zone" style="display: none; padding-top: 15px; border-top: 1px dashed #eee;">
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="newKidName" placeholder="아이 이름 등록" style="flex: 1">
+          <button class="btn btn-primary" style="padding: 0 20px;" onclick="registerKid()">등록</button>
+        </div>
+      </div>
+    </div>
+
+    <main id="player-grid" class="player-grid"></main>
+  </div>
+
+  <input type="file" id="photoInput" style="display:none;" accept="image/*">
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue, push, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuvaYFkKVQLFXZXtum8o7kD1XUyw_MQvE",
+      authDomain: "mark-point-festivals.firebaseapp.com",
+      databaseURL: "https://mark-point-festivals-default-rtdb.firebaseio.com",
+      projectId: "mark-point-festivals",
+      storageBucket: "mark-point-festivals.firebasestorage.app",
+      messagingSenderId: "87999590531",
+      appId: "1:87999590531:web:418d4fc2a7f175ea56ebb6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const playerRef = ref(db, 'mc_players/');
+    const dataRef = ref(db, 'mc_mission_data/');
+    const dailyMsgRef = ref(db, 'mc_daily_msgs/');
+    const feedbackRef = ref(db, 'mc_feedbacks/');
+
+    let players = {}, missions = {}, dailyMsgs = {}, feedbacks = {}, isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    let targetPhotoKid = null, editMissionId = null;
+
+    window.tryLogin = () => {
+      if (document.getElementById('adminPwd').value === 'admin1234') {
+        sessionStorage.setItem('isAdmin', 'true');
+        location.href = '?admin=true';
+      } else alert('비밀번호가 틀렸습니다.');
+    };
+
+    if (location.search.includes('admin=true') || isAdmin) {
+      isAdmin = true; sessionStorage.setItem('isAdmin', 'true');
+      document.getElementById('admin-panel').style.display = 'flex';
+      document.getElementById('kid-admin-zone').style.display = 'block';
+      document.getElementById('admin-daily-msg').style.display = 'flex';
+      document.getElementById('del-daily-btn').style.display = 'block';
+      document.getElementById('auth-btn').innerText = '관리자 로그아웃';
+      document.getElementById('auth-btn').onclick = () => { sessionStorage.clear(); location.href = '?'; };
+    }
+
+    const getKSTDate = (date = new Date()) => {
+      const offset = date.getTimezoneOffset() * 60000;
+      return new Date(date.getTime() - offset).toISOString().split('T')[0];
+    };
+    document.getElementById('viewDate').value = getKSTDate();
+    document.getElementById('dateText').innerText = getKSTDate();
+
+    onValue(playerRef, (snapshot) => { players = snapshot.val() || {}; render(); updateAdminSelect(); });
+    onValue(dataRef, (snapshot) => { missions = snapshot.val() || {}; render(); });
+    onValue(dailyMsgRef, (snapshot) => { dailyMsgs = snapshot.val() || {}; updateDailyMsgDisplay(); });
+    onValue(feedbackRef, (snapshot) => { feedbacks = snapshot.val() || {}; render(); });
+
+    window.triggerPhotoUpload = (pId) => { if (!isAdmin) return; targetPhotoKid = pId; document.getElementById('photoInput').click(); };
+    document.getElementById('photoInput').onchange = (e) => {
+      const file = e.target.files[0];
+      if (file && targetPhotoKid) {
+        const reader = new FileReader();
+        reader.onload = (ev) => { update(ref(db, `mc_players/${targetPhotoKid}`), { photo: ev.target.result }); };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    window.updateKidName = (pId) => {
+      if (!isAdmin) return;
+      const newName = prompt("아이 이름 변경:", players[pId].name);
+      if (newName) update(ref(db, `mc_players/${pId}`), { name: newName });
+    };
+
+    window.toggleEdit = (mId) => { editMissionId = (editMissionId === mId) ? null : mId; render(); };
+    window.saveMissionEdit = (pId, date, mId) => {
+      const text = document.getElementById(`edit-text-${mId}`).value;
+      const point = parseInt(document.getElementById(`edit-point-${mId}`).value);
+      if (!text || isNaN(point)) return;
+      update(ref(db, `mc_mission_data/${pId}/${date}/missions/${mId}`), { text, point });
+      editMissionId = null;
+    };
+
+    window.saveDailyMsg = () => {
+      const date = document.getElementById('viewDate').value;
+      const msg = document.getElementById('newDailyMsg').value;
+      if (msg) set(ref(db, `mc_daily_msgs/${date}`), msg);
+      document.getElementById('newDailyMsg').value = '';
+    };
+
+    window.deleteDailyMsg = () => {
+      const date = document.getElementById('viewDate').value;
+      if (confirm('삭제하시겠습니까?')) remove(ref(db, `mc_daily_msgs/${date}`));
+    };
+
+    function updateDailyMsgDisplay() {
+      const date = document.getElementById('viewDate').value;
+      document.getElementById('daily-msg-display').innerText = dailyMsgs[date] || "즐거운 하루 보내자! ⛏️";
+    }
+
+    window.addMission = () => {
+      const pId = document.getElementById('targetKid').value;
+      const date = document.getElementById('viewDate').value;
+      const mData = {
+        text: document.getElementById('missionText').value,
+        point: parseInt(document.getElementById('missionPoint').value),
+        sender: document.getElementById('missionSender').value,
+        msg: document.getElementById('missionMsg').value,
+        status: 'active',
+        order: Object.keys((missions[pId] && missions[pId][date] && missions[pId][date].missions) || {}).length,
+        createdAt: Date.now()
+      };
+      if (!pId || !mData.text || isNaN(mData.point)) return;
+      push(ref(db, `mc_mission_data/${pId}/${date}/missions`), mData);
+      document.getElementById('missionText').value = ''; document.getElementById('missionMsg').value = '';
+    };
+
+    window.setMissionStatus = (pId, date, mId, status, point = 0) => {
+      if (status === 'completed') update(ref(db, `mc_players/${pId}`), { totalPoints: (players[pId].totalPoints || 0) + point });
+      else if (status === 'active' && missions[pId][date].missions[mId].status === 'completed') update(ref(db, `mc_players/${pId}`), { totalPoints: Math.max(0, (players[pId].totalPoints || 0) - point) });
+      update(ref(db, `mc_mission_data/${pId}/${date}/missions/${mId}`), { status });
+    };
+
+    window.moveOrder = (pId, date, mId, direction) => {
+      const mList = Object.entries(missions[pId][date].missions).sort((a, b) => (a[1].order || 0) - (b[1].order || 0));
+      const idx = mList.findIndex(x => x[0] === mId);
+      if (direction === 'up' && idx > 0) {
+        const temp = mList[idx][1].order;
+        update(ref(db, `mc_mission_data/${pId}/${date}/missions/${mList[idx][0]}`), { order: mList[idx - 1][1].order });
+        update(ref(db, `mc_mission_data/${pId}/${date}/missions/${mList[idx - 1][0]}`), { order: temp });
+      } else if (direction === 'down' && idx < mList.length - 1) {
+        const temp = mList[idx][1].order;
+        update(ref(db, `mc_mission_data/${pId}/${date}/missions/${mList[idx][0]}`), { order: mList[idx + 1][1].order });
+        update(ref(db, `mc_mission_data/${pId}/${date}/missions/${mList[idx + 1][0]}`), { order: temp });
+      }
+    };
+
+    window.sendFeedback = (pId) => {
+      const date = document.getElementById('viewDate').value;
+      const msg = document.getElementById(`feedback-in-${pId}`).value;
+      if (!msg) return;
+      push(ref(db, `mc_feedbacks/${pId}/${date}`), { msg, createdAt: Date.now() });
+      document.getElementById(`feedback-in-${pId}`).value = '';
+    };
+
+    window.registerKid = () => {
+      const name = document.getElementById('newKidName').value;
+      if (!name) return;
+      push(playerRef, { name: name, totalPoints: 0, photo: "" });
+      document.getElementById('newKidName').value = '';
+    };
+
+    window.handleDateChange = (date) => { document.getElementById('dateText').innerText = date; updateDailyMsgDisplay(); render(); };
+    window.quickDateChange = (days) => {
+      let d = (days === 0) ? new Date() : new Date(document.getElementById('viewDate').value);
+      if (days !== 0) d.setDate(d.getDate() + days);
+      const newDate = getKSTDate(d);
+      document.getElementById('viewDate').value = newDate;
+      handleDateChange(newDate);
+    };
+
+    function updateAdminSelect() {
+      const select = document.getElementById('targetKid');
+      if (select) select.innerHTML = Object.entries(players).map(([id, p]) => `<option value="${id}">${p.name}</option>`).join('');
+    }
+
+    function render() {
+      const grid = document.getElementById('player-grid');
+      const date = document.getElementById('viewDate').value;
+      grid.innerHTML = '';
+
+      Object.entries(players).forEach(([pId, p]) => {
+        const mList = (missions[pId] && missions[pId][date] && missions[pId][date].missions) || {};
+        const mEntries = Object.entries(mList).sort((a, b) => (a[1].order || 0) - (b[1].order || 0));
+        const dayFeedback = (feedbacks[pId] && feedbacks[pId][date]) || {};
+        const allocated = mEntries.reduce((acc, curr) => acc + (Number(curr[1].point) || 0), 0);
+
+        const section = document.createElement('section');
+        section.className = 'panel';
+        section.innerHTML = `
+          <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+            <div class="photo-area" onclick="triggerPhotoUpload('${pId}')">
+                ${p.photo ? `<img src="${p.photo}">` : '<div style="font-size:0.6rem; color:#64748b; padding:20px; text-align:center;">📷</div>'}
+            </div>
+            <div>
+                <h2 style="font-family:'Black Han Sans'; font-size:1.5rem; margin:0; cursor:${isAdmin ? 'pointer' : 'default'}" onclick="updateKidName('${pId}')">${p.name}</h2>
+                <div style="font-size:0.75rem; color:var(--muted); font-weight:600">PLAYER DASHBOARD</div>
+            </div>
+          </div>
+          
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px;">
+            <div style="background:#fff7ed; padding:15px; border-radius:18px; text-align:center;">
+              <div style="font-size:1.3rem; font-weight:800; color:var(--gold);">${p.totalPoints || 0}P</div>
+              <div style="font-size:0.65rem; font-weight:700;">보유 EXP</div>
+            </div>
+            <div style="background:#f0f9ff; padding:15px; border-radius:18px; text-align:center;">
+              <div style="font-size:1.3rem; font-weight:800; color:var(--blue);">${allocated}P</div>
+              <div style="font-size:0.65rem; font-weight:700;">오늘의 목표</div>
+            </div>
+          </div>
+
+          <div class="m-list">
+            ${mEntries.map(([mId, m]) => {
+          const isEditing = editMissionId === mId;
+          return `
+                <div class="m-item ${m.status} ${isEditing ? 'editing' : ''}">
+                    <div class="tag ${m.status === 'active' ? 'tag-active' : m.status === 'completed' ? 'tag-done' : 'tag-fail'}">
+                        ${m.status === 'active' ? '● 진행 중' : m.status === 'completed' ? '✅ 완료' : '🚫 실패'}
+                    </div>
+                    ${isEditing ? `
+                        <input type="text" id="edit-text-${mId}" value="${m.text}" style="width:100%; margin-bottom:8px;">
+                        <div style="display:flex; gap:6px;">
+                          <input type="number" id="edit-point-${mId}" value="${m.point}" style="width:60px;">
+                          <button class="btn btn-primary" style="padding:0 12px; font-size:0.75rem;" onclick="saveMissionEdit('${pId}','${date}','${mId}')">저장</button>
+                          <button class="btn btn-ghost" onclick="toggleEdit('${mId}')">취소</button>
+                        </div>
+                    ` : `
+                        <div style="font-weight:700; font-size:1.1rem; margin-bottom:4px; padding-right:40px;">${m.text}</div>
+                        <div style="color:var(--blue); font-weight:700; font-size:0.85rem;">+ ${m.point} EXP <span style="color:#cbd5e1; font-weight:400; margin-left:6px;">| From ${m.sender}</span></div>
+                    `}
+                    ${m.msg ? `<div class="bubble admin"><b>${m.sender}:</b> ${m.msg}</div>` : ''}
+                    
+                    ${isAdmin ? `
+                        <div class="order-btns">
+                            <button class="btn-updown" onclick="moveOrder('${pId}','${date}','${mId}','up')">▲</button>
+                            <button class="btn-updown" onclick="moveOrder('${pId}','${date}','${mId}','down')">▼</button>
+                        </div>
+                        <div style="margin-top:15px; display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                            ${m.status === 'active'
+                ? `<button class="btn btn-primary" onclick="setMissionStatus('${pId}','${date}','${mId}','completed',${m.point})">승인</button>
+                                   <button class="btn" style="background:#fee2e2; color:#ef4444; border-radius:12px; font-weight:700" onclick="setMissionStatus('${pId}','${date}','${mId}','failed')">실패</button>`
+                : `<button class="btn btn-primary" style="background:var(--gold); grid-column: span 2" onclick="setMissionStatus('${pId}','${date}','${mId}','active',${m.point})">상태 복구</button>`}
+                        </div>
+                        <div style="display:flex; gap:6px; margin-top:8px;">
+                            <button class="btn btn-ghost" style="flex:1" onclick="toggleEdit('${mId}')">수정</button>
+                            <button class="btn btn-ghost" style="flex:1; color:var(--danger)" onclick="if(confirm('영구 삭제?')) remove(ref(db, 'mc_mission_data/${pId}/${date}/missions/${mId}'))">영구 삭제</button>
+                        </div>
+                    ` : ''}
+                </div>`
+        }).join('')}
+          </div>
+          
+          <div style="margin-top:20px;">
+            ${Object.values(dayFeedback).map(fb => `<div class="bubble player"><b>${p.name}:</b> ${fb.msg}</div>`).join('')}
+          </div>
+          
+          <div style="display:flex; gap:8px; margin-top:15px;">
+            <input type="text" id="feedback-in-${pId}" placeholder="메시지 보내기..." style="flex:1; font-size:0.85rem;">
+            <button class="btn btn-primary" style="width:auto; padding:0 15px; font-size:0.85rem;" onclick="sendFeedback('${pId}')">전송</button>
+          </div>
+        `;
+        grid.appendChild(section);
+      });
+    }
+  </script>
+</body>
+
+</html>

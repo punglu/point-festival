@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>포인트 잔치 — Home (Instagram Style)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fafafa; --card: #ffffff; --accent: #10b981;
+  --blue: #3b82f6; --purple: #7c3aed; --text: #1a1a1a;
+  --muted: #8e8e93; --border: #efefef; --gold: #f59e0b;
+  --radius: 20px; --shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', -apple-system, sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.5;
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 20px; -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  width: 100%; max-width: 440px;
+  animation: fadeUp 0.5s ease;
+}
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+
+.logo-section { text-align: center; margin-bottom: 36px; }
+.logo-icon { font-size: 3.2rem; margin-bottom: 12px; }
+.logo-title {
+  font-size: 2rem; font-weight: 800; letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.logo-sub { color: var(--muted); font-size: 0.85rem; margin-top: 6px; font-weight: 500; }
+
+.card-group { display: flex; flex-direction: column; gap: 14px; }
+
+.entry-card {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--card); border-radius: var(--radius); padding: 22px 24px;
+  box-shadow: var(--shadow); cursor: pointer; text-decoration: none;
+  color: var(--text); transition: all 0.3s ease; border: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.entry-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  border-radius: 0 4px 4px 0; transition: width 0.3s;
+}
+.entry-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
+.entry-card:hover::before { width: 6px; }
+.entry-card:active { transform: translateY(-1px); }
+
+.card-kids::before { background: linear-gradient(180deg, var(--accent), #059669); }
+.card-admin::before { background: linear-gradient(180deg, var(--blue), var(--purple)); }
+
+.card-icon {
+  width: 52px; height: 52px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; flex-shrink: 0;
+}
+.card-kids .card-icon { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+.card-admin .card-icon { background: linear-gradient(135deg, #dbeafe, #c7d2fe); }
+
+.card-text { flex: 1; }
+.card-title { font-size: 1.05rem; font-weight: 800; margin-bottom: 2px; }
+.card-desc { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
+.card-arrow { font-size: 1.2rem; color: var(--muted); transition: transform 0.3s; }
+.entry-card:hover .card-arrow { transform: translateX(4px); }
+
+.version {
+  text-align: center; margin-top: 32px;
+  font-size: 0.7rem; color: var(--muted); opacity: 0.5;
+}
+
+/* Dark Theme toggle (미리보기용) */
+.theme-toggle {
+  position: fixed; top: 16px; right: 16px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 50%; width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1.1rem; box-shadow: var(--shadow);
+  transition: 0.2s; z-index: 100;
+}
+.theme-toggle:hover { transform: scale(1.1); }
+
+body.dark {
+  --bg: #0f0f0f; --card: #1c1c1e; --text: #f5f5f7;
+  --muted: #8e8e93; --border: #2c2c2e;
+}
+body.dark .entry-card { box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+
+@media (max-width: 480px) {
+  .logo-title { font-size: 1.7rem; }
+  .entry-card { padding: 18px 20px; }
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="document.body.classList.toggle('dark'); this.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';">🌙</button>
+
+<div class="container">
+  <div class="logo-section">
+    <div class="logo-icon">🎮</div>
+    <div class="logo-title">포인트 잔치</div>
+    <div class="logo-sub">우리 가족 미션 포인트 시스템</div>
+  </div>
+
+  <div class="card-group">
+    <a href="design-v2-user.html" class="entry-card card-kids">
+      <div class="card-icon">👦</div>
+      <div class="card-text">
+        <div class="card-title">아이들 보기</div>
+        <div class="card-desc">미션 확인하고 포인트 모으기</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a href="design-v2-admin.html" class="entry-card card-admin">
+      <div class="card-icon">🛠️</div>
+      <div class="card-text">
+        <div class="card-title">관리자 페이지</div>
+        <div class="card-desc">미션 관리 및 포인트 설정</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+  </div>
+
+  <div class="version">v6.0 — Minecraft Point Festival</div>
+</div>
+
+</body>
+</html>

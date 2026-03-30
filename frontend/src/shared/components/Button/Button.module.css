@@ -1,0 +1,59 @@
+/* Gemini E-4: 공통 버튼 — styles.css 섹션 6에서 추출 */
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.primary {
+  composes: btn;
+  background: var(--accent);
+  color: white;
+  padding: 12px 20px;
+}
+
+.primary:hover {
+  background: #059669;
+}
+
+.ghost {
+  composes: btn;
+  background: var(--input-bg);
+  color: var(--muted);
+  padding: 8px 12px;
+  font-size: 0.8rem;
+}
+
+.ghost:hover {
+  background: #e2e8f0;
+  color: var(--text);
+}
+
+.dangerSm {
+  composes: btn;
+  background: #fee2e2;
+  color: #ef4444;
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.dangerSm:hover {
+  background: #fecaca;
+}

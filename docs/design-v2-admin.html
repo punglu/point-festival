@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>포인트 잔치 — Admin (Instagram Style)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fafafa; --card: #ffffff; --accent: #10b981; --accent-light: #d1fae5;
+  --blue: #3b82f6; --text: #1a1a1a; --muted: #8e8e93; --border: #efefef;
+  --danger: #ef4444; --gold: #f59e0b; --purple: #7c3aed;
+  --radius: 16px; --radius-sm: 12px;
+  --glass: rgba(255,255,255,0.72); --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.06); --shadow-lg: 0 12px 40px rgba(0,0,0,0.1);
+  --nav-height: 64px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', -apple-system, sans-serif; background: var(--bg);
+  color: var(--text); line-height: 1.5; padding-bottom: calc(var(--nav-height) + 20px);
+  -webkit-font-smoothing: antialiased; }
+
+/* Header */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white; padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.header-center { text-align: center; flex: 2; }
+.header-title { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.3px; }
+.header-sub { font-size: 0.72rem; opacity: 0.85; margin-top: 2px; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.notif-btn {
+  position: relative; background: rgba(255,255,255,0.2); border: none;
+  border-radius: 10px; padding: 8px 10px; cursor: pointer; font-size: 1.2rem;
+  backdrop-filter: blur(10px); transition: 0.2s;
+}
+.notif-btn:hover { background: rgba(255,255,255,0.3); }
+.notif-badge {
+  position: absolute; top: 2px; right: 2px; background: var(--danger);
+  color: white; border-radius: 50%; min-width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 800;
+}
+.logout-btn {
+  background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+  color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.72rem;
+  font-weight: 600; cursor: pointer; backdrop-filter: blur(10px); font-family: inherit;
+}
+
+/* Auth */
+.auth-panel {
+  max-width: 400px; margin: 60px auto; padding: 0 20px;
+}
+.auth-card {
+  background: var(--card); border-radius: var(--radius); padding: 32px;
+  box-shadow: var(--shadow-md); text-align: center;
+}
+.auth-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 20px; }
+.auth-input {
+  width: 100%; padding: 12px 16px; border: 1.5px solid var(--border);
+  border-radius: 10px; font-size: 0.9rem; outline: none; margin-bottom: 10px;
+  font-family: inherit; transition: 0.2s;
+}
+.auth-input:focus { border-color: var(--purple); }
+.auth-btn {
+  width: 100%; padding: 12px; border: none; border-radius: 10px;
+  background: linear-gradient(135deg, #667eea, #764ba2); color: white;
+  font-weight: 800; font-size: 0.9rem; cursor: pointer; font-family: inherit;
+  margin-top: 6px;
+}
+
+/* Admin Content */
+.admin-content { padding: 12px 16px; }
+.admin-content.hidden { display: none; }
+
+/* Quest Control */
+.quest-card {
+  background: var(--card); border-radius: var(--radius); padding: 20px;
+  border: 2px solid var(--accent); margin-bottom: 12px; box-shadow: var(--shadow-sm);
+}
+.quest-label { font-weight: 800; color: var(--accent); font-size: 1rem; margin-bottom: 12px; }
+.quest-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.quest-select, .quest-input {
+  flex: 1; padding: 10px 12px; border: 1.5px solid var(--border);
+  border-radius: 10px; font-size: 0.85rem; outline: none; font-family: inherit;
+}
+.quest-btn {
+  padding: 10px 20px; border: none; border-radius: 10px;
+  background: var(--accent); color: white; font-weight: 700; cursor: pointer;
+  font-family: inherit; font-size: 0.85rem;
+}
+
+/* Section Cards */
+.section-card {
+  background: var(--card); border-radius: var(--radius); padding: 20px;
+  margin-bottom: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+}
+.section-title { font-weight: 800; font-size: 0.95rem; margin-bottom: 12px; }
+
+/* User Management */
+.user-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px; background: #f8fafc; border-radius: var(--radius-sm);
+  margin-bottom: 8px; border: 1px solid var(--border);
+}
+.user-name { font-weight: 800; font-size: 1rem; }
+.user-meta { font-size: 0.72rem; color: var(--muted); display: flex; gap: 8px; margin-top: 2px; }
+.user-badge { padding: 2px 8px; border-radius: 6px; font-size: 0.68rem; font-weight: 700;
+  background: #f1f5f9; }
+.user-badge.locked { background: #fee2e2; color: #dc2626; }
+.user-actions { display: flex; gap: 4px; }
+.user-action-btn {
+  padding: 6px 10px; border-radius: 8px; border: none; font-size: 0.72rem;
+  font-weight: 600; cursor: pointer; font-family: inherit; transition: 0.2s;
+}
+.btn-pin { background: #eff6ff; color: var(--blue); }
+.btn-unlock { background: #fef3c7; color: #d97706; }
+.btn-history { background: #f1f5f9; color: var(--muted); }
+
+/* Mission Management */
+.mgmt-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.mgmt-btn {
+  flex: 1; min-width: 100px; padding: 12px; border-radius: 10px; border: 2px dashed var(--border);
+  background: white; cursor: pointer; text-align: center; font-size: 0.82rem;
+  font-weight: 700; font-family: inherit; transition: 0.2s;
+}
+.mgmt-btn:hover { border-color: var(--accent); background: #f0fdf4; }
+.mgmt-copy { border-color: #86efac; background: #f0fdf4; color: #16a34a; border-style: solid; }
+.mgmt-delete { border-color: #fca5a5; background: #fef2f2; color: var(--danger); border-style: solid; }
+
+/* Proposal Review */
+.proposal-section {
+  background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #fbbf24;
+  border-radius: var(--radius); padding: 20px; margin-bottom: 12px;
+}
+.proposal-item {
+  background: white; border-radius: var(--radius-sm); padding: 16px;
+  margin-bottom: 10px; border: 1px solid #e5e7eb;
+}
+.proposal-actions { display: flex; gap: 8px; margin-top: 12px; }
+.proposal-approve {
+  flex: 1; padding: 10px; border: none; border-radius: 10px;
+  background: var(--accent); color: white; font-weight: 700;
+  cursor: pointer; font-family: inherit; font-size: 0.85rem;
+}
+.proposal-reject {
+  flex: 1; padding: 10px; border: none; border-radius: 10px;
+  background: #fee2e2; color: var(--danger); font-weight: 700;
+  cursor: pointer; font-family: inherit; font-size: 0.85rem;
+}
+
+/* Date + Cheer */
+.date-bar { display: flex; gap: 8px; margin-bottom: 8px; }
+.date-chip {
+  flex: 1; text-align: center; padding: 8px; border-radius: 10px;
+  font-size: 0.8rem; font-weight: 700; cursor: pointer;
+  background: white; border: 1px solid var(--border); font-family: inherit; transition: 0.2s;
+}
+.date-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
+.cheer-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+.cheer-avatar {
+  width: 44px; height: 44px; border-radius: 50%; background: #f1f5f9;
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+  flex-shrink: 0; cursor: pointer;
+}
+.cheer-input {
+  width: 100%; min-height: 60px; padding: 10px 14px; border: 1.5px solid var(--border);
+  border-radius: 12px; font-size: 0.85rem; outline: none; resize: vertical;
+  font-family: inherit;
+}
+.cheer-btns { display: flex; gap: 6px; margin-top: 6px; }
+.cheer-save {
+  flex: 1; padding: 8px; border: none; border-radius: 8px;
+  background: var(--accent); color: white; font-weight: 700;
+  font-size: 0.8rem; cursor: pointer; font-family: inherit;
+}
+.cheer-delete {
+  padding: 8px 12px; border: none; border-radius: 8px;
+  background: #fee2e2; color: var(--danger); font-size: 0.8rem;
+  font-weight: 700; cursor: pointer; font-family: inherit;
+}
+
+/* Player Cards */
+.player-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+
+/* Mission Items */
+.m-item {
+  background: #f8fafc; padding: 14px; border-radius: var(--radius-sm);
+  margin-bottom: 8px; border: 1px solid var(--border); position: relative;
+}
+.m-item.completed { border-left: 4px solid var(--accent); background: #f0fdf4; }
+.m-item.pending_approval { border-left: 4px solid var(--gold); background: #fffbeb; }
+.m-item.failed { border-left: 4px solid var(--danger); background: #fef2f2; opacity: 0.8; }
+.tag { font-size: 0.68rem; font-weight: 800; padding: 3px 8px; border-radius: 20px;
+  display: inline-block; margin-bottom: 6px; }
+.tag-active { background: #eff6ff; color: #2563eb; }
+.tag-done { background: #ecfdf5; color: #059669; }
+.tag-pending { background: #fef3c7; color: #d97706; }
+.tag-fail { background: #fef2f2; color: #dc2626; }
+.m-actions { display: flex; gap: 6px; margin-top: 8px; }
+.m-action {
+  flex: 1; padding: 8px; border: none; border-radius: 8px; font-weight: 700;
+  font-size: 0.8rem; cursor: pointer; font-family: inherit; transition: 0.2s;
+}
+.m-approve { background: var(--accent); color: white; }
+.m-fail { background: #f1f5f9; color: var(--muted); }
+.m-restore { background: #eff6ff; color: var(--blue); }
+.m-delete { background: #fee2e2; color: var(--danger); padding: 8px 12px; flex: none; }
+
+/* Stat cards (inside player cards) */
+.admin-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 12px; }
+.admin-stat {
+  text-align: center; padding: 10px 6px; border-radius: 10px; cursor: pointer; transition: 0.2s;
+}
+.admin-stat:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+
+/* Bottom Nav */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  height: var(--nav-height); background: var(--glass);
+  backdrop-filter: blur(24px); border-top: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-around;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 6px 16px; cursor: pointer; background: none; border: none; font-family: inherit;
+}
+.nav-item.active { color: var(--purple); }
+.nav-item:not(.active) { color: var(--muted); }
+.nav-icon { font-size: 1.4rem; }
+.nav-label { font-size: 0.65rem; font-weight: 700; }
+
+/* Notification Modal */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: white; border-radius: 24px; padding: 24px;
+  width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto;
+  box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.notif-item {
+  padding: 14px; border-bottom: 1px solid var(--border);
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.notif-item.unread { background: #eff6ff; border-left: 3px solid var(--blue); border-radius: 8px; }
+.notif-icon { font-size: 1.3rem; flex-shrink: 0; }
+.notif-body { flex: 1; font-size: 0.85rem; }
+.notif-time { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+.notif-actions { display: flex; gap: 6px; margin-top: 6px; }
+
+.hidden { display: none !important; }
+.fade-in { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div style="flex:1;"></div>
+  <div class="header-center">
+    <div class="header-title">포인트 잔치</div>
+    <div class="header-sub">👑 관리자 모드</div>
+  </div>
+  <div class="header-actions">
+    <button class="notif-btn hidden" id="notifBtn" onclick="openNotif()">
+      🔔<span class="notif-badge" id="notifBadge">2</span>
+    </button>
+    <button class="logout-btn hidden" id="adminLogoutBtn" onclick="adminLogout()">🚪 로그아웃</button>
+  </div>
+</div>
+
+<!-- Auth Panel -->
+<div class="auth-panel" id="authPanel">
+  <div class="auth-card">
+    <div class="auth-title">🔐 관리자 인증</div>
+    <input class="auth-input" type="email" placeholder="이메일" id="adminEmail">
+    <input class="auth-input" type="password" placeholder="비밀번호" id="adminPw">
+    <button class="auth-btn" onclick="adminLogin()">로그인</button>
+  </div>
+</div>
+
+<!-- Admin Main -->
+<div class="admin-content hidden" id="adminMain">
+
+  <!-- Quest Control -->
+  <div class="quest-card">
+    <div class="quest-label">🛠️ QUEST CONTROL</div>
+    <div class="quest-row">
+      <select class="quest-select"><option>유빈</option><option>유현</option></select>
+      <select class="quest-select" style="max-width:100px;"><option>아빠</option><option>엄마</option></select>
+    </div>
+    <div class="quest-row">
+      <input class="quest-input" placeholder="미션 제목">
+      <input class="quest-input" type="number" placeholder="EXP" style="max-width:80px;">
+    </div>
+    <div class="quest-row">
+      <input class="quest-input" placeholder="응원 메시지 (선택)">
+      <button class="quest-btn">하달</button>
+    </div>
+  </div>
+
+  <!-- User Management -->
+  <div class="section-card">
+    <div class="section-title">👥 사용자 관리</div>
+    <div class="quest-row" style="margin-bottom:12px;">
+      <input class="quest-input" placeholder="이름">
+      <input class="quest-input" placeholder="PIN 4자리" maxlength="4" style="max-width:100px;">
+      <button class="quest-btn">➕ 등록</button>
+    </div>
+    <div class="user-item">
+      <div>
+        <div class="user-name">유빈</div>
+        <div class="user-meta">
+          <span class="user-badge">PIN: ****</span>
+          <span class="user-badge">시도: 0/5</span>
+        </div>
+      </div>
+      <div class="user-actions">
+        <button class="user-action-btn btn-pin">PIN 변경</button>
+        <button class="user-action-btn btn-history">기록</button>
+      </div>
+    </div>
+    <div class="user-item">
+      <div>
+        <div class="user-name">유현</div>
+        <div class="user-meta">
+          <span class="user-badge">PIN: ****</span>
+          <span class="user-badge locked">🔒 잠금</span>
+        </div>
+      </div>
+      <div class="user-actions">
+        <button class="user-action-btn btn-unlock">잠금 해제</button>
+        <button class="user-action-btn btn-history">기록</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mission Management -->
+  <div class="section-card">
+    <div class="section-title">🛠 미션 관리</div>
+    <div class="mgmt-btns">
+      <button class="mgmt-btn">📂 과거 미션 가져오기</button>
+      <button class="mgmt-btn mgmt-copy">♻️ 일괄 복제</button>
+      <button class="mgmt-btn mgmt-delete">🗑️ 일괄 삭제</button>
+    </div>
+  </div>
+
+  <!-- Proposal Review -->
+  <div class="proposal-section">
+    <div class="section-title" style="color:#92400e;">💡 미션 제안 검토</div>
+    <div class="proposal-item">
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <strong style="color:var(--accent);">유빈</strong>의 제안
+        <span style="font-size:0.72rem; color:var(--muted);">5분 전</span>
+      </div>
+      <div style="font-weight:700; margin-bottom:4px;">운동 30분 (20P)</div>
+      <div style="font-size:0.82rem; font-style:italic; color:var(--muted); padding:8px; background:#f8fafc; border-radius:8px;">
+        💬 이유: "건강해지고 싶어요"
+      </div>
+      <div class="proposal-actions">
+        <button class="proposal-approve" onclick="alert('✅ 승인!')">✅ 승인</button>
+        <button class="proposal-reject" onclick="alert('❌ 거절')">❌ 거절</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Date + Cheer -->
+  <div class="section-card">
+    <div class="section-title">📅 날짜 선택</div>
+    <div style="text-align:center; font-size:1.1rem; font-weight:800; color:var(--blue); margin-bottom:8px;" id="adminDate">2026-03-30</div>
+    <div class="date-bar">
+      <button class="date-chip" onclick="this.parentElement.querySelectorAll('.date-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">어제</button>
+      <button class="date-chip active">오늘</button>
+      <button class="date-chip" onclick="this.parentElement.querySelectorAll('.date-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">내일</button>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">📢 부모님 응원 메시지</div>
+    <div class="cheer-row">
+      <div class="cheer-avatar">👨</div>
+      <div style="flex:1;">
+        <div style="font-size:0.8rem; font-weight:700; color:var(--blue); margin-bottom:4px;">아빠</div>
+        <textarea class="cheer-input" placeholder="응원 메시지를 입력하세요"></textarea>
+        <div class="cheer-btns">
+          <button class="cheer-save">💾 저장</button>
+          <button class="cheer-delete">🗑️</button>
+        </div>
+      </div>
+    </div>
+    <div class="cheer-row">
+      <div class="cheer-avatar">👩</div>
+      <div style="flex:1;">
+        <div style="font-size:0.8rem; font-weight:700; color:#db2777; margin-bottom:4px;">엄마</div>
+        <textarea class="cheer-input" placeholder="응원 메시지를 입력하세요"></textarea>
+        <div class="cheer-btns">
+          <button class="cheer-save">💾 저장</button>
+          <button class="cheer-delete">🗑️</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player Cards -->
+  <div class="player-grid">
+    <div class="section-card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+        <div style="width:48px; height:48px; border-radius:50%; background:#f1f5f9;
+          display:flex; align-items:center; justify-content:center; font-size:1.4rem;">👦</div>
+        <div><div style="font-weight:800; font-size:1.1rem;">유빈</div>
+          <div style="font-size:0.75rem; color:var(--muted);">열심히 하자!</div></div>
+      </div>
+      <div class="admin-stats">
+        <div class="admin-stat" style="background:#ecfdf5;"><div style="font-weight:800; font-size:1.1rem; color:var(--accent);">45</div><div style="font-size:0.6rem; color:var(--muted);">획득(예정)</div></div>
+        <div class="admin-stat" style="background:#fef2f2;"><div style="font-weight:800; font-size:1.1rem; color:var(--danger);">-5</div><div style="font-size:0.6rem; color:var(--muted);">사용</div></div>
+        <div class="admin-stat" style="background:#eff6ff;"><div style="font-weight:800; font-size:1.1rem; color:var(--blue);">15</div><div style="font-size:0.6rem; color:var(--muted);">잔액(예정)</div></div>
+      </div>
+      <button class="m-action m-delete" style="width:100%; margin-bottom:12px;" onclick="alert('차감 모달')">➖ 차감</button>
+      <div class="section-title" style="font-size:0.85rem;">📋 오늘의 미션</div>
+      <div class="m-item">
+        <div class="tag tag-active">● 진행 중</div>
+        <div style="font-weight:700;">방 청소하기 (+15P)</div>
+        <div class="m-actions">
+          <button class="m-action m-approve">✅ 승인</button>
+          <button class="m-action m-fail">🚫 실패</button>
+          <button class="m-action m-delete">🗑️</button>
+        </div>
+      </div>
+      <div class="m-item completed">
+        <div class="tag tag-done">✅ 완료</div>
+        <div style="font-weight:700;">독서 30분 (+10P)</div>
+        <div class="m-actions">
+          <button class="m-action m-restore">↩️ 복구</button>
+          <button class="m-action m-delete">🗑️</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+        <div style="width:48px; height:48px; border-radius:50%; background:#f1f5f9;
+          display:flex; align-items:center; justify-content:center; font-size:1.4rem;">👧</div>
+        <div><div style="font-weight:800; font-size:1.1rem;">유현</div>
+          <div style="font-size:0.75rem; color:var(--muted);">최선을 다하자</div></div>
+      </div>
+      <div class="admin-stats">
+        <div class="admin-stat" style="background:#ecfdf5;"><div style="font-weight:800; font-size:1.1rem; color:var(--accent);">60</div><div style="font-size:0.6rem; color:var(--muted);">획득(예정)</div></div>
+        <div class="admin-stat" style="background:#fef2f2;"><div style="font-weight:800; font-size:1.1rem; color:var(--danger);">-10</div><div style="font-size:0.6rem; color:var(--muted);">사용</div></div>
+        <div class="admin-stat" style="background:#eff6ff;"><div style="font-weight:800; font-size:1.1rem; color:var(--blue);">25</div><div style="font-size:0.6rem; color:var(--muted);">잔액(예정)</div></div>
+      </div>
+      <button class="m-action m-delete" style="width:100%; margin-bottom:12px;">➖ 차감</button>
+      <div class="section-title" style="font-size:0.85rem;">📋 오늘의 미션</div>
+      <div class="m-item pending_approval">
+        <div class="tag tag-pending">⏳ 승인 대기</div>
+        <div style="font-weight:700;">수학 문제 풀기 (+20P)</div>
+        <div class="m-actions">
+          <button class="m-action m-approve">✅ 승인</button>
+          <button class="m-action m-fail">🚫 실패</button>
+          <button class="m-action m-delete">🗑️</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notification Modal -->
+<div class="modal-overlay" id="notifModal">
+  <div class="modal-box">
+    <h3 style="margin-bottom:12px;">🔔 알림</h3>
+    <div class="notif-item unread">
+      <div class="notif-icon">✅</div>
+      <div class="notif-body">
+        <div><strong>유빈</strong>이(가) "수학 문제 풀기" 승인을 요청했습니다</div>
+        <div class="notif-time">5분 전</div>
+      </div>
+    </div>
+    <div class="notif-item unread">
+      <div class="notif-icon">💡</div>
+      <div class="notif-body">
+        <div><strong>유현</strong>이(가) "운동 30분" 미션을 제안했습니다</div>
+        <div class="notif-time">12분 전</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:16px;">
+      <button style="flex:1; padding:10px; border:none; border-radius:10px; background:#f1f5f9;
+        color:var(--muted); font-weight:700; cursor:pointer; font-family:inherit;"
+        onclick="alert('모두 읽음')">모두 읽음</button>
+      <button style="flex:1; padding:10px; border:none; border-radius:10px; background:var(--purple);
+        color:white; font-weight:700; cursor:pointer; font-family:inherit;"
+        onclick="document.getElementById('notifModal').classList.remove('show')">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <button class="nav-item active"><span class="nav-icon">🏠</span><span class="nav-label">대시보드</span></button>
+  <button class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">사용자</span></button>
+  <button class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">알림</span></button>
+  <button class="nav-item"><span class="nav-icon">⚙️</span><span class="nav-label">설정</span></button>
+</nav>
+
+<script>
+function adminLogin() {
+  document.getElementById('authPanel').classList.add('hidden');
+  document.getElementById('adminMain').classList.remove('hidden');
+  document.getElementById('adminMain').classList.add('fade-in');
+  document.getElementById('notifBtn').classList.remove('hidden');
+  document.getElementById('adminLogoutBtn').classList.remove('hidden');
+}
+function adminLogout() {
+  if (confirm('로그아웃 하시겠습니까?')) location.reload();
+}
+function openNotif() {
+  document.getElementById('notifModal').classList.add('show');
+}
+</script>
+</body>
+</html>

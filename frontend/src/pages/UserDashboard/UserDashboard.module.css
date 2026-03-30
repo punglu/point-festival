@@ -1,0 +1,936 @@
+/* UserDashboard.module.css — Step 1 Baseline */
+
+/* ── 레이아웃 ── */
+.container {
+  min-height: 100vh;
+  background: var(--bg-primary, #0f172a);
+  color: var(--text-primary, #f1f5f9);
+  padding-bottom: 72px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--bg-card, #1e293b);
+  border-bottom: 1px solid var(--border-color, #334155);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.headerTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent, #60a5fa);
+}
+
+.logoutBtn {
+  background: transparent;
+  border: 1px solid var(--border-color, #334155);
+  color: var(--text-secondary, #94a3b8);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.logoutBtn:hover {
+  color: var(--text-primary, #f1f5f9);
+  border-color: var(--text-primary, #f1f5f9);
+}
+
+/* ── 날짜 선택 ── */
+.dateBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--bg-card, #1e293b);
+  border-bottom: 1px solid var(--border-color, #334155);
+}
+
+.dateChip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color, #334155);
+  background: transparent;
+  color: var(--text-secondary, #94a3b8);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.dateChip:hover {
+  border-color: var(--accent, #60a5fa);
+  color: var(--accent, #60a5fa);
+}
+
+.dateChipActive {
+  background: var(--accent, #60a5fa);
+  border-color: var(--accent, #60a5fa);
+  color: #fff;
+}
+
+.dateDisplay {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--text-secondary, #94a3b8);
+}
+
+/* ── 스크롤 영역 ── */
+.scrollArea {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── 프로필 카드 ── */
+.profileCard {
+  background: var(--bg-card, #1e293b);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid var(--border-color, #334155);
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.profilePhoto {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--border-color, #334155);
+  object-fit: cover;
+  border: 2px solid var(--accent, #60a5fa);
+}
+
+.profilePhotoPlaceholder {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--border-color, #334155);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border: 2px solid var(--accent, #60a5fa);
+}
+
+.profileName {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.profileRole {
+  font-size: 12px;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.statusInput {
+  width: 100%;
+  background: var(--bg-primary, #0f172a);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-primary, #f1f5f9);
+  font-size: 13px;
+  margin-bottom: 14px;
+  box-sizing: border-box;
+}
+
+.statusInput:focus {
+  outline: none;
+  border-color: var(--accent, #60a5fa);
+}
+
+.statRow {
+  display: flex;
+  gap: 8px;
+}
+
+.statPill {
+  flex: 1;
+  background: var(--bg-primary, #0f172a);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  border: 1px solid var(--border-color, #334155);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.statPill:hover {
+  border-color: var(--accent, #60a5fa);
+}
+
+.statLabel {
+  font-size: 11px;
+  color: var(--text-secondary, #94a3b8);
+  margin-bottom: 4px;
+}
+
+.statValue {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.statEarned { color: #34d399; }
+.statBalance { color: var(--accent, #60a5fa); }
+.statPending { color: #fbbf24; }
+
+/* ── 스토리 카드 ── */
+.storyRow {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.storyCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.storyRing {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+}
+
+.storyAvatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--bg-card, #1e293b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  overflow: hidden;
+}
+
+.storyAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.storyName {
+  font-size: 12px;
+  color: var(--text-secondary, #94a3b8);
+}
+
+/* ── 탭 ── */
+.tabBar {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-card, #1e293b);
+  border-radius: 12px;
+  padding: 4px;
+  border: 1px solid var(--border-color, #334155);
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #94a3b8);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tabBtnActive {
+  background: var(--accent, #60a5fa);
+  color: #fff;
+}
+
+/* ── 미션 카드 ── */
+.missionCard {
+  background: var(--bg-card, #1e293b);
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-color, #334155);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.missionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.missionTitle {
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.missionPoints {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fbbf24;
+  white-space: nowrap;
+}
+
+.missionStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.statusActive     { background: #1e3a5f; color: #60a5fa; }
+.statusPending    { background: #2d2a1f; color: #fbbf24; }
+.statusCompleted  { background: #1a3a2a; color: #34d399; }
+.statusFailed     { background: #3a1f1f; color: #f87171; }
+.statusRejected   { background: #2d1f2f; color: #c084fc; }
+.statusProposed   { background: #1f2a3a; color: #7dd3fc; }
+
+.missionMsg {
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--text-primary, #f1f5f9);
+}
+
+.msgDad { background: #1e3a5f; border-left: 3px solid #60a5fa; }
+.msgMom { background: #3a1f2a; border-left: 3px solid #f472b6; }
+
+.missionAction {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.actionApprove {
+  background: var(--accent, #60a5fa);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.actionApprove:hover { opacity: 0.85; }
+
+.rejectionReason {
+  font-size: 12px;
+  color: #f87171;
+  padding: 6px 10px;
+  background: #2a1515;
+  border-radius: 6px;
+}
+
+.missionsFailed .missionTitle { text-decoration: line-through; color: var(--text-secondary, #94a3b8); }
+
+/* ── 제안 섹션 ── */
+.proposalSection {
+  background: var(--bg-card, #1e293b);
+  border-radius: 16px;
+  padding: 18px;
+  border: 1px solid var(--border-color, #334155);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.proposalTitle {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.proposalInput {
+  width: 100%;
+  background: var(--bg-primary, #0f172a);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text-primary, #f1f5f9);
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.proposalInput:focus {
+  outline: none;
+  border-color: var(--accent, #60a5fa);
+}
+
+.proposalRow {
+  display: flex;
+  gap: 8px;
+}
+
+.proposalBtn {
+  background: var(--accent, #60a5fa);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.proposalBtn:hover { opacity: 0.85; }
+
+.proposalList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.proposalItem {
+  background: var(--bg-primary, #0f172a);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ── 피드백 섹션 ── */
+.feedbackCard {
+  background: var(--bg-card, #1e293b);
+  border-radius: 16px;
+  padding: 18px;
+  border: 1px solid var(--border-color, #334155);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.feedbackTitle {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.feedbackMsg {
+  font-size: 14px;
+  color: var(--text-primary, #f1f5f9);
+  line-height: 1.6;
+}
+
+.feedbackReply {
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--text-primary, #f1f5f9);
+}
+
+.replyDad { background: #1e3a5f; border-left: 3px solid #60a5fa; }
+.replyMom { background: #3a1f2a; border-left: 3px solid #f472b6; }
+
+.feedbackInputRow {
+  display: flex;
+  gap: 8px;
+}
+
+.feedbackInput {
+  flex: 1;
+  background: var(--bg-primary, #0f172a);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text-primary, #f1f5f9);
+  font-size: 14px;
+}
+
+.feedbackInput:focus {
+  outline: none;
+  border-color: var(--accent, #60a5fa);
+}
+
+.feedbackSend {
+  background: var(--accent, #60a5fa);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.feedbackSend:hover { opacity: 0.85; }
+
+/* ── 차감 아코디언 ── */
+.deductSection {
+  background: var(--bg-card, #1e293b);
+  border-radius: 16px;
+  border: 1px solid var(--border-color, #334155);
+  overflow: hidden;
+}
+
+.deductHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.deductHeaderTitle {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.deductTotal {
+  font-size: 14px;
+  color: #f87171;
+  font-weight: 700;
+}
+
+.deductChevron {
+  font-size: 12px;
+  color: var(--text-secondary, #94a3b8);
+  transition: transform 0.2s;
+}
+
+.deductChevronOpen { transform: rotate(180deg); }
+
+.deductList {
+  padding: 0 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.deductItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding: 8px 10px;
+  background: var(--bg-primary, #0f172a);
+  border-radius: 8px;
+}
+
+.deductAmount {
+  color: #f87171;
+  font-weight: 700;
+}
+
+.deductEmpty {
+  font-size: 13px;
+  color: var(--text-secondary, #94a3b8);
+  padding: 8px 10px;
+}
+
+/* ── 랭킹 뷰 ── */
+.progressSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.progressCard {
+  background: var(--bg-card, #1e293b);
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-color, #334155);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progressRank {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent, #60a5fa);
+  width: 28px;
+  text-align: center;
+}
+
+.progressName {
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.progressBadge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.progressStats {
+  font-size: 13px;
+  color: var(--text-secondary, #94a3b8);
+  text-align: right;
+}
+
+.progressPoints {
+  font-size: 16px;
+  font-weight: 700;
+  color: #34d399;
+}
+
+/* ── 하단 네비 ── */
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: var(--bg-card, #1e293b);
+  border-top: 1px solid var(--border-color, #334155);
+  z-index: 20;
+}
+
+.navItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #94a3b8);
+  transition: color 0.2s;
+  gap: 3px;
+}
+
+.navItem:hover { color: var(--text-primary, #f1f5f9); }
+
+.navItemActive { color: var(--accent, #60a5fa); }
+
+.navIcon { font-size: 20px; }
+.navLabel { font-size: 11px; font-weight: 500; }
+
+/* ── 모달 공통 ── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+
+.modalBox {
+  background: var(--bg-card, #1e293b);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid var(--border-color, #334155);
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.modalClose {
+  background: transparent;
+  border: 1px solid var(--border-color, #334155);
+  color: var(--text-secondary, #94a3b8);
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-top: 16px;
+  width: 100%;
+  transition: color 0.2s;
+}
+
+.modalClose:hover { color: var(--text-primary, #f1f5f9); }
+
+/* ── 로딩 ── */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 14px;
+}
+
+.emptyMsg {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 13px;
+}
+
+/* ── 섹션 헤더 ── */
+.sectionHeader {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+@media (max-width: 480px) {
+  .scrollArea { padding: 12px 16px; }
+  .header { padding: 12px 16px; }
+}
+
+/* ========================================
+   Step 2: v2 Overhaul — 마인크래프트 픽셀 스타일
+   ======================================== */
+
+/* --- 픽셀 스타일 기본 --- */
+.missionCard,
+.profileCard,
+.feedbackCard,
+.deductSection,
+.proposalSection {
+  border: 3px solid var(--border-color, #334155);
+  border-radius: 4px;
+  box-shadow: 4px 4px 0 var(--border-color, #334155);
+}
+
+/* --- ExpBar --- */
+.expBarContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: var(--bg-primary, #0f172a);
+  border: 2px solid var(--border-color, #334155);
+  border-radius: 4px;
+}
+
+.levelBadge {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--accent, #60a5fa);
+  background: rgba(96, 165, 250, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 2px solid var(--accent, #60a5fa);
+  white-space: nowrap;
+}
+
+.expBarTrack {
+  flex: 1;
+  height: 12px;
+  background: var(--bg-card, #1e293b);
+  border: 2px solid var(--border-color, #334155);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.expBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent, #60a5fa), #34d399);
+  transition: width 0.6s ease;
+}
+
+.expBarText {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #94a3b8);
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: right;
+}
+
+/* --- Mission Progress Bar --- */
+.missionProgressBar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 8px;
+  padding: 6px 0;
+}
+
+.progressStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 1;
+}
+
+.progressDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  border: 2px solid var(--border-color, #334155);
+  background: var(--bg-primary, #0f172a);
+  transition: all 0.3s ease;
+}
+
+.progressStepActive .progressDot {
+  background: var(--accent, #60a5fa);
+  border-color: var(--accent, #60a5fa);
+  box-shadow: 0 0 6px var(--accent, #60a5fa);
+}
+
+.progressLabel {
+  font-size: 0.65rem;
+  color: var(--text-secondary, #94a3b8);
+  white-space: nowrap;
+}
+
+.progressStepActive .progressLabel {
+  color: var(--accent, #60a5fa);
+  font-weight: 700;
+}
+
+.progressLine {
+  flex: 1;
+  height: 3px;
+  background: var(--border-color, #334155);
+  margin: 0 -2px;
+  margin-bottom: 18px;
+  transition: background 0.3s ease;
+}
+
+.progressLineActive {
+  background: var(--accent, #60a5fa);
+}
+
+/* --- Confetti --- */
+.confettiContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.confettiParticle {
+  position: absolute;
+  top: -10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* --- 포인트 코인 스타일 --- */
+.coinIcon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background: #FFD700;
+  border: 2px solid #DAA520;
+  border-radius: 2px;
+  text-align: center;
+  line-height: 14px;
+  font-size: 0.6rem;
+  font-weight: 900;
+  color: #8B6914;
+  margin-right: 4px;
+  vertical-align: middle;
+  box-shadow: 1px 1px 0 #B8860B;
+}
+
+.pointValue {
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+/* ========================================
+   StatDetailModal — 인라인 스타일 CSS Module 이관
+   ======================================== */
+
+.statModalList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statModalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.statModalRowGap {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.statModalSection {
+  font-size: 14px;
+}
+
+.statModalTotal {
+  border-top: 1px solid var(--border-color, #334155);
+  padding-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.statModalEarned {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.statModalEarnedLight {
+  color: #34d399;
+}
+
+.statModalSpent {
+  color: #f87171;
+}
+
+.statModalBalance {
+  color: #60a5fa;
+}
+
+.statModalPending {
+  color: #fbbf24;
+  font-weight: 700;
+}
