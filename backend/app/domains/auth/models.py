@@ -1,4 +1,5 @@
-from sqlalchemy import Boolean, Column, String, Integer, BigInteger, ForeignKey
+from sqlalchemy import Boolean, Column, String, Integer, BigInteger, DateTime, ForeignKey
+from sqlalchemy.sql import func
 from app.models.base import Base, SoftDeleteMixin, TimestampMixin
 
 
@@ -19,3 +20,15 @@ class PlayerAuth(Base, SoftDeleteMixin, TimestampMixin):
     login_attempts = Column(Integer, default=0, nullable=False)
     lock_until = Column(BigInteger, nullable=True)
     is_admin = Column(Boolean, default=False, nullable=False, server_default="false")
+
+
+class AdminAuth(Base, SoftDeleteMixin):
+    """관리자 ID/PW 인증 정보"""
+    __tablename__ = "admin_auth"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String(50), unique=True, nullable=False)
+    password = Column(String(255), nullable=False)
+    display_name = Column(String(50), nullable=False)
+    created_at = Column(DateTime, default=func.now(), nullable=False)
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)

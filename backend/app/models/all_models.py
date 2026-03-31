@@ -1,5 +1,5 @@
 """Junction Hub: import만 수행"""
-from app.domains.auth.models import PlayerAuth           # noqa: F401
+from app.domains.auth.models import PlayerAuth, AdminAuth  # noqa: F401
 from app.domains.player.models import Player             # noqa: F401
 from app.domains.mission.models import Mission           # noqa: F401
 from app.domains.cheer.models import CheerMessage        # noqa: F401

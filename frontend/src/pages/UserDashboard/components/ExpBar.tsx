@@ -2,10 +2,20 @@ import styles from '../UserDashboard.module.css';
 
 interface ExpBarProps {
   totalPoints: number;
-  levelThresholds: Record<string, number>;
+  levelThresholds: Record<string, number> | null;
 }
 
 export default function ExpBar({ totalPoints, levelThresholds }: ExpBarProps) {
+  if (!levelThresholds) {
+    return (
+      <div className={styles.expBarContainer}>
+        <span className={styles.levelBadge}>-</span>
+        <div className={styles.expBarTrack} />
+        <span className={styles.expBarText}>-</span>
+      </div>
+    );
+  }
+
   // 레벨 계산: thresholds 내림차순 순회
   const levels = Object.entries(levelThresholds)
     .map(([lv, pts]) => ({ level: Number(lv), points: pts }))

@@ -53,6 +53,58 @@
   border-bottom-color: #4c6ef5;
 }
 
+.logoutBtn {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: #718096;
+  cursor: pointer;
+  align-self: center;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.logoutBtn:hover {
+  color: #e53e3e;
+  border-color: #e53e3e;
+}
+
+/* ─── Task 6: 인라인 스타일 이관 유틸리티 ─── */
+.flex1 { flex: 1; }
+.flex3 { flex: 3; }
+.floatRight { float: right; }
+
+/* FeedbackViewer */
+.feedbackMsgMargin { margin-bottom: 8px; }
+.feedbackReply { padding-left: 16px; font-size: 13px; color: #4a5568; margin-bottom: 4px; }
+.feedbackReplyRow { display: flex; gap: 8px; margin-top: 8px; }
+.feedbackReplyInput { flex: 1; }
+
+/* MissionCloneModal */
+.cloneInfoText { font-size: 13px; color: #718096; margin-bottom: 12px; }
+.clonePointInput { width: 64px; }
+.clonePointUnit { font-size: 12px; color: #a0aec0; }
+.cloneSelectedCount { font-size: 13px; color: #718096; margin-top: 12px; }
+.cloneFullBtn { width: 100%; margin-top: 16px; }
+
+/* MissionManager */
+.missionMetaRow { display: flex; gap: 8px; margin-top: 6px; }
+
+/* PointManager */
+.pointBalanceRow { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+.pointBalanceValue { color: #f59e0b; }
+.pointSubtitle { font-size: 14px; }
+.pointSubtitleMt { font-size: 14px; margin-top: 20px; }
+.deductAmountValue { color: #e53e3e; font-weight: 700; }
+
+/* CheerEditor */
+.cheerDateLabel { font-size: 13px; color: #718096; margin-bottom: 12px; }
+.cheerSaveBtn { width: 100%; margin-top: 12px; }
+
 /* ─── 관리 카드 ─── */
 .adminCard {
   background: #fff;

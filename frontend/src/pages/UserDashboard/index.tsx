@@ -27,11 +27,17 @@ export default function UserDashboard() {
   const {
     player, selectedDate,
     cheers, feedbacks, deductions, dailyPoint,
-    activeTab, activeNav, deductOpen, loading, levelThresholds,
+    activeTab, activeNav, deductOpen, loading, levelThresholds, senders, parentPhotos,
     myProposals, activeMissions, totalDeducted, pendingPoints,
     setSelectedDate, setActiveTab, setActiveNav, setDeductOpen,
     quickDate, requestApproval, proposeMission, sendFeedback,
   } = useDashboard();
+
+  const cheerData = senders.reduce<Record<string, string>>((acc, s) => {
+    const found = cheers.find(c => c.sender === s.key);
+    if (found) acc[s.key] = found.message;
+    return acc;
+  }, {});
 
   const handleLogout = () => {
     logout();
@@ -66,8 +72,8 @@ export default function UserDashboard() {
       {/* 메인 콘텐츠 */}
       {activeNav === 'home' ? (
         <div className={styles.scrollArea}>
-          {/* 스토리 카드 */}
-          <StoryCards cheers={cheers} />
+          {/* 응원 섹션 */}
+          <StoryCards cheers={cheerData} parentPhotos={parentPhotos} senders={senders} />
 
           {/* 프로필 카드 + ExpBar */}
           <ProfileCard

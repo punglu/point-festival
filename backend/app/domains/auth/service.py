@@ -8,15 +8,13 @@ from sqlalchemy import select, update, text
 from fastapi import HTTPException, status
 from datetime import datetime, timedelta, timezone
 
-from app.domains.auth.models import PlayerAuth
-from app.domains.auth.schema import LoginRequest, LoginResponse
+from app.domains.auth.models import PlayerAuth, AdminAuth
+from app.domains.auth.schema import LoginRequest, LoginResponse, AdminLoginResponse
 from app.domains.player.models import Player
 from app.config import settings
 from jose import jwt
 
 
-MAX_ATTEMPTS = 5
-LOCK_DURATION_MS = 5 * 60 * 1000  # 5분
 
 
 async def authenticate_player(
@@ -78,14 +76,14 @@ async def authenticate_player(
         await _increment_attempts(db, auth, new_attempts, now_ms)
         await _save_login_log(db, req.player_id, success=False)
 
-        if new_attempts >= MAX_ATTEMPTS:
+        if new_attempts >= settings.MAX_LOGIN_ATTEMPTS:
             raise HTTPException(
                 status_code=status.HTTP_423_LOCKED,
-                detail="5회 실패하여 5분간 잠금되었습니다.",
+                detail=f"{settings.MAX_LOGIN_ATTEMPTS}회 실패하여 {settings.LOCK_DURATION_SECONDS // 60}분간 잠금되었습니다.",
             )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"잘못된 PIN입니다. ({new_attempts}/{MAX_ATTEMPTS})",
+            detail=f"잘못된 PIN입니다. ({new_attempts}/{settings.MAX_LOGIN_ATTEMPTS})",
         )
 
     # 인증 성공: 시도 횟수 초기화 + 마지막 접속 갱신
@@ -137,8 +135,8 @@ async def _increment_attempts(
     -- WHERE player_id = :player_id
     """
     values: dict = {"login_attempts": new_attempts}
-    if new_attempts >= MAX_ATTEMPTS:
-        values["lock_until"] = now_ms + LOCK_DURATION_MS
+    if new_attempts >= settings.MAX_LOGIN_ATTEMPTS:
+        values["lock_until"] = now_ms + settings.LOCK_DURATION_SECONDS * 1000
         values["login_attempts"] = 0
 
     await db.execute(
@@ -159,6 +157,53 @@ async def _save_login_log(db: AsyncSession, player_id: int, success: bool) -> No
             "VALUES (:pid, :ok, CURRENT_DATE, NOW())"
         ),
         {"pid": player_id, "ok": success},
+    )
+
+
+async def authenticate_admin(
+    db: AsyncSession,
+    username: str,
+    password: str,
+) -> AdminLoginResponse:
+    """관리자 ID/PW 인증 및 JWT 발급
+
+    -- [SQL] 관리자 인증 정보 조회
+    -- SELECT * FROM admin_auth
+    -- WHERE username = :username
+    --   AND deleted_at IS NULL;
+    """
+    result = await db.execute(
+        select(AdminAuth).where(
+            AdminAuth.username == username,
+            AdminAuth.deleted_at.is_(None),
+        )
+    )
+    admin = result.scalars().first()
+
+    if not admin:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="아이디 또는 비밀번호가 올바르지 않습니다.",
+        )
+
+    if not bcrypt.checkpw(password.encode("utf-8"), admin.password.encode("utf-8")):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="아이디 또는 비밀번호가 올바르지 않습니다.",
+        )
+
+    payload = {
+        "sub": str(admin.id),
+        "name": admin.display_name,
+        "role": "admin",
+        "is_admin": True,
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_EXPIRE_MINUTES),
+    }
+    token = jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+
+    return AdminLoginResponse(
+        access_token=token,
+        display_name=admin.display_name,
     )
 
 

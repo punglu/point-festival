@@ -102,6 +102,19 @@ async def update_mission(
     return MissionResponse.model_validate(mission)
 
 
+async def update_mission_status(
+    db: AsyncSession, mission_id: int, new_status: str, role: str = "player"
+) -> MissionResponse:
+    """미션 상태 전용 변경 — 상태 전이 검증은 update_mission 내 _validate_status_transition 위임
+
+    -- [SQL] 미션 상태 변경
+    -- UPDATE missions SET status = :status, updated_at = NOW()
+    -- WHERE id = :id AND deleted_at IS NULL;
+    """
+    mission_update = MissionUpdate(status=new_status)
+    return await update_mission(db, mission_id, mission_update, role=role)
+
+
 async def soft_delete_mission(db: AsyncSession, mission_id: int) -> None:
     """
     -- [SQL] 미션 소프트 삭제

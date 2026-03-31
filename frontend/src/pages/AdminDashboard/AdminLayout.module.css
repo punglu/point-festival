@@ -1,0 +1,42 @@
+/* AdminLayout.module.css — 사이드바 레이아웃 */
+
+.adminLayout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--admin-bg, #f5f7fa);
+}
+
+.desktopSidebar {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.mainArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+/* 태블릿: 아이콘 전용 사이드바 */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .desktopSidebar {
+    width: 64px;
+  }
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .desktopSidebar {
+    display: none;
+  }
+  .content {
+    padding: 16px;
+  }
+}

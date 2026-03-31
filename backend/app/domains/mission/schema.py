@@ -23,6 +23,10 @@ class MissionUpdate(BaseModel):
     sort_order: Optional[int] = None
 
 
+class MissionStatusUpdate(BaseModel):
+    status: str  # 'completed' | 'failed' | 'active'
+
+
 class MissionPropose(BaseModel):
     player_id: int
     date: date

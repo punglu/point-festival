@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.domains.auth.schema import LoginRequest, LoginResponse
-from app.domains.auth.service import authenticate_player, logout as auth_logout, handle_logout
+from app.domains.auth.schema import LoginRequest, LoginResponse, AdminLoginRequest, AdminLoginResponse
+from app.domains.auth.service import authenticate_player, authenticate_admin, logout as auth_logout, handle_logout
 
 router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
@@ -12,6 +12,17 @@ router = APIRouter(prefix="/api/auth", tags=["Auth"])
 async def login(req: LoginRequest, db: AsyncSession = Depends(get_db)):
     """플레이어 PIN 로그인"""
     return await authenticate_player(db, req)
+
+
+@router.post("/admin/login", response_model=AdminLoginResponse)
+async def admin_login(
+    request: AdminLoginRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """관리자 ID/PW 로그인"""
+    return await authenticate_admin(
+        db=db, username=request.username, password=request.password
+    )
 
 
 @router.post("/logout")

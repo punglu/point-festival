@@ -9,6 +9,18 @@ import {
   DailyPointResponse,
 } from '../api/dashboardApi';
 
+export interface SenderConfig {
+  key: string;
+  label: string;
+  color: string;
+  emoji: string;
+}
+
+const SENDERS_FALLBACK: SenderConfig[] = [
+  { key: 'dad', label: '아빠', color: 'var(--blue)', emoji: '👨' },
+  { key: 'mom', label: '엄마', color: '#db2777', emoji: '👩' },
+];
+
 function getToday(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -32,10 +44,15 @@ export function useDashboard() {
   const [deductOpen, setDeductOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // 레벨 설정 (app_configs에서 로드, 실패 시 기본값 유지)
-  const [levelThresholds, setLevelThresholds] = useState<Record<string, number>>({
-    '1': 0, '2': 50, '3': 150, '4': 300, '5': 500,
-  });
+  // 레벨 설정 (app_configs에서 로드, null = 로드 전/실패)
+  const [levelThresholds, setLevelThresholds] = useState<Record<string, number> | null>(null);
+  const [configError, setConfigError] = useState(false);
+
+  // 응원 발신자 목록 (app_configs cheer.senders)
+  const [senders, setSenders] = useState<SenderConfig[]>([]);
+
+  // 부모 사진 (app_configs photos.{sender})
+  const [parentPhotos, setParentPhotos] = useState<Record<string, string>>({});
 
   // 날짜/플레이어 변경 시 데이터 로드 — AbortController로 race condition 방지
   useEffect(() => {
@@ -76,14 +93,36 @@ export function useDashboard() {
     };
   }, [player, selectedDate]);
 
-  // 레벨 임계치 로드 (최초 1회)
+  // 레벨 임계치 + senders 로드 (최초 1회)
   useEffect(() => {
     dashboardApi.getConfig('level.thresholds')
       .then(res => {
         if (res.data.value) setLevelThresholds(JSON.parse(res.data.value));
+        else setConfigError(true);
       })
-      .catch(() => {}); // 실패 시 기본값 유지
+      .catch(() => setConfigError(true));
+
+    dashboardApi.getConfig('cheer.senders')
+      .then(res => {
+        if (res.data.value) setSenders(JSON.parse(res.data.value));
+        else setSenders(SENDERS_FALLBACK);
+      })
+      .catch(() => setSenders(SENDERS_FALLBACK));
   }, []);
+
+  // 부모 사진 로드 (senders 확정 후)
+  useEffect(() => {
+    if (!senders.length) return;
+    Promise.all(senders.map(s => dashboardApi.getConfig(`photos.${s.key}`).catch(() => null)))
+      .then(results => {
+        const photos: Record<string, string> = {};
+        results.forEach((res, i) => {
+          if (res?.data?.value) photos[senders[i].key] = res.data.value;
+        });
+        setParentPhotos(photos);
+      })
+      .catch(() => {});
+  }, [senders]);
 
   // 액션 후 갱신용 (사용자 명시 액션 — abort 불필요)
   const refreshData = useCallback(async () => {
@@ -153,7 +192,7 @@ export function useDashboard() {
   return {
     // 상태
     player, selectedDate, missions, cheers, feedbacks, deductions, dailyPoint,
-    activeTab, activeNav, deductOpen, loading, levelThresholds,
+    activeTab, activeNav, deductOpen, loading, levelThresholds, configError, senders, parentPhotos,
     // 파생
     myProposals, activeMissions, totalDeducted, totalAllocated, pendingPoints,
     // 액션

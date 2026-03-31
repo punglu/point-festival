@@ -2,28 +2,48 @@
 import time
 
 from fastapi import HTTPException
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domains.daily_point.models import DailyPoint
 from app.domains.player.models import Player
 from app.domains.auth.models import PlayerAuth
 from app.domains.player.schema import PlayerListItem, PlayerLockRequest, PlayerUpdate, PlayerUpdateAdmin
 
 
 async def get_player_list(db: AsyncSession) -> list[PlayerListItem]:
-    """플레이어 목록 조회 (잠금 상태 포함)
+    """플레이어 목록 조회 (잠금 상태 + 사진 + 총 포인트 포함)
 
-    -- [SQL] 플레이어 목록 + 잠금 상태 조회
-    -- SELECT p.id, p.name, p.role, p.last_login,
-    --        pa.lock_until
+    -- [SQL] 플레이어 목록 + 잠금 상태 + 총 포인트 조회
+    -- WITH points AS (
+    --   SELECT player_id, COALESCE(SUM(balance), 0) AS total_points
+    --   FROM daily_points
+    --   WHERE deleted_at IS NULL
+    --   GROUP BY player_id
+    -- )
+    -- SELECT p.id, p.name, p.role, p.photo, p.last_login,
+    --        pa.lock_until,
+    --        COALESCE(pts.total_points, 0) AS total_points
     -- FROM players p
     -- LEFT JOIN player_auth pa ON pa.player_id = p.id
+    -- LEFT JOIN points pts ON pts.player_id = p.id
     -- WHERE p.deleted_at IS NULL
     -- ORDER BY p.id;
     """
+    points_subq = (
+        select(
+            DailyPoint.player_id,
+            func.coalesce(func.sum(DailyPoint.balance), 0).label("total_points"),
+        )
+        .where(DailyPoint.deleted_at.is_(None))
+        .group_by(DailyPoint.player_id)
+        .subquery()
+    )
+
     result = await db.execute(
-        select(Player, PlayerAuth.lock_until)
+        select(Player, PlayerAuth.lock_until, points_subq.c.total_points)
         .outerjoin(PlayerAuth, PlayerAuth.player_id == Player.id)
+        .outerjoin(points_subq, points_subq.c.player_id == Player.id)
         .where(Player.deleted_at.is_(None))
         .order_by(Player.id)
     )
@@ -35,10 +55,12 @@ async def get_player_list(db: AsyncSession) -> list[PlayerListItem]:
             id=player.id,
             name=player.name,
             role=player.role,
+            photo=player.photo,
             last_login=player.last_login,
             is_locked=player.is_locked or bool(lock_until and now_ms < lock_until),
+            total_points=int(total_points or 0),
         )
-        for player, lock_until in rows
+        for player, lock_until, total_points in rows
     ]
 
 

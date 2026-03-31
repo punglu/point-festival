@@ -21,11 +21,33 @@ interface PlayerListItem {
   role: string;
   last_login: number | null;
   is_locked: boolean;
+  total_points?: number;
+  photo?: string | null;
+}
+
+export interface AdminLoginResponse {
+  access_token: string;
+  token_type: string;
+  display_name: string;
+  is_admin: boolean;
+}
+
+export async function adminLogin(
+  username: string,
+  password: string,
+  signal?: AbortSignal,
+): Promise<AdminLoginResponse> {
+  const { data } = await httpClient.post<AdminLoginResponse>(
+    '/api/auth/admin/login',
+    { username, password },
+    { signal },
+  );
+  return data;
 }
 
 export const authApi = {
-  login: async (payload: LoginPayload): Promise<LoginResult> => {
-    const { data } = await httpClient.post<LoginResult>('/api/auth/login', payload);
+  login: async (payload: LoginPayload, signal?: AbortSignal): Promise<LoginResult> => {
+    const { data } = await httpClient.post<LoginResult>('/api/auth/login', payload, { signal });
     return data;
   },
 
@@ -33,8 +55,8 @@ export const authApi = {
     await httpClient.post('/api/auth/logout');
   },
 
-  getPlayers: async (): Promise<PlayerListItem[]> => {
-    const { data } = await httpClient.get<PlayerListItem[]>('/api/players');
+  getPlayers: async (signal?: AbortSignal): Promise<PlayerListItem[]> => {
+    const { data } = await httpClient.get<PlayerListItem[]>('/api/players', { signal });
     return data;
   },
 };

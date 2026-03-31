@@ -14,3 +14,15 @@ class LoginResponse(BaseModel):
     player_role: str
     is_admin: bool = False
     message: str = "로그인 성공"
+
+
+class AdminLoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+class AdminLoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    display_name: str
+    is_admin: bool = True

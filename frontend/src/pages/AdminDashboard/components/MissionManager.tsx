@@ -78,8 +78,7 @@ export default function MissionManager({ playerId, selectedDate }: Props) {
       <div className={styles.adminCardTitle}>
         미션 관리
         <button
-          className={`${styles.btnSecondary} ${styles.btnSm}`}
-          style={{ float: 'right' }}
+          className={`${styles.btnSecondary} ${styles.btnSm} ${styles.floatRight}`}
           onClick={() => setShowCloneModal(true)}
         >
           전일 복제
@@ -89,15 +88,13 @@ export default function MissionManager({ playerId, selectedDate }: Props) {
       {/* 미션 추가 폼 */}
       <div className={styles.adminSelectors}>
         <input
-          className={styles.formInput}
-          style={{ flex: 3 }}
+          className={`${styles.formInput} ${styles.flex3}`}
           placeholder="미션 내용"
           value={newText}
           onChange={(e) => setNewText(e.target.value)}
         />
         <input
-          className={styles.formInput}
-          style={{ flex: 1 }}
+          className={`${styles.formInput} ${styles.flex1}`}
           type="number"
           placeholder="P"
           value={newPoint}
@@ -115,9 +112,9 @@ export default function MissionManager({ playerId, selectedDate }: Props) {
       ) : (
         missions.map((m) => (
           <div key={m.id} className={styles.missionRow}>
-            <div style={{ flex: 1 }}>
+            <div className={styles.flex1}>
               <div className={styles.missionText}>{m.text}</div>
-              <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+              <div className={styles.missionMetaRow}>
                 <span className={styles.missionStatus}>{m.status}</span>
                 <span className={styles.missionPoint}>{m.point}P</span>
               </div>

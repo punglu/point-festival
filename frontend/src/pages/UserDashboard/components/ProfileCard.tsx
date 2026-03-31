@@ -7,7 +7,7 @@ interface Props {
   player: { id: number; name: string; role: string } | null;
   dailyPoint: DailyPointResponse | null;
   pendingPoints: number;
-  levelThresholds: Record<string, number>;
+  levelThresholds: Record<string, number> | null;
   onStatClick?: (type: 'earned' | 'balance' | 'pending') => void;
 }
 

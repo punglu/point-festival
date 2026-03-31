@@ -55,7 +55,7 @@ CREATE INDEX idx_missions_player_date ON missions(player_id, date);
 CREATE TABLE cheer_messages (
     id              SERIAL PRIMARY KEY,
     date            DATE NOT NULL,
-    sender          VARCHAR(20) NOT NULL CHECK (sender IN ('dad', 'mom')),
+    sender          VARCHAR(50) NOT NULL,
     message         TEXT NOT NULL,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -143,6 +143,17 @@ CREATE TABLE login_logs (
 );
 CREATE INDEX idx_login_logs_player ON login_logs(player_id, created_at DESC);
 
+-- 12. Admin Auth
+CREATE TABLE admin_auth (
+    id           SERIAL PRIMARY KEY,
+    username     VARCHAR(50) UNIQUE NOT NULL,
+    password     VARCHAR(255) NOT NULL,
+    display_name VARCHAR(50) NOT NULL,
+    created_at   TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at   TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at   TIMESTAMP NULL DEFAULT NULL
+);
+
 -- Seed Data (개발용, PIN=1234)
 -- 해시 생성: python3 -c "import bcrypt; print(bcrypt.hashpw(b'1234', bcrypt.gensalt(12)).decode())"
 -- 아래 해시는 실제 '1234'와 매칭 검증 완료
@@ -156,7 +167,20 @@ INSERT INTO player_auth (player_id, pin_hash, is_admin) VALUES
     (2, '$2b$12$Obp2TMVO6SxsBI4wBsPG2uPGexUoBzIgE4rDSiA0clxw.Pbd5lGlq', FALSE),
     (3, '$2b$12$Obp2TMVO6SxsBI4wBsPG2uPGexUoBzIgE4rDSiA0clxw.Pbd5lGlq', TRUE);
 
+-- 해시 생성: python3 -c "import bcrypt; print(bcrypt.hashpw(b'admin1234', bcrypt.gensalt(12)).decode())"
+-- 아래 해시는 실제 'admin1234'와 매칭 검증 완료
+INSERT INTO admin_auth (username, password, display_name) VALUES
+    ('dad', '$2b$12$cDiscHyPegxLxvtmYuovvOTbflxIfDSRFUoYQytwO0KpceYIHJxG2', '아빠'),
+    ('mom', '$2b$12$8FXpLsillveX2B4dXRtWSeb0hZgqBMimMXceDNy4I8lRdYq5l0q5u', '엄마');
+
 INSERT INTO app_configs (key, value) VALUES
     ('photos.dad', ''),
     ('photos.mom', ''),
-    ('level.thresholds', '{"1":0,"2":50,"3":150,"4":300,"5":500}');
+    ('level.thresholds', '{"1":0,"2":50,"3":150,"4":300,"5":500}'),
+    ('cheer.senders', '[{"key":"dad","label":"아빠","color":"var(--blue)","emoji":"👨"},{"key":"mom","label":"엄마","color":"#db2777","emoji":"👩"}]');
+
+INSERT INTO missions (player_id, date, text, point, status, sender, sort_order) VALUES
+    (1, CURRENT_DATE, '오늘의 첫 로그인!', 5,  'completed', '아빠', 0),
+    (1, CURRENT_DATE, '방 정리하기',       10, 'active',    '아빠', 1),
+    (2, CURRENT_DATE, '오늘의 첫 로그인!', 5,  'completed', '엄마', 0),
+    (2, CURRENT_DATE, '책 30분 읽기',      10, 'active',    '엄마', 1);

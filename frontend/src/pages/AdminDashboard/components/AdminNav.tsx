@@ -4,6 +4,7 @@ import { AdminTab } from '../hooks/useAdmin';
 interface Props {
   activeTab: AdminTab;
   setActiveTab: (tab: AdminTab) => void;
+  onLogout: () => void;
 }
 
 const TABS: { key: AdminTab; label: string }[] = [
@@ -14,7 +15,7 @@ const TABS: { key: AdminTab; label: string }[] = [
   { key: 'more', label: '더보기' },
 ];
 
-export default function AdminNav({ activeTab, setActiveTab }: Props) {
+export default function AdminNav({ activeTab, setActiveTab, onLogout }: Props) {
   return (
     <nav className={styles.adminNav}>
       {TABS.map((tab) => (
@@ -26,6 +27,9 @@ export default function AdminNav({ activeTab, setActiveTab }: Props) {
           {tab.label}
         </button>
       ))}
+      <button className={styles.logoutBtn} onClick={onLogout}>
+        로그아웃
+      </button>
     </nav>
   );
 }

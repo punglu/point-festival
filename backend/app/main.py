@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.config import settings
 from app.domains.auth.router import router as auth_router
 from app.domains.player.router import router as player_router
 from app.domains.mission.router import router as mission_router
@@ -22,7 +23,7 @@ app = FastAPI(
 # CORS (개발 환경 — 프로덕션은 nginx 프록시로 대체)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=settings.CORS_ORIGINS.split(","),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

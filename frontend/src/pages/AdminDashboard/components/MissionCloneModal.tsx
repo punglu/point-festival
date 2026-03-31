@@ -55,7 +55,7 @@ export default function MissionCloneModal({
       <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalTitle}>미션 복제</div>
 
-        <div style={{ fontSize: 13, color: '#718096', marginBottom: 12 }}>
+        <div className={styles.cloneInfoText}>
           원본: {sourceDate} → 대상: {targetDate}
         </div>
 
@@ -69,25 +69,23 @@ export default function MissionCloneModal({
             <span className={styles.missionText}>{m.text}</span>
             <input
               type="number"
-              className={styles.formInput}
-              style={{ width: 64 }}
+              className={`${styles.formInput} ${styles.clonePointInput}`}
               value={pointOverrides[m.id] ?? m.point}
               onChange={(e) =>
                 setPointOverrides((prev) => ({ ...prev, [m.id]: Number(e.target.value) }))
               }
               min={0}
             />
-            <span style={{ fontSize: 12, color: '#a0aec0' }}>P</span>
+            <span className={styles.clonePointUnit}>P</span>
           </div>
         ))}
 
-        <div style={{ fontSize: 13, color: '#718096', marginTop: 12 }}>
+        <div className={styles.cloneSelectedCount}>
           선택된 미션: {selected.size}개
         </div>
 
         <button
-          className={styles.btnPrimary}
-          style={{ width: '100%', marginTop: 16 }}
+          className={`${styles.btnPrimary} ${styles.cloneFullBtn}`}
           onClick={handleClone}
           disabled={loading || selected.size === 0}
         >

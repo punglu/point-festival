@@ -23,5 +23,7 @@ class PlayerListItem(BaseModel):
     role: str
     last_login: int | None = None
     is_locked: bool = False
+    photo: Optional[str] = None
+    total_points: int = 0
 
     model_config = {"from_attributes": True}

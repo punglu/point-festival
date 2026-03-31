@@ -8,10 +8,23 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.domains.auth.dependencies import get_admin_user
+from app.domains.auth.dependencies import get_current_admin
 
-from app.domains.mission.schema import MissionCreate, MissionUpdate, MissionCloneRequest, MissionCloneResponse, MissionResponse
-from app.domains.mission.service import create_mission, update_mission, soft_delete_mission, clone_missions
+from app.domains.mission.schema import (
+    MissionCreate,
+    MissionUpdate,
+    MissionStatusUpdate,
+    MissionCloneRequest,
+    MissionCloneResponse,
+    MissionResponse,
+)
+from app.domains.mission.service import (
+    create_mission,
+    update_mission,
+    update_mission_status,
+    soft_delete_mission,
+    clone_missions,
+)
 
 from app.domains.deduction.schema import DeductionCreate, DeductionResponse
 from app.domains.deduction.service import create_deduction
@@ -42,9 +55,21 @@ router = APIRouter(prefix="/api/admin", tags=["Admin"])
 async def admin_create_mission(
     data: MissionCreate,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await create_mission(db, data)
+
+
+@router.patch("/missions/{mission_id}/status", response_model=MissionResponse)
+async def update_mission_status_admin(
+    mission_id: int,
+    status_data: MissionStatusUpdate,
+    db: AsyncSession = Depends(get_db),
+    _: dict = Depends(get_current_admin),
+):
+    return await update_mission_status(
+        db=db, mission_id=mission_id, new_status=status_data.status, role="admin"
+    )
 
 
 @router.patch("/missions/{mission_id}", response_model=MissionResponse)
@@ -52,7 +77,7 @@ async def admin_update_mission(
     mission_id: int,
     data: MissionUpdate,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await update_mission(db, mission_id, data, role="admin")
 
@@ -61,7 +86,7 @@ async def admin_update_mission(
 async def admin_delete_mission(
     mission_id: int,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     await soft_delete_mission(db, mission_id)
 
@@ -70,7 +95,7 @@ async def admin_delete_mission(
 async def admin_clone_missions(
     data: MissionCloneRequest,
     db: AsyncSession = Depends(get_db),
-    admin_user: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await clone_missions(db, data)
 
@@ -80,7 +105,7 @@ async def admin_clone_missions(
 async def admin_create_deduction(
     data: DeductionCreate,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await create_deduction(db, data)
 
@@ -90,7 +115,7 @@ async def admin_create_deduction(
 async def admin_adjust_daily_point(
     data: DailyPointAdjust,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await adjust_daily_point(db, data)
 
@@ -101,7 +126,7 @@ async def admin_upsert_cheer(
     target_date: date,
     data: CheerCreate,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await upsert_cheer(db, data)
 
@@ -112,7 +137,7 @@ async def admin_update_player(
     player_id: int,
     data: PlayerUpdateAdmin,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await update_player_admin(db, player_id, data)
 
@@ -122,7 +147,7 @@ async def admin_lock_player(
     player_id: int,
     data: PlayerLockRequest,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await lock_player(db, player_id, data)
 
@@ -131,7 +156,7 @@ async def admin_lock_player(
 @router.get("/notifications", response_model=list[NotificationResponse])
 async def admin_get_notifications(
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await get_unread_notifications(db)
 
@@ -140,7 +165,7 @@ async def admin_get_notifications(
 async def admin_create_notification(
     data: NotificationCreate,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await create_notification(db, data)
 
@@ -149,7 +174,7 @@ async def admin_create_notification(
 async def admin_mark_notification_read(
     notification_id: int,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     await mark_as_read(db, notification_id)
 
@@ -160,7 +185,7 @@ async def admin_get_feedbacks(
     player_id: int,
     target_date: date,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await get_feedbacks_by_player(db, player_id, target_date)
 
@@ -170,7 +195,7 @@ async def admin_add_reply(
     feedback_id: int,
     data: FeedbackReplyCreate,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await add_reply(db, data)
 
@@ -179,7 +204,7 @@ async def admin_add_reply(
 @router.get("/configs", response_model=list[ConfigResponse])
 async def admin_get_configs(
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await get_all_configs(db)
 
@@ -189,6 +214,6 @@ async def admin_update_config(
     key: str,
     data: ConfigUpdate,
     db: AsyncSession = Depends(get_db),
-    _: dict = Depends(get_admin_user),
+    _: dict = Depends(get_current_admin),
 ):
     return await upsert_config(db, key, data)

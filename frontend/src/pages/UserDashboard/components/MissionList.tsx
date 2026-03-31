@@ -18,12 +18,11 @@ const STATUS_CLASS: Record<string, string> = {
 };
 
 export default function MissionList({ missions, requestApproval }: Props) {
-  if (missions.length === 0) {
-    return <div className={styles.emptyMsg}>오늘의 미션이 없습니다.</div>;
-  }
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div data-testid="mission-list" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {missions.length === 0 && (
+        <div className={styles.emptyMsg}>아직 등록된 미션이 없습니다.</div>
+      )}
       {missions.map(m => (
         <div
           key={m.id}

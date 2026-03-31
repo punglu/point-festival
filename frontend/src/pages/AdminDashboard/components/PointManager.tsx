@@ -51,11 +51,11 @@ export default function PointManager({ playerId, selectedDate }: Props) {
     <div className={styles.adminCard}>
       <div className={styles.adminCardTitle}>포인트 관리</div>
 
-      <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 16 }}>
-        현재 보유 포인트: <span style={{ color: '#f59e0b' }}>{balance}P</span>
+      <div className={styles.pointBalanceRow}>
+        현재 보유 포인트: <span className={styles.pointBalanceValue}>{balance}P</span>
       </div>
 
-      <div className={styles.adminCardTitle} style={{ fontSize: 14 }}>포인트 차감</div>
+      <div className={`${styles.adminCardTitle} ${styles.pointSubtitle}`}>포인트 차감</div>
       <div className={styles.formGroup}>
         <label className={styles.formLabel}>금액 (P)</label>
         <input
@@ -81,12 +81,12 @@ export default function PointManager({ playerId, selectedDate }: Props) {
 
       {deductions.length > 0 && (
         <>
-          <div className={styles.adminCardTitle} style={{ fontSize: 14, marginTop: 20 }}>차감 이력</div>
+          <div className={`${styles.adminCardTitle} ${styles.pointSubtitleMt}`}>차감 이력</div>
           {deductions.map((d) => (
             <div key={d.id} className={styles.listRow}>
               <div className={styles.listRowHeader}>
                 <span className={styles.listRowTitle}>{d.reason}</span>
-                <span style={{ color: '#e53e3e', fontWeight: 700 }}>-{d.amount}P</span>
+                <span className={styles.deductAmountValue}>-{d.amount}P</span>
               </div>
               <span className={styles.listRowMeta}>{d.date}</span>
             </div>

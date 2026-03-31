@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from '../AdminDashboard.module.css';
 import { adminApi, FeedbackItem } from '../api/adminApi';
+import { useAuthStore } from '../../../shared/stores/useAuthStore';
 
 interface Props {
   playerId: number | null;
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export default function FeedbackViewer({ playerId, selectedDate }: Props) {
+  const { adminDisplayName } = useAuthStore();
   const [feedbacks, setFeedbacks] = useState<FeedbackItem[]>([]);
   const [replyText, setReplyText] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(false);
@@ -26,7 +28,8 @@ export default function FeedbackViewer({ playerId, selectedDate }: Props) {
     if (!text) return;
     setLoading(true);
     try {
-      await adminApi.createReply(feedbackId, { feedback_id: feedbackId, sender: '관리자', text });
+      const senderName = adminDisplayName ?? '관리자';
+      await adminApi.createReply(feedbackId, { feedback_id: feedbackId, sender: senderName, text });
       setReplyText((prev) => ({ ...prev, [feedbackId]: '' }));
       if (playerId) {
         const res = await adminApi.getFeedbacks(playerId, selectedDate);
@@ -50,16 +53,15 @@ export default function FeedbackViewer({ playerId, selectedDate }: Props) {
       ) : (
         feedbacks.map((fb) => (
           <div key={fb.id} className={styles.listRow}>
-            <div className={styles.listRowBody} style={{ marginBottom: 8 }}>"{fb.msg}"</div>
+            <div className={`${styles.listRowBody} ${styles.feedbackMsgMargin}`}>"{fb.msg}"</div>
             {fb.replies.map((r) => (
-              <div key={r.id} style={{ paddingLeft: 16, fontSize: 13, color: '#4a5568', marginBottom: 4 }}>
+              <div key={r.id} className={styles.feedbackReply}>
                 ↳ {r.sender}: {r.text}
               </div>
             ))}
-            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+            <div className={styles.feedbackReplyRow}>
               <input
-                className={styles.formInput}
-                style={{ flex: 1 }}
+                className={`${styles.formInput} ${styles.feedbackReplyInput}`}
                 placeholder="답글 작성..."
                 value={replyText[fb.id] ?? ''}
                 onChange={(e) => setReplyText((prev) => ({ ...prev, [fb.id]: e.target.value }))}

@@ -1,52 +1,42 @@
-import { useState } from 'react';
 import styles from '../UserDashboard.module.css';
-import { CheerResponse } from '../api/dashboardApi';
-import CheerModal from './CheerModal';
 
-interface Props {
-  cheers: CheerResponse[];
+export interface SenderConfig {
+  key: string;
+  label: string;
+  color: string;
+  emoji: string;
 }
 
-const SENDERS = [
-  { key: 'dad', label: '아빠', emoji: '👨' },
-  { key: 'mom', label: '엄마', emoji: '👩' },
-];
+interface Props {
+  cheers: Record<string, string>;
+  parentPhotos: Record<string, string>;
+  senders: SenderConfig[];
+}
 
-export default function StoryCards({ cheers }: Props) {
-  const [selected, setSelected] = useState<CheerResponse | null>(null);
+const DEFAULT_CHEER = '오늘도 화이팅!';
 
-  const getCheer = (sender: string) =>
-    cheers.find(c => c.sender === sender || c.sender === (sender === 'dad' ? '아빠' : '엄마'));
-
+export default function StoryCards({ cheers, parentPhotos, senders }: Props) {
   return (
-    <>
-      <div className={styles.storyRow}>
-        {SENDERS.map(({ key, label, emoji }) => {
-          const cheer = getCheer(key);
-          return (
-            <button
-              key={key}
-              className={styles.storyCard}
-              onClick={() => cheer && setSelected(cheer)}
-              style={{ background: 'transparent', border: 'none', cursor: cheer ? 'pointer' : 'default' }}
-            >
-              <div className={styles.storyRing} style={{ opacity: cheer ? 1 : 0.4 }}>
-                <div className={styles.storyAvatar}>{emoji}</div>
+    <div className={styles.cheerSection}>
+      <div className={styles.cheerGrid}>
+        {senders.map((sender) => (
+          <div key={sender.key} className={styles.cheerItem}>
+            <div className={styles.cheerPhotoRing} style={{ borderColor: sender.color }}>
+              {parentPhotos[sender.key] ? (
+                <img src={parentPhotos[sender.key]} alt={sender.label} className={styles.cheerPhoto} />
+              ) : (
+                <span className={styles.cheerInitial}>{sender.label}</span>
+              )}
+            </div>
+            <div className={styles.cheerBubbleWrapper}>
+              <span className={styles.cheerLabel} style={{ color: sender.color }}>{sender.label}</span>
+              <div className={styles.cheerBubble}>
+                {cheers[sender.key] || DEFAULT_CHEER}
               </div>
-              <span className={styles.storyName}>{label}</span>
-            </button>
-          );
-        })}
+            </div>
+          </div>
+        ))}
       </div>
-
-      {selected && (
-        <CheerModal
-          sender={selected.sender}
-          message={selected.message}
-          isOpen={true}
-          onClose={() => setSelected(null)}
-        />
-      )}
-    </>
+    </div>
   );
 }
