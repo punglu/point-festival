@@ -1,0 +1,57 @@
+.section {
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.playerName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1E293B;
+  margin-bottom: 12px;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.statRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: #64748B;
+}
+
+.statEarned  { font-size: 13px; font-weight: 600; color: #059669; }
+.statSpent   { font-size: 13px; font-weight: 600; color: #DC2626; }
+.statBalance { font-size: 14px; font-weight: 700; color: #4338CA; }
+
+.divider {
+  border: none;
+  border-top: 1px solid #F1F5F9;
+  margin: 8px 0;
+}

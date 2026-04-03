@@ -27,11 +27,14 @@ export default function UserDashboard() {
   const {
     player, selectedDate,
     cheers, feedbacks, deductions, dailyPoint,
-    activeTab, activeNav, deductOpen, loading, levelThresholds, senders, parentPhotos,
+    activeTab, activeNav, deductOpen, loading, levelThresholds, senders, parentPhotos, playerPhoto, playerStatusMsg, allPlayers,
     myProposals, activeMissions, totalDeducted, pendingPoints,
     setSelectedDate, setActiveTab, setActiveNav, setDeductOpen,
     quickDate, requestApproval, proposeMission, sendFeedback,
   } = useDashboard();
+
+  // 나에게 온 메세지 뱃지 카운트
+  const chatBadgeCount = feedbacks.filter(fb => fb.recipient === player?.name).length;
 
   const cheerData = senders.reduce<Record<string, string>>((acc, s) => {
     const found = cheers.find(c => c.sender === s.key);
@@ -44,7 +47,6 @@ export default function UserDashboard() {
     navigate('/');
   };
 
-  // 승인 요청 성공 시 confetti 트리거
   const handleApproval = async (missionId: number) => {
     await requestApproval(missionId);
     setShowConfetti(true);
@@ -52,61 +54,61 @@ export default function UserDashboard() {
   };
 
   return (
-    <div className={styles.container}>
-      {/* Confetti 오버레이 (최상위) */}
+    <div className={styles.dashboardContainer}>
       <ConfettiEffect trigger={showConfetti} />
 
-      {/* 헤더 */}
-      <header className={styles.header}>
-        <span className={styles.headerTitle}>⛏️ 포인트 잔치</span>
-        <button className={styles.logoutBtn} onClick={handleLogout}>로그아웃</button>
-      </header>
+      {/* 통합 헤더 (Indigo) */}
+      <div className={styles.header}>
+        <div className={styles.headerTop}>
+          <div className={styles.brand}>
+            <img src="/favicon-192x192.png" alt="포인트 잔치" className={styles.brandLogo} />
+            <span className={styles.brandName}>포인트 잔치</span>
+          </div>
+          <button className={styles.logoutBtn} onClick={handleLogout}>로그아웃</button>
+        </div>
 
-      {/* 날짜 선택 */}
-      <DateSelector
-        selectedDate={selectedDate}
-        quickDate={quickDate}
-        setSelectedDate={setSelectedDate}
-      />
+        <DateSelector
+          selectedDate={selectedDate}
+          quickDate={quickDate}
+          setSelectedDate={setSelectedDate}
+        />
 
-      {/* 메인 콘텐츠 */}
+        <ProfileCard
+          player={player}
+          photo={playerPhoto}
+          initialStatusMsg={playerStatusMsg}
+          dailyPoint={dailyPoint}
+          pendingPoints={pendingPoints}
+          levelThresholds={levelThresholds}
+          onStatClick={type => setStatModal(type)}
+        />
+      </div>
+
       {activeNav === 'home' ? (
-        <div className={styles.scrollArea}>
-          {/* 응원 섹션 */}
+        <div className={styles.contentArea}>
           <StoryCards cheers={cheerData} parentPhotos={parentPhotos} senders={senders} />
 
-          {/* 프로필 카드 + ExpBar */}
-          <ProfileCard
-            player={player}
-            dailyPoint={dailyPoint}
-            pendingPoints={pendingPoints}
-            levelThresholds={levelThresholds}
-            onStatClick={type => setStatModal(type)}
-          />
-
-          {/* 탭 바 */}
-          <div className={styles.tabBar}>
+          <div className={styles.tabContainer}>
             <button
-              className={`${styles.tabBtn} ${activeTab === 'missions' ? styles.tabBtnActive : ''}`}
+              className={`${styles.tab} ${activeTab === 'missions' ? styles.tabActive : ''}`}
               onClick={() => setActiveTab('missions')}
-            >
-              미션
-            </button>
+            >미션</button>
             <button
-              className={`${styles.tabBtn} ${activeTab === 'proposal' ? styles.tabBtnActive : ''}`}
+              className={`${styles.tab} ${activeTab === 'proposal' ? styles.tabActive : ''}`}
               onClick={() => setActiveTab('proposal')}
-            >
-              제안
-            </button>
-            <button
-              className={`${styles.tabBtn} ${activeTab === 'feedback' ? styles.tabBtnActive : ''}`}
-              onClick={() => setActiveTab('feedback')}
-            >
-              답장
-            </button>
+            >제안</button>
+            <div className={styles.tabWrapper}>
+              <button
+                className={`${styles.tab} ${activeTab === 'feedback' ? styles.tabActive : ''}`}
+                style={{ width: '100%' }}
+                onClick={() => setActiveTab('feedback')}
+              >대화하기</button>
+              {chatBadgeCount > 0 && (
+                <span className={styles.tabBadge}>{chatBadgeCount}</span>
+              )}
+            </div>
           </div>
 
-          {/* 탭 콘텐츠 */}
           {loading ? (
             <div className={styles.loading}>불러오는 중...</div>
           ) : (
@@ -121,13 +123,17 @@ export default function UserDashboard() {
                 <FeedbackSection
                   feedbacks={feedbacks}
                   sendFeedback={sendFeedback}
+                  playerId={player?.id ?? 0}
                   playerName={player?.name ?? ''}
+                  playerPhoto={playerPhoto}
+                  parentPhotos={parentPhotos}
+                  senders={senders}
+                  allPlayers={allPlayers}
                 />
               )}
             </>
           )}
 
-          {/* 차감 아코디언 */}
           <DeductionAccordion
             deductions={deductions}
             totalDeducted={totalDeducted}
@@ -136,15 +142,13 @@ export default function UserDashboard() {
           />
         </div>
       ) : (
-        <div className={styles.scrollArea}>
+        <div className={styles.contentArea}>
           <RankingView currentPlayerId={player?.id ?? 0} />
         </div>
       )}
 
-      {/* 하단 네비 */}
       <BottomNav activeNav={activeNav} setActiveNav={setActiveNav} />
 
-      {/* 포인트 통계 모달 */}
       <StatDetailModal
         type={statModal}
         isOpen={statModal !== null}

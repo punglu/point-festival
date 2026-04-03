@@ -1,0 +1,116 @@
+.card {
+  background: #fff;
+  border-radius: 12px;
+  border: 0.5px solid #E2E8F0;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E293B;
+  flex-shrink: 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: #64748B;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 140px;
+  margin-bottom: 12px;
+}
+
+.barCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.barWrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+}
+
+.bar {
+  flex: 1;
+  max-width: 22px;
+  border-radius: 3px 3px 0 0;
+  transition: height 0.4s ease;
+  min-height: 0;
+}
+
+.dayLabel {
+  font-size: 10px;
+  color: #94A3B8;
+  margin-top: 4px;
+}
+
+.dayLabelToday {
+  composes: dayLabel;
+  color: #4338CA;
+  font-weight: 700;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.footerLabel {
+  font-size: 11px;
+  color: #64748B;
+  flex: 1;
+}
+
+.footerValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #4338CA;
+}
+
+.footerSub {
+  font-size: 11px;
+  color: #94A3B8;
+}

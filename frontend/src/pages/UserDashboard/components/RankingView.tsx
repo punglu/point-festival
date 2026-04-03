@@ -60,8 +60,7 @@ export default function RankingView({ currentPlayerId }: Props) {
       {entries.map((entry, i) => (
         <div
           key={entry.player.id}
-          className={styles.progressCard}
-          style={entry.player.id === currentPlayerId ? { borderColor: 'var(--accent, #60a5fa)' } : undefined}
+          className={`${styles.progressCard} ${entry.player.id === currentPlayerId ? styles.progressCardHighlight : ''}`}
         >
           <span className={styles.progressRank}>{i + 1}</span>
           <span className={styles.progressName}>

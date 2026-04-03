@@ -1,9 +1,10 @@
 from datetime import date
 
-from fastapi import APIRouter, Depends, Header, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
+from app.dependencies import get_current_user
 from app.domains.mission.schema import MissionCreate, MissionUpdate, MissionPropose, MissionResponse
 from app.domains.mission.service import (
     get_missions_by_player_date, create_mission, update_mission,
@@ -34,10 +35,10 @@ async def edit_mission(
     mission_id: int,
     data: MissionUpdate,
     db: AsyncSession = Depends(get_db),
-    x_player_role: str = Header(default="player", alias="X-Player-Role"),
+    user: dict = Depends(get_current_user),
 ):
-    """미션 수정 (상태 변경 포함). X-Player-Role 헤더로 역할 전달 — Phase 4 JWT로 대체 예정"""
-    return await update_mission(db, mission_id, data, role=x_player_role)
+    """미션 수정 (상태 변경 포함). JWT role 기반 권한 검증"""
+    return await update_mission(db, mission_id, data, role=user.get("role", "player"))
 
 
 @router.delete("/{mission_id}", status_code=204)
@@ -60,4 +61,15 @@ async def copy_missions(
     db: AsyncSession = Depends(get_db),
 ):
     """미션 일괄 복제"""
+    return await batch_copy_missions(db, player_id, from_date, to_date)
+
+
+@router.post("/batch-copy", response_model=list[MissionResponse], status_code=201)
+async def batch_copy_missions_alias(
+    player_id: int = Query(...),
+    from_date: date = Query(...),
+    to_date: date = Query(...),
+    db: AsyncSession = Depends(get_db),
+):
+    """미션 일괄 복제 (batch-copy alias)"""
     return await batch_copy_missions(db, player_id, from_date, to_date)

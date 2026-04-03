@@ -1,0 +1,238 @@
+.view {
+  padding: 24px;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1E1B4B;
+  margin: 0;
+}
+
+.senderBadge {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4338CA;
+  background: #EEF2FF;
+  border-radius: 20px;
+  padding: 4px 12px;
+}
+
+/* ── 날짜 선택 ── */
+.dateRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dateBtn {
+  background: #EEF2FF;
+  border: 1px solid #C7D2FE;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #4338CA;
+  cursor: pointer;
+}
+.dateBtn:hover { background: #E0E7FF; }
+
+.dateInput {
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #374151;
+  outline: none;
+}
+.dateInput:focus { border-color: #4338CA; }
+
+/* ── 채팅 영역 ── */
+.chatArea {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 200px;
+}
+
+.empty {
+  text-align: center;
+  color: #9CA3AF;
+  font-size: 14px;
+  padding: 40px 0;
+}
+
+/* ── 스레드 ── */
+.thread {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #E2E8F0;
+}
+.thread:last-child { border-bottom: none; }
+
+/* ── 행 레이아웃 ── */
+.rowLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.rowRight {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ── 아바타 ── */
+.avatarMe,
+.avatarOther {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.avatarOther {
+  background: #E0E7FF;
+  color: #4338CA;
+}
+
+.avatarMe {
+  background: #FCE7F3;
+  color: #DB2777;
+}
+
+/* ── 말풍선 ── */
+.bubblePlayer,
+.bubbleMe,
+.bubbleOther {
+  max-width: 70%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bubblePlayer {
+  background: #EEF2FF;
+  border-top-left-radius: 2px;
+}
+
+.bubbleMe {
+  background: #FCE7F3;
+  border-top-right-radius: 2px;
+}
+
+.bubbleOther {
+  background: #F3F4F6;
+  border-top-left-radius: 2px;
+}
+
+.bubbleSender {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6B7280;
+}
+
+.bubbleText {
+  margin: 0;
+  font-size: 13px;
+  color: #111827;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+/* ── 답장 입력 ── */
+.replyToggle {
+  align-self: flex-start;
+  margin-left: 42px;
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: #818CF8;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-family: inherit;
+}
+.replyToggle:hover { color: #4338CA; }
+
+.replyInputWrap {
+  margin-left: 42px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.replyAs {
+  font-size: 11px;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.replyInputRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.replyInput {
+  flex: 1;
+  border: 1.5px solid #C7D2FE;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #111827;
+  outline: none;
+}
+.replyInput:focus { border-color: #4338CA; }
+
+.btnSend {
+  background: #4338CA;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.btnSend:disabled { background: #E0E0E0; cursor: not-allowed; }
+
+.btnCancel {
+  background: none;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+  color: #6B7280;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}

@@ -1,0 +1,116 @@
+import { useState, useEffect, useCallback } from 'react';
+import { adminApi } from '../api/adminApi';
+import { useCycle } from './useCycle';
+import { useAdminToast } from './useAdminToast';
+import type {
+  Player, Mission, Notification, DailyPoint,
+  DashboardStats, MissionRankItem,
+} from '../types/admin.types';
+
+export function useAdminData() {
+  const cycle = useCycle();
+  const { showToast } = useAdminToast();
+  const [players,       setPlayers]       = useState<Player[]>([]);
+  const [missions,      setMissions]      = useState<Mission[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [dailyPoints,   setDailyPoints]   = useState<DailyPoint[]>([]);
+  const [loading,       setLoading]       = useState(true);
+
+  const loadDashboardData = useCallback(async (signal?: AbortSignal) => {
+    setLoading(true);
+    try {
+      // FE-01: 날짜 필터 없이 전체 미션 조회 (승인대기 포함)
+      const [playersRes, missionsRes, notifsRes] = await Promise.all([
+        adminApi.getPlayers(signal),
+        adminApi.getMissions({}, signal),
+        adminApi.getNotifications(signal),
+      ]);
+      if (signal?.aborted) return;
+
+      setPlayers(playersRes.data);
+      setMissions(missionsRes.data);
+      setNotifications(notifsRes.data);
+
+      // 각 플레이어별 주기 포인트 조회
+      const pointPromises = playersRes.data.map((p) =>
+        adminApi.getDailyPointsRange(p.id, cycle.startDate, cycle.endDate, signal)
+      );
+      const pointResults = await Promise.all(pointPromises);
+      if (signal?.aborted) return;
+      setDailyPoints(pointResults.flatMap((r) => r.data));
+    } catch (err) {
+      if ((err as { name?: string }).name !== 'CanceledError') {
+        console.error('대시보드 데이터 로드 실패:', err);
+      }
+    } finally {
+      if (!signal?.aborted) setLoading(false);
+    }
+  }, [cycle.startDate, cycle.endDate]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    loadDashboardData(controller.signal);
+    return () => controller.abort();
+  }, [loadDashboardData]);
+
+  // ── 대시보드 통계 파생 ──
+  const today = new Date().toISOString().slice(0, 10);
+  const stats: DashboardStats = {
+    totalActiveMissions: missions.filter((m) => m.status === 'active').length,
+    pendingApproval:     missions.filter((m) => m.status === 'pending_approval').length,
+    completedThisWeek:   missions.filter((m) =>
+      m.status === 'completed' && m.date >= cycle.startDate && m.date <= cycle.endDate
+    ).length,
+    totalPointsIssued:   dailyPoints.reduce((sum, dp) => sum + dp.earned, 0),
+    todayNewMissions:    missions.filter((m) => m.date === today).length,
+    weeklyGoal:          15,
+  };
+
+  // ── 미션 랭킹 파생 (완료 미션 기준) ──
+  const missionRanking: MissionRankItem[] = (() => {
+    const countMap: Record<string, { total: number; players: Record<string, number> }> = {};
+    missions
+      .filter((m) => m.status === 'completed')
+      .forEach((m) => {
+        const playerName = players.find((p) => p.id === m.player_id)?.name ?? '?';
+        if (!countMap[m.text]) countMap[m.text] = { total: 0, players: {} };
+        countMap[m.text].total++;
+        countMap[m.text].players[playerName] = (countMap[m.text].players[playerName] ?? 0) + 1;
+      });
+    return Object.entries(countMap)
+      .map(([text, data]) => ({ text, totalCount: data.total, playerCounts: data.players }))
+      .sort((a, b) => b.totalCount - a.totalCount)
+      .slice(0, 8);
+  })();
+
+  const unreadNotifCount = notifications.filter((n) => !n.is_read).length;
+
+  const reload = useCallback(() => {
+    const controller = new AbortController();
+    loadDashboardData(controller.signal);
+  }, [loadDashboardData]);
+
+  // ── 승인/거절 액션 ──
+  const approveMission = async (id: number) => {
+    try {
+      await adminApi.updateMissionStatus(id, 'completed');
+      showToast('success', '승인 완료!');
+      reload();
+    } catch { showToast('error', '처리 실패'); }
+  };
+
+  const rejectMission = async (id: number, reason = '') => {
+    try {
+      await adminApi.updateMissionStatus(id, 'rejected', reason || undefined);
+      showToast('success', '거절 처리됨');
+      reload();
+    } catch { showToast('error', '처리 실패'); }
+  };
+
+  return {
+    players, missions, notifications, dailyPoints,
+    stats, missionRanking, unreadNotifCount,
+    cycle, loading, reload,
+    approveMission, rejectMission,
+  };
+}

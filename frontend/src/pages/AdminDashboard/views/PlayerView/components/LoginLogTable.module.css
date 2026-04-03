@@ -1,0 +1,122 @@
+.section {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #F1F5F9;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.playerTabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 6px;
+  background: #F9FAFB;
+  color: #6B7280;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.12s;
+}
+.tab:hover { border-color: #6366F1; color: #4338CA; }
+
+.tabActive {
+  composes: tab;
+  background: #EEF2FF;
+  border-color: #6366F1;
+  color: #4338CA;
+  font-weight: 600;
+}
+
+.dateRange {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dateInput {
+  padding: 3px 6px;
+  font-size: 11px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 6px;
+  outline: none;
+  font-family: inherit;
+  color: #374151;
+}
+.dateInput:focus { border-color: #6366F1; }
+
+.dateSep {
+  font-size: 11px;
+  color: #9CA3AF;
+}
+
+.empty {
+  padding: 32px;
+  text-align: center;
+  color: #94A3B8;
+  font-size: 13px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid #F8FAFC;
+}
+.row:last-child { border-bottom: none; }
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dotSuccess { composes: dot; background: #059669; }
+.dotFail    { composes: dot; background: #DC2626; }
+
+.playerName {
+  font-size: 13px;
+  color: #1E293B;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+.badgeSuccess { composes: badge; color: #059669; background: #D1FAE5; }
+.badgeFail    { composes: badge; color: #DC2626; background: #FEF2F2; }
+
+.date {
+  font-size: 11px;
+  color: #94A3B8;
+}

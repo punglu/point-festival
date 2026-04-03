@@ -77,43 +77,48 @@ export default function PinInputView({ player, onBack, onLoginError }: Props) {
         }, 400);
       }
     },
-    [player.id, setLogin, navigate],
+    [player.id, setLogin, navigate, onLoginError],
   );
 
-  const renderAvatar = () => {
+  const renderAvatarContent = () => {
     if (player.photo) {
       const src = player.photo.startsWith('data:')
         ? player.photo
         : `data:image/jpeg;base64,${player.photo}`;
-      return <img src={src} alt={player.name} className={styles.playerPhoto} />;
+      return <img src={src} alt={player.name} className={styles.pinAvatarPhoto} />;
     }
     return (
-      <div
-        className={styles.playerInitial}
+      <span
+        className={styles.pinAvatarInitial}
         style={{ backgroundColor: color.bg, color: color.text }}
       >
         {player.name.charAt(0)}
-      </div>
+      </span>
     );
   };
 
   return (
-    <div className={styles.pinViewWrapper}>
+    <div className={styles.authView}>
+      {/* Indigo 헤더: 플레이어 아바타 + 이름 */}
       <div className={styles.pinHeader}>
-        {renderAvatar()}
-        <span className={styles.playerName}>{player.name}</span>
+        <div className={styles.pinAvatar}>
+          {renderAvatarContent()}
+        </div>
+        <div className={styles.pinPlayerName}>{player.name}</div>
+        <div className={styles.pinPrompt}>PIN 번호를 입력하세요</div>
       </div>
 
-      <p className={styles.subtitle}>PIN 번호를 입력하세요</p>
+      {/* PIN 슬롯 + 키패드 */}
+      <div className={styles.pinBody}>
+        <PinInput onComplete={handlePinComplete} hasError={hasError} resetKey={resetKey} />
 
-      <PinInput onComplete={handlePinComplete} hasError={hasError} resetKey={resetKey} />
+        {error && <div className={styles.loginError}>{error}</div>}
+        {lockedMessage && <div className={styles.loginLocked}>{lockedMessage}</div>}
 
-      {error && <div className={styles.loginError}>{error}</div>}
-      {lockedMessage && <div className={styles.loginLocked}>{lockedMessage}</div>}
-
-      <button className={styles.backLink} onClick={onBack}>
-        ← 다른 플레이어 선택
-      </button>
+        <button className={styles.backLink} onClick={onBack}>
+          ← 다른 플레이어 선택
+        </button>
+      </div>
     </div>
   );
 }

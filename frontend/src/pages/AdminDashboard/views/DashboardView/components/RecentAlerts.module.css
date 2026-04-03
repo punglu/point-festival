@@ -1,0 +1,100 @@
+.card {
+  background: #fff;
+  border-radius: 12px;
+  border: 0.5px solid #E2E8F0;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E293B;
+  flex: 1;
+}
+
+.viewAll {
+  font-size: 11px;
+  color: #4338CA;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  transition: opacity 0.15s;
+}
+
+.viewAll:hover { opacity: 0.7; }
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #F8FAFC;
+}
+
+.item:last-child { border-bottom: none; }
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4338CA;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.dotRead {
+  composes: dot;
+  background: #CBD5E1;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notifTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1E293B;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notifBody {
+  font-size: 11px;
+  color: #64748B;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.time {
+  font-size: 11px;
+  color: #94A3B8;
+  flex-shrink: 0;
+}
+
+.empty {
+  font-size: 13px;
+  color: #94A3B8;
+  text-align: center;
+  padding: 20px 0;
+}

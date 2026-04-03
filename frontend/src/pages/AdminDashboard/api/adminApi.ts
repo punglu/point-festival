@@ -1,151 +1,115 @@
 import { httpClient } from '../../../shared/api/httpClient';
+import type {
+  Player, Mission, Deduction, DailyPoint,
+  Notification, AppConfig, LoginLog, CheerMessage,
+  FeedbackItem, FeedbackReplyItem,
+} from '../types/admin.types';
 
-// === Types ===
-export interface MissionItem {
-  id: number;
-  player_id: number;
-  date: string;
-  text: string;
-  point: number;
-  status: string;
-  sender: string | null;
-  msg: string | null;
-  proposed_by: string | null;
-  proposal_reason: string | null;
-  rejection_reason: string | null;
-  sort_order: number;
-}
-
-export interface MissionCloneRequest {
-  source_player_id: number;
-  source_date: string;
-  target_date: string;
-  point_overrides?: Record<number, number> | null;
-}
-
-export interface MissionCloneResponse {
+interface MissionCloneResponse {
   cloned_count: number;
-  missions: MissionItem[];
+  missions: Mission[];
 }
 
-export interface DeductionItem {
-  id: number;
-  player_id: number;
-  date: string;
-  reason: string;
-  amount: number;
-}
-
-export interface DailyPointItem {
-  id: number;
-  player_id: number;
-  date: string;
-  earned: number;
-  spent: number;
-  balance: number;
-}
-
-export interface CheerItem {
-  id: number;
-  date: string;
-  sender: string;
-  message: string;
-}
-
-export interface PlayerItem {
-  id: number;
-  name: string;
-  role: string;
-  last_login: number | null;
-  is_locked: boolean;
-}
-
-export interface NotificationItem {
-  id: number;
-  type: string;
-  player_id: number | null;
-  title: string;
-  body: string | null;
-  is_read: boolean;
-  created_at: string;
-}
-
-export interface FeedbackReplyItem {
-  id: number;
-  feedback_id: number;
-  sender: string;
-  text: string;
-  created_at: string;
-}
-
-export interface FeedbackItem {
-  id: number;
-  player_id: number;
-  date: string;
-  msg: string;
-  replies: FeedbackReplyItem[];
-}
-
-export interface ConfigItem {
-  id: number;
-  key: string;
-  value: string | null;
-}
-
-// === API Functions ===
 export const adminApi = {
-  // ─── 미션 ────────────────────────────────────────────────
-  createMission: (data: Omit<MissionItem, 'id' | 'proposed_by' | 'proposal_reason' | 'rejection_reason'>, signal?: AbortSignal) =>
-    httpClient.post<MissionItem>('/api/admin/missions', data, { signal }),
+  // ===== 플레이어 =====
+  getPlayers: (signal?: AbortSignal) =>
+    httpClient.get<Player[]>('/api/admin/players', { signal }),
 
-  updateMission: (id: number, data: Partial<MissionItem>, signal?: AbortSignal) =>
-    httpClient.patch<MissionItem>(`/api/admin/missions/${id}`, data, { signal }),
+  updatePlayer: (id: number, data: Partial<Pick<Player, 'name' | 'status_msg' | 'photo'>>, signal?: AbortSignal) =>
+    httpClient.patch<Player>(`/api/admin/players/${id}`, data, { signal }),
+
+  lockPlayer: (id: number, isLocked: boolean, signal?: AbortSignal) =>
+    httpClient.patch<Player>(`/api/admin/players/${id}/lock`, { is_locked: isLocked }, { signal }),
+
+  changePlayerPin: (id: number, pin: string, signal?: AbortSignal) =>
+    httpClient.patch(`/api/admin/players/${id}/pin`, { pin }, { signal }),
+
+  createPlayer: (data: { name: string; pin: string; role?: string }, signal?: AbortSignal) =>
+    httpClient.post<Player>('/api/players', data, { signal }),
+
+  deletePlayer: (id: number, signal?: AbortSignal) =>
+    httpClient.delete(`/api/players/${id}`, { signal }),
+
+  // ===== 미션 =====
+  getMissions: (params: { player_id?: number; date?: string }, signal?: AbortSignal) =>
+    httpClient.get<Mission[]>('/api/admin/missions', { params, signal }),
+
+  createMission: (data: { player_id: number; date: string; text: string; point: number }, signal?: AbortSignal) =>
+    httpClient.post<Mission>('/api/admin/missions', data, { signal }),
+
+  updateMission: (id: number, data: Partial<Pick<Mission, 'text' | 'point' | 'status'>>, signal?: AbortSignal) =>
+    httpClient.patch<Mission>(`/api/admin/missions/${id}`, data, { signal }),
+
+  updateMissionStatus: (id: number, status: string, rejectionReason?: string, signal?: AbortSignal) =>
+    httpClient.patch<Mission>(`/api/admin/missions/${id}/status`, { status, rejection_reason: rejectionReason }, { signal }),
 
   deleteMission: (id: number, signal?: AbortSignal) =>
     httpClient.delete(`/api/admin/missions/${id}`, { signal }),
 
-  cloneMissions: (data: MissionCloneRequest, signal?: AbortSignal) =>
+  batchCopyMissions: (data: { player_id: number; source_date: string; target_date: string; mission_ids: number[] }, signal?: AbortSignal) =>
+    httpClient.post<Mission[]>('/api/admin/missions/clone-selected', data, { signal }),
+
+  cloneMissions: (data: { source_player_id: number; source_date: string; target_date: string; point_overrides?: Record<number, number> }, signal?: AbortSignal) =>
     httpClient.post<MissionCloneResponse>('/api/admin/missions/clone', data, { signal }),
 
-  // ─── 포인트 ──────────────────────────────────────────────
-  createDeduction: (data: Omit<DeductionItem, 'id'>, signal?: AbortSignal) =>
-    httpClient.post<DeductionItem>('/api/admin/deductions', data, { signal }),
+  // ===== 차감 =====
+  getDeductions: (params: { player_id?: number; date?: string }, signal?: AbortSignal) =>
+    httpClient.get<Deduction[]>('/api/admin/deductions', { params, signal }),
 
-  adjustDailyPoint: (data: { player_id: number; date: string; earned_delta: number; spent_delta: number }, signal?: AbortSignal) =>
-    httpClient.post<DailyPointItem>('/api/admin/daily-points/adjust', data, { signal }),
+  createDeduction: (data: { player_id: number; date: string; reason: string; amount: number }, signal?: AbortSignal) =>
+    httpClient.post<Deduction>('/api/admin/deductions', data, { signal }),
 
-  // ─── 응원 ────────────────────────────────────────────────
-  upsertCheer: (date: string, data: { date: string; sender: string; message: string }, signal?: AbortSignal) =>
-    httpClient.put<CheerItem>(`/api/admin/cheers/${date}`, data, { signal }),
+  updateDeduction: (id: number, data: Partial<Pick<Deduction, 'reason' | 'amount'>>, signal?: AbortSignal) =>
+    httpClient.patch<Deduction>(`/api/admin/deductions/${id}`, data, { signal }),
 
-  // ─── 플레이어 ─────────────────────────────────────────────
-  updatePlayer: (id: number, data: { name?: string; status_msg?: string; photo?: string }, signal?: AbortSignal) =>
-    httpClient.patch<PlayerItem>(`/api/admin/players/${id}`, data, { signal }),
+  deleteDeduction: (id: number, signal?: AbortSignal) =>
+    httpClient.delete(`/api/admin/deductions/${id}`, { signal }),
 
-  lockPlayer: (id: number, isLocked: boolean, signal?: AbortSignal) =>
-    httpClient.patch<PlayerItem>(`/api/admin/players/${id}/lock`, { is_locked: isLocked }, { signal }),
+  // ===== 포인트 =====
+  getDailyPoints: (params: { player_id?: number; date?: string }, signal?: AbortSignal) =>
+    httpClient.get<DailyPoint[]>('/api/admin/daily-points', { params, signal }),
 
-  // ─── 알림 ────────────────────────────────────────────────
+  getDailyPointsRange: (playerId: number, start: string, end: string, signal?: AbortSignal) =>
+    httpClient.get<DailyPoint[]>('/api/daily-points/range', { params: { player_id: playerId, start, end }, signal }),
+
+  adjustDailyPoint: (data: { player_id: number; date: string; delta: number }, signal?: AbortSignal) =>
+    httpClient.post<DailyPoint>('/api/admin/daily-points/adjust', data, { signal }),
+
+  // ===== 알림 =====
   getNotifications: (signal?: AbortSignal) =>
-    httpClient.get<NotificationItem[]>('/api/admin/notifications', { signal }),
+    httpClient.get<Notification[]>('/api/admin/notifications', { signal }),
 
-  createNotification: (data: { type: string; player_id?: number; title: string; body?: string }, signal?: AbortSignal) =>
-    httpClient.post<NotificationItem>('/api/admin/notifications', data, { signal }),
-
-  markNotificationRead: (id: number, signal?: AbortSignal) =>
+  markAsRead: (id: number, signal?: AbortSignal) =>
     httpClient.patch(`/api/admin/notifications/${id}/read`, {}, { signal }),
 
-  // ─── 피드백 ──────────────────────────────────────────────
-  getFeedbacks: (playerId: number, date: string, signal?: AbortSignal) =>
-    httpClient.get<FeedbackItem[]>('/api/admin/feedbacks', { params: { player_id: playerId, target_date: date }, signal }),
+  markAllAsRead: (signal?: AbortSignal) =>
+    httpClient.patch('/api/admin/notifications/read-all', {}, { signal }),
 
-  createReply: (feedbackId: number, data: { feedback_id: number; sender: string; text: string }, signal?: AbortSignal) =>
-    httpClient.post<FeedbackReplyItem>(`/api/admin/feedbacks/${feedbackId}/replies`, data, { signal }),
+  // ===== 설정 =====
+  getConfig: (key: string, signal?: AbortSignal) =>
+    httpClient.get<AppConfig>(`/api/configs/${key}`, { signal }),
 
-  // ─── 설정 ────────────────────────────────────────────────
-  getConfigs: (signal?: AbortSignal) =>
-    httpClient.get<ConfigItem[]>('/api/admin/configs', { signal }),
+  updateConfig: (key: string, value: string, signal?: AbortSignal) =>
+    httpClient.put<AppConfig>(`/api/admin/configs/${key}`, { value }, { signal }),
 
-  updateConfig: (key: string, value: string | null, signal?: AbortSignal) =>
-    httpClient.put<ConfigItem>(`/api/admin/configs/${key}`, { value }, { signal }),
+  // ===== 응원 메시지 =====
+  getCheers: (date: string, signal?: AbortSignal) =>
+    httpClient.get<CheerMessage[]>('/api/cheers', { params: { date }, signal }),
+
+  upsertCheer: (date: string, data: { date: string; sender: string; message: string }, signal?: AbortSignal) =>
+    httpClient.put(`/api/admin/cheers/${date}`, data, { signal }),
+
+  // ===== 가족 채팅 (피드백) =====
+  getFeedbacks: (date: string, playerId?: number, signal?: AbortSignal) =>
+    httpClient.get<FeedbackItem[]>('/api/feedbacks/', {
+      params: playerId ? { date, player_id: playerId } : { date },
+      signal,
+    }),
+
+  sendAdminReply: (data: { feedback_id: number; sender: string; text: string }, signal?: AbortSignal) =>
+    httpClient.post<FeedbackReplyItem>('/api/feedbacks/replies', data, { signal }),
+
+  // ===== 로그인 로그 =====
+  getLoginLogs: (params?: { player_id?: number; limit?: number }, signal?: AbortSignal) =>
+    httpClient.get<LoginLog[]>('/api/admin/login-logs', { params, signal }),
 };

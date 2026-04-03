@@ -16,7 +16,6 @@ export default function ExpBar({ totalPoints, levelThresholds }: ExpBarProps) {
     );
   }
 
-  // 레벨 계산: thresholds 내림차순 순회
   const levels = Object.entries(levelThresholds)
     .map(([lv, pts]) => ({ level: Number(lv), points: pts }))
     .sort((a, b) => b.points - a.points);
@@ -29,7 +28,6 @@ export default function ExpBar({ totalPoints, levelThresholds }: ExpBarProps) {
     }
   }
 
-  // 현재 레벨 → 다음 레벨 진행률
   const currentThreshold = levelThresholds[String(currentLevel)] ?? 0;
   const nextLevel = currentLevel + 1;
   const nextThreshold = levelThresholds[String(nextLevel)] ?? null;

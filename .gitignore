@@ -19,3 +19,6 @@ mc-images.tar
 
 # OS
 .DS_Store
+
+# docs
+/docs/

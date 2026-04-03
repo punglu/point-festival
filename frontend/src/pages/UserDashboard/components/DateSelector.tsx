@@ -36,7 +36,6 @@ export default function DateSelector({ selectedDate, quickDate, setSelectedDate 
         value={selectedDate}
         onChange={e => setSelectedDate(e.target.value)}
         className={styles.dateDisplay}
-        style={{ background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer' }}
       />
     </div>
   );

@@ -1,0 +1,50 @@
+.view {
+  padding: 24px;
+  max-width: 1200px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.btnPrimary {
+  padding: 8px 16px;
+  background: #4338CA;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.btnPrimary:hover { background: #3730A3; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 0;
+}
+
+.loading {
+  padding: 48px 24px;
+  text-align: center;
+  color: #94A3B8;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .view { padding: 16px; }
+  .grid { grid-template-columns: 1fr; }
+}

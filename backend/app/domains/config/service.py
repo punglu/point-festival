@@ -40,6 +40,14 @@ async def upsert_config(db: AsyncSession, key: str, data: ConfigUpdate) -> Confi
     result = await db.execute(stmt)
     existing = result.scalar_one_or_none()
 
+    if key == "point_cycle":
+        valid_cycles = {"daily", "weekly", "monthly", "quarterly", "yearly"}
+        if data.value not in valid_cycles:
+            raise HTTPException(
+                status_code=400,
+                detail=f"유효하지 않은 주기 값: '{data.value}'. 허용값: {valid_cycles}",
+            )
+
     if existing:
         existing.value = data.value
         await db.commit()

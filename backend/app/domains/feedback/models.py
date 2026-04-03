@@ -9,6 +9,7 @@ class Feedback(Base, SoftDeleteMixin, TimestampMixin):
     player_id = Column(Integer, ForeignKey("players.id", ondelete="CASCADE"), nullable=False)
     date = Column(Date, nullable=False)
     msg = Column(Text, nullable=False)
+    recipient = Column(String(50), nullable=True)
 
 
 class FeedbackReply(Base, SoftDeleteMixin):

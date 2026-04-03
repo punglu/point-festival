@@ -17,9 +17,15 @@ const STATUS_CLASS: Record<string, string> = {
   rejected: styles.statusRejected,
 };
 
+const POINT_BADGE_CLASS: Record<string, string> = {
+  completed: styles.pointBadgeCompleted,
+  active: styles.pointBadgeActive,
+  pending_approval: styles.pointBadgePending,
+};
+
 export default function MissionList({ missions, requestApproval }: Props) {
   return (
-    <div data-testid="mission-list" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div className={styles.missionList}>
       {missions.length === 0 && (
         <div className={styles.emptyMsg}>아직 등록된 미션이 없습니다.</div>
       )}
@@ -29,23 +35,17 @@ export default function MissionList({ missions, requestApproval }: Props) {
           className={`${styles.missionCard} ${m.status === 'failed' ? styles.missionsFailed : ''}`}
         >
           <div className={styles.missionHeader}>
-            <span className={styles.missionTitle}>{m.text}</span>
-            {m.status === 'failed' ? (
-              <span className={styles.pointValue}>
-                <span className={styles.coinIcon}>P</span>0
-              </span>
-            ) : (
-              <span className={styles.pointValue}>
-                <span className={styles.coinIcon}>P</span>{m.point}
-              </span>
-            )}
+            <span className={m.status === 'completed' ? styles.missionTextCompleted : styles.missionTextActive}>
+              {m.text}
+            </span>
+            <span className={`${styles.pointBadge} ${POINT_BADGE_CLASS[m.status] ?? styles.pointBadgeActive}`}>
+              {m.status === 'failed' ? '0P' : `${m.point}P`}
+            </span>
           </div>
 
-          {/* active / pending_approval / completed → 진행 바 표시 */}
           {MissionProgressBar({ status: m.status }) !== null ? (
             <MissionProgressBar status={m.status} />
           ) : (
-            // failed / rejected → 텍스트 배지 폴백
             <span className={`${styles.missionStatus} ${STATUS_CLASS[m.status] ?? ''}`}>
               {STATUS_LABEL[m.status] ?? m.status}
             </span>

@@ -42,7 +42,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className={styles.authPage}>
+    <div className={styles.authContainer}>
       {toast && (
         <Toast
           message={toast.message}

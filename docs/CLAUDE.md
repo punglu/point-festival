@@ -1,7 +1,7 @@
 # CLAUDE.md — 프로젝트 컨텍스트 (매 세션 필독)
 
 > **프로젝트:** 마인크래프트 포인트 잔치 — 모던 스택 마이그레이션
-> **최종 갱신:** 2026-03-31 | Phase 3 완료, Phase 4 설계 대기
+> **최종 갱신:** 2026-04-03 | Phase 5 완료 + 핫픽스 3건 적용, Phase 6 설계 대기
 > **이 파일은 프로젝트의 SSOT입니다. 매 세션 시작 시 반드시 읽으세요.**
 
 ---
@@ -55,7 +55,7 @@
 - **CSS Modules 강제**: 모든 스타일은 `.module.css` (global.css, reset.css만 예외). 인라인 style={{}} 최소화 (파일당 5개 미만)
 - **Shared 승격 규칙**: 2개+ 페이지에서 사용될 때만 `src/shared/`로 이동
 - **테마 격리**: `[data-domain]` 속성 기반 CSS Variable 분기 (다크/라이트)
-- **AbortController**: useEffect 내 API 호출 시 cleanup에 abort() 필수 (Race Condition 방지)
+- **AbortController**: useEffect 내 API 호출 시 cleanup에 abort() 필수. 폼 제출 API 호출에도 signal 전달 필수 (Race Condition 방지)
 
 ### 인프라
 - **Docker 3-Tier**: Frontend(Nginx) / Backend(FastAPI) / DB(PostgreSQL) 분리
@@ -95,25 +95,28 @@ mc-point-festival/
 ├── deploy.sh                    # OrbStack → NAS 배포
 │
 ├── database/
-│   └── init.sql                 # 11 테이블 + Seed (level.thresholds 포함)
+│   └── init.sql                 # 12 테이블 + Seed (admin_auth 포함)
 │
 ├── backend/
 │   ├── Dockerfile
 │   ├── requirements.txt
 │   └── app/
-│       ├── main.py              # FastAPI 앱 + 라우터 등록 (10개)
+│       ├── main.py              # FastAPI 앱 + 라우터 등록
 │       ├── config.py            # pydantic-settings
 │       ├── database.py          # AsyncSession
 │       ├── models/
 │       │   ├── base.py          # Base + Mixin
-│       │   └── all_models.py    # Junction Hub (10개 모델)
+│       │   └── all_models.py    # Junction Hub (11개 모델)
 │       └── domains/
-│           ├── auth/            # ✅ Phase 1
+│           ├── auth/            # ✅ Phase 1 + Phase 5
+│           │   ├── router.py    # POST /login + POST /admin/login
+│           │   ├── service.py   # authenticate_player + authenticate_admin
+│           │   ├── schema.py    # LoginRequest/Response + AdminLoginRequest/Response
+│           │   ├── models.py    # PlayerAuth + AdminAuth
+│           │   └── dependencies.py  # get_current_user(player) + get_current_admin
 │           ├── player/          # ✅ Phase 1 + Phase 3 PATCH 추가
-│           │   ├── router.py    # GET + PATCH
-│           │   ├── service.py   # get_players + update_player
-│           │   ├── schema.py    # PlayerListItem + PlayerUpdate
-│           │   └── models.py
+│           ├── admin/           # ✅ Phase 4
+│           │   └── router.py    # /api/admin/* 집합 라우터 (get_current_admin 보호)
 │           ├── mission/         # ✅ Phase 2
 │           ├── cheer/           # ✅ Phase 2
 │           ├── feedback/        # ✅ Phase 2
@@ -128,43 +131,66 @@ mc-point-festival/
 │   ├── nginx.conf
 │   └── src/
 │       ├── main.tsx
-│       ├── App.tsx              # Router + ProtectedRoute + data-domain 래퍼
+│       ├── App.tsx              # Router + ProtectedRoute + AdminProtectedRoute
 │       ├── styles/
 │       │   ├── reset.css
 │       │   └── global.css       # CSS Variables + 테마 격리
 │       ├── shared/
 │       │   ├── api/httpClient.ts
-│       │   ├── stores/useAuthStore.ts
-│       │   └── components/Button/
+│       │   ├── stores/useAuthStore.ts  # setLogin + adminLogin + logout
+│       │   ├── utils/compressImage.ts  # Canvas 기반 이미지 압축 (200px, JPEG 75%)
+│       │   └── components/
+│       │       ├── Button/
+│       │       └── PhotoUpload/        # 재사용 사진 업로드 컴포넌트
 │       └── pages/
-│           ├── Auth/            # ✅ Phase 1
-│           │   ├── index.tsx
+│           ├── Auth/            # ✅ Phase 1 + Phase 5 (Login Hub 리팩토링)
+│           │   ├── index.tsx    # 3모드 허브 (select/pin/admin)
 │           │   ├── Auth.module.css
 │           │   ├── components/
-│           │   ├── hooks/
-│           │   └── api/
-│           └── UserDashboard/   # ✅ Phase 3
+│           │   │   ├── PlayerSelectView.tsx   # 캐릭터 카드 그리드
+│           │   │   ├── PlayerCard.tsx         # 사진/이니셜 폴백 카드
+│           │   │   ├── PinInputView.tsx       # PIN 입력 화면
+│           │   │   ├── AdminLoginView.tsx     # ID/PW 관리자 로그인
+│           │   │   ├── LoginOverlay.tsx       # (레거시 유지)
+│           │   │   ├── PinInput.tsx
+│           │   │   └── PlayerSelector.tsx
+│           │   ├── hooks/useAuth.ts
+│           │   └── api/authApi.ts             # login + adminLogin + getPlayers(signal)
+│           ├── UserDashboard/   # ✅ Phase 3
+│           │   ├── index.tsx
+│           │   ├── UserDashboard.module.css
+│           │   ├── components/
+│           │   │   ├── DateSelector.tsx
+│           │   │   ├── ProfileCard.tsx
+│           │   │   ├── StoryCards.tsx
+│           │   │   ├── MissionList.tsx
+│           │   │   ├── MissionProposal.tsx
+│           │   │   ├── FeedbackSection.tsx
+│           │   │   ├── DeductionAccordion.tsx
+│           │   │   ├── RankingView.tsx
+│           │   │   ├── BottomNav.tsx
+│           │   │   ├── StatDetailModal.tsx
+│           │   │   ├── CheerModal.tsx
+│           │   │   ├── ExpBar.tsx
+│           │   │   ├── MissionProgressBar.tsx
+│           │   │   └── ConfettiEffect.tsx
+│           │   ├── hooks/useDashboard.ts
+│           │   └── api/dashboardApi.ts
+│           └── AdminDashboard/  # ✅ Phase 4
 │               ├── index.tsx
-│               ├── UserDashboard.module.css
+│               ├── AdminDashboard.module.css
 │               ├── components/
-│               │   ├── DateSelector.tsx
-│               │   ├── ProfileCard.tsx
-│               │   ├── StoryCards.tsx
-│               │   ├── MissionList.tsx
-│               │   ├── MissionProposal.tsx
-│               │   ├── FeedbackSection.tsx
-│               │   ├── DeductionAccordion.tsx
-│               │   ├── RankingView.tsx
-│               │   ├── BottomNav.tsx
-│               │   ├── StatDetailModal.tsx
-│               │   ├── CheerModal.tsx
-│               │   ├── ExpBar.tsx
-│               │   ├── MissionProgressBar.tsx
-│               │   └── ConfettiEffect.tsx
+│               │   ├── AdminNav.tsx
+│               │   ├── MissionManager.tsx
+│               │   ├── MissionCloneModal.tsx
+│               │   ├── PointManager.tsx
+│               │   ├── PlayerManager.tsx
+│               │   ├── CheerEditor.tsx
+│               │   ├── FeedbackViewer.tsx
+│               │   ├── NotificationManager.tsx
+│               │   └── ConfigManager.tsx
 │               ├── hooks/
-│               │   └── useDashboard.ts
 │               └── api/
-│                   └── dashboardApi.ts
 │
 └── _legacy/                     # ✅ Phase 1에서 이동 완료
     ├── index.html
@@ -190,6 +216,7 @@ mc-point-festival/
 | 8 | mc_notifications | notification | notifications | ✅ 2 |
 | 9 | mc_config | config | app_configs | ✅ 2 |
 | 10 | mc_login_logs | login_log | login_logs | ✅ 2 |
+| 11 | — (신규) | auth | admin_auth | ✅ 5 |
 
 **mc_party_data** (레거시) → players + daily_points로 흡수, 별도 테이블 없음.
 
@@ -202,10 +229,11 @@ mc-point-festival/
 | **1** | **Scaffolding + Auth** | **✅ 완료** |
 | **2** | **Core Domains BE (8개 도메인 CRUD)** | **✅ 완료** |
 | **3** | **User Dashboard FE (user.html 마이그레이션)** | **✅ 완료** |
-| 4 | Admin Dashboard BE+FE (RBAC, 미션관리) | 대기 |
-| 5 | Home Page + Legacy (index.html 다크테마) | 대기 |
-| 6 | Data Migration + E2E (Firebase→PostgreSQL ETL) | 대기 |
-| 7 | Production Deploy (NAS 배포, DNS, SSL) | 대기 |
+| **4** | **Admin Dashboard BE+FE (RBAC, 미션관리)** | **✅ 완료** |
+| **5** | **Login Hub + Admin 인증 분리** | **✅ 완료** |
+| 6 | Home Page + Legacy (index.html 다크테마) | 대기 |
+| 7 | Data Migration + E2E (Firebase→PostgreSQL ETL) | 대기 |
+| 8 | Production Deploy (NAS 배포, DNS, SSL) | 대기 |
 
 ---
 
@@ -279,14 +307,131 @@ mc-point-festival/
 
 ---
 
-## 11. Phase 4 Task 목록 (다음)
+## 11. Phase 4 완료 Task 목록 (아카이브)
 
-> Phase 4 설계 미착수. 아래는 CLAUDE.md v2 기준 Phase 정의입니다.
-> **Phase 4: Admin Dashboard BE+FE (RBAC, 미션관리)**
+| Task ID | 작업 | 상태 |
+|---|---|---|
+| P4-001 ~ P4-N | Admin Dashboard BE (admin 집합 라우터, RBAC) | ✅ 완료 |
+| P4-N+1 ~ P4-M | Admin Dashboard FE (9개 컴포넌트, AdminDashboard.module.css) | ✅ 완료 |
+| P4-FIX-1 | init.sql is_locked 컬럼 / healthcheck / CSS Module 이관 | ✅ 완료 |
+
+**QA 결과:** Codex PASS (P4-FIX-1 핫픽스 후)
+
+### Phase 4 확립된 패턴
+- **Admin 집합 라우터**: `admin/router.py`가 각 도메인 service를 직접 import해 `/api/admin/*` 제공
+- **RBAC**: `get_current_admin` 의존성으로 admin_auth 토큰 전용 보호 (Phase 5 hotfix에서 확정)
+- **AdminProtectedRoute**: `isLoggedIn && isAdmin` 검사 + `<Navigate to="/" replace />`
 
 ---
 
-## 12. 보고 형식
+## 12. Phase 5 완료 Task 목록 (아카이브)
+
+### Step 1: BE — Admin 인증 기반 구축
+| Task ID | 작업 | 상태 |
+|---|---|---|
+| P5-001 | init.sql: admin_auth 테이블 + Seed (dad/mom, bcrypt) | ✅ 완료 |
+| P5-002 | AdminAuth 모델 (SoftDeleteMixin) | ✅ 완료 |
+| P5-003 | AdminLoginRequest / AdminLoginResponse 스키마 | ✅ 완료 |
+| P5-004 | authenticate_admin 서비스 (RAW SQL 주석, bcrypt 검증) | ✅ 완료 |
+| P5-005 | POST /api/auth/admin/login 라우트 | ✅ 완료 |
+| P5-006 | all_models.py AdminAuth import 추가 | ✅ 완료 |
+| P5-007 | Step 1 빌드 검증 | ✅ 완료 |
+
+### Step 2: FE — Login Hub
+| Task ID | 작업 | 상태 |
+|---|---|---|
+| P5-008 | authApi.ts: adminLogin 함수 + AdminLoginResponse 타입 | ✅ 완료 |
+| P5-009 | useAuthStore: adminDisplayName + adminLogin 액션 | ✅ 완료 |
+| P5-010 | PlayerCard.tsx (사진/이니셜 폴백, 클릭 콜백) | ✅ 완료 |
+| P5-011 | PlayerSelectView.tsx (카드 그리드, 관리자 링크, AbortController) | ✅ 완료 |
+| P5-012 | PinInputView.tsx (기존 PinInput 재사용, 뒤로가기) | ✅ 완료 |
+| P5-013 | AdminLoginView.tsx (ID/PW 폼, AbortController) | ✅ 완료 |
+| P5-014 | Auth/index.tsx: 3모드 허브 리팩토링 (select/pin/admin) | ✅ 완료 |
+| P5-015 | Auth.module.css: Login Hub 클래스 14개 추가 | ✅ 완료 |
+| P5-016 | Step 2 빌드 검증 | ✅ 완료 |
+
+### 핫픽스 (Codex QA FAIL 4건)
+| Task ID | 작업 | 상태 |
+|---|---|---|
+| P5-FIX-1 | JWT payload sub 수정: `admin.username` → `str(admin.id)` | ✅ 완료 |
+| P5-FIX-2 | dependencies.py: get_current_user role 체크 + get_current_admin 신규 | ✅ 완료 |
+| P5-FIX-3 | admin/router.py: get_admin_user → get_current_admin 전체 교체 | ✅ 완료 |
+| P5-FIX-4 | mission/, AdminDashboard/ origin/dev 롤백 (범위 초과 복원) | ✅ 완료 |
+| P5-FIX-5 | authApi.getPlayers + PlayerSelectView에 AbortController signal 전달 | ✅ 완료 |
+
+**QA 결과:** Codex 79/80 PASS (WARNING 1: E-4 dependencies.py 의도적 변경 — hotfix 필수 수정)
+
+### Phase 5 확립된 패턴
+- **JWT 토큰 완전 격리**: Player(`role="player"`, `sub=str(player.id)`) / Admin(`role="admin"`, `sub=str(admin_auth.id)`)
+- **get_current_user**: `role != "player"` 시 401. Player 전용 엔드포인트 보호
+- **get_current_admin**: `role != "admin"` 시 401 → admin_auth 테이블 id 조회. Admin 전용 엔드포인트 보호
+- **Login Hub 3모드**: `select`(캐릭터 선택) → `pin`(PIN 입력) / `admin`(ID/PW 폼). 뒤로가기 시 select 복귀
+- **AdminAuth**: admin_auth 테이블, SoftDeleteMixin, bcrypt 해시. PIN 인증과 완전 분리
+- **AbortController 확장**: useEffect뿐 아니라 폼 제출 API 호출(`abortRef.current`)에도 적용
+
+---
+
+## 13. Phase 5 이후 핫픽스 (2026-04-03)
+
+### P-FEATURE-POINT-CYCLE-001 — 포인트 사이클 기능
+| 작업 | 상태 |
+|---|---|
+| ConfigManager `point_cycle` 키: textarea → select 드롭다운 (daily/weekly/monthly/quarterly/yearly) | ✅ 완료 |
+| `useDashboard` `cycleSummary` 반환 + `UserDashboard/index.tsx` 적용 | ✅ 완료 |
+| `UserDashboard.module.css` `.cycleLabel` 추가 (파란 배지) | ✅ 완료 |
+
+### P-HOTFIX-ADMIN-VIEWS-002 / PATCH-003 — Admin Dashboard UI 전면 개편
+| 작업 | 상태 |
+|---|---|
+| `DashboardView`: 오늘 날짜 고정 + 전체 플레이어 집계 (totalPoints/completedCount/pendingCount/totalCount) | ✅ 완료 |
+| `DashboardView`: 플레이어 요약 `<table>` (레벨/포인트/완료율 pill), 모바일 카드 전환 (`data-label` 패턴) | ✅ 완료 |
+| `DashboardView`: 컬러 스탯 카드 4종 (indigo/green/amber/purple) | ✅ 완료 |
+| AdminHeader에서 `PlayerFilterBar` 제거 → 각 View 로컬로 이동 | ✅ 완료 |
+| 5개 View CSS 데드코드 제거 (콜로케이션 정리) | ✅ 완료 |
+| `PointManager` 차감 목록: `.deductionCard` 카드형 (왼쪽 red border) | ✅ 완료 |
+| `nginx.conf` `index.html` no-cache 헤더 추가 (브라우저 캐시 버그 방지) | ✅ 완료 |
+
+### P-HOTFIX-ADMIN-POLISH-004 — 사진 업로드 + 시각 폴리시
+| 작업 | 상태 |
+|---|---|
+| `shared/utils/compressImage.ts` 신규 (Canvas, 200px, JPEG 75%) | ✅ 완료 |
+| `shared/components/PhotoUpload/` 신규 (호버 오버레이, 파일 선택, base64 콜백) | ✅ 완료 |
+| `PlayerManager` 수정 모달: PhotoUpload 통합, 기존 photo 로드 | ✅ 완료 |
+| `CheerEditor` dad/mom 행: PhotoUpload 통합, 변경 즉시 `adminApi.updateConfig('photos.{key}', b64)` 저장 | ✅ 완료 |
+| `adminApi.ts` `PlayerItem.photo?: string | null` 추가 | ✅ 완료 |
+| `DashboardView.module.css` 스탯 카드 `linear-gradient` + `::before` 라디얼 하이라이트 + hover lift | ✅ 완료 |
+| `DashboardView.module.css` `levelPill`/`pointPill` 그라디언트 + `box-shadow` | ✅ 완료 |
+| `Sidebar.module.css` `linear-gradient(180deg, #F8F7FF → #EEF2FF)` + brand 섹션 subtle gradient | ✅ 완료 |
+| `AdminHeader.module.css` `linear-gradient(90deg, #FAFAFF → #F5F5FF)` | ✅ 완료 |
+
+### 핫픽스에서 확립된 패턴
+- **Photo 저장 방식**: Base64 → DB 직접 저장 (`players.photo TEXT`, `app_configs`의 `photos.dad`/`photos.mom` 키). 파일 서버 불필요
+- **DashboardView 집계 전략**: `selectedPlayerId` 무시, 항상 오늘(`TODAY = new Date().toISOString().slice(0,10)`) + 전체 플레이어 집계로 어드민 오버뷰 제공
+- **PlayerFilterBar 위치**: AdminHeader에 없음. 각 View 최상단 로컬 배치
+- **mobile table→card**: `thead { display:none }` + `td::before { content: attr(data-label) }` 패턴
+- **PhotoUpload Shared 승격 조건 충족**: PlayerManager + CheerEditor 2곳 사용 → `src/shared/components/PhotoUpload/` 배치 정당
+
+---
+
+## 14. 잔여 사항
+
+| # | 항목 | 상태 | 비고 |
+|---|---|---|---|
+| 1 | ~~Phase 4-A CSS 레거시 클래스 제거~~ | **Close (해당 없음)** | Outlook Hub 프로젝트 이슈 혼입. mc-point-festival 미존재 확인 (2026-03-31) |
+| 2 | Docker socket 권한 이슈 | 해결 가이드 전달 | 방안 A 권장: 호스트에서 직접 pytest 실행 (venv + DB 포트 포워딩) |
+| 3 | B-5 global.css 변경 이력 확인 | PM 수동 확인 대기 | Git 초기화 후 diff — 코드 결함 아님, WARNING 수준 |
+| 4 | ~~P4 missions/{id}/status 라우트 롤백~~ | **Close (재적용 완료)** | P5 hotfix 오귀인으로 롤백됐으나 2026-03-31 재적용 확정. mission/schema+service+admin/router 복원 |
+
+---
+
+## 15. Phase 6 Task 목록 (다음)
+
+> Phase 6 설계 미착수.
+> **Phase 6: Home Page + Legacy (index.html 다크테마 마이그레이션)**
+
+---
+
+## 16. 보고 형식
 
 ### 작업 시작
 ```
@@ -308,7 +453,7 @@ Task ID: [PX-XXX]
 
 ---
 
-## 13. 주의사항
+## 17. 주의사항
 
 - **설계서에 없는 파일을 임의로 생성하지 마세요.** 실행 프롬프트에 명시된 파일만 생성합니다.
 - **전역 CSS 파일을 추가하지 마세요.** global.css, reset.css 외 전역 스타일 금지.
@@ -316,8 +461,9 @@ Task ID: [PX-XXX]
 - **Python import 순서**: stdlib → third-party → local (isort 규칙)
 - **TypeScript strict mode** 호환 코드만 작성합니다.
 - **useEffect 내 API 호출 시 AbortController cleanup 필수.**
+- **폼 제출 API 호출에도 AbortController signal 전달 필수.** (AdminLoginView 패턴 참조)
 - **인라인 style={{}} 5개/파일 초과 금지.** CSS Module로 이관합니다.
 
 ### Phase별 제약
-- Phase 1~3: ✅ 완료 (수정 시 PM 승인 필요)
-- Phase 4: Admin Dashboard — BE RBAC + FE admin.html 마이그레이션
+- Phase 1~5: ✅ 완료 (수정 시 PM 승인 필요)
+- Phase 6: Home Page — index.html 다크테마 마이그레이션

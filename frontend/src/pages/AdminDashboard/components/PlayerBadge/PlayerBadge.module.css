@@ -1,0 +1,17 @@
+.badge {
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.sm { width: 20px; height: 20px; font-size: 9px;  border-radius: 6px; }
+.md { width: 36px; height: 36px; font-size: 14px; border-radius: 8px; }
+.lg { width: 56px; height: 56px; font-size: 22px; border-radius: 12px; }
+
+.badgeImg {
+  object-fit: cover;
+}

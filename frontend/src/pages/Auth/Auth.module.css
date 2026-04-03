@@ -1,65 +1,173 @@
-/* Auth.module.css — P-HOTFIX-AUTH-UI-001 */
-/* 원본 레거시 UI 구조 복원 (화이트 테마) */
+/* Auth.module.css — Duolingo + Indigo 스타일 개편 */
 
-/* ===== 페이지 래퍼 ===== */
-.authPage {
+/* ── 디자인 토큰 ── */
+.authContainer {
+  --user-primary: #4338CA;
+  --user-primary-hover: #3730A3;
+  --user-primary-light: #EEF2FF;
+  --user-primary-border: #E0E7FF;
+  --user-primary-accent: #A5B4FC;
+  --user-primary-muted: #C7D2FE;
+  --user-purple: #7C3AED;
+  --user-purple-light: #F5F3FF;
+  --user-purple-border: #E9D5FF;
+  --user-bg: #F7F7FF;
+  --user-surface: #FFFFFF;
+  --user-text: #333333;
+  --user-text-muted: #666666;
+  --user-text-disabled: #999999;
+  --user-success: #059669;
+  --user-success-light: #D1FAE5;
+  --user-danger: #EF4444;
+  --user-danger-light: #FEE2E2;
+  --user-pink-light: #FCE7F3;
+  --user-pink-border: #F9A8D4;
+  --user-radius-card: 14px;
+  --user-radius-input: 12px;
+  --user-radius-pill: 20px;
+  --user-radius-circle: 50%;
+  --user-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+
+  background: var(--user-bg);
   min-height: 100vh;
-  background: var(--bg);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
+  font-family: var(--user-font);
+}
+
+/* ── 뷰 래퍼 (헤더+바디를 하나의 카드로 묶음) ── */
+.authView {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 공통 Auth 헤더 (Indigo) ── */
+.authHeader {
+  background: var(--user-primary);
+  padding: 40px 20px 36px;
+  text-align: center;
+}
+
+.authIcon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+.brandLogo {
+  width: 90%;
+  max-width: 94px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 14px;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
 }
 
 .authTitle {
-  font-size: 1.25rem;
+  font-size: 26px;
   font-weight: 800;
-  color: var(--text);
-  text-align: center;
-  margin: 0 0 4px;
+  color: #fff;
+  margin: 0 0 6px;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .authSubtitle {
-  font-size: 0.85rem;
-  color: var(--muted);
+  font-size: 14px;
+  color: var(--user-primary-muted);
+  margin: 0;
+}
+
+/* ── 본문 영역 ── */
+.authBody {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 푸터 영역 ── */
+.authFooter {
+  padding: 12px 20px 28px;
   text-align: center;
-  margin: 0 0 20px;
 }
 
-/* ===== Player Selector 카드 그리드 ===== */
-.playerSelector {
-  background: var(--card);
-  border-radius: 24px;
-  padding: 32px 24px;
-  box-shadow: var(--shadow);
-  max-width: 480px;
-  width: 100%;
+.authFooterLink {
+  font-size: 13px;
+  color: var(--user-text-disabled);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--user-font);
+  text-decoration: underline;
 }
 
-.playerGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 16px;
+/* 관리자 로그인 진입 버튼 */
+.adminEntryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1.5px solid var(--user-primary-border);
+  background: var(--user-surface);
+  color: var(--user-primary);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--user-font);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.adminEntryBtn:hover {
+  background: var(--user-primary-light);
+  border-color: var(--user-primary-accent);
+}
+
+/* AdminLoginView 폼 래퍼 */
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.authBackLink {
+  font-size: 13px;
+  color: var(--user-primary-muted);
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--user-font);
+  text-decoration: none;
+}
+
+/* ── 플레이어 선택 카드 목록 ── */
+.playerCardList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+  justify-content: center;
+  padding: 8px 0;
 }
 
 .playerCard {
+  background: var(--user-surface);
+  border-radius: var(--user-radius-card);
+  padding: 16px;
+  border: 2px solid var(--user-primary-border);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 20px 16px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 16px;
-  background: var(--card);
+  gap: 14px;
   cursor: pointer;
-  transition: 0.2s;
-  text-align: center;
+  transition: border-color 0.15s, transform 0.1s;
+  width: 100%;
+  text-align: left;
 }
 
-.playerCard:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+.playerCard:active {
+  transform: scale(0.98);
+  border-color: var(--user-primary);
 }
 
 .playerCard:disabled {
@@ -68,7 +176,490 @@
   transform: none;
 }
 
-/* 아바타 원형 */
+.playerAvatar {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--user-radius-circle);
+  border: 3px solid var(--user-primary-accent);
+  background: var(--user-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.playerAvatarAlt {
+  border-color: var(--user-purple-border);
+  background: var(--user-purple-light);
+}
+
+.playerPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.playerInitial {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.playerCardBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.playerName {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--user-text);
+}
+
+.playerLevel {
+  font-size: 12px;
+  color: var(--user-primary);
+  margin-top: 2px;
+}
+
+.playerPoints {
+  font-size: 12px;
+  color: var(--user-text-muted);
+}
+
+.playerPointBadge {
+  margin-left: auto;
+  padding: 4px 12px;
+  border-radius: var(--user-radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.playerPointBadgeDefault {
+  background: var(--user-primary-light);
+  color: var(--user-primary);
+  border-bottom: 2px solid var(--user-primary);
+}
+
+.playerPointBadgeAlt {
+  background: var(--user-purple-light);
+  color: var(--user-purple);
+  border-bottom: 2px solid var(--user-purple);
+}
+
+.levelBadge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--user-primary-light);
+  color: var(--user-primary);
+}
+
+.lockIcon {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+/* ── PIN 입력 화면 ── */
+.pinHeader {
+  background: var(--user-primary);
+  padding: 28px 24px 32px;
+  text-align: center;
+}
+
+.pinAvatar {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--user-radius-circle);
+  background: var(--user-primary-light);
+  border: 3px solid var(--user-primary-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  overflow: hidden;
+}
+
+.pinAvatarPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--user-radius-circle);
+}
+
+.pinAvatarInitial {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.pinPlayerName {
+  font-size: 18px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.pinPrompt {
+  font-size: 13px;
+  color: var(--user-primary-muted);
+  margin-top: 4px;
+}
+
+.pinBody {
+  flex: 1;
+  padding: 28px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* ── PIN 슬롯 ── */
+.pinSlots {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+}
+
+.pinSlot {
+  width: 52px;
+  height: 60px;
+  background: var(--user-surface);
+  border: 2px solid var(--user-primary-border);
+  border-radius: var(--user-radius-input);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--user-primary);
+}
+
+.pinSlotFilled {
+  border-color: var(--user-primary);
+  background: var(--user-primary-light);
+}
+
+.pinSlotError {
+  border-color: var(--user-danger);
+  background: var(--user-danger-light);
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-4px); }
+  75%       { transform: translateX(4px); }
+}
+
+/* ── 숫자 키패드 (Duolingo 3D) ── */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 68px);
+  gap: 10px;
+  justify-content: center;
+}
+
+.key {
+  width: 68px;
+  height: 54px;
+  background: var(--user-surface);
+  border-radius: var(--user-radius-input);
+  border: 1.5px solid var(--user-primary-border);
+  border-bottom: 3px solid var(--user-primary-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--user-text);
+  cursor: pointer;
+  font-family: var(--user-font);
+  transition: transform 0.1s;
+}
+
+.key:active {
+  transform: translateY(1px);
+  border-bottom-width: 2px;
+}
+
+.keyBackspace {
+  border-color: var(--user-danger-light);
+  border-bottom-color: #FCA5A5;
+  color: var(--user-danger);
+}
+
+.keyEmpty {
+  background: transparent;
+  border: none;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ── 뒤로가기 링크 ── */
+.backLink {
+  display: block;
+  text-align: center;
+  padding: 12px;
+  color: var(--user-primary-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--user-font);
+  transition: color 0.15s;
+}
+
+.backLink:hover {
+  color: var(--user-primary);
+}
+
+/* ── 에러 메시지 ── */
+.loginError {
+  background: var(--user-danger-light);
+  color: var(--user-danger);
+  padding: 10px 14px;
+  border-radius: var(--user-radius-input);
+  font-size: 13px;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.loginLocked {
+  background: #FFF7ED;
+  color: #EA580C;
+  padding: 12px 14px;
+  border-radius: var(--user-radius-input);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #FED7AA;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── 관리자 로그인 헤더 ── */
+.adminHeader {
+  background: var(--user-primary);
+  padding: 28px 24px 32px;
+  text-align: center;
+}
+
+.adminIcon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+/* ── 관리자 로그인 폼 ── */
+.adminForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--user-radius-card);
+  flex: 1;
+  padding: 24px 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--user-text-muted);
+}
+
+.adminFormInput {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--user-surface);
+  border: 2px solid var(--user-primary-border);
+  border-radius: var(--user-radius-input);
+  font-size: 14px;
+  color: var(--user-text);
+  box-sizing: border-box;
+  font-family: var(--user-font);
+  transition: border-color 0.15s;
+}
+
+.adminFormInput:focus {
+  border-color: var(--user-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(67, 56, 202, 0.1);
+}
+
+.adminFormInput::placeholder {
+  color: var(--user-text-disabled);
+}
+
+/* Duolingo 3D 로그인 버튼 */
+.adminFormButton {
+  background: var(--user-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--user-radius-input);
+  border-bottom: 4px solid var(--user-primary-hover);
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--user-font);
+  transition: transform 0.1s;
+  margin-top: 4px;
+}
+
+.adminFormButton:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.adminFormButton:disabled {
+  background: #E0E0E0;
+  border-bottom-color: #BDBDBD;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  background: var(--user-danger-light);
+  color: var(--user-danger);
+  padding: 10px 14px;
+  border-radius: var(--user-radius-input);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ── 빈 상태 ── */
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--user-text-muted);
+  font-size: 14px;
+}
+
+/* ── 레거시 호환 (기존 코드에서 참조되는 클래스) ── */
+.authPage {
+  min-height: 100vh;
+  background: var(--user-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: var(--user-font);
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--user-primary-muted);
+  margin: 4px 0 0;
+}
+
+.pinViewWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.pinInputContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.pinDigit,
+.pinDigitFilled,
+.pinDigitError {
+  width: 52px;
+  height: 60px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--user-font);
+  border-radius: var(--user-radius-input);
+  border: 2px solid var(--user-primary-border);
+  background: var(--user-surface);
+  color: var(--user-text);
+  outline: none;
+  transition: border-color 0.15s;
+  caret-color: transparent;
+}
+
+.pinDigit:focus {
+  border-color: var(--user-primary);
+}
+
+.pinDigitFilled {
+  border-color: var(--user-primary);
+  background: var(--user-primary-light);
+}
+
+.pinDigitError {
+  border-color: var(--user-danger);
+  background: var(--user-danger-light);
+  animation: shake 0.3s ease;
+}
+
+.selectViewWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 480px;
+  width: 100%;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.adminLinkBtn {
+  display: block;
+  margin: 8px auto 0;
+  background: none;
+  border: none;
+  color: var(--user-text-disabled);
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: var(--user-font);
+}
+
+.adminLink {
+  display: block;
+  text-align: center;
+  color: var(--user-text-disabled);
+  font-size: 13px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--user-font);
+  text-decoration: underline;
+}
+
+.giftIcon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.lockedBadge {
+  font-size: 12px;
+  color: var(--user-danger);
+  font-weight: 600;
+}
+
 .avatar {
   width: 72px;
   height: 72px;
@@ -85,421 +676,32 @@
 .playerCardName {
   font-weight: 700;
   font-size: 1rem;
-  color: var(--text);
+  color: var(--user-text);
 }
 
 .playerCardPoints {
   font-weight: 600;
   font-size: 0.85rem;
-  color: var(--muted);
+  color: var(--user-text-muted);
 }
 
-.lockedBadge {
-  font-size: 0.75rem;
-  color: var(--danger);
-  font-weight: 600;
-}
+/* ── 데스크탑 (1024px+) ── */
+@media (min-width: 1024px) {
+  .authContainer {
+    align-items: center;
+    justify-content: center;
+  }
 
-/* ===== 관리자 로그인 링크 ===== */
-.adminDivider {
-  border: none;
-  border-top: 1px solid #e2e8f0;
-  margin: 24px 0 16px;
-}
+  .authContainer > * {
+    width: 420px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(67, 56, 202, 0.08);
+  }
 
-.adminLink {
-  display: block;
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
-  padding: 8px;
-  transition: color 0.2s;
-  cursor: pointer;
-  background: none;
-  border: none;
-  width: 100%;
-  font-family: 'Pretendard', sans-serif;
-}
-
-.adminLink:hover {
-  color: var(--blue);
-}
-
-/* ===== Login Overlay ===== */
-.loginOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(248, 250, 252, 0.97);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  backdrop-filter: blur(8px);
-}
-
-.loginCard {
-  background: var(--card);
-  border-radius: 28px;
-  padding: 40px 32px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
-}
-
-.loginAvatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  font-weight: 800;
-  color: #fff;
-  margin: 0 auto 16px;
-}
-
-.loginCardTitle {
-  font-family: 'Black Han Sans', sans-serif;
-  font-size: 1.5rem;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-
-.subtitle {
-  font-size: 0.9rem;
-  color: var(--muted);
-  margin-bottom: 24px;
-}
-
-.autoLoginCheckbox {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.autoLoginCheckbox input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
-
-.loginError {
-  background: #fef2f2;
-  color: #dc2626;
-  padding: 12px;
-  border-radius: 12px;
-  margin: 15px 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border: 1px solid #fecaca;
-}
-
-.loginLocked {
-  background: #fff7ed;
-  color: #ea580c;
-  padding: 15px;
-  border-radius: 12px;
-  margin: 15px 0;
-  font-size: 0.95rem;
-  font-weight: 600;
-  border: 2px solid #fed7aa;
-}
-
-.lastLoginInfo {
-  margin-top: 12px;
-  padding: 10px;
-  background: var(--input-bg);
-  border-radius: 12px;
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-/* ← 다른 플레이어 선택 / 뒤로가기 */
-.backLink {
-  display: block;
-  text-align: center;
-  margin-top: 20px;
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  background: none;
-  border: none;
-  font-family: 'Pretendard', sans-serif;
-  transition: color 0.2s;
-}
-
-.backLink:hover {
-  color: var(--accent);
-}
-
-/* ===== 빈 상태 ===== */
-.emptyState {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-/* ===== 선물상자 아이콘 ===== */
-.giftIcon {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 12px;
-}
-
-.giftIcon svg {
-  display: block;
-  width: 48px;
-  height: 48px;
-}
-
-/* ===== Phase 5 PlayerSelectView ===== */
-.selectViewWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 480px;
-  width: 100%;
-}
-
-.cardGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.cardGridSingle {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  max-width: 200px;
-  margin: 0 auto;
-}
-
-.cardGridThree > :last-child:nth-child(odd) {
-  grid-column: 1 / -1;
-  max-width: 50%;
-  justify-self: center;
-}
-
-.adminLinkBtn {
-  display: block;
-  margin: 16px auto 0;
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 0.85rem;
-  text-decoration: underline;
-  cursor: pointer;
-  font-family: 'Pretendard', sans-serif;
-  transition: color 0.2s;
-}
-
-.adminLinkBtn:hover {
-  color: var(--text);
-}
-
-/* ===== Phase 5 PlayerCard ===== */
-.playerAvatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #ecfdf5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-
-.playerPhoto {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.playerInitial {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #059669;
-}
-
-.playerName {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-
-.playerPoints {
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.levelBadge {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: #ecfdf5;
-  color: #059669;
-}
-
-.lockIcon {
-  margin-top: 4px;
-  font-size: 0.8rem;
-}
-
-/* ===== PIN 입력 ===== */
-.pinInputContainer {
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-.pinDigit,
-.pinDigitFilled,
-.pinDigitError {
-  width: 56px;
-  height: 64px;
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
-  border-radius: 14px;
-  border: 2px solid #e2e8f0;
-  background: var(--input-bg);
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.15s;
-  caret-color: transparent;
-}
-
-.pinDigit:focus {
-  border-color: var(--accent);
-}
-
-.pinDigitFilled {
-  border-color: var(--accent);
-  background: #ecfdf5;
-}
-
-.pinDigitError {
-  border-color: #ef4444;
-  background: #fef2f2;
-  animation: shake 0.3s ease;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
-}
-
-/* ===== Phase 5 PinInputView ===== */
-.pinViewWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  background: var(--card);
-  border-radius: 24px;
-  padding: 32px 24px;
-  box-shadow: var(--shadow);
-  max-width: 400px;
-  width: 100%;
-  text-align: center;
-}
-
-.pinHeader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-/* ===== Admin 로그인 폼 (AdminLoginView) ===== */
-.adminForm {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background: var(--card);
-  border-radius: 24px;
-  padding: 32px 24px;
-  box-shadow: var(--shadow);
-  max-width: 400px;
-  width: 100%;
-}
-
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.adminFormInput {
-  width: 100%;
-  padding: 14px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 14px;
-  font-size: 1rem;
-  font-family: 'Pretendard', sans-serif;
-  background: var(--input-bg);
-  color: var(--text);
-  box-sizing: border-box;
-  outline: none;
-  transition: 0.2s;
-}
-
-.adminFormInput:focus {
-  border-color: var(--accent);
-}
-
-.adminFormButton {
-  width: 100%;
-  padding: 14px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  font-size: 1rem;
-  font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  margin-top: 4px;
-}
-
-.adminFormButton:hover:not(:disabled) {
-  opacity: 0.9;
-}
-
-.adminFormButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.errorMessage {
-  background: #fef2f2;
-  color: #dc2626;
-  padding: 12px;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border: 1px solid #fecaca;
-  text-align: center;
+  .pinBody,
+  .adminForm,
+  .authBody {
+    background: var(--user-surface);
+  }
 }

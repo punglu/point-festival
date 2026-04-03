@@ -1,0 +1,240 @@
+/* DashboardModal.module.css — shared styles for all DashboardView modals */
+
+/* ── Player tab ── */
+.playerTabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+/* ── List body ── */
+.listBody {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  max-height: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.empty {
+  text-align: center;
+  color: #9CA3AF;
+  padding: 40px 0;
+  font-size: 14px;
+}
+
+/* ── Date header ── */
+.dateHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B7280;
+  border-bottom: 1px solid #F3F4F6;
+  margin-top: 8px;
+}
+
+.dateHeader:first-child {
+  margin-top: 0;
+}
+
+.dateSubtotal {
+  font-size: 11px;
+  color: #4338CA;
+  font-weight: 700;
+}
+
+/* ── Mission row ── */
+.missionRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 4px;
+  border-bottom: 1px solid #F9FAFB;
+}
+
+.missionText {
+  flex: 1;
+  font-size: 13px;
+  color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playerBadge {
+  flex-shrink: 0;
+  font-size: 11px;
+  background: #EEF2FF;
+  color: #4338CA;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-weight: 600;
+}
+
+.pointBadge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #059669;
+  background: #ECFDF5;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.statusBadge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dateMeta {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #9CA3AF;
+}
+
+/* ── Pending approval row ── */
+.pendingRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 4px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.pendingInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.pendingMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.pendingActions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btnApprove {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #059669;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btnApprove:hover {
+  background: #047857;
+}
+
+.btnReject {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #DC2626;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btnReject:hover {
+  background: #B91C1C;
+}
+
+/* ── Reject form ── */
+.rejectForm {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.rejectInput {
+  width: 140px;
+  padding: 4px 8px;
+  font-size: 12px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  outline: none;
+}
+
+.rejectInput:focus {
+  border-color: #6366F1;
+}
+
+.btnConfirmReject {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #DC2626;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btnCancel {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #F3F4F6;
+  color: #374151;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ── Summary box ── */
+.summaryBox {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: #F9FAFB;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  font-size: 13px;
+}
+
+.summaryName {
+  color: #374151;
+  font-weight: 500;
+}
+
+.summaryVal {
+  color: #6B7280;
+  font-size: 12px;
+}
+
+.summaryTotal {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #E5E7EB;
+  font-size: 14px;
+  font-weight: 700;
+  color: #4338CA;
+  text-align: right;
+}

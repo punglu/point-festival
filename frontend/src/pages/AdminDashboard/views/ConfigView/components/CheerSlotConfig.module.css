@@ -1,0 +1,79 @@
+.section {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 14px;
+}
+
+.slots {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.slotRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slotAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.slotAvatarFallback {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #EEF2FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #4338CA;
+  flex-shrink: 0;
+}
+
+.slotBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slotInput {
+  flex: 1;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+.slotInput:focus { border-color: #4338CA; }
+
+.slotTextarea {
+  width: 100%;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+  box-sizing: border-box;
+  color: #374151;
+  line-height: 1.5;
+}
+.slotTextarea:focus { border-color: #4338CA; }

@@ -1,6 +1,6 @@
 from datetime import date
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class MissionCreate(BaseModel):
@@ -64,3 +64,18 @@ class MissionCloneRequest(BaseModel):
 class MissionCloneResponse(BaseModel):
     cloned_count: int
     missions: list[MissionResponse]
+
+
+class MissionCloneSelectedRequest(BaseModel):
+    """선택된 미션을 대상 날짜로 복제"""
+    source_date: date
+    target_date: date
+    player_id: int
+    mission_ids: list[int]
+
+    @field_validator('mission_ids')
+    @classmethod
+    def at_least_one(cls, v: list[int]) -> list[int]:
+        if not v:
+            raise ValueError('최소 1개의 미션을 선택해야 합니다')
+        return v

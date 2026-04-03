@@ -33,6 +33,12 @@ export default function MissionProposal({ myProposals, proposeMission }: Props) 
     }
   };
 
+  const statusColor = (status: string) => {
+    if (status === 'rejected') return '#EF4444';
+    if (status === 'active') return '#059669';
+    return '#D97706';
+  };
+
   return (
     <div className={styles.proposalSection}>
       <div className={styles.proposalTitle}>✏️ 미션 제안</div>
@@ -77,7 +83,7 @@ export default function MissionProposal({ myProposals, proposeMission }: Props) 
             {myProposals.map(m => (
               <div key={m.id} className={styles.proposalItem}>
                 <span>{m.text}</span>
-                <span style={{ color: m.status === 'rejected' ? '#f87171' : m.status === 'active' ? '#34d399' : '#fbbf24', fontSize: 12, fontWeight: 600 }}>
+                <span style={{ color: statusColor(m.status), fontSize: 12, fontWeight: 600 }}>
                   {PROPOSAL_STATUS[m.status] ?? m.status}
                 </span>
               </div>

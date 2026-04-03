@@ -69,6 +69,7 @@ CREATE TABLE feedbacks (
     player_id       INTEGER NOT NULL REFERENCES players(id) ON DELETE CASCADE,
     date            DATE NOT NULL,
     msg             TEXT NOT NULL,
+    recipient       VARCHAR(50) DEFAULT NULL,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at      TIMESTAMPTZ
@@ -177,7 +178,9 @@ INSERT INTO app_configs (key, value) VALUES
     ('photos.dad', ''),
     ('photos.mom', ''),
     ('level.thresholds', '{"1":0,"2":50,"3":150,"4":300,"5":500}'),
-    ('cheer.senders', '[{"key":"dad","label":"아빠","color":"var(--blue)","emoji":"👨"},{"key":"mom","label":"엄마","color":"#db2777","emoji":"👩"}]');
+    ('cheer.senders', '[{"key":"dad","label":"아빠","color":"var(--blue)","emoji":"👨"},{"key":"mom","label":"엄마","color":"#db2777","emoji":"👩"}]'),
+    ('point_cycle', 'weekly')
+  ON CONFLICT (key) DO NOTHING;
 
 INSERT INTO missions (player_id, date, text, point, status, sender, sort_order) VALUES
     (1, CURRENT_DATE, '오늘의 첫 로그인!', 5,  'completed', '아빠', 0),

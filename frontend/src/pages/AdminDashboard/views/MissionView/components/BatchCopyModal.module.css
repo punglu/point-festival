@@ -1,0 +1,204 @@
+.sourceRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.sourceBtn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #E2E8F0;
+  background: #F8FAFC;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748B;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.sourceBtn:hover { border-color: #4338CA; color: #4338CA; }
+.sourceBtnActive {
+  composes: sourceBtn;
+  border-color: #4338CA;
+  background: #EEF2FF;
+  color: #4338CA;
+  font-weight: 600;
+}
+
+.formGroup {
+  margin-bottom: 16px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+.input:focus { border-color: #4338CA; box-shadow: 0 0 0 2px rgba(67,56,202,.1); }
+
+.missionList {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+}
+
+.missionRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #F1F5F9;
+  background: #fff;
+  transition: background 0.1s;
+}
+.missionRow:last-child { border-bottom: none; }
+.missionRow:hover { background: #F8FAFC; }
+
+.missionCheck {
+  width: 16px;
+  height: 16px;
+  accent-color: #4338CA;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.missionText {
+  flex: 1;
+  font-size: 13px;
+  color: #1E293B;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playerBadge {
+  font-size: 10px;
+  font-weight: 500;
+  color: #4338CA;
+  background: #EEF2FF;
+  padding: 2px 7px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.pointInput {
+  width: 60px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  text-align: right;
+  flex-shrink: 0;
+}
+.pointInput:focus { border-color: #4338CA; }
+
+.selectAllRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.selectAllBtn {
+  font-size: 12px;
+  color: #4338CA;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  font-weight: 500;
+}
+.selectAllBtn:hover { text-decoration: underline; }
+
+.selectedCount {
+  font-size: 11px;
+  color: #64748B;
+}
+
+.targetGroup {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.targetBtn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #E2E8F0;
+  background: #F8FAFC;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748B;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.targetBtn:hover { border-color: #4338CA; color: #4338CA; }
+.targetBtnActive {
+  composes: targetBtn;
+  border-color: #4338CA;
+  background: #EEF2FF;
+  color: #4338CA;
+  font-weight: 600;
+}
+
+.inputMt {
+  margin-top: 6px;
+}
+
+.labelNoMb {
+  margin-bottom: 0;
+}
+
+.selectAllRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.targetHint {
+  font-size: 11px;
+  color: #64748B;
+  margin-top: 4px;
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: #94A3B8;
+  font-size: 13px;
+}
+
+.btnSubmit {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #4338CA;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.btnSubmit:hover    { background: #3730A3; }
+.btnSubmit:disabled { opacity: 0.5; cursor: not-allowed; }

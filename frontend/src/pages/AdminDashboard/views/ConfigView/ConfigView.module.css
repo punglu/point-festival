@@ -1,0 +1,57 @@
+.view {
+  padding: 24px;
+  max-width: 720px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.btnSave {
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #4338CA;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.btnSave:hover    { background: #3730A3; }
+.btnSave:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dirtyNote {
+  font-size: 11px;
+  color: #D97706;
+  font-weight: 500;
+}
+
+.loading {
+  padding: 48px 24px;
+  text-align: center;
+  color: #94A3B8;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .view { padding: 16px; }
+}

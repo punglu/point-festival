@@ -1,0 +1,101 @@
+.card {
+  background: #F8F9FF;
+  border-radius: 10px;
+  border: 1.5px solid #4338CA;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748B;
+  margin-bottom: 4px;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+.input:focus {
+  border-color: #4338CA;
+  box-shadow: 0 0 0 2px rgba(67,56,202,.1);
+}
+
+.pointRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pointInput {
+  composes: input;
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.quickBtns {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.quickBtn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  background: #EEF2FF;
+  color: #4338CA;
+  border: 1px solid #C7D2FE;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.quickBtn:hover { background: #E0E7FF; }
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btnSave {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #4338CA;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.btnSave:hover { background: #3730A3; }
+
+.btnCancel {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #F1F5F9;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.btnCancel:hover { background: #E2E8F0; }

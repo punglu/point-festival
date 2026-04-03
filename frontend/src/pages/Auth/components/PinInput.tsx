@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styles from '../Auth.module.css';
 
 interface PinInputProps {
@@ -7,67 +7,85 @@ interface PinInputProps {
   resetKey: number;
 }
 
+const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'];
+
 export default function PinInput({ onComplete, hasError, resetKey }: PinInputProps) {
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const values = useRef<string[]>(['', '', '', '']);
+  const [digits, setDigits] = useState<string[]>(['', '', '', '']);
 
   useEffect(() => {
-    values.current = ['', '', '', ''];
-    inputRefs.current.forEach((ref) => {
-      if (ref) ref.value = '';
-    });
-    inputRefs.current[0]?.focus();
+    setDigits(['', '', '', '']);
   }, [resetKey]);
 
-  const getClassName = (index: number): string => {
-    if (hasError) return styles.pinDigitError;
-    if (values.current[index]) return styles.pinDigitFilled;
-    return styles.pinDigit;
+  const addDigit = (digit: string) => {
+    setDigits(prev => {
+      const next = [...prev];
+      const emptyIdx = next.findIndex(d => d === '');
+      if (emptyIdx === -1) return prev;
+      next[emptyIdx] = digit;
+      if (emptyIdx === 3) {
+        setTimeout(() => onComplete(next.join('')), 300);
+      }
+      return next;
+    });
   };
 
-  const handleInput = useCallback(
-    (index: number, rawValue: string) => {
-      const cleaned = rawValue.replace(/[^0-9]/g, '');
-      values.current[index] = cleaned;
-      const el = inputRefs.current[index];
-      if (el) el.value = cleaned;
-
-      if (cleaned && index < 3) {
-        inputRefs.current[index + 1]?.focus();
-      }
-
-      if (index === 3 && cleaned) {
-        const pin = values.current.join('');
-        if (pin.length === 4) {
-          setTimeout(() => onComplete(pin), 300);
+  const removeDigit = () => {
+    setDigits(prev => {
+      const next = [...prev];
+      for (let i = 3; i >= 0; i--) {
+        if (next[i] !== '') {
+          next[i] = '';
+          break;
         }
       }
-    },
-    [onComplete],
-  );
-
-  const handleKeyDown = useCallback((index: number, key: string) => {
-    if (key === 'Backspace' && !values.current[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  }, []);
+      return next;
+    });
+  };
 
   return (
-    <div className={styles.pinInputContainer}>
-      {[0, 1, 2, 3].map((i) => (
-        <input
-          key={i}
-          ref={(el) => { inputRefs.current[i] = el; }}
-          type="text"
-          maxLength={1}
-          inputMode="numeric"
-          pattern="[0-9]"
-          autoComplete="off"
-          className={getClassName(i)}
-          onInput={(e) => handleInput(i, (e.target as HTMLInputElement).value)}
-          onKeyDown={(e) => handleKeyDown(i, e.key)}
-        />
-      ))}
-    </div>
+    <>
+      {/* PIN 슬롯 */}
+      <div className={styles.pinSlots}>
+        {digits.map((d, i) => (
+          <div
+            key={i}
+            className={`${styles.pinSlot} ${d ? styles.pinSlotFilled : ''} ${hasError ? styles.pinSlotError : ''}`}
+          >
+            {d ? '●' : ''}
+          </div>
+        ))}
+      </div>
+
+      {/* 숫자 키패드 */}
+      <div className={styles.keypad}>
+        {KEYS.map((k, i) => {
+          if (k === '') {
+            return <div key={i} className={styles.keyEmpty} />;
+          }
+          if (k === '⌫') {
+            return (
+              <button
+                key={i}
+                type="button"
+                className={`${styles.key} ${styles.keyBackspace}`}
+                onClick={removeDigit}
+              >
+                ⌫
+              </button>
+            );
+          }
+          return (
+            <button
+              key={i}
+              type="button"
+              className={styles.key}
+              onClick={() => addDigit(k)}
+            >
+              {k}
+            </button>
+          );
+        })}
+      </div>
+    </>
   );
 }

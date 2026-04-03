@@ -1,7 +1,7 @@
 # CLAUDE.md — 프로젝트 컨텍스트 (매 세션 필독)
 
 > **프로젝트:** 마인크래프트 포인트 잔치 — 모던 스택 마이그레이션
-> **최종 갱신:** 2026-03-31 | Phase 5 완료, Phase 6 설계 대기
+> **최종 갱신:** 2026-04-03 | Phase 5 완료 + 핫픽스 3건 적용, Phase 6 설계 대기
 > **이 파일은 프로젝트의 SSOT입니다. 매 세션 시작 시 반드시 읽으세요.**
 
 ---
@@ -138,7 +138,10 @@ mc-point-festival/
 │       ├── shared/
 │       │   ├── api/httpClient.ts
 │       │   ├── stores/useAuthStore.ts  # setLogin + adminLogin + logout
-│       │   └── components/Button/
+│       │   ├── utils/compressImage.ts  # Canvas 기반 이미지 압축 (200px, JPEG 75%)
+│       │   └── components/
+│       │       ├── Button/
+│       │       └── PhotoUpload/        # 재사용 사진 업로드 컴포넌트
 │       └── pages/
 │           ├── Auth/            # ✅ Phase 1 + Phase 5 (Login Hub 리팩토링)
 │           │   ├── index.tsx    # 3모드 허브 (select/pin/admin)
@@ -368,7 +371,49 @@ mc-point-festival/
 
 ---
 
-## 13. 잔여 사항
+## 13. Phase 5 이후 핫픽스 (2026-04-03)
+
+### P-FEATURE-POINT-CYCLE-001 — 포인트 사이클 기능
+| 작업 | 상태 |
+|---|---|
+| ConfigManager `point_cycle` 키: textarea → select 드롭다운 (daily/weekly/monthly/quarterly/yearly) | ✅ 완료 |
+| `useDashboard` `cycleSummary` 반환 + `UserDashboard/index.tsx` 적용 | ✅ 완료 |
+| `UserDashboard.module.css` `.cycleLabel` 추가 (파란 배지) | ✅ 완료 |
+
+### P-HOTFIX-ADMIN-VIEWS-002 / PATCH-003 — Admin Dashboard UI 전면 개편
+| 작업 | 상태 |
+|---|---|
+| `DashboardView`: 오늘 날짜 고정 + 전체 플레이어 집계 (totalPoints/completedCount/pendingCount/totalCount) | ✅ 완료 |
+| `DashboardView`: 플레이어 요약 `<table>` (레벨/포인트/완료율 pill), 모바일 카드 전환 (`data-label` 패턴) | ✅ 완료 |
+| `DashboardView`: 컬러 스탯 카드 4종 (indigo/green/amber/purple) | ✅ 완료 |
+| AdminHeader에서 `PlayerFilterBar` 제거 → 각 View 로컬로 이동 | ✅ 완료 |
+| 5개 View CSS 데드코드 제거 (콜로케이션 정리) | ✅ 완료 |
+| `PointManager` 차감 목록: `.deductionCard` 카드형 (왼쪽 red border) | ✅ 완료 |
+| `nginx.conf` `index.html` no-cache 헤더 추가 (브라우저 캐시 버그 방지) | ✅ 완료 |
+
+### P-HOTFIX-ADMIN-POLISH-004 — 사진 업로드 + 시각 폴리시
+| 작업 | 상태 |
+|---|---|
+| `shared/utils/compressImage.ts` 신규 (Canvas, 200px, JPEG 75%) | ✅ 완료 |
+| `shared/components/PhotoUpload/` 신규 (호버 오버레이, 파일 선택, base64 콜백) | ✅ 완료 |
+| `PlayerManager` 수정 모달: PhotoUpload 통합, 기존 photo 로드 | ✅ 완료 |
+| `CheerEditor` dad/mom 행: PhotoUpload 통합, 변경 즉시 `adminApi.updateConfig('photos.{key}', b64)` 저장 | ✅ 완료 |
+| `adminApi.ts` `PlayerItem.photo?: string | null` 추가 | ✅ 완료 |
+| `DashboardView.module.css` 스탯 카드 `linear-gradient` + `::before` 라디얼 하이라이트 + hover lift | ✅ 완료 |
+| `DashboardView.module.css` `levelPill`/`pointPill` 그라디언트 + `box-shadow` | ✅ 완료 |
+| `Sidebar.module.css` `linear-gradient(180deg, #F8F7FF → #EEF2FF)` + brand 섹션 subtle gradient | ✅ 완료 |
+| `AdminHeader.module.css` `linear-gradient(90deg, #FAFAFF → #F5F5FF)` | ✅ 완료 |
+
+### 핫픽스에서 확립된 패턴
+- **Photo 저장 방식**: Base64 → DB 직접 저장 (`players.photo TEXT`, `app_configs`의 `photos.dad`/`photos.mom` 키). 파일 서버 불필요
+- **DashboardView 집계 전략**: `selectedPlayerId` 무시, 항상 오늘(`TODAY = new Date().toISOString().slice(0,10)`) + 전체 플레이어 집계로 어드민 오버뷰 제공
+- **PlayerFilterBar 위치**: AdminHeader에 없음. 각 View 최상단 로컬 배치
+- **mobile table→card**: `thead { display:none }` + `td::before { content: attr(data-label) }` 패턴
+- **PhotoUpload Shared 승격 조건 충족**: PlayerManager + CheerEditor 2곳 사용 → `src/shared/components/PhotoUpload/` 배치 정당
+
+---
+
+## 14. 잔여 사항
 
 | # | 항목 | 상태 | 비고 |
 |---|---|---|---|
@@ -379,14 +424,14 @@ mc-point-festival/
 
 ---
 
-## 14. Phase 6 Task 목록 (다음)
+## 15. Phase 6 Task 목록 (다음)
 
 > Phase 6 설계 미착수.
 > **Phase 6: Home Page + Legacy (index.html 다크테마 마이그레이션)**
 
 ---
 
-## 15. 보고 형식
+## 16. 보고 형식
 
 ### 작업 시작
 ```
@@ -408,7 +453,7 @@ Task ID: [PX-XXX]
 
 ---
 
-## 16. 주의사항
+## 17. 주의사항
 
 - **설계서에 없는 파일을 임의로 생성하지 마세요.** 실행 프롬프트에 명시된 파일만 생성합니다.
 - **전역 CSS 파일을 추가하지 마세요.** global.css, reset.css 외 전역 스타일 금지.

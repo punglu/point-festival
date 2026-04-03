@@ -1,0 +1,84 @@
+.card {
+  background: #fff;
+  border-radius: 12px;
+  border: 0.5px solid #E2E8F0;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E293B;
+  flex: 1;
+}
+
+.countBadge {
+  background: #FEF3C7;
+  color: #92400E;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.viewAll {
+  font-size: 11px;
+  color: #4338CA;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  transition: opacity 0.15s;
+}
+
+.viewAll:hover { opacity: 0.7; }
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item {
+  padding: 10px 12px;
+  border-left: 3px solid #D97706;
+  background: #FFFBEB;
+  border-radius: 0 8px 8px 0;
+}
+
+.missionName {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1E293B;
+  margin-bottom: 4px;
+}
+
+.missionMeta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.player { color: #4338CA; font-weight: 500; }
+.dot    { color: #CBD5E1; }
+.point  { color: #059669; font-weight: 500; }
+.time   { color: #94A3B8; }
+
+.empty {
+  font-size: 13px;
+  color: #059669;
+  text-align: center;
+  padding: 24px 0;
+}

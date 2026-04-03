@@ -55,39 +55,37 @@ export default function PlayerSelectView({ onPlayerSelect, onAdminClick }: Props
   }, []);
 
   return (
-    <div className={styles.selectViewWrapper}>
-      {/* 선물상자 아이콘 */}
-      <div className={styles.giftIcon}>
-        <svg width="48" height="48" viewBox="0 0 64 64" fill="none">
-          <rect x="10" y="26" width="44" height="28" rx="4" fill="#10b981"/>
-          <rect x="10" y="26" width="44" height="8" rx="3" fill="#6ee7b7"/>
-          <rect x="29" y="26" width="6" height="28" fill="#ef4444"/>
-          <rect x="29" y="26" width="6" height="8" fill="#fca5a5"/>
-          <path d="M32 26c-4-8-14-8-14-2s10 2 14 2z" fill="#ef4444"/>
-          <path d="M32 26c4-8 14-8 14-2s-10 2-14 2z" fill="#fca5a5"/>
-          <rect x="29" y="34" width="6" height="20" rx="1" fill="#dc2626"/>
-        </svg>
+    <div className={styles.authView}>
+      {/* Indigo 헤더 */}
+      <div className={styles.authHeader}>
+        <img src="/logo-login.png" alt="포인트 잔치" className={styles.brandLogo} />
+        <h1 className={styles.authTitle}>포인트 잔치</h1>
+        <p className={styles.authSubtitle}>플레이어를 선택하세요</p>
       </div>
 
-      <h2 className={styles.authTitle}>포인트 잔치</h2>
-      <p className={styles.authSubtitle}>플레이어를 선택하세요</p>
-
-      <div className={styles.cardGrid}>
-        {players.map((p) => (
-          <PlayerCard
-            key={p.id}
-            name={p.name}
-            photo={p.photo}
-            level={thresholds ? calcLevel(p.total_points ?? 0, thresholds) : null}
-            isLocked={p.is_locked}
-            onClick={() => onPlayerSelect({ id: p.id, name: p.name, photo: p.photo })}
-          />
-        ))}
+      {/* 플레이어 카드 목록 */}
+      <div className={styles.authBody}>
+        <div className={styles.playerCardList}>
+          {players.map((p, idx) => (
+            <PlayerCard
+              key={p.id}
+              name={p.name}
+              photo={p.photo}
+              level={thresholds ? calcLevel(p.total_points ?? 0, thresholds) : null}
+              isLocked={p.is_locked}
+              isAlt={idx % 2 === 1}
+              onClick={() => onPlayerSelect({ id: p.id, name: p.name, photo: p.photo })}
+            />
+          ))}
+        </div>
       </div>
 
-      <button className={styles.adminLinkBtn} onClick={onAdminClick}>
-        관리자 로그인
-      </button>
+      {/* 관리자 로그인 */}
+      <div className={styles.authFooter}>
+        <button className={styles.adminEntryBtn} onClick={onAdminClick}>
+          ⚙️ 관리자 로그인
+        </button>
+      </div>
     </div>
   );
 }

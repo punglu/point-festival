@@ -13,7 +13,7 @@ export default function DeductionAccordion({ deductions, totalDeducted, isOpen, 
     <div className={styles.deductSection}>
       <div className={styles.deductHeader} onClick={onToggle}>
         <span className={styles.deductHeaderTitle}>📉 포인트 사용 내역</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className={styles.deductHeaderRight}>
           {totalDeducted > 0 && (
             <span className={styles.deductTotal}>-{totalDeducted}P</span>
           )}

@@ -1,0 +1,116 @@
+/* MissionProgressBar — 3노드 미니 인디케이터 */
+
+.bar {
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+  /* 카드 너비에 맞추되 최대 폭 제한 */
+  max-width: 200px;
+}
+
+/* 노드 + 라벨 묶음 */
+.stepGroup {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.stepWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+/* ── 노드 (원형) ── */
+.node {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 현재 단계: 약간 확대 + 글로우 */
+.nodeCurrent {
+  transform: scale(1.15);
+}
+
+/* 도전중 (active) */
+.nodeActive {
+  background: #3B82F6;
+  color: #fff;
+}
+.nodeCurrent.nodeActive {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+/* 확인중 (pending_approval) */
+.nodePending {
+  background: #F59E0B;
+  color: #fff;
+}
+.nodeCurrent.nodePending {
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.28);
+}
+
+/* 완료! (completed) */
+.nodeCompleted {
+  background: #10B981;
+  color: #fff;
+}
+.nodeCurrent.nodeCompleted {
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+}
+
+/* 이미 지나간 단계 */
+.nodePast {
+  background: #C7D2FE;
+  color: #4338CA;
+}
+
+/* 아직 안 된 단계 */
+.nodeFuture {
+  background: #F1F5F9;
+  color: #CBD5E1;
+  border: 1.5px solid #E2E8F0;
+}
+
+/* ── 연결선 ── */
+.line {
+  flex: 1;
+  height: 2px;
+  border-radius: 1px;
+  min-width: 8px;
+}
+
+.lineFilled {
+  background: #C7D2FE;
+}
+
+.lineEmpty {
+  background: #E2E8F0;
+}
+
+/* ── 라벨 ── */
+.label {
+  font-size: 9px;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.labelCurrent {
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.labelPast {
+  color: #94A3B8;
+}
+
+.labelFuture {
+  color: #CBD5E1;
+}

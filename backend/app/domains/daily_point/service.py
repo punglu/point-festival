@@ -1,11 +1,145 @@
-from datetime import date
+from datetime import date, timedelta
 from typing import Optional
+from zoneinfo import ZoneInfo
 
-from sqlalchemy import select
+from fastapi import HTTPException
+from sqlalchemy import func as sa_func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.daily_point.models import DailyPoint
-from app.domains.daily_point.schema import DailyPointUpsert, DailyPointAdjust, DailyPointResponse
+from app.domains.daily_point.schema import (
+    DailyPointUpsert, DailyPointAdjust, DailyPointResponse, PointCycleSummary,
+)
+
+KST = ZoneInfo("Asia/Seoul")
+VALID_CYCLES = {"daily", "weekly", "monthly", "quarterly", "yearly"}
+
+
+def get_cycle_date_range(cycle: str, base_date: date) -> tuple[date, date]:
+    """
+    주기에 따른 시작일~종료일 계산 (KST 기준, sync — DB I/O 없음).
+
+    Args:
+        cycle: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'
+        base_date: 기준 날짜
+
+    Returns:
+        (start_date, end_date) 튜플
+    """
+    if cycle not in VALID_CYCLES:
+        raise ValueError(f"유효하지 않은 주기: '{cycle}'. 허용값: {VALID_CYCLES}")
+
+    if cycle == "daily":
+        return (base_date, base_date)
+
+    elif cycle == "weekly":
+        # ISO-8601: 월요일 시작 (weekday()=0)
+        start = base_date - timedelta(days=base_date.weekday())
+        end = start + timedelta(days=6)
+        return (start, end)
+
+    elif cycle == "monthly":
+        start = base_date.replace(day=1)
+        if start.month == 12:
+            end = date(start.year + 1, 1, 1) - timedelta(days=1)
+        else:
+            end = date(start.year, start.month + 1, 1) - timedelta(days=1)
+        return (start, end)
+
+    elif cycle == "quarterly":
+        quarter_start_month = ((base_date.month - 1) // 3) * 3 + 1
+        start = date(base_date.year, quarter_start_month, 1)
+        if quarter_start_month + 3 > 12:
+            end = date(base_date.year + 1, 1, 1) - timedelta(days=1)
+        else:
+            end = date(base_date.year, quarter_start_month + 3, 1) - timedelta(days=1)
+        return (start, end)
+
+    else:  # yearly
+        return (date(base_date.year, 1, 1), date(base_date.year, 12, 31))
+
+
+def _get_cycle_label(cycle: str, start: date, end: date) -> str:
+    """UI 표시용 라벨 생성 (sync — 순수 계산)"""
+    if cycle == "daily":
+        return f"{start.strftime('%m/%d')} 포인트"
+    elif cycle == "weekly":
+        return f"이번 주 ({start.strftime('%m/%d')}~{end.strftime('%m/%d')})"
+    elif cycle == "monthly":
+        return f"{start.month}월 포인트"
+    elif cycle == "quarterly":
+        quarter = (start.month - 1) // 3 + 1
+        return f"Q{quarter} 포인트"
+    elif cycle == "yearly":
+        return f"{start.year}년 포인트"
+    return ""
+
+
+async def get_point_cycle_summary(
+    db: AsyncSession, player_id: int, base_date: date, cycle: str
+) -> PointCycleSummary:
+    """
+    -- [SQL] 주기별 포인트 집계
+    -- SELECT
+    --   COALESCE(SUM(earned), 0) AS total_earned,
+    --   COALESCE(SUM(spent), 0) AS total_spent,
+    --   COALESCE(SUM(balance), 0) AS balance,
+    --   COUNT(*) AS day_count
+    -- FROM daily_points
+    -- WHERE player_id = :player_id
+    --   AND date BETWEEN :start_date AND :end_date
+    --   AND deleted_at IS NULL;
+    """
+    if cycle not in VALID_CYCLES:
+        raise HTTPException(status_code=400, detail=f"유효하지 않은 주기: '{cycle}'")
+
+    start_date, end_date = get_cycle_date_range(cycle, base_date)
+
+    stmt = select(
+        sa_func.coalesce(sa_func.sum(DailyPoint.earned), 0).label("total_earned"),
+        sa_func.coalesce(sa_func.sum(DailyPoint.spent), 0).label("total_spent"),
+        sa_func.coalesce(sa_func.sum(DailyPoint.balance), 0).label("balance"),
+        sa_func.count().label("day_count"),
+    ).where(
+        DailyPoint.player_id == player_id,
+        DailyPoint.date >= start_date,
+        DailyPoint.date <= end_date,
+        DailyPoint.deleted_at.is_(None),
+    )
+
+    result = await db.execute(stmt)
+    row = result.one()
+
+    return PointCycleSummary(
+        player_id=player_id,
+        cycle=cycle,
+        start_date=start_date,
+        end_date=end_date,
+        total_earned=row.total_earned,
+        total_spent=row.total_spent,
+        balance=row.balance,
+        day_count=row.day_count,
+        label=_get_cycle_label(cycle, start_date, end_date),
+    )
+
+
+async def get_daily_points_admin(
+    db: AsyncSession,
+    player_id: Optional[int] = None,
+    target_date: Optional[date] = None,
+) -> list[DailyPointResponse]:
+    """
+    -- [SQL] Admin 일일 포인트 조회 (player_id, date 선택 필터)
+    -- SELECT * FROM daily_points WHERE deleted_at IS NULL
+    -- [AND player_id = :player_id] [AND date = :date];
+    """
+    stmt = select(DailyPoint).where(DailyPoint.deleted_at.is_(None))
+    if player_id is not None:
+        stmt = stmt.where(DailyPoint.player_id == player_id)
+    if target_date is not None:
+        stmt = stmt.where(DailyPoint.date == target_date)
+    result = await db.execute(stmt)
+    return [DailyPointResponse.model_validate(dp) for dp in result.scalars().all()]
 
 
 async def get_daily_point(

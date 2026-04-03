@@ -1,0 +1,123 @@
+.section {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #92400E;
+}
+
+.countBadge {
+  background: #FCD34D;
+  color: #78350F;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 10px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #FDE68A;
+  border-left: 3px solid #818CF8;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.missionText {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.playerBadge {
+  font-size: 10px;
+  font-weight: 500;
+  color: #4338CA;
+  background: #EEF2FF;
+  padding: 2px 7px;
+  border-radius: 8px;
+}
+
+.pointBadge {
+  font-size: 10px;
+  font-weight: 500;
+  color: #059669;
+  background: #D1FAE5;
+  padding: 2px 7px;
+  border-radius: 8px;
+}
+
+.reason {
+  font-size: 11px;
+  color: #64748B;
+  line-height: 1.4;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btnApprove {
+  flex: 1;
+  padding: 5px 0;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #059669;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.btnApprove:hover { background: #047857; }
+
+.btnReject {
+  flex: 1;
+  padding: 5px 0;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.btnReject:hover { background: #FEE2E2; }
+
+@media (max-width: 1023px) {
+  .grid { grid-template-columns: 1fr; }
+}

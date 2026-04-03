@@ -7,6 +7,7 @@ class FeedbackCreate(BaseModel):
     player_id: int
     date: date
     msg: str
+    recipient: Optional[str] = None
 
 
 class FeedbackReplyCreate(BaseModel):
@@ -30,6 +31,8 @@ class FeedbackResponse(BaseModel):
     player_id: int
     date: date
     msg: str
+    recipient: Optional[str] = None
+    player_name: Optional[str] = None
     replies: list[FeedbackReplyResponse] = []
 
     model_config = {"from_attributes": True}

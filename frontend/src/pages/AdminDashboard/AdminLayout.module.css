@@ -1,42 +1,73 @@
-/* AdminLayout.module.css — 사이드바 레이아웃 */
+/* AdminLayout.module.css — 전체 Admin 레이아웃 + CSS 변수 토큰 */
 
-.adminLayout {
+.layout {
+  /* ── 토큰 정의 ── */
+  --ap:          #4338CA;   /* admin primary */
+  --ap-light:    #818CF8;
+  --ap-bg:       #EEF2FF;
+  --ap-hover:    #3730A3;
+  --sidebar-bg:  #312E81;
+  --sidebar-txt: #A5B4FC;
+  --sidebar-act: #E0E7FF;
+  --content-bg:  #F8FAFC;
+  --card-bg:     #FFFFFF;
+  --border:      #E2E8F0;
+  --text:        #1E293B;
+  --text-muted:  #64748B;
+  --text-dis:    #94A3B8;
+  --success:     #059669;
+  --success-bg:  #D1FAE5;
+  --warning:     #D97706;
+  --warning-bg:  #FEF3C7;
+  --warning-txt: #92400E;
+  --danger:      #DC2626;
+  --danger-bg:   #FEF2F2;
+  --radius:      8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --shadow-sm:   0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:   0 4px 12px rgba(0,0,0,.10), 0 2px 4px rgba(0,0,0,.06);
+
   display: flex;
   min-height: 100vh;
-  background: var(--admin-bg, #f5f7fa);
+  background: var(--content-bg);
+  font-family: 'Pretendard', 'Inter', sans-serif;
 }
 
-.desktopSidebar {
-  width: 240px;
+.sidebarDesktop {
+  display: block;
   flex-shrink: 0;
 }
 
-.mainArea {
+.mobileHeader {
+  display: none;
+}
+
+.main {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  padding: 28px 32px;
+  overflow-y: auto;
   min-width: 0;
 }
 
-.content {
-  flex: 1;
-  padding: 24px;
-  overflow-y: auto;
-}
-
-/* 태블릿: 아이콘 전용 사이드바 */
-@media (min-width: 769px) and (max-width: 1023px) {
-  .desktopSidebar {
-    width: 64px;
+/* ── 반응형: 모바일 < 1024px ── */
+@media (max-width: 1023px) {
+  .layout {
+    flex-direction: column;
   }
-}
 
-/* 모바일 */
-@media (max-width: 768px) {
-  .desktopSidebar {
+  .sidebarDesktop {
     display: none;
   }
-  .content {
+
+  .mobileHeader {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .main {
     padding: 16px;
   }
 }

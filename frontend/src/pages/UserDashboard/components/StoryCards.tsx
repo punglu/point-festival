@@ -17,26 +17,27 @@ const DEFAULT_CHEER = '오늘도 화이팅!';
 
 export default function StoryCards({ cheers, parentPhotos, senders }: Props) {
   return (
-    <div className={styles.cheerSection}>
-      <div className={styles.cheerGrid}>
-        {senders.map((sender) => (
-          <div key={sender.key} className={styles.cheerItem}>
-            <div className={styles.cheerPhotoRing} style={{ borderColor: sender.color }}>
+    <div className={styles.cheerRow}>
+      {senders.map((sender, idx) => {
+        const isDad = idx === 0;
+        return (
+          <div
+            key={sender.key}
+            className={`${styles.cheerCard} ${isDad ? styles.cheerCardDad : styles.cheerCardMom}`}
+          >
+            <div className={`${styles.cheerAvatar} ${isDad ? styles.cheerAvatarDad : styles.cheerAvatarMom}`}>
               {parentPhotos[sender.key] ? (
                 <img src={parentPhotos[sender.key]} alt={sender.label} className={styles.cheerPhoto} />
               ) : (
-                <span className={styles.cheerInitial}>{sender.label}</span>
+                <span>{sender.emoji || sender.label[0]}</span>
               )}
             </div>
-            <div className={styles.cheerBubbleWrapper}>
-              <span className={styles.cheerLabel} style={{ color: sender.color }}>{sender.label}</span>
-              <div className={styles.cheerBubble}>
-                {cheers[sender.key] || DEFAULT_CHEER}
-              </div>
+            <div className={`${styles.cheerBubble} ${isDad ? styles.cheerBubbleDad : styles.cheerBubbleMom}`}>
+              {cheers[sender.key] || DEFAULT_CHEER}
             </div>
           </div>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }

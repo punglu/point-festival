@@ -46,43 +46,55 @@ export default function AdminLoginView({ onBack }: Props) {
   };
 
   return (
-    <div className={styles.adminForm}>
-      <form onSubmit={handleSubmit}>
-        <div className={styles.formGroup}>
-          <input
-            type="text"
-            placeholder="아이디"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className={styles.adminFormInput}
-            autoComplete="username"
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <input
-            type="password"
-            placeholder="비밀번호"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={styles.adminFormInput}
-            autoComplete="current-password"
-          />
-        </div>
+    <div className={styles.authView}>
+      {/* Indigo 헤더 */}
+      <div className={styles.adminHeader}>
+        <div className={styles.adminIcon}>⚙️</div>
+        <h1 className={styles.authTitle}>관리자 로그인</h1>
+        <p className={styles.authSubtitle}>관리자 계정으로 로그인하세요</p>
+      </div>
 
-        {error && <div className={styles.errorMessage}>{error}</div>}
+      {/* 로그인 폼 */}
+      <div className={styles.adminForm}>
+        <form onSubmit={handleSubmit} className={styles.loginForm}>
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>아이디</label>
+            <input
+              type="text"
+              placeholder="아이디 입력"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className={styles.adminFormInput}
+              autoComplete="username"
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>비밀번호</label>
+            <input
+              type="password"
+              placeholder="비밀번호 입력"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={styles.adminFormInput}
+              autoComplete="current-password"
+            />
+          </div>
 
-        <button
-          type="submit"
-          className={styles.adminFormButton}
-          disabled={isLoading || !username || !password}
-        >
-          {isLoading ? '로그인 중...' : '로그인'}
+          {error && <div className={styles.errorMessage}>{error}</div>}
+
+          <button
+            type="submit"
+            className={styles.adminFormButton}
+            disabled={isLoading || !username || !password}
+          >
+            {isLoading ? '로그인 중...' : '로그인'}
+          </button>
+        </form>
+
+        <button className={styles.backLink} onClick={onBack}>
+          ← 플레이어 선택으로
         </button>
-      </form>
-
-      <button className={styles.backLink} onClick={onBack}>
-        ← 플레이어 선택으로
-      </button>
+      </div>
     </div>
   );
 }

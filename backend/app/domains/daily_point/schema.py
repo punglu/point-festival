@@ -2,6 +2,19 @@ from datetime import date
 from pydantic import BaseModel
 
 
+class PointCycleSummary(BaseModel):
+    """주기별 포인트 집계 응답"""
+    player_id: int
+    cycle: str
+    start_date: date
+    end_date: date
+    total_earned: int
+    total_spent: int
+    balance: int
+    day_count: int
+    label: str
+
+
 class DailyPointUpsert(BaseModel):
     player_id: int
     date: date
