@@ -9,7 +9,7 @@ NAS_HOST="192.168.1.57"
 NAS_PORT="5422"
 NAS_SSH="ssh -p ${NAS_PORT} ${NAS_USER}@${NAS_HOST}"
 NAS_SCP="scp -P ${NAS_PORT}"
-NAS_PATH="/volume3/V3_APPL/PJT/point-festival"
+NAS_PATH="/var/services/homes/starbee/point-festival"
 IMAGE_FILE="mc-images.tar"
 
 echo "=== MC Point Festival — 프로덕션 배포 ==="
