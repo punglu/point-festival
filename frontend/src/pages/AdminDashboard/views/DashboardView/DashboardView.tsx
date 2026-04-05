@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getLocalToday, getWeekLabel, getMonday } from '../../../../shared/utils/dateUtils';
+
 import styles from './DashboardView.module.css';
 import { useAdminData } from '../../hooks/useAdminData';
 import StatCard from '../../components/StatCard/StatCard';
@@ -20,9 +20,6 @@ export default function DashboardView() {
     players, missions, notifications, dailyPoints,
     stats, missionRanking, cycle, loading, reload,
   } = useAdminData();
-
-  const today     = getLocalToday();
-  const weekRange = getWeekLabel(getMonday());
 
   const [selectedCard, setSelectedCard] = useState<CardMode | null>(null);
 
@@ -49,11 +46,7 @@ export default function DashboardView() {
       {/* 헤더 */}
       <div className={styles.header}>
         <div className={styles.titleArea}>
-          <h1 className={styles.title}>
-            대시보드
-            <span className={styles.weekRange}>{weekRange}</span>
-          </h1>
-          <p className={styles.dateText}>{today}</p>
+          <h1 className={styles.title}>대시보드</h1>
         </div>
         <div className={styles.headerActions}>
           <button className={styles.btnRefresh} onClick={reload}>새로고침</button>
@@ -62,6 +55,13 @@ export default function DashboardView() {
           </button>
         </div>
       </div>
+
+      {/* 주기 배너 */}
+      {cycleLabel && (
+        <div className={styles.cycleRow}>
+          <span className={styles.cycleBadge}>이번 주기: {cycleLabel}</span>
+        </div>
+      )}
 
       {/* 스탯 카드 4종 — 순서: 총 발행 → 활성 → 승인대기 → 완료 */}
       <div className={`${styles.statGrid} ${selectedCard ? styles.statGridHasSelection : ''}`}>
@@ -72,7 +72,6 @@ export default function DashboardView() {
           <StatCard
             label="총 발행 포인트"
             value={`${stats.totalPointsIssued}pt`}
-            subtext={cycle.label}
           />
         </div>
         <div
@@ -128,7 +127,7 @@ export default function DashboardView() {
       />
 
       {/* 2. 밸런싱 섹션 */}
-      <BalanceSection missions={missions} players={childPlayers} />
+      <BalanceSection missions={missions} players={childPlayers} cycleLabel={cycleLabel} />
 
       {/* 3. 최근 알림 */}
       <RecentAlerts notifications={notifications} />

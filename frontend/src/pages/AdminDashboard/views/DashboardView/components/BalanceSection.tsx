@@ -16,9 +16,10 @@ interface PlayerBalance {
 interface BalanceSectionProps {
   missions: Mission[];
   players: Player[];
+  cycleLabel: string;
 }
 
-export default function BalanceSection({ missions, players }: BalanceSectionProps) {
+export default function BalanceSection({ missions, players, cycleLabel }: BalanceSectionProps) {
   // 아이 플레이어만 (role='player'인 플레이어 — 아빠/엄마 제외)
   const childPlayers = useMemo(() => {
     return players.filter(p => p.role === 'player');
@@ -32,8 +33,8 @@ export default function BalanceSection({ missions, players }: BalanceSectionProp
       const done = myMissions.filter(m => m.status === 'completed');
       const doneCount = done.length;
       const donePoints = done.reduce((s, m) => s + m.point, 0);
-      const pending = myMissions.filter(m => m.status === 'active' || m.status === 'pending_approval');
-      const pendingPoints = pending.reduce((s, m) => s + m.point, 0);
+      // 남은 포인트: 배정 총합 - 완료 총합 (failed 미션 제외)
+      const pendingPoints = assignedPoints - donePoints;
       const rate = assignedPoints > 0 ? Math.round((donePoints / assignedPoints) * 100) : 0;
       return { id: p.id, name: p.name, assignedCount, assignedPoints, doneCount, donePoints, pendingPoints, rate };
     });
@@ -46,7 +47,10 @@ export default function BalanceSection({ missions, players }: BalanceSectionProp
 
   return (
     <div className={styles.section}>
-      <h3 className={styles.sectionTitle}>미션 밸런싱</h3>
+      <div className={styles.sectionHeader}>
+        <h3 className={styles.sectionTitle}>미션 밸런싱</h3>
+        {cycleLabel && <span className={styles.sectionSub}>집계: {cycleLabel}</span>}
+      </div>
 
       {/* 플레이어별 밸런싱 카드 */}
       <div className={styles.cardGrid}>
@@ -57,18 +61,42 @@ export default function BalanceSection({ missions, players }: BalanceSectionProp
               <div className={styles.cardName}>{b.name}</div>
             </div>
 
-            <div className={styles.statRow}>
-              <div className={styles.stat}>
-                <div className={styles.statNum}>{b.assignedCount}</div>
-                <div className={styles.statLabel}>배정</div>
+            {/* ---- 미션 현황 ---- */}
+            <div className={styles.rowLabel}>미션 현황</div>
+            <div className={`${styles.statRow} ${styles.statRow2}`}>
+              <div className={styles.statCell}>
+                <div className={`${styles.statNum} ${styles.statPurple}`}>{b.assignedCount}</div>
+                <div className={styles.statCellLabel}>배정</div>
               </div>
-              <div className={styles.stat}>
-                <div className={`${styles.statNum} ${styles.statDone}`}>{b.doneCount}</div>
-                <div className={styles.statLabel}>완료</div>
+              <div className={styles.statCell}>
+                <div className={`${styles.statNum} ${styles.statGreen}`}>{b.doneCount}</div>
+                <div className={styles.statCellLabel}>완료</div>
               </div>
-              <div className={styles.stat}>
-                <div className={`${styles.statNum} ${styles.statPending}`}>{b.pendingPoints}P</div>
-                <div className={styles.statLabel}>예정</div>
+            </div>
+
+            {/* 구분선 */}
+            <div className={styles.separator} />
+
+            {/* ---- 포인트 현황 ---- */}
+            <div className={styles.rowLabel}>포인트 현황</div>
+            <div className={`${styles.statRow} ${styles.statRow3}`}>
+              <div className={styles.statCell}>
+                <div className={`${styles.statNum} ${styles.statPurple}`} style={{ fontSize: '13px' }}>
+                  {b.assignedPoints}P
+                </div>
+                <div className={styles.statCellLabel}>배정</div>
+              </div>
+              <div className={styles.statCell}>
+                <div className={`${styles.statNum} ${styles.statGreen}`} style={{ fontSize: '13px' }}>
+                  {b.donePoints}P
+                </div>
+                <div className={styles.statCellLabel}>획득</div>
+              </div>
+              <div className={styles.statCell}>
+                <div className={`${styles.statNum} ${styles.statAmber}`} style={{ fontSize: '13px' }}>
+                  {b.pendingPoints}P
+                </div>
+                <div className={styles.statCellLabel}>남은</div>
               </div>
             </div>
 
@@ -80,42 +108,54 @@ export default function BalanceSection({ missions, players }: BalanceSectionProp
         ))}
       </div>
 
-      {/* 포인트 밸런스 비교 바 */}
+      {/* 포인트 밸런스 비교 — 세로 바 차트 */}
       <div className={styles.compareCard}>
-        <div className={styles.compareTitle}>포인트 밸런스 비교</div>
-
-        <div className={styles.compareGroup}>
-          <div className={styles.compareLabel}>배정 포인트 (이번 주기)</div>
-          {balances.map(b => (
-            <div key={b.id} className={styles.barRow}>
-              <span className={styles.barName}>{b.name}</span>
-              <div className={styles.barTrack}>
-                <div
-                  className={`${styles.barFill} ${styles.barAssigned}`}
-                  style={{ width: `${(b.assignedPoints / maxAssigned) * 100}%` }}
-                >
-                  {b.assignedPoints > 0 && <span className={styles.barValue}>{b.assignedPoints}P</span>}
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className={styles.compareHeader}>
+          <div className={styles.compareTitle}>포인트 밸런스 비교</div>
+          {cycleLabel && <div className={styles.compareSub}>집계: {cycleLabel}</div>}
         </div>
 
-        <div className={styles.compareGroup}>
-          <div className={styles.compareLabel}>획득 포인트 (이번 주기)</div>
-          {balances.map(b => (
-            <div key={b.id} className={styles.barRow}>
-              <span className={styles.barName}>{b.name}</span>
-              <div className={styles.barTrack}>
-                <div
-                  className={`${styles.barFill} ${styles.barEarned}`}
-                  style={{ width: `${(b.donePoints / maxEarned) * 100}%` }}
-                >
-                  {b.donePoints > 0 && <span className={styles.barValue}>{b.donePoints}P</span>}
+        <div className={styles.chartRow}>
+          {/* 배정 포인트 그룹 */}
+          <div className={styles.chartGroup}>
+            <div className={styles.chartLabel}>배정 포인트</div>
+            <div className={styles.verticalBars}>
+              {balances.map(b => (
+                <div key={`a-${b.id}`} className={styles.vBar}>
+                  <div className={styles.vBarValue} style={{ color: '#3C3489' }}>
+                    {b.assignedPoints > 0 ? `${b.assignedPoints}P` : '0'}
+                  </div>
+                  <div
+                    className={`${styles.vBarBlock} ${styles.vBarPurple}`}
+                    style={{ height: `${maxAssigned > 0 ? (b.assignedPoints / maxAssigned) * 100 : 0}%`, minHeight: '2px' }}
+                  />
+                  <div className={styles.vBarName}>{b.name}</div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* 구분선 */}
+          <div className={styles.chartDivider} />
+
+          {/* 획득 포인트 그룹 */}
+          <div className={styles.chartGroup}>
+            <div className={styles.chartLabel}>획득 포인트</div>
+            <div className={styles.verticalBars}>
+              {balances.map(b => (
+                <div key={`e-${b.id}`} className={styles.vBar}>
+                  <div className={styles.vBarValue} style={{ color: '#27500A' }}>
+                    {b.donePoints > 0 ? `${b.donePoints}P` : '0'}
+                  </div>
+                  <div
+                    className={`${styles.vBarBlock} ${styles.vBarGreen}`}
+                    style={{ height: `${maxEarned > 0 ? (b.donePoints / maxEarned) * 100 : 0}%`, minHeight: '2px' }}
+                  />
+                  <div className={styles.vBarName}>{b.name}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

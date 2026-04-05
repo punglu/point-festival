@@ -15,6 +15,22 @@
 
 .titleArea {}
 
+/* 주기 배너 행 — 스탯 카드 바로 위, 우측 정렬 */
+.cycleRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -8px;
+}
+
+.cycleBadge {
+  font-size: 11px;
+  color: #534AB7;
+  background: #EEEDFE;
+  padding: 3px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
 .title {
   font-size: 22px;
   font-weight: 700;
@@ -22,19 +38,6 @@
   margin: 0;
 }
 
-.dateText {
-  font-size: 13px;
-  color: #64748B;
-  margin-top: 4px;
-}
-
-.weekRange {
-  font-size: 10px;
-  color: var(--muted, #94a3b8);
-  font-weight: 400;
-  margin-left: 8px;
-  opacity: 0.7;
-}
 
 .headerActions {
   display: flex;
@@ -131,6 +134,12 @@
 @media (max-width: 1023px) {
   .statGrid { grid-template-columns: repeat(2, 1fr); }
   .grid2    { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .cycleBadge {
+    font-size: 10px;
+  }
 }
 
 @media (max-width: 480px) {

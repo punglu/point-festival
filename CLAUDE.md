@@ -568,6 +568,22 @@ mc-point-festival/
 - **밸런싱 대상**: players에서 role='player'만 필터. 아빠/엄마(role='admin') 제외
 - **기존 모달 제거**: ActiveMissionDetailModal, PendingApprovalModal, CompletedMissionsModal, PointHistoryModal → 인라인 CardDetailTable로 대체. 모달 파일은 보존
 
+### P-HOTFIX-DASHBOARD-DETAIL-002 — 밸런싱 카드 개선 + 세로 바 + 주기 배너
+| 작업 | 상태 |
+|---|---|
+| BalanceSection 카드: 3셀 1행 → 2행 분리 (미션 현황 / 포인트 현황) + 구분선 + 서브 라벨 | ✅ 완료 |
+| BalanceSection 카드: 셀 배경색 적용 (statCell → background-secondary) | ✅ 완료 |
+| BalanceSection 포인트 밸런스 비교: 가로 바 → 세로 바 차트 (4인 막대) | ✅ 완료 |
+| DashboardView: 글로벌 주기 배너 (타이틀 우측 cycleBadge) | ✅ 완료 |
+| DashboardView: 스탯 카드 총 발행 포인트에서 "이번 주기" 서브 라벨 제거 | ✅ 완료 |
+| BalanceSection: 섹션 타이틀 + 비교 차트에 "집계: 기간" 표기 | ✅ 완료 |
+
+#### 확립된 패턴 (DETAIL-002)
+- **글로벌 주기 배너**: 개별 컴포넌트가 주기를 각자 표기하지 않고, 대시보드 최상단에 1회 표기. 하위 섹션은 "집계: 기간"으로 참조
+- **밸런싱 카드 2행 분리**: 건수(미션 현황)와 포인트(포인트 현황)를 구분선으로 분리. 서브 라벨 + 셀 배경으로 시각 구분
+- **세로 바 차트**: 4인 이하 비교에서 가로 바보다 직관적. 2그룹(배정/획득) 나란히 배치
+- **pendingPoints 계산**: `assignedPoints - donePoints` (active/pending_approval 합산 아님. Lazy Expiry 적용 후 현재 주기 내에서 정확)
+
 ---
 
 ## 16. Phase 7 Task 목록 (진행중)

@@ -18,11 +18,9 @@ export default function StatCard({ label, value, subtext, subtextColor, onClick 
     >
       <div className={styles.label}>{label}</div>
       <div className={styles.value}>{value}</div>
-      {subtext && (
-        <div className={styles.subtext} style={subtextColor ? { color: subtextColor } : undefined}>
-          {subtext}
-        </div>
-      )}
+      <div className={styles.subtext} style={subtextColor ? { color: subtextColor } : undefined}>
+        {subtext ?? ''}
+      </div>
     </div>
   );
 }

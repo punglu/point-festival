@@ -2,11 +2,23 @@
   margin-top: 4px;
 }
 
+/* 섹션 헤더 */
+.sectionHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
 .sectionTitle {
   font-size: 13px;
   font-weight: 600;
   color: #1E293B;
-  margin-bottom: 10px;
+}
+
+.sectionSub {
+  font-size: 10px;
+  color: var(--color-text-secondary, #64748b);
 }
 
 /* 밸런싱 카드 그리드 */
@@ -28,7 +40,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .avatar {
@@ -51,33 +63,63 @@
   color: #1E293B;
 }
 
-/* 통계 3열 */
+/* 서브 라벨 (미션 현황 / 포인트 현황) */
+.rowLabel {
+  font-size: 9px;
+  color: var(--color-text-secondary, #64748b);
+  margin-bottom: 4px;
+  padding-left: 2px;
+}
+
+/* 구분선 */
+.separator {
+  height: 0.5px;
+  background: var(--color-border-tertiary, #e2e8f0);
+  margin: 8px 0;
+}
+
+/* stat 행 공통 */
 .statRow {
   display: grid;
+  gap: 4px;
+}
+
+/* 2열 (배정/완료) */
+.statRow2 {
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 0;
+}
+
+/* 3열 (배정P/획득P/남은P) */
+.statRow3 {
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 6px;
   margin-bottom: 10px;
 }
 
-.stat {
+/* 개별 셀 */
+.statCell {
   text-align: center;
+  background: var(--color-background-secondary, #f8fafc);
+  border-radius: 6px;
+  padding: 5px 4px;
 }
 
 .statNum {
-  font-size: 18px;
-  font-weight: 600;
-  color: #3C3489;
+  font-size: 14px;
+  font-weight: 500;
   line-height: 1.1;
 }
 
-.statDone    { color: #27500A; }
-.statPending { color: #854F0B; }
-
-.statLabel {
+.statCellLabel {
   font-size: 9px;
-  color: #64748b;
-  margin-top: 2px;
+  color: var(--color-text-secondary, #64748b);
+  margin-top: 1px;
 }
+
+/* 색상 */
+.statPurple { color: #3C3489; }
+.statGreen  { color: #27500A; }
+.statAmber  { color: #854F0B; }
 
 /* 진행률 바 */
 .progressTrack {
@@ -108,74 +150,97 @@
   padding: 14px;
 }
 
+/* 비교 카드 헤더 */
+.compareHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
 .compareTitle {
   font-size: 12px;
-  font-weight: 600;
-  color: #1E293B;
-  margin-bottom: 12px;
+  font-weight: 500;
 }
 
-.compareGroup {
-  margin-bottom: 12px;
-}
-
-.compareGroup:last-child {
-  margin-bottom: 0;
-}
-
-.compareLabel {
+.compareSub {
   font-size: 10px;
-  color: #64748b;
-  margin-bottom: 6px;
+  color: var(--color-text-secondary, #64748b);
 }
 
-.barRow {
+/* 차트 2그룹 가로 배치 */
+.chartRow {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
+  gap: 16px;
 }
 
-.barName {
-  font-size: 11px;
-  color: #64748b;
-  width: 32px;
-  flex-shrink: 0;
-}
-
-.barTrack {
+.chartGroup {
   flex: 1;
-  background: #F1EFE8;
-  border-radius: 3px;
-  height: 14px;
-  overflow: hidden;
 }
 
-.barFill {
-  height: 100%;
-  border-radius: 3px;
+.chartLabel {
+  font-size: 10px;
+  color: var(--color-text-secondary, #64748b);
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.chartDivider {
+  width: 0.5px;
+  background: var(--color-border-tertiary, #e2e8f0);
+}
+
+/* 세로 바 컨테이너 */
+.verticalBars {
   display: flex;
-  align-items: center;
-  padding-left: 5px;
-  min-width: 4px;
-  transition: width 0.3s;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 6px;
+  height: 100px;
 }
 
-.barAssigned { background: #AFA9EC; }
-.barEarned   { background: #97C459; }
+/* 개별 바 */
+.vBar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  max-width: 40px;
+}
 
-.barValue {
+.vBarValue {
   font-size: 9px;
   font-weight: 500;
-  white-space: nowrap;
 }
 
-.barAssigned .barValue { color: #3C3489; }
-.barEarned   .barValue { color: #173404; }
+.vBarBlock {
+  width: 100%;
+  border-radius: 3px 3px 0 0;
+  min-height: 2px;
+  transition: height 0.3s;
+}
+
+.vBarPurple { background: #AFA9EC; }
+.vBarGreen  { background: #97C459; }
+
+.vBarName {
+  font-size: 9px;
+  color: var(--color-text-secondary, #64748b);
+}
 
 /* 모바일 */
 @media (max-width: 768px) {
   .cardGrid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .verticalBars {
+    height: 80px;
+    gap: 4px;
+  }
+
+  .vBarValue { font-size: 8px; }
+  .vBarName  { font-size: 8px; }
+  .chartRow  { gap: 12px; }
 }
