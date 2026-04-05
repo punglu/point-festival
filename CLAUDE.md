@@ -61,6 +61,7 @@
 - **Docker 3-Tier**: Frontend(Nginx) / Backend(FastAPI) / DB(PostgreSQL) 분리
 - **개발**: `docker-compose.yml` (볼륨 마운트, 핫 리로드)
 - **운영**: `docker-compose.prod.yml` (이미지 기반, NAS 경로)
+- **배포**: `deploy.sh`는 빌드+전송만 (크로스 빌드 `buildx amd64` + SSH 파이프). NAS 컨테이너 재시작은 PM 수동
 
 ---
 
@@ -542,7 +543,7 @@ mc-point-festival/
 | P7-INFRA-002 | `.gitignore`: `favicon-assets/`, `logo-assets/` 추가 (git rm --cached) | ✅ 완료 |
 | P7-INFRA-003 | `docker-compose.yml`: `image:` 태그 명시 (`mc-backend/mc-frontend:latest`), version 제거 | ✅ 완료 |
 | P7-INFRA-004 | `docker-compose.prod.yml`: B방식 (image 기반, NAS bind mount, `init.sql` 마운트) | ✅ 완료 |
-| P7-INFRA-005 | `deploy.sh`: Mac 로컬 빌드 → SSH 파이프 전송 → NAS sudo docker 실행 | ✅ 완료 |
+| P7-INFRA-005 | `deploy.sh`: Mac 크로스 빌드(`buildx amd64`) → SSH 파이프 전송. NAS 컨테이너 재시작은 수동 | ✅ 완료 |
 | P7-INFRA-006 | `reset-history.sh`: 이력 데이터 초기화 스크립트 (계정/설정 유지) | ✅ 완료 |
 | P7-INFRA-007 | `.env.production.template` 신규 생성 | ✅ 완료 |
 
@@ -590,10 +591,13 @@ mc-point-festival/
 | P7-PATCH-001 | Admin DashboardView: 플레이어별 배정 미션 수 + 획득 예정 포인트 표시 (밸런싱) | 🔄 진행중 |
 
 ### Phase 7 확립된 패턴
-- **B방식 배포**: Mac에서 `docker-compose build` → `docker save` → SSH 파이프(`cat | ssh "cat >"`) → NAS `sudo docker load` → `docker-compose up -d`
+- **2단계 배포**: deploy.sh(Mac)는 빌드+전송만 수행. NAS 컨테이너 재시작은 PM이 SSH 접속 후 수동 실행
+- **크로스 빌드**: Mac ARM → NAS AMD64이므로 `docker buildx build --platform linux/amd64` 필수. `docker-compose build` 사용 금지
+- **SSH 파이프 전송**: Synology SFTP chroot로 `scp` 절대경로 불가 → `cat file | ssh "cat > path"` 방식
+- **NAS sudo 필수**: docker 그룹 미등록 → 모든 docker 명령에 `sudo` 접두
+- **docker tag 필수**: 로컬 빌드명 `mc-point-festival-backend` → prod 참조명 `mc-backend`로 태깅
 - **pgdata 보존**: `docker-compose down`은 컨테이너만 삭제. bind mount `pgdata/`는 유지됨. `init.sql`은 `pgdata/`가 빈 경우에만 실행
 - **init.sql 마운트 필수**: `docker-compose.prod.yml`에 `./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql` 없으면 최초 기동 시 빈 DB
-- **NAS SSH 파이프**: Synology SFTP chroot로 `scp` 절대경로 불가 → `cat file | ssh "cat > path"` 방식
 
 ---
 
