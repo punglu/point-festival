@@ -209,8 +209,8 @@ INSERT INTO player_auth (player_id, pin_hash, is_admin) VALUES
 -- 해시 생성: python3 -c "import bcrypt; print(bcrypt.hashpw(b'admin1234', bcrypt.gensalt(12)).decode())"
 -- 아래 해시는 실제 'admin1234'와 매칭 검증 완료
 INSERT INTO admin_auth (username, password, display_name, player_id) VALUES
-    ('dad', '$2b$12$cDiscHyPegxLxvtmYuovvOTbflxIfDSRFUoYQytwO0KpceYIHJxG2', '아빠', 4),
-    ('mom', '$2b$12$8FXpLsillveX2B4dXRtWSeb0hZgqBMimMXceDNy4I8lRdYq5l0q5u', '엄마', 5);
+    ('dad', '$2b$12$cDiscHyPegxLxvtmYuovvOTbflxIfDSRFUoYQytwO0KpceYIHJxG2', '아빠', 3),
+    ('mom', '$2b$12$8FXpLsillveX2B4dXRtWSeb0hZgqBMimMXceDNy4I8lRdYq5l0q5u', '엄마', 4);
 
 INSERT INTO app_configs (key, value) VALUES
     ('photos.dad', ''),

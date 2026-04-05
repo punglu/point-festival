@@ -7,7 +7,8 @@ services:
     restart: always
     env_file: .env
     volumes:
-      - /volume1/docker/mc-point-festival/pgdata:/var/lib/postgresql/data
+      - /volume3/V3_APPL/PJT/point-festival/pgdata:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U mc_admin -d mc_festival"]
       interval: 10s
