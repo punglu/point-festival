@@ -10,7 +10,8 @@ class Settings(BaseSettings):
     MAX_LOGIN_ATTEMPTS: int = 5
     LOCK_DURATION_SECONDS: int = 300
 
-    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173,https://point-festival.exiledstarbee.synology.me"
+    ENVIRONMENT: str = "development"
 
     class Config:
         env_file = ".env"

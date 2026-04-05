@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.domains.auth.router import router as auth_router
@@ -34,12 +35,25 @@ async def lifespan(app: FastAPI):
     yield
 
 
+_is_prod = getattr(settings, "ENVIRONMENT", "development") == "production"
+
 app = FastAPI(
     title="MC Point Festival API",
     version="1.0.0",
     description="마인크래프트 포인트 잔치 백엔드 API",
     lifespan=lifespan,
+    docs_url=None if _is_prod else "/docs",
+    redoc_url=None if _is_prod else "/redoc",
+    openapi_url=None if _is_prod else "/openapi.json",
 )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "서버 내부 오류가 발생했습니다."},
+    )
+
 
 # CORS (개발 환경 — 프로덕션은 nginx 프록시로 대체)
 app.add_middleware(

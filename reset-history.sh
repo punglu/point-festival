@@ -30,7 +30,10 @@ if [ "$INCLUDE_TEMPLATES" = true ]; then
     TEMPLATE_SQL="TRUNCATE mission_templates RESTART IDENTITY CASCADE;"
 fi
 
-docker exec -i mc-db psql -U mc_admin -d mc_festival << SQL
+DB_USER="${POSTGRES_USER:-mc_admin}"
+DB_NAME="${POSTGRES_DB:-mc_festival}"
+
+docker exec -i mc-db psql -U "$DB_USER" -d "$DB_NAME" << SQL
 BEGIN;
 
 -- 이력 데이터 삭제 (FK 의존성 순서)
