@@ -28,6 +28,7 @@ httpClient.interceptors.response.use(
 
       if (!isLoginRequest) {
         // 보호 API의 401은 "토큰 만료/무효" → 전역 세션 정리
+        sessionStorage.setItem('mc_session_expired', '1'); // Auth 페이지에서 메시지 표시용
         sessionStorage.removeItem('accessToken');
         localStorage.removeItem('loggedInPlayer');
         localStorage.removeItem('rememberMe');

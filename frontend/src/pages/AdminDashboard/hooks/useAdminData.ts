@@ -21,10 +21,10 @@ export function useAdminData() {
   const loadDashboardData = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     try {
-      // FE-01: 날짜 필터 없이 전체 미션 조회 (승인대기 포함)
+      // FE-01: 현재 주기 범위로 미션 조회 (스탯 카드 범위 통일)
       const [playersRes, missionsRes, notifsRes] = await Promise.all([
         adminApi.getPlayers(signal),
-        adminApi.getMissions({}, signal),
+        adminApi.getMissions({ date_from: cycle.startDate, date_to: cycle.endDate }, signal),
         adminApi.getNotifications(signal),
       ]);
       if (signal?.aborted) return;

@@ -1,3 +1,4 @@
+import calendar
 from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
@@ -24,6 +25,102 @@ def is_same_week(d1: date, d2: date) -> bool:
     s1, _ = get_week_range(d1)
     s2, _ = get_week_range(d2)
     return s1 == s2
+
+
+def get_cycle_range(cycle_type: str, ref_date: date) -> tuple[date, date]:
+    """
+    주기 타입에 따른 시작/종료 날짜 계산.
+    지원: daily, weekly, biweekly, monthly, quarterly, yearly
+    미지원 값: weekly 폴백
+    """
+    if cycle_type == "daily":
+        return ref_date, ref_date
+
+    elif cycle_type == "weekly":
+        start = ref_date - timedelta(days=ref_date.weekday())  # 월요일
+        end = start + timedelta(days=6)  # 일요일
+        return start, end
+
+    elif cycle_type == "biweekly":
+        # ISO week number 기반: 홀수주 시작 → 2주 단위
+        start = ref_date - timedelta(days=ref_date.weekday())  # 이번 주 월요일
+        iso_week = start.isocalendar()[1]
+        if iso_week % 2 == 0:
+            start = start - timedelta(weeks=1)  # 홀수주 월요일로 이동
+        end = start + timedelta(days=13)  # 2주 뒤 일요일
+        return start, end
+
+    elif cycle_type == "monthly":
+        start = ref_date.replace(day=1)
+        last_day = calendar.monthrange(ref_date.year, ref_date.month)[1]
+        end = ref_date.replace(day=last_day)
+        return start, end
+
+    elif cycle_type == "quarterly":
+        quarter_month = ((ref_date.month - 1) // 3) * 3 + 1  # 1, 4, 7, 10
+        start = ref_date.replace(month=quarter_month, day=1)
+        end_month = quarter_month + 2
+        last_day = calendar.monthrange(ref_date.year, end_month)[1]
+        end = ref_date.replace(month=end_month, day=last_day)
+        return start, end
+
+    elif cycle_type == "yearly":
+        start = ref_date.replace(month=1, day=1)
+        end = ref_date.replace(month=12, day=31)
+        return start, end
+
+    else:
+        # 알 수 없는 주기 → weekly 폴백
+        start = ref_date - timedelta(days=ref_date.weekday())
+        end = start + timedelta(days=6)
+        return start, end
+
+
+async def get_current_cycle(db: AsyncSession) -> str:
+    """
+    -- [SQL] 현재 주기 설정 조회
+    -- SELECT value FROM app_configs WHERE key = 'point_cycle';
+    -- 설계 예외: mission 도메인에서 config 모델 직접 조회 (PM 승인, 읽기 전용 1컬럼)
+    """
+    from app.domains.config.models import AppConfig
+    stmt = select(AppConfig.value).where(AppConfig.key == "point_cycle")
+    result = await db.execute(stmt)
+    value = result.scalar_one_or_none()
+    return value or "weekly"  # 미설정 시 weekly 기본값
+
+
+async def expire_stale_missions(db: AsyncSession, cycle_start_date: date) -> int:
+    """
+    -- [SQL] 주기 만료 미션 일괄 실패 처리 (Lazy Expiry)
+    -- UPDATE missions
+    -- SET status = 'failed',
+    --     msg = '[시스템] 주기 마감 자동 실패',
+    --     updated_at = NOW()
+    -- WHERE date < :cycle_start_date
+    --   AND status IN ('active', 'pending_approval')
+    --   AND deleted_at IS NULL;
+    --
+    -- 트리거: Admin 대시보드 미션 조회 시 1회 호출 (Lazy Expiry 패턴)
+    -- pending_approval 포함 이유: 주기 내 미승인 = 미완료로 간주
+    """
+    from sqlalchemy import update as sql_update
+
+    now_utc = datetime.now(timezone.utc)
+    stmt = (
+        sql_update(Mission)
+        .where(
+            Mission.date < cycle_start_date,
+            Mission.status.in_(["active", "pending_approval"]),
+            Mission.deleted_at.is_(None),
+        )
+        .values(
+            status="failed",
+            msg="[시스템] 주기 마감 자동 실패",
+            updated_at=now_utc,
+        )
+    )
+    result = await db.execute(stmt)
+    return result.rowcount
 
 
 # 역할별 미션 상태 전환 규칙 (단일 진실 공급원)
@@ -127,12 +224,17 @@ async def get_missions_admin(
     db: AsyncSession,
     player_id: Optional[int] = None,
     target_date: Optional[date] = None,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
 ) -> list[MissionResponse]:
     """
-    -- [SQL] Admin 미션 조회 (player_id, date 선택 필터)
+    -- [SQL] Admin 미션 조회 (player_id, date, date_from/date_to 선택 필터)
     -- SELECT * FROM missions
     -- WHERE deleted_at IS NULL
-    -- [AND player_id = :player_id] [AND date = :date]
+    -- [AND player_id = :player_id]
+    -- [AND date = :target_date]
+    -- [AND date >= :date_from]
+    -- [AND date <= :date_to]
     -- ORDER BY player_id ASC, sort_order ASC, id ASC;
     """
     stmt = select(Mission).where(Mission.deleted_at.is_(None))
@@ -140,6 +242,10 @@ async def get_missions_admin(
         stmt = stmt.where(Mission.player_id == player_id)
     if target_date is not None:
         stmt = stmt.where(Mission.date == target_date)
+    if date_from is not None:
+        stmt = stmt.where(Mission.date >= date_from)
+    if date_to is not None:
+        stmt = stmt.where(Mission.date <= date_to)
     stmt = stmt.order_by(Mission.player_id.asc(), Mission.sort_order.asc(), Mission.id.asc())
     result = await db.execute(stmt)
     return [MissionResponse.model_validate(m) for m in result.scalars().all()]

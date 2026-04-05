@@ -6,7 +6,7 @@ import LevelConfig from './components/LevelConfig';
 import SystemConfig from './components/SystemConfig';
 
 export default function ConfigView() {
-  const { configs, setConfig, cheerMsgs, setCheerMessage, isDirty, saveAll, loading, saving } = useConfigView();
+  const { configs, setConfig, cheerMsgs, setCheerMessage, isDirty, saveAll, loading, saving, cycleDaysRemaining, handlePeriodChange } = useConfigView();
 
   return (
     <div className={styles.view}>
@@ -39,6 +39,8 @@ export default function ConfigView() {
           <CycleConfig
             value={configs['point.cycle'] ?? null}
             onChange={(v) => setConfig('point.cycle', v)}
+            onPeriodChange={handlePeriodChange}
+            cycleDaysRemaining={cycleDaysRemaining}
           />
           <LevelConfig
             value={configs['level.thresholds'] ?? null}

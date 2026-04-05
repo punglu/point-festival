@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getLocalToday, getWeekLabel, getMonday } from '../../../../shared/utils/dateUtils';
 import styles from './DashboardView.module.css';
@@ -9,26 +9,36 @@ import PendingMissionCard from './components/PendingMissionCard';
 import WeeklyActivityChart from './components/WeeklyActivityChart';
 import RecentAlerts from './components/RecentAlerts';
 import MissionRanking from './components/MissionRanking';
-import ActiveMissionDetailModal from './components/ActiveMissionDetailModal';
-import PendingApprovalModal from './components/PendingApprovalModal';
-import CompletedMissionsModal from './components/CompletedMissionsModal';
-import PointHistoryModal from './components/PointHistoryModal';
+import CardDetailTable from './components/CardDetailTable';
+import BalanceSection from './components/BalanceSection';
+
+type CardMode = 'points' | 'active' | 'pending' | 'completed';
 
 export default function DashboardView() {
   const navigate = useNavigate();
   const {
     players, missions, notifications, dailyPoints,
     stats, missionRanking, cycle, loading, reload,
-    approveMission, rejectMission,
   } = useAdminData();
 
   const today     = getLocalToday();
   const weekRange = getWeekLabel(getMonday());
 
-  const [activeDetailOpen,    setActiveDetailOpen]    = useState(false);
-  const [pendingApprovalOpen, setPendingApprovalOpen] = useState(false);
-  const [completedOpen,       setCompletedOpen]       = useState(false);
-  const [pointHistoryOpen,    setPointHistoryOpen]    = useState(false);
+  const [selectedCard, setSelectedCard] = useState<CardMode | null>(null);
+
+  const handleCardClick = (mode: CardMode) => {
+    setSelectedCard(prev => prev === mode ? null : mode);
+  };
+
+  const cycleLabel = useMemo(() => {
+    if (!cycle?.startDate || !cycle?.endDate) return '';
+    const fmt = (d: string) => d.replace(/-/g, '.');
+    return `${fmt(cycle.startDate)} ~ ${fmt(cycle.endDate)}`;
+  }, [cycle]);
+
+  const childPlayers = useMemo(() => {
+    return players.filter(p => p.role === 'player');
+  }, [players]);
 
   if (loading) {
     return <div className={styles.loading}>데이터 로딩 중...</div>;
@@ -53,34 +63,62 @@ export default function DashboardView() {
         </div>
       </div>
 
-      {/* 스탯 카드 4열 */}
-      <div className={styles.statGrid}>
-        <StatCard
-          label="활성 미션"
-          value={stats.totalActiveMissions}
-          subtext={`오늘 ${stats.todayNewMissions}건`}
-          onClick={() => setActiveDetailOpen(true)}
-        />
-        <StatCard
-          label="승인 대기"
-          value={stats.pendingApproval}
-          subtext={stats.pendingApproval > 0 ? '확인 필요' : '모두 처리됨'}
-          subtextColor={stats.pendingApproval > 0 ? '#D97706' : '#059669'}
-          onClick={() => setPendingApprovalOpen(true)}
-        />
-        <StatCard
-          label="이번 주 완료"
-          value={stats.completedThisWeek}
-          subtext={`목표 ${stats.weeklyGoal}건`}
-          onClick={() => setCompletedOpen(true)}
-        />
-        <StatCard
-          label="총 발행 포인트"
-          value={`${stats.totalPointsIssued}pt`}
-          subtext={cycle.label}
-          onClick={() => setPointHistoryOpen(true)}
-        />
+      {/* 스탯 카드 4종 — 순서: 총 발행 → 활성 → 승인대기 → 완료 */}
+      <div className={`${styles.statGrid} ${selectedCard ? styles.statGridHasSelection : ''}`}>
+        <div
+          className={`${styles.statCardWrap} ${selectedCard === 'points' ? styles.statCardSelected : ''}`}
+          onClick={() => handleCardClick('points')}
+        >
+          <StatCard
+            label="총 발행 포인트"
+            value={`${stats.totalPointsIssued}pt`}
+            subtext={cycle.label}
+          />
+        </div>
+        <div
+          className={`${styles.statCardWrap} ${selectedCard === 'active' ? styles.statCardSelected : ''}`}
+          onClick={() => handleCardClick('active')}
+        >
+          <StatCard
+            label="활성 미션"
+            value={stats.totalActiveMissions}
+            subtext={`오늘 ${stats.todayNewMissions}건`}
+          />
+        </div>
+        <div
+          className={`${styles.statCardWrap} ${selectedCard === 'pending' ? styles.statCardSelected : ''}`}
+          onClick={() => handleCardClick('pending')}
+        >
+          <StatCard
+            label="승인 대기"
+            value={stats.pendingApproval}
+            subtext={stats.pendingApproval > 0 ? '확인 필요' : '모두 처리됨'}
+            subtextColor={stats.pendingApproval > 0 ? '#D97706' : '#059669'}
+          />
+        </div>
+        <div
+          className={`${styles.statCardWrap} ${selectedCard === 'completed' ? styles.statCardSelected : ''}`}
+          onClick={() => handleCardClick('completed')}
+        >
+          <StatCard
+            label="이번 주기 완료"
+            value={stats.completedThisWeek}
+            subtext={`목표 ${stats.weeklyGoal}건`}
+          />
+        </div>
       </div>
+
+      {/* 상세 테이블 패널 (선택된 카드가 있을 때만) */}
+      {selectedCard && (
+        <div className={styles.detailPanel}>
+          <CardDetailTable
+            mode={selectedCard}
+            missions={missions}
+            players={players}
+            cycleLabel={cycleLabel}
+          />
+        </div>
+      )}
 
       {/* 1. 플레이어 현황 */}
       <PlayerStatusCard
@@ -89,46 +127,18 @@ export default function DashboardView() {
         dailyPoints={dailyPoints}
       />
 
-      {/* 2. 최근 알림 */}
+      {/* 2. 밸런싱 섹션 */}
+      <BalanceSection missions={missions} players={childPlayers} />
+
+      {/* 3. 최근 알림 */}
       <RecentAlerts notifications={notifications} />
 
-      {/* 3. 승인 대기 미션 */}
+      {/* 4. 승인 대기 미션 */}
       <PendingMissionCard missions={missions} players={players} />
 
-      {/* 4. 이번 주 활동 랭킹 */}
+      {/* 5. 이번 주 활동 랭킹 */}
       <WeeklyActivityChart missions={missions} players={players} cycle={cycle} />
       <MissionRanking ranking={missionRanking} players={players} cycle={cycle} />
-
-      {/* 모달 */}
-      <ActiveMissionDetailModal
-        open={activeDetailOpen}
-        onClose={() => setActiveDetailOpen(false)}
-        missions={missions}
-        players={players}
-        cycle={cycle}
-      />
-      <PendingApprovalModal
-        open={pendingApprovalOpen}
-        onClose={() => setPendingApprovalOpen(false)}
-        missions={missions}
-        players={players}
-        onApprove={approveMission}
-        onReject={rejectMission}
-      />
-      <CompletedMissionsModal
-        open={completedOpen}
-        onClose={() => setCompletedOpen(false)}
-        missions={missions}
-        players={players}
-        cycle={cycle}
-      />
-      <PointHistoryModal
-        open={pointHistoryOpen}
-        onClose={() => setPointHistoryOpen(false)}
-        missions={missions}
-        players={players}
-        cycle={cycle}
-      />
     </div>
   );
 }

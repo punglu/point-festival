@@ -83,6 +83,33 @@
   gap: 16px;
 }
 
+/* 스탯 카드 탭화 */
+.statCardWrap {
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.statGridHasSelection .statCardWrap:not(.statCardSelected) {
+  opacity: 0.55;
+}
+
+.statCardSelected::after {
+  content: '';
+  display: block;
+  height: 3px;
+  background: #4338CA;
+  border-radius: 0 0 4px 4px;
+  margin-top: 3px;
+}
+
+/* 상세 패널 */
+.detailPanel {
+  background: #fff;
+  border: 0.5px solid #e2e8f0;
+  border-radius: 12px;
+  margin-top: -8px;
+}
+
 /* ── 2열 그리드 ── */
 .grid2 {
   display: grid;
@@ -109,4 +136,5 @@
 @media (max-width: 480px) {
   .title { font-size: 18px; }
   .statGrid { gap: 10px; }
+  .statGrid { grid-template-columns: repeat(2, 1fr); }
 }

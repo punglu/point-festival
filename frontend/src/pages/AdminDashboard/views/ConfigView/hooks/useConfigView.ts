@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { adminApi } from '../../../api/adminApi';
 import { getLocalToday } from '../../../../../shared/utils/dateUtils';
 import { useAdminToast } from '../../../hooks/useAdminToast';
+import { useCycle } from '../../../hooks/useCycle';
 
 const ALL_KEYS = [
   'cheer.senders',
@@ -19,6 +20,7 @@ const TODAY = getLocalToday();
 
 export function useConfigView() {
   const { showToast } = useAdminToast();
+  const cycle = useCycle();
   const [configs,        setConfigs]        = useState<Record<string, string | null>>({});
   const [original,       setOriginal]       = useState<Record<string, string | null>>({});
   const [cheerMsgs,      setCheerMsgs]      = useState<Record<CheerSender, string>>({ dad: '', mom: '' });
@@ -99,5 +101,23 @@ export function useConfigView() {
     }
   };
 
-  return { configs, setConfig, cheerMsgs, setCheerMessage, isDirty, saveAll, loading, saving };
+  const cycleDaysRemaining = useMemo(() => {
+    if (!cycle?.endDate) return null;
+    const end = new Date(cycle.endDate + 'T23:59:59');
+    const today = new Date();
+    const diff = Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return diff > 0 ? diff : 0;
+  }, [cycle]);
+
+  const handlePeriodChange = async (period: string) => {
+    try {
+      await adminApi.updateConfig('point_cycle', period);
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      const detail = axiosErr.response?.data?.detail || '주기 변경에 실패했습니다.';
+      showToast('error', detail);
+    }
+  };
+
+  return { configs, setConfig, cheerMsgs, setCheerMessage, isDirty, saveAll, loading, saving, cycleDaysRemaining, handlePeriodChange };
 }

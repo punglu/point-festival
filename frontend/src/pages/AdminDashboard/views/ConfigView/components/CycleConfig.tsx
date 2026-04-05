@@ -6,8 +6,10 @@ const WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일'] as const;
 const PERIOD_LABELS: Record<string, string> = { weekly: '주간', biweekly: '격주', monthly: '월간' };
 
 interface Props {
-  value:    string | null;
-  onChange: (value: string) => void;
+  value:               string | null;
+  onChange:            (value: string) => void;
+  onPeriodChange?:     (period: string) => void;
+  cycleDaysRemaining?: number | null;
 }
 
 function parse(value: string | null): CycleData {
@@ -15,7 +17,7 @@ function parse(value: string | null): CycleData {
   return { period: 'weekly', start_day: '월', end_time: '23:59' };
 }
 
-export default function CycleConfig({ value, onChange }: Props) {
+export default function CycleConfig({ value, onChange, onPeriodChange, cycleDaysRemaining }: Props) {
   const data = parse(value);
 
   const update = (patch: Partial<CycleData>) => {
@@ -27,13 +29,21 @@ export default function CycleConfig({ value, onChange }: Props) {
       <div className={styles.sectionTitle}>포인트 사이클 설정</div>
 
       <div className={styles.fieldGroup}>
-        <div className={styles.label}>기간</div>
+        <div className={styles.label}>
+          기간
+          {cycleDaysRemaining != null && cycleDaysRemaining > 0 && (
+            <span className={styles.cycleRemaining}>현재 주기 종료까지 {cycleDaysRemaining}일</span>
+          )}
+        </div>
         <div className={styles.segmentRow}>
           {PERIODS.map((p) => (
             <button
               key={p}
               className={data.period === p ? styles.segBtnActive : styles.segBtn}
-              onClick={() => update({ period: p })}
+              onClick={() => {
+                update({ period: p });
+                onPeriodChange?.(p);
+              }}
             >
               {PERIOD_LABELS[p]}
             </button>

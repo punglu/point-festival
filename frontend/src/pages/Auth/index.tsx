@@ -19,7 +19,14 @@ export default function AuthPage() {
   const { isLoggedIn, isAdmin } = useAuthStore();
   const [mode, setMode] = useState<Mode>('select');
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
-  const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' } | null>(() => {
+    // 401 인터셉터가 세션 만료 플래그를 남긴 경우 토스트 표시
+    if (sessionStorage.getItem('mc_session_expired')) {
+      sessionStorage.removeItem('mc_session_expired');
+      return { message: '세션이 만료되었습니다. 다시 로그인해주세요.', type: 'error' };
+    }
+    return null;
+  });
 
   if (isLoggedIn) {
     return <Navigate to={isAdmin ? '/admin' : '/dashboard'} replace />;

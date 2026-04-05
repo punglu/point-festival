@@ -1,0 +1,181 @@
+.section {
+  margin-top: 4px;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1E293B;
+  margin-bottom: 10px;
+}
+
+/* 밸런싱 카드 그리드 */
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.card {
+  background: #fff;
+  border: 0.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #EEEDFE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #534AB7;
+  flex-shrink: 0;
+}
+
+.cardName {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1E293B;
+}
+
+/* 통계 3열 */
+.statRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.statNum {
+  font-size: 18px;
+  font-weight: 600;
+  color: #3C3489;
+  line-height: 1.1;
+}
+
+.statDone    { color: #27500A; }
+.statPending { color: #854F0B; }
+
+.statLabel {
+  font-size: 9px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* 진행률 바 */
+.progressTrack {
+  background: #F1EFE8;
+  border-radius: 4px;
+  height: 5px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.progressFill {
+  height: 100%;
+  background: #639922;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.rateLabel {
+  font-size: 9px;
+  color: #64748b;
+}
+
+/* 비교 카드 */
+.compareCard {
+  background: #fff;
+  border: 0.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.compareTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1E293B;
+  margin-bottom: 12px;
+}
+
+.compareGroup {
+  margin-bottom: 12px;
+}
+
+.compareGroup:last-child {
+  margin-bottom: 0;
+}
+
+.compareLabel {
+  font-size: 10px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.barName {
+  font-size: 11px;
+  color: #64748b;
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.barTrack {
+  flex: 1;
+  background: #F1EFE8;
+  border-radius: 3px;
+  height: 14px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  padding-left: 5px;
+  min-width: 4px;
+  transition: width 0.3s;
+}
+
+.barAssigned { background: #AFA9EC; }
+.barEarned   { background: #97C459; }
+
+.barValue {
+  font-size: 9px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.barAssigned .barValue { color: #3C3489; }
+.barEarned   .barValue { color: #173404; }
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .cardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

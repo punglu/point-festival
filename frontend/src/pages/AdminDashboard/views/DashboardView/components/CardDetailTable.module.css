@@ -1,0 +1,217 @@
+.container {
+  padding: 14px;
+}
+
+.tableHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.cycleLabel {
+  font-size: 11px;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.playerFilter {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 0.5px solid var(--color-border-tertiary, #e2e8f0);
+  background: var(--color-background-primary, #fff);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.empty {
+  text-align: center;
+  padding: 24px;
+  font-size: 12px;
+  color: var(--color-text-tertiary, #94a3b8);
+}
+
+/* ========================================
+   아코디언 그룹 (총 발행포인트 모드)
+   ======================================== */
+
+.groupList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.groupItem {
+  border: 0.5px solid var(--color-border-tertiary, #e2e8f0);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.groupRow {
+  display: grid;
+  grid-template-columns: 52px 44px 1fr 1fr 28px;
+  align-items: center;
+  padding: 9px 10px;
+  gap: 6px;
+  background: var(--color-background-secondary, #f8fafc);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.groupRow:hover {
+  background: #F5F3FF;
+}
+
+.groupRowActive {
+  background: #EEEDFE;
+}
+
+.grDate {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.grName {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.grAssigned {
+  font-size: 10px;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.grDone {
+  font-size: 10px;
+  color: #27500A;
+}
+
+.grRate {
+  opacity: 0.65;
+}
+
+.grToggle {
+  font-size: 10px;
+  text-align: right;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.groupRowActive .grDate,
+.groupRowActive .grName {
+  color: #3C3489;
+}
+
+.groupRowActive .grAssigned {
+  color: #534AB7;
+}
+
+.groupRowActive .grToggle {
+  color: #534AB7;
+}
+
+.drilldown {
+  border-top: 0.5px solid var(--color-border-tertiary, #e2e8f0);
+}
+
+/* ========================================
+   공통 상세 테이블
+   ======================================== */
+
+.flatTableWrap {
+  overflow-x: auto;
+}
+
+.detailTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.detailTable thead th {
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-text-secondary, #64748b);
+  background: var(--color-background-secondary, #f8fafc);
+  text-align: left;
+  border-bottom: 0.5px solid var(--color-border-tertiary, #e2e8f0);
+}
+
+.detailTable tbody td {
+  padding: 8px 10px;
+  border-bottom: 0.5px solid var(--color-border-tertiary, #e2e8f0);
+  vertical-align: middle;
+}
+
+.detailTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.statusPill {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.statusActive    { background: #E6F1FB; color: #185FA5; }
+.statusCompleted { background: #EAF3DE; color: #27500A; }
+.statusPending   { background: #EEEDFE; color: #534AB7; }
+.statusFailed    { background: #FCEBEB; color: #A32D2D; }
+
+/* ========================================
+   모바일
+   ======================================== */
+
+@media (max-width: 768px) {
+  .groupRow {
+    grid-template-columns: 52px 44px 1fr 28px;
+    grid-template-rows: auto auto auto;
+  }
+
+  .grAssigned {
+    grid-column: 1 / 4;
+    grid-row: 2;
+  }
+
+  .grDone {
+    grid-column: 1 / 4;
+    grid-row: 3;
+  }
+
+  .grToggle {
+    grid-row: 1 / 2;
+    grid-column: 4;
+    align-self: center;
+  }
+
+  .detailTable thead {
+    display: none;
+  }
+
+  .detailTable tbody tr {
+    display: block;
+    padding: 10px;
+    margin-bottom: 6px;
+    border: 0.5px solid var(--color-border-tertiary, #e2e8f0);
+    border-radius: 8px;
+    background: var(--color-background-primary, #fff);
+  }
+
+  .detailTable tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    border-bottom: none;
+    font-size: 12px;
+  }
+
+  .detailTable tbody td::before {
+    content: attr(data-label);
+    font-size: 10px;
+    color: var(--color-text-secondary, #64748b);
+    font-weight: 500;
+    min-width: 48px;
+  }
+}

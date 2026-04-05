@@ -34,7 +34,7 @@ export const adminApi = {
     httpClient.delete(`/api/players/${id}`, { signal }),
 
   // ===== 미션 =====
-  getMissions: (params: { player_id?: number; date?: string }, signal?: AbortSignal) =>
+  getMissions: (params: { player_id?: number; date?: string; date_from?: string; date_to?: string }, signal?: AbortSignal) =>
     httpClient.get<Mission[]>('/api/admin/missions', { params, signal }),
 
   createMission: (data: { player_id: number; date: string; text: string; point: number; group_id?: string }, signal?: AbortSignal) =>

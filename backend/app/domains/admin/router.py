@@ -25,6 +25,9 @@ from app.domains.mission.service import (
     admin_revert_mission,
     clone_selected_missions,
     create_mission,
+    expire_stale_missions,
+    get_current_cycle,
+    get_cycle_range,
     get_missions_admin,
     update_mission,
     update_mission_status,
@@ -86,10 +89,18 @@ async def admin_list_players(
 async def admin_list_missions(
     player_id: Optional[int] = Query(None),
     target_date: Optional[date] = Query(None, alias="date"),
+    date_from: Optional[date] = Query(None),
+    date_to: Optional[date] = Query(None),
     db: AsyncSession = Depends(get_db),
     _: dict = Depends(get_current_admin),
 ):
-    return await get_missions_admin(db, player_id, target_date)
+    # Lazy Expiry: 현재 주기 이전 미완료 미션 자동 실패 처리
+    current_cycle = await get_current_cycle(db)
+    cycle_start, cycle_end = get_cycle_range(current_cycle, date.today())
+    expired_count = await expire_stale_missions(db, cycle_start)
+    if expired_count > 0:
+        await db.commit()
+    return await get_missions_admin(db, player_id, target_date, date_from, date_to)
 
 
 @router.post("/missions", response_model=MissionResponse, status_code=201)

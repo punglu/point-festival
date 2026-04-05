@@ -531,6 +531,43 @@ mc-point-festival/
 - **로그인 페이지 필터링**: BE에서 `visible_only=True`로 처리. FE 필터링 없음
 - **Admin은 is_visible 무시**: `/api/admin/players`는 숨긴 플레이어도 표시하여 관리 가능
 
+### P-HOTFIX-CYCLE-INTEGRITY-001 — 주기 기반 미션 생명주기 정합성
+| 작업 | 상태 |
+|---|---|
+| `get_cycle_range()` 주기 유틸 함수 (daily/weekly/biweekly/monthly/quarterly/yearly 지원) | ✅ 완료 |
+| `expire_stale_missions()` Lazy Expiry — 이전 주기 active/pending 미션 자동 failed | ✅ 완료 |
+| Admin 대시보드 미션 조회 시 Lazy Expiry 트리거 (`admin_list_missions`) | ✅ 완료 |
+| `get_missions_admin` date_from/date_to optional 파라미터 추가 | ✅ 완료 |
+| `useAdminData` → 주기 범위로 미션 조회 (스탯 카드 범위 통일) | ✅ 완료 |
+| 주기 변경 가드 A: 주기 진행 중 잠금 | ✅ 완료 |
+| 주기 변경 가드 B: 활성 반복 미션 의존성 잠금 | ✅ 완료 |
+| ConfigView 잔여일 뱃지 + 에러 토스트 | ✅ 완료 |
+
+#### 확립된 패턴
+- **Lazy Expiry**: cron 없이 조회 시점에 만료 처리. `expire_stale_missions(db, cycle_start_date)` — 현재 주기 시작일 이전 active/pending 미션 → failed
+- **주기 변경 2중 가드**: (A) 주기 진행 중 변경 불가 + (B) 활성 반복 미션 존재 시 변경 불가
+- **get_cycle_range**: daily/weekly/biweekly/monthly/quarterly/yearly 지원. 미지원 값은 weekly 폴백
+- **설계 예외**: `mission/service.py`에서 `app_configs` 읽기 전용 조회 허용 (PM 승인, Vertical Domain 예외)
+- **스탯 카드 범위 통일**: `useAdminData`의 getMissions가 `date_from: cycle.startDate, date_to: cycle.endDate`로 주기 범위 제한됨
+
+### P-HOTFIX-DASHBOARD-DETAIL-001 — DashboardView 카드 상세 + 밸런싱
+| 작업 | 상태 |
+|---|---|
+| 스탯 카드 순서 변경: 총 발행 → 활성 → 승인대기 → 완료 | ✅ 완료 |
+| 스탯 카드 탭화: 클릭 시 하단 상세 테이블 토글 (같은 카드 재클릭 시 닫힘) | ✅ 완료 |
+| CardDetailTable.tsx 신규: 4모드 (points/active/pending/completed) | ✅ 완료 |
+| points 모드: 일자×플레이어 아코디언, 배정 대비 완료 비교 (달성률%) | ✅ 완료 |
+| active/pending/completed 모드: flat 테이블 (일자/이름/미션명/포인트/상태) | ✅ 완료 |
+| 플레이어 필터 셀렉트 (각 모드 공통) | ✅ 완료 |
+| 모바일 카드 전환: thead 숨김 + data-label 패턴 | ✅ 완료 |
+| BalanceSection.tsx 신규: 플레이어별 밸런싱 카드 + 포인트 비교 바 | ✅ 완료 |
+
+#### 확립된 패턴
+- **스탯 카드 탭 패턴**: selectedCard 상태로 1개 CardDetailTable 영역을 4모드로 전환
+- **아코디언 그룹 집계**: missions[]를 date+player_id로 groupBy → 배정건수/포인트 vs 완료건수/포인트
+- **밸런싱 대상**: players에서 role='player'만 필터. 아빠/엄마(role='admin') 제외
+- **기존 모달 제거**: ActiveMissionDetailModal, PendingApprovalModal, CompletedMissionsModal, PointHistoryModal → 인라인 CardDetailTable로 대체. 모달 파일은 보존
+
 ---
 
 ## 16. Phase 7 Task 목록 (진행중)
