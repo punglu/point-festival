@@ -1,7 +1,7 @@
 # CLAUDE.md — 프로젝트 컨텍스트 (매 세션 필독)
 
 > **프로젝트:** 마인크래프트 포인트 잔치 — 모던 스택 마이그레이션
-> **최종 갱신:** 2026-04-05 | Phase 5 완료 + REFACTORING_0404 + Chat 시스템 + Player 가시성 제어 추가, Phase 6 설계 대기
+> **최종 갱신:** 2026-04-05 | Phase 7 진행중 — v1.0.0 운영 배포 완료, 운영 패치 진행중
 > **이 파일은 프로젝트의 SSOT입니다. 매 세션 시작 시 반드시 읽으세요.**
 
 ---
@@ -276,8 +276,8 @@ mc-point-festival/
 | **4** | **Admin Dashboard BE+FE (RBAC, 미션관리)** | **✅ 완료** |
 | **5** | **Login Hub + Admin 인증 분리** | **✅ 완료** |
 | 6 | Home Page + Legacy (index.html 다크테마) | 대기 |
-| 7 | Data Migration + E2E (Firebase→PostgreSQL ETL) | 대기 |
-| 8 | Production Deploy (NAS 배포, DNS, SSL) | 대기 |
+| **7** | **프로덕션 배포 준비 + 운영 패치** | **🚀 진행중** |
+| 8 | Data Migration (Firebase→PostgreSQL ETL) | 대기 |
 
 ---
 
@@ -500,7 +500,7 @@ mc-point-festival/
 | 작업 | 상태 |
 |---|---|
 | `admin_auth`에 `player_id` 컬럼 추가 (players FK) | ✅ 완료 |
-| players 테이블에 아빠(id=6)/엄마(id=7) 레코드 추가 | ✅ 완료 |
+| players 테이블에 아빠(id=3)/엄마(id=4) 레코드 추가 (init.sql 정비에서 확정) | ✅ 완료 |
 | admin JWT payload에 `player_id` claim 포함 | ✅ 완료 |
 | `useAuthStore` — `adminPlayerId` 상태 추가 | ✅ 완료 |
 | `관리자(id=3)` soft-delete (레거시 PIN admin 비활성화) | ✅ 완료 |
@@ -532,25 +532,90 @@ mc-point-festival/
 
 ---
 
-## 15. 잔여 사항
+## 16. Phase 7 Task 목록 (진행중)
+
+### 인프라/배포 환경
+
+| Task ID | 작업 | 상태 |
+|---|---|---|
+| P7-INFRA-001 | 레거시 정리: `public/`, `_legacy/`, `nas-deploy/`, `frontend/media/` 삭제 | ✅ 완료 |
+| P7-INFRA-002 | `.gitignore`: `favicon-assets/`, `logo-assets/` 추가 (git rm --cached) | ✅ 완료 |
+| P7-INFRA-003 | `docker-compose.yml`: `image:` 태그 명시 (`mc-backend/mc-frontend:latest`), version 제거 | ✅ 완료 |
+| P7-INFRA-004 | `docker-compose.prod.yml`: B방식 (image 기반, NAS bind mount, `init.sql` 마운트) | ✅ 완료 |
+| P7-INFRA-005 | `deploy.sh`: Mac 로컬 빌드 → SSH 파이프 전송 → NAS sudo docker 실행 | ✅ 완료 |
+| P7-INFRA-006 | `reset-history.sh`: 이력 데이터 초기화 스크립트 (계정/설정 유지) | ✅ 완료 |
+| P7-INFRA-007 | `.env.production.template` 신규 생성 | ✅ 완료 |
+
+### 보안
+
+| Task ID | 작업 | 상태 |
+|---|---|---|
+| P7-SEC-001 | `nginx.conf`: `server_tokens off`, 보안 헤더 6종, dotfile/.map 차단 | ✅ 완료 |
+| P7-SEC-002 | `main.py`: `ENVIRONMENT=production` 시 Swagger 비활성화 (`_is_prod` 분기) | ✅ 완료 |
+| P7-SEC-003 | `main.py`: 글로벌 예외 핸들러 (스택 트레이스 노출 방지) | ✅ 완료 |
+| P7-SEC-004 | `config.py`: CORS 프로덕션 도메인 추가, `ENVIRONMENT` 필드 추가 | ✅ 완료 |
+| P7-SEC-005 | `App.tsx`: `AdminProtectedRoute` — Player 로그인 시 `/` → `/dashboard` 리다이렉트 | ✅ 완료 |
+
+### DB 정합성
+
+| Task ID | 작업 | 상태 |
+|---|---|---|
+| P7-DB-001 | `init.sql`: `admin_auth player_id` 버그 수정 (4,5 → 3,4) | ✅ 완료 |
+| P7-DB-002 | `init.sql`: `player_auth` 아빠(3)/엄마(4) 항목 추가 | ✅ 완료 |
+| P7-DB-003 | `init.sql`: `docker-compose.prod.yml`에 마운트 추가 (최초 기동 시 자동 실행) | ✅ 완료 |
+
+### 버전 관리
+
+| 항목 | 내용 |
+|---|---|
+| `v1.0.0` 태그 | 포인트 페스티발 2.0 초기 릴리즈 (2026-04-05) |
+| `prd` 브랜치 | 프로덕션 배포 전용 브랜치 |
+| `dev` 브랜치 | 개발 메인 브랜치 |
+
+### NAS 환경 정보
+
+| 항목 | 값 |
+|---|---|
+| SSH | `ssh -p 5422 starbee@192.168.1.57` |
+| 프로젝트 경로 | `/volume3/V3_APPL/PJT/point-festival` |
+| pgdata 경로 | `/volume3/V3_APPL/PJT/point-festival/pgdata` |
+| docker 권한 | `sudo` 필요 (또는 `synogroup --member docker starbee`) |
+| 서비스 포트 | `:3000` (Nginx → frontend) |
+| 관리자 계정 | `dad` / `admin1234`, `mom` / `admin1234` |
+
+### 운영 패치 (진행중)
+
+| Task ID | 작업 | 상태 |
+|---|---|---|
+| P7-PATCH-001 | Admin DashboardView: 플레이어별 배정 미션 수 + 획득 예정 포인트 표시 (밸런싱) | 🔄 진행중 |
+
+### Phase 7 확립된 패턴
+- **B방식 배포**: Mac에서 `docker-compose build` → `docker save` → SSH 파이프(`cat | ssh "cat >"`) → NAS `sudo docker load` → `docker-compose up -d`
+- **pgdata 보존**: `docker-compose down`은 컨테이너만 삭제. bind mount `pgdata/`는 유지됨. `init.sql`은 `pgdata/`가 빈 경우에만 실행
+- **init.sql 마운트 필수**: `docker-compose.prod.yml`에 `./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql` 없으면 최초 기동 시 빈 DB
+- **NAS SSH 파이프**: Synology SFTP chroot로 `scp` 절대경로 불가 → `cat file | ssh "cat > path"` 방식
+
+---
+
+## 17. 잔여 사항
 
 | # | 항목 | 상태 | 비고 |
 |---|---|---|---|
 | 1 | ~~Phase 4-A CSS 레거시 클래스 제거~~ | **Close (해당 없음)** | Outlook Hub 프로젝트 이슈 혼입. mc-point-festival 미존재 확인 (2026-03-31) |
-| 2 | Docker socket 권한 이슈 | 해결 가이드 전달 | 방안 A 권장: 호스트에서 직접 pytest 실행 (venv + DB 포트 포워딩) |
+| 2 | Docker socket 권한 이슈 | ✅ 해결 | NAS: `sudo` 방식 확정. 또는 `synogroup --member docker starbee` 후 재로그인 |
 | 3 | B-5 global.css 변경 이력 확인 | PM 수동 확인 대기 | Git 초기화 후 diff — 코드 결함 아님, WARNING 수준 |
 | 4 | ~~P4 missions/{id}/status 라우트 롤백~~ | **Close (재적용 완료)** | P5 hotfix 오귀인으로 롤백됐으나 2026-03-31 재적용 확정. mission/schema+service+admin/router 복원 |
 
 ---
 
-## 16. Phase 6 Task 목록 (다음)
+## 18. Phase 6 Task 목록 (대기)
 
 > Phase 6 설계 미착수.
 > **Phase 6: Home Page + Legacy (index.html 다크테마 마이그레이션)**
 
 ---
 
-## 17. 보고 형식
+## 19. 보고 형식
 
 ### 작업 시작
 ```
@@ -572,7 +637,7 @@ Task ID: [PX-XXX]
 
 ---
 
-## 18. 주의사항
+## 20. 주의사항
 
 - **설계서에 없는 파일을 임의로 생성하지 마세요.** 실행 프롬프트에 명시된 파일만 생성합니다.
 - **전역 CSS 파일을 추가하지 마세요.** global.css, reset.css 외 전역 스타일 금지.
