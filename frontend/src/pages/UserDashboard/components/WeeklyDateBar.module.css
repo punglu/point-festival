@@ -1,0 +1,142 @@
+.weekNav {
+  background: #4338CA;
+  padding: 0 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navBtn {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+.navBtn:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.weekLabel {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+}
+
+.todayBtn {
+  font-size: 10px;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  cursor: pointer;
+  margin-left: 6px;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.todayBtn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.dateBar {
+  display: flex;
+  background: #3730A3;
+  margin: 0 12px;
+  border-radius: 12px;
+  padding: 6px 3px;
+  gap: 2px;
+}
+
+.day {
+  flex: 1;
+  text-align: center;
+  padding: 6px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.day:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dayName {
+  font-size: 11px;
+  font-family: 'Pretendard', sans-serif;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 2px;
+}
+
+.dayNum {
+  font-size: 15px;
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.today {
+  background: #6366F1;
+}
+
+.today .dayName,
+.today .dayNum {
+  color: #fff;
+}
+
+.selected {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: -2px;
+}
+
+.past .dayNum {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 3px;
+  min-height: 10px;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.dotDone {
+  background: #FBBF24;
+}
+
+.dotActive {
+  background: #34D399;
+}
+
+@media (min-width: 768px) {
+  .dateBar {
+    margin: 0 20px;
+    border-radius: 14px;
+    padding: 8px 6px;
+    gap: 4px;
+  }
+  .day { padding: 10px 0; border-radius: 12px; min-height: 64px; }
+  .dayName { font-size: 13px; }
+  .dayNum { font-size: 17px; }
+  .dot { width: 5px; height: 5px; }
+  .weekNav { padding: 0 24px 10px; }
+  .navBtn { font-size: 12px; }
+  .weekLabel { font-size: 12px; }
+}

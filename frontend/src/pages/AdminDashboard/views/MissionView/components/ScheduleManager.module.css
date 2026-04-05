@@ -1,0 +1,215 @@
+.container {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--card, #fff);
+  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.playerTag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--brand-purple, #5D45A2);
+  color: #fff;
+  margin-left: 4px;
+}
+
+/* 태블릿+ (481px 이상): 1행 인라인 배치 */
+.createForm {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--input-bg, #f1f5f9);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dayPicker {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.dayBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.dayActive {
+  background: var(--brand-purple, #5D45A2);
+  color: #fff;
+  border-color: var(--brand-purple, #5D45A2);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+}
+
+.pointInput {
+  width: 60px;
+  flex-shrink: 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.pointLabel {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--brand-purple, #5D45A2);
+  flex-shrink: 0;
+}
+
+.addBtn {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 6px 16px;
+  background: var(--brand-purple, #5D45A2);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.addBtn:hover {
+  opacity: 0.9;
+}
+
+.loading, .empty {
+  text-align: center;
+  color: var(--muted, #94a3b8);
+  font-size: 0.85rem;
+  padding: 16px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.inactive {
+  opacity: 0.5;
+}
+
+.cardBody {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.playerBadge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--brand-skyblue, #5BB8F5);
+  color: #fff;
+}
+
+.missionText {
+  font-size: 0.9rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.pointBadge {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brand-orange, #FFA500);
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.dayTags {
+  font-size: 0.75rem;
+  color: var(--muted, #94a3b8);
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+}
+
+.toggleBtn, .deleteBtn {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  cursor: pointer;
+}
+
+.deleteBtn {
+  color: var(--danger, #ef4444);
+  border-color: var(--danger, #ef4444);
+}
+
+/* 모바일 (≤480px): wrap 허용, 4행 배치 */
+@media (max-width: 480px) {
+  .createForm {
+    flex-wrap: wrap;
+  }
+  .dayPicker {
+    width: 100%;
+  }
+  .input {
+    width: 100%;
+    flex: unset;
+  }
+  .pointInput {
+    flex: 1;
+    width: auto;
+  }
+  .pointLabel {
+    display: block !important;
+    flex-shrink: 0;
+  }
+  .addBtn {
+    width: 100%;
+  }
+}

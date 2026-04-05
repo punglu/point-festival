@@ -1,0 +1,201 @@
+.missionList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.emptyMsg {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+  padding: 32px 0;
+}
+
+/* ===== 미션카드 ===== */
+.card {
+  background: var(--color-background-primary, #fff);
+  border-radius: 14px;
+  border: 0.5px solid var(--color-border-tertiary, #e2e8f0);
+  padding: 14px 16px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.cardCompleted {
+  border-left: 3px solid #10B981;
+  border-radius: 0 14px 14px 0;
+}
+
+.cardFailed {
+  opacity: 0.6;
+}
+
+.cardLeft {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Row 1: 미션명 + 뱃지 */
+.cardRow1 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.missionName {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-primary, #1e293b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nameStrike {
+  text-decoration: line-through;
+}
+
+.statusBadge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badge_active           { background: #EEF2FF; color: #4338CA; }
+.badge_pending_approval { background: #FEF3C7; color: #92400E; }
+.badge_completed        { background: #ECFDF5; color: #065F46; }
+.badge_failed           { background: #FEF2F2; color: #991B1B; }
+.badge_proposed         { background: #F0F9FF; color: #0C4A6E; }
+.badge_rejected         { background: #FEF2F2; color: #991B1B; }
+
+/* Row 2: 메타 */
+.cardMeta {
+  font-size: 12px;
+  color: var(--color-text-tertiary, #94a3b8);
+  margin-bottom: 10px;
+}
+
+/* Row 3: 미니 프로그레스 */
+.progressRow {
+  display: flex;
+  align-items: center;
+}
+
+.progressDot {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #E2E8F0;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.dotFilled  { background: #6366F1; }
+.dotPurple  { background: #6366F1; }
+.dotAmber   { background: #F59E0B; }
+.dotGreen   { background: #10B981; }
+
+.dotLabel {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.dotLabelActive {
+  font-weight: 500;
+}
+
+.progressLine {
+  flex: 1;
+  height: 2px;
+  background: #E2E8F0;
+  margin: 0 6px;
+}
+
+.lineFilled { background: #6366F1; }
+.lineGreen  { background: #10B981; }
+
+/* Row 4: 액션 버튼 */
+.actionBtn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 9px 0;
+  background: #6366F1;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+
+.actionBtn:hover  { opacity: 0.9; }
+.actionBtn:active { transform: scale(0.98); }
+
+.pendingMsg {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 12px;
+  color: #D97706;
+  font-weight: 500;
+}
+
+/* 우측: 포인트 */
+.pointArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  padding-top: 2px;
+}
+
+.pointCircle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.pointCircleAmber { background: #FEF3C7; }
+.pointCircleGreen { background: #ECFDF5; }
+
+.pointValue {
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.pointAmber  { color: #D97706; }
+.pointGreen  { color: #10B981; }
+.pointStrike { color: #94a3b8; text-decoration: line-through; }
+
+/* ===== 반응형 ===== */
+@media (max-width: 360px) {
+  .card        { padding: 12px 14px; gap: 10px; }
+  .missionName { font-size: 14px; }
+  .pointCircle { width: 32px; height: 32px; }
+  .pointValue  { font-size: 14px; }
+  .actionBtn   { font-size: 12px; padding: 8px 0; }
+}
+
+@media (min-width: 768px) {
+  .card        { padding: 16px 20px; gap: 16px; }
+  .missionName { font-size: 16px; }
+  .pointValue  { font-size: 18px; }
+  .dotLabel    { font-size: 11px; }
+}

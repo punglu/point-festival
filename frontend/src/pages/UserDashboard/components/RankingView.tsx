@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from '../UserDashboard.module.css';
+import { getLocalToday } from '../../../shared/utils/dateUtils';
 import { dashboardApi, PlayerResponse, DailyPointResponse } from '../api/dashboardApi';
 
 interface Props {
@@ -16,14 +17,14 @@ export default function RankingView({ currentPlayerId }: Props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getLocalToday();
     const load = async () => {
       setLoading(true);
       try {
         const { data: players } = await dashboardApi.getPlayers();
         const results = await Promise.all(
           players
-            .filter(p => p.role !== 'admin')
+            .filter(p => p.role !== 'admin' && p.is_dashboard_visible !== false)
             .map(async player => {
               try {
                 const res = await dashboardApi.getPointsRange(

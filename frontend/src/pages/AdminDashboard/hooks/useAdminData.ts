@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { adminApi } from '../api/adminApi';
 import { useCycle } from './useCycle';
+import { getLocalToday } from '../../../shared/utils/dateUtils';
 import { useAdminToast } from './useAdminToast';
+import { httpClient } from '../../../shared/api/httpClient';
 import type {
   Player, Mission, Notification, DailyPoint,
   DashboardStats, MissionRankItem,
@@ -53,8 +55,16 @@ export function useAdminData() {
     return () => controller.abort();
   }, [loadDashboardData]);
 
+  // Lazy Init: 마운트 시 1회 — 오늘의 템플릿 미션 자동 생성
+  useEffect(() => {
+    const controller = new AbortController();
+    httpClient.post('/api/mission-templates/generate', {}, { signal: controller.signal })
+      .catch(() => {}); // 실패해도 대시보드 사용에 영향 없음
+    return () => controller.abort();
+  }, []);
+
   // ── 대시보드 통계 파생 ──
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getLocalToday();
   const stats: DashboardStats = {
     totalActiveMissions: missions.filter((m) => m.status === 'active').length,
     pendingApproval:     missions.filter((m) => m.status === 'pending_approval').length,

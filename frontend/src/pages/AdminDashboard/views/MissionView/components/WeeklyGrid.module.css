@@ -1,0 +1,321 @@
+.container {
+  margin-bottom: 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 4px 16px rgba(99,102,241,0.06);
+  overflow: hidden;
+  border: 1px solid #E8EAED;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid #F0F1F5;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: #FAFBFF;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 2px;
+  color: #1E293B;
+  letter-spacing: -0.2px;
+}
+
+.weekRange {
+  font-size: 11px;
+  color: #94A3B8;
+  font-weight: 400;
+}
+
+.nav {
+  display: flex;
+  gap: 6px;
+}
+
+.navBtn {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  background: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  color: #64748B;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.navBtn:hover {
+  border-color: #A5B4FC;
+  color: #4338CA;
+  background: #F5F3FF;
+}
+
+.navBtnActive {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: #4338CA;
+  color: #fff;
+  border: 1px solid #4338CA;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+.navBtnActive:hover {
+  background: #3730A3;
+}
+
+.loading {
+  text-align: center;
+  color: #94A3B8;
+  padding: 32px 24px;
+  font-size: 13px;
+}
+
+/* ── Grid ── */
+.gridWrap {
+  overflow: hidden;
+}
+
+.gridHeader {
+  display: grid;
+  grid-template-columns: 96px repeat(7, 1fr);
+  background: #EEF2FF;
+}
+
+.ghLabel {
+  padding: 10px 12px;
+  border-right: 1px solid #E0E7FF;
+}
+
+.ghCell {
+  padding: 10px 4px;
+  text-align: center;
+  border-right: 1px solid #E0E7FF;
+  position: relative;
+}
+.ghCell:last-child { border-right: none; }
+
+.ghDay {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4338CA;
+  letter-spacing: 0.5px;
+}
+.ghDate {
+  font-size: 10px;
+  color: #818CF8;
+  margin-top: 3px;
+  font-weight: 400;
+}
+
+/* Today column header */
+.ghToday {
+  background: #EEF2FF;
+}
+.ghToday .ghDay {
+  display: inline-block;
+  background: #4338CA;
+  color: #fff;
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-size: 12px;
+}
+.ghToday .ghDate {
+  color: #4338CA;
+  font-weight: 600;
+}
+
+/* Weekend columns (6th=Sat, 7th=Sun) */
+.ghWeekend .ghDay {
+  color: #EC4899;
+}
+.ghWeekend .ghDate {
+  color: #F9A8D4;
+}
+
+/* ── Player rows ── */
+.gridRow {
+  display: grid;
+  grid-template-columns: 96px repeat(7, 1fr);
+  border-top: 1px solid #F0F1F5;
+  transition: background 0.1s;
+}
+.gridRow:hover {
+  background: #FAFBFF;
+}
+
+.grName {
+  padding: 10px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  border-right: 1px solid #F0F1F5;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #FAFBFF;
+  min-height: 56px;
+}
+
+.grAvatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid #E0E7FF;
+}
+
+.grInitial {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366F1, #818CF8);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  flex-shrink: 0;
+  letter-spacing: -0.5px;
+}
+
+.grCell {
+  padding: 8px 6px;
+  text-align: center;
+  border-right: 1px solid #F0F1F5;
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 56px;
+}
+.grCell:last-child { border-right: none; }
+
+.grCell:hover {
+  background: #F5F3FF;
+}
+
+/* Today data column */
+.grCellToday {
+  background: #F5F3FF;
+}
+.grCellToday:hover {
+  background: #EDE9FE;
+}
+
+/* Selected cell */
+.grSelected {
+  background: #EEF2FF !important;
+  box-shadow: inset 0 0 0 2px #6366F1;
+}
+
+/* Weekend data columns */
+.grCellWeekend {
+  background: #FDFCFF;
+}
+.grCellWeekend:hover {
+  background: #F5F3FF;
+}
+
+/* ── Cell contents ── */
+.grTotal {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+}
+.grDone    { color: #10B981; }
+.grActive  { color: #F59E0B; }
+.grPending { color: #8B5CF6; }
+
+.grDetail {
+  font-size: 10px;
+  font-weight: 600;
+  color: #A0AEC0;
+  background: #F1F5F9;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.grEmpty {
+  color: #CBD5E1;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.approveBtn {
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: #EEF2FF;
+  color: #4338CA;
+  border: 1px solid #C7D2FE;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  margin-top: 2px;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+.approveBtn:hover {
+  background: #4338CA;
+  color: #fff;
+  border-color: #4338CA;
+}
+
+@media (max-width: 768px) {
+  .gridHeader, .gridRow {
+    grid-template-columns: 52px repeat(7, 1fr);
+  }
+
+  .ghLabel { padding: 8px 4px; }
+
+  .ghCell { padding: 8px 2px; }
+  .ghDay  { font-size: 11px; letter-spacing: 0; }
+  .ghDate { font-size: 9px; margin-top: 2px; }
+  .ghToday::after { font-size: 8px; margin-top: 2px; }
+
+  .grName {
+    padding: 6px 4px;
+    font-size: 10px;
+    gap: 4px;
+    min-height: 48px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .grAvatar, .grInitial {
+    width: 20px;
+    height: 20px;
+    font-size: 9px;
+  }
+
+  .grCell {
+    padding: 5px 2px;
+    gap: 2px;
+    min-height: 48px;
+  }
+
+  .grTotal   { font-size: 11px; }
+  .grDetail  { font-size: 9px; padding: 1px 3px; }
+  .grEmpty   { font-size: 11px; }
+
+  .approveBtn {
+    font-size: 8px;
+    padding: 2px 4px;
+    white-space: nowrap;
+  }
+}

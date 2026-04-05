@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import HTTPException
@@ -12,13 +12,27 @@ from app.domains.mission.schema import (
     MissionCreate, MissionUpdate, MissionPropose, MissionResponse,
 )
 
+def get_week_range(d: date) -> tuple[date, date]:
+    """ISO 기준 주간 범위 반환 (월요일 ~ 일요일)"""
+    start = d - timedelta(days=d.weekday())
+    end = start + timedelta(days=6)
+    return start, end
+
+
+def is_same_week(d1: date, d2: date) -> bool:
+    """두 날짜가 같은 ISO 주차인지 확인"""
+    s1, _ = get_week_range(d1)
+    s2, _ = get_week_range(d2)
+    return s1 == s2
+
+
 # 역할별 미션 상태 전환 규칙 (단일 진실 공급원)
 ROLE_TRANSITIONS: dict[str, dict[str, list[str]]] = {
     "admin": {
-        "active": ["pending_approval", "failed"],
+        "active": ["pending_approval", "failed", "completed"],
         "pending_approval": ["completed", "rejected", "active"],
         "proposed": ["active", "rejected"],
-        "completed": ["cancelled"],   # 관리자만 완료된 미션을 취소 가능
+        "completed": ["cancelled", "active"],  # 관리자만 완료된 미션을 취소/재활성화 가능
         "failed": ["active"],
         "rejected": [],
         "cancelled": ["active"],      # 취소된 미션을 재활성화 가능 (포인트 재지급은 재완료 시에만)
@@ -59,6 +73,54 @@ def _validate_status_transition(current: str, new: str, role: str) -> None:
         status_code=400,
         detail=f"'{current}' → '{new}' 전환은 허용되지 않습니다",
     )
+
+
+async def admin_revert_mission(db: AsyncSession, mission_id: int) -> MissionResponse:
+    """
+    -- [SQL] 관리자 전용: 완료 미션 → active 복구 + 포인트 환수
+    --
+    -- 1. 미션 조회 (completed + not deleted)
+    -- SELECT * FROM missions WHERE id = :id AND status = 'completed' AND deleted_at IS NULL;
+    --
+    -- 2. 미션 상태 복구
+    -- UPDATE missions SET status = 'active', msg = '[시스템] 관리자에 의한 완료 취소'
+    -- WHERE id = :id;
+    --
+    -- 3. 포인트 환수 — adjust_daily_point(earned_delta = -mission.point)
+    -- UPDATE daily_points
+    -- SET earned = earned - :point, balance = balance - :point
+    -- WHERE player_id = :pid AND date = :date AND deleted_at IS NULL;
+    """
+    from datetime import datetime, timezone
+    from app.domains.daily_point.service import adjust_daily_point
+    from app.domains.daily_point.schema import DailyPointAdjust
+
+    stmt = select(Mission).where(
+        Mission.id == mission_id,
+        Mission.status == "completed",
+        Mission.deleted_at.is_(None),
+    )
+    result = await db.execute(stmt)
+    mission = result.scalar_one_or_none()
+    if not mission:
+        raise HTTPException(status_code=404, detail="완료된 미션을 찾을 수 없습니다")
+
+    now_utc = datetime.now(timezone.utc)
+    mission.status = "active"
+    mission.msg = "[시스템] 관리자에 의한 완료 취소"
+    mission.updated_at = now_utc
+    await db.flush()
+
+    # 포인트 환수 (earned_delta 음수 → 차감)
+    await adjust_daily_point(db, DailyPointAdjust(
+        player_id=mission.player_id,
+        date=mission.date,
+        earned_delta=-mission.point,
+        spent_delta=0,
+    ))
+
+    await db.refresh(mission)
+    return MissionResponse.model_validate(mission)
 
 
 async def get_missions_admin(
@@ -164,6 +226,12 @@ async def update_mission(
 
     if "status" in updates:
         _validate_status_transition(mission.status, updates["status"], role)
+        # 주차 검증: player는 이번 주 미션만 상태 변경 가능
+        if role == "player" and not is_same_week(date.today(), mission.date):
+            raise HTTPException(
+                status_code=400,
+                detail="이번 주가 아닌 미션은 변경할 수 없습니다.",
+            )
 
     new_status = updates.get("status", old_status)
 
@@ -180,7 +248,7 @@ async def update_mission(
         await emit_notification(
             db, "approval_request", mission.player_id,
             f"{name}가 \"{mission.text}\" 승인을 요청했어요",
-            f"+{mission.point} pt",
+            f"{mission.date} · +{mission.point}pt",
         )
 
     await db.commit()
@@ -232,7 +300,7 @@ async def propose_mission(db: AsyncSession, data: MissionPropose) -> MissionResp
     await emit_notification(
         db, "proposal", data.player_id,
         f"{data.proposed_by}가 새 미션을 제안했어요: \"{data.text}\"",
-        f"+{data.point} pt",
+        f"{data.date} · +{data.point}pt",
     )
 
     await db.commit()
@@ -348,11 +416,12 @@ async def clone_selected_missions(
     # 3. 복제 생성 (status='active' 초기화)
     cloned = []
     for src in sources:
+        point = data.point_overrides.get(src.id, src.point) if data.point_overrides else src.point
         new_mission = Mission(
             player_id=data.player_id,
             date=data.target_date,
             text=src.text,
-            point=src.point,
+            point=point,
             sender=src.sender,
             status="active",
             proposed_by="admin_copy",
@@ -392,3 +461,69 @@ async def batch_copy_missions(
     for m in created:
         await db.refresh(m)
     return [MissionResponse.model_validate(m) for m in created]
+
+
+async def get_missions_by_range(
+    db: AsyncSession, player_id: int, start_date: date, end_date: date
+) -> dict:
+    """
+    -- [SQL] 주간 미션 조회
+    -- SELECT * FROM missions
+    -- WHERE player_id = :pid AND date BETWEEN :start AND :end
+    --   AND deleted_at IS NULL
+    -- ORDER BY date ASC, sort_order ASC;
+    """
+    from collections import defaultdict
+    stmt = (
+        select(Mission)
+        .where(
+            Mission.player_id == player_id,
+            Mission.date >= start_date,
+            Mission.date <= end_date,
+            Mission.deleted_at.is_(None),
+        )
+        .order_by(Mission.date.asc(), Mission.sort_order.asc())
+    )
+    result = await db.execute(stmt)
+    missions = result.scalars().all()
+
+    grouped: dict = defaultdict(list)
+    for m in missions:
+        grouped[str(m.date)].append({
+            "id": m.id,
+            "date": str(m.date),
+            "text": m.text,
+            "point": m.point,
+            "status": m.status,
+            "sender": m.sender,
+            "msg": m.msg,
+            "proposed_by": m.proposed_by,
+            "created_at": str(m.created_at) if m.created_at else None,
+        })
+    return dict(grouped)
+
+
+async def bulk_approve_missions(db: AsyncSession, player_id: int, date_str: str) -> int:
+    """
+    -- [SQL] 일괄 승인
+    -- UPDATE missions SET status = 'completed', updated_at = NOW()
+    -- WHERE player_id = :pid AND date = :date AND status = 'pending_approval'
+    --   AND deleted_at IS NULL;
+    """
+    from sqlalchemy import update as sql_update
+    from datetime import datetime as dt_class
+
+    target_date = dt_class.strptime(date_str, "%Y-%m-%d").date()
+
+    stmt = (
+        sql_update(Mission)
+        .where(
+            Mission.player_id == player_id,
+            Mission.date == target_date,
+            Mission.status == "pending_approval",
+            Mission.deleted_at.is_(None),
+        )
+        .values(status="completed", updated_at=datetime.now(timezone.utc))
+    )
+    result = await db.execute(stmt)
+    return result.rowcount

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getLocalToday, getWeekLabel, getMonday } from '../../../../shared/utils/dateUtils';
 import styles from './DashboardView.module.css';
 import { useAdminData } from '../../hooks/useAdminData';
 import StatCard from '../../components/StatCard/StatCard';
@@ -21,7 +22,8 @@ export default function DashboardView() {
     approveMission, rejectMission,
   } = useAdminData();
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today     = getLocalToday();
+  const weekRange = getWeekLabel(getMonday());
 
   const [activeDetailOpen,    setActiveDetailOpen]    = useState(false);
   const [pendingApprovalOpen, setPendingApprovalOpen] = useState(false);
@@ -37,7 +39,10 @@ export default function DashboardView() {
       {/* 헤더 */}
       <div className={styles.header}>
         <div className={styles.titleArea}>
-          <h1 className={styles.title}>대시보드</h1>
+          <h1 className={styles.title}>
+            대시보드
+            <span className={styles.weekRange}>{weekRange}</span>
+          </h1>
           <p className={styles.dateText}>{today}</p>
         </div>
         <div className={styles.headerActions}>
@@ -77,23 +82,21 @@ export default function DashboardView() {
         />
       </div>
 
-      {/* 플레이어 현황 + 승인 대기 미션 */}
-      <div className={styles.grid2}>
-        <PlayerStatusCard
-          players={players}
-          missions={missions}
-          dailyPoints={dailyPoints}
-        />
-        <PendingMissionCard missions={missions} players={players} />
-      </div>
+      {/* 1. 플레이어 현황 */}
+      <PlayerStatusCard
+        players={players}
+        missions={missions}
+        dailyPoints={dailyPoints}
+      />
 
-      {/* 이번 주 활동 (풀와이드) */}
-      <WeeklyActivityChart missions={missions} players={players} cycle={cycle} />
-
-      {/* 최근 알림 */}
+      {/* 2. 최근 알림 */}
       <RecentAlerts notifications={notifications} />
 
-      {/* 미션 랭킹 (풀와이드) */}
+      {/* 3. 승인 대기 미션 */}
+      <PendingMissionCard missions={missions} players={players} />
+
+      {/* 4. 이번 주 활동 랭킹 */}
+      <WeeklyActivityChart missions={missions} players={players} cycle={cycle} />
       <MissionRanking ranking={missionRanking} players={players} cycle={cycle} />
 
       {/* 모달 */}

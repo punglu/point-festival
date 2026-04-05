@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useAuthStore } from '../../../shared/stores/useAuthStore';
+import { getLocalToday, formatDate } from '../../../shared/utils/dateUtils';
 import {
   dashboardApi,
   MissionResponse,
@@ -24,7 +25,7 @@ const SENDERS_FALLBACK: SenderConfig[] = [
 ];
 
 function getToday(): string {
-  return new Date().toISOString().slice(0, 10);
+  return getLocalToday();
 }
 
 export function useDashboard() {
@@ -65,6 +66,9 @@ export function useDashboard() {
 
   // 플레이어 상태 메시지 (DB players.status_msg)
   const [playerStatusMsg, setPlayerStatusMsg] = useState<string>('');
+
+  // 전체 기간 누적 획득 포인트
+  const [totalEarned, setTotalEarned] = useState<number>(0);
 
   // 전체 플레이어 목록 (대화하기 탭용)
   const [allPlayers, setAllPlayers] = useState<PlayerResponse[]>([]);
@@ -126,6 +130,16 @@ export function useDashboard() {
       .catch(() => {});
     return () => controller.abort();
   }, [player, selectedDate, pointCycle]);
+
+  // 전체 누적 획득 포인트 로드 (포인트 변경 시 갱신)
+  useEffect(() => {
+    if (!player) return;
+    const ctrl = new AbortController();
+    dashboardApi.getTotalEarned(player.id, ctrl.signal)
+      .then((res) => { if (!ctrl.signal.aborted) setTotalEarned(res.data.total_earned); })
+      .catch(() => {});
+    return () => ctrl.abort();
+  }, [player?.id, dailyPoint]);
 
   // 플레이어 사진 로드 (로그인 후 최초 1회)
   useEffect(() => {
@@ -236,7 +250,7 @@ export function useDashboard() {
   const quickDate = useCallback((offset: number) => {
     const d = new Date();
     d.setDate(d.getDate() + offset);
-    setSelectedDate(d.toISOString().slice(0, 10));
+    setSelectedDate(formatDate(d));
   }, []);
 
   // 파생 데이터
@@ -255,7 +269,7 @@ export function useDashboard() {
   return {
     // 상태
     player, selectedDate, missions, cheers, feedbacks, deductions, dailyPoint,
-    pointCycle, cycleSummary,
+    pointCycle, cycleSummary, totalEarned,
     activeTab, activeNav, deductOpen, loading, levelThresholds, configError, senders, parentPhotos, playerPhoto, playerStatusMsg, allPlayers,
     // 파생
     myProposals, activeMissions, totalDeducted, totalAllocated, pendingPoints,

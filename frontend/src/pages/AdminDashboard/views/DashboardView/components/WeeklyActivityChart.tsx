@@ -1,4 +1,5 @@
 import styles from './WeeklyActivityChart.module.css';
+import { getLocalToday, formatDate } from '../../../../../shared/utils/dateUtils';
 import type { Mission, Player } from '../../../types/admin.types';
 import type { CycleInfo } from '../../../hooks/useCycle';
 
@@ -16,15 +17,15 @@ const PLAYER_COLORS = [
 ];
 
 export default function WeeklyActivityChart({ missions, players, cycle }: Props) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getLocalToday();
 
   // 주기 7일 날짜 배열
   const days: string[] = [];
-  const start = new Date(cycle.startDate);
+  const start = new Date(cycle.startDate + 'T00:00:00');
   for (let i = 0; i < 7; i++) {
     const d = new Date(start);
     d.setDate(start.getDate() + i);
-    days.push(d.toISOString().slice(0, 10));
+    days.push(formatDate(d));
   }
 
   const nonAdminPlayers = players.filter((p) => p.role !== 'admin');

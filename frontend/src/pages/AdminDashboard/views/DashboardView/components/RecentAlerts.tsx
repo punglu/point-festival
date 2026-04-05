@@ -2,6 +2,27 @@ import { useNavigate } from 'react-router-dom';
 import styles from './RecentAlerts.module.css';
 import type { Notification } from '../../../types/admin.types';
 
+function extractDate(body: string | null | undefined, createdAt: string): string {
+  if (body) {
+    const match = body.match(/(\d{4}-\d{2}-\d{2})/);
+    if (match) return match[1];
+  }
+  const d = new Date(createdAt);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function inferRoute(n: Notification): string {
+  if (n.type === 'approval_request' || n.type === 'proposal') {
+    const date = extractDate(n.body, n.created_at);
+    return `/admin/missions?date=${date}`;
+  }
+  const text = `${n.title} ${n.body ?? ''}`;
+  if (/채팅|피드백|대화/.test(text))    return '/admin/chat';
+  if (/포인트|차감/.test(text))          return '/admin/points';
+  if (/플레이어/.test(text))             return '/admin/players';
+  return '/admin';
+}
+
 interface Props {
   notifications: Notification[];
 }
@@ -34,7 +55,11 @@ export default function RecentAlerts({ notifications }: Props) {
       ) : (
         <div className={styles.list}>
           {recent.map((n) => (
-            <div key={n.id} className={styles.item}>
+            <div
+              key={n.id}
+              className={`${styles.item} ${styles.itemClickable}`}
+              onClick={() => navigate(inferRoute(n))}
+            >
               <div className={n.is_read ? styles.dotRead : styles.dot} />
               <div className={styles.content}>
                 <div className={styles.notifTitle}>{n.title}</div>

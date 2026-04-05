@@ -25,4 +25,5 @@ class AdminLoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     display_name: str
+    player_id: int | None = None
     is_admin: bool = True

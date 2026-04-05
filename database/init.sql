@@ -10,8 +10,10 @@ CREATE TABLE players (
     photo           TEXT,
     status_msg      VARCHAR(200),
     last_login      BIGINT,
-    is_locked       BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    is_locked             BOOLEAN NOT NULL DEFAULT FALSE,
+    is_visible            BOOLEAN NOT NULL DEFAULT TRUE,
+    is_dashboard_visible  BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at      TIMESTAMPTZ
 );
@@ -45,11 +47,31 @@ CREATE TABLE missions (
     proposal_reason TEXT,
     rejection_reason TEXT,
     sort_order      INTEGER NOT NULL DEFAULT 0,
+    group_id        VARCHAR(36),
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at      TIMESTAMPTZ
 );
 CREATE INDEX idx_missions_player_date ON missions(player_id, date);
+CREATE INDEX idx_missions_group ON missions(group_id) WHERE group_id IS NOT NULL;
+
+-- 3-1. Mission Templates (반복 미션 스케줄링)
+CREATE TABLE mission_templates (
+    id              SERIAL PRIMARY KEY,
+    player_id       INTEGER NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+    text            VARCHAR(500) NOT NULL,
+    point           INTEGER NOT NULL DEFAULT 0,
+    day_of_week     INTEGER NOT NULL DEFAULT 127,
+    is_active       BOOLEAN NOT NULL DEFAULT TRUE,
+    last_generated_date DATE,
+    group_id        VARCHAR(36),
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deleted_at      TIMESTAMPTZ
+);
+CREATE INDEX idx_mission_templates_player ON mission_templates(player_id);
+CREATE INDEX idx_mission_templates_group ON mission_templates(group_id) WHERE group_id IS NOT NULL;
+COMMENT ON COLUMN mission_templates.day_of_week IS 'Bitmask: 1=월 2=화 4=수 8=목 16=금 32=토 64=일. 127=매일';
 
 -- 4. Cheer Messages
 CREATE TABLE cheer_messages (
@@ -84,6 +106,19 @@ CREATE TABLE feedback_replies (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at      TIMESTAMPTZ
 );
+
+-- 6-1. Chat Messages (1:1 메신저)
+CREATE TABLE chat_messages (
+    id              SERIAL PRIMARY KEY,
+    sender_id       INTEGER NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+    receiver_id     INTEGER NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+    message         TEXT NOT NULL,
+    is_read         BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deleted_at      TIMESTAMPTZ
+);
+CREATE INDEX idx_chat_sender_receiver ON chat_messages(sender_id, receiver_id);
+CREATE INDEX idx_chat_receiver_unread ON chat_messages(receiver_id, is_read) WHERE is_read = FALSE;
 
 -- 7. Deductions
 CREATE TABLE deductions (
@@ -150,6 +185,7 @@ CREATE TABLE admin_auth (
     username     VARCHAR(50) UNIQUE NOT NULL,
     password     VARCHAR(255) NOT NULL,
     display_name VARCHAR(50) NOT NULL,
+    player_id    INTEGER REFERENCES players(id),
     created_at   TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at   TIMESTAMP NULL DEFAULT NULL
@@ -161,18 +197,20 @@ CREATE TABLE admin_auth (
 INSERT INTO players (name, role) VALUES
     ('유빈', 'player'),
     ('유현', 'player'),
-    ('관리자', 'admin');
+    -- ('관리자', 'admin'),  -- 레거시 PIN admin 제거 (admin_auth dad/mom으로 대체)
+    ('아빠', 'player'),
+    ('엄마', 'player');
 
 INSERT INTO player_auth (player_id, pin_hash, is_admin) VALUES
     (1, '$2b$12$Obp2TMVO6SxsBI4wBsPG2uPGexUoBzIgE4rDSiA0clxw.Pbd5lGlq', FALSE),
-    (2, '$2b$12$Obp2TMVO6SxsBI4wBsPG2uPGexUoBzIgE4rDSiA0clxw.Pbd5lGlq', FALSE),
-    (3, '$2b$12$Obp2TMVO6SxsBI4wBsPG2uPGexUoBzIgE4rDSiA0clxw.Pbd5lGlq', TRUE);
+    (2, '$2b$12$Obp2TMVO6SxsBI4wBsPG2uPGexUoBzIgE4rDSiA0clxw.Pbd5lGlq', FALSE);
+    -- (3, '...', TRUE);  -- 관리자 PIN auth 제거
 
 -- 해시 생성: python3 -c "import bcrypt; print(bcrypt.hashpw(b'admin1234', bcrypt.gensalt(12)).decode())"
 -- 아래 해시는 실제 'admin1234'와 매칭 검증 완료
-INSERT INTO admin_auth (username, password, display_name) VALUES
-    ('dad', '$2b$12$cDiscHyPegxLxvtmYuovvOTbflxIfDSRFUoYQytwO0KpceYIHJxG2', '아빠'),
-    ('mom', '$2b$12$8FXpLsillveX2B4dXRtWSeb0hZgqBMimMXceDNy4I8lRdYq5l0q5u', '엄마');
+INSERT INTO admin_auth (username, password, display_name, player_id) VALUES
+    ('dad', '$2b$12$cDiscHyPegxLxvtmYuovvOTbflxIfDSRFUoYQytwO0KpceYIHJxG2', '아빠', 4),
+    ('mom', '$2b$12$8FXpLsillveX2B4dXRtWSeb0hZgqBMimMXceDNy4I8lRdYq5l0q5u', '엄마', 5);
 
 INSERT INTO app_configs (key, value) VALUES
     ('photos.dad', ''),

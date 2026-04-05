@@ -13,6 +13,15 @@
   --danger: #ef4444;
   --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
   --input-bg: #f1f5f9;
+
+  /* === 에셋 가이드 팔레트 === */
+  --brand-purple: #5D45A2;
+  --brand-coral: #FF4D4D;
+  --brand-orange: #FFA500;
+  --brand-mint: #7EDCC0;
+  --brand-skyblue: #5BB8F5;
+  --brand-pink: #FFB0C8;
+  --brand-gold: #FFD700;
 }
 
 /* Admin 사이드바 전용 CSS 변수 */

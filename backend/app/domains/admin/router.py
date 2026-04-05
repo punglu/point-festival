@@ -20,7 +20,9 @@ from app.domains.mission.schema import (
     MissionCloneSelectedRequest,
     MissionResponse,
 )
+from app.domains.mission.models import Mission
 from app.domains.mission.service import (
+    admin_revert_mission,
     clone_selected_missions,
     create_mission,
     get_missions_admin,
@@ -28,6 +30,8 @@ from app.domains.mission.service import (
     update_mission_status,
     soft_delete_mission,
     clone_missions,
+    get_missions_by_range,
+    bulk_approve_missions,
 )
 
 from app.domains.deduction.schema import DeductionCreate, DeductionUpdate, DeductionResponse
@@ -44,8 +48,8 @@ from app.domains.daily_point.service import adjust_daily_point, get_daily_points
 from app.domains.cheer.schema import CheerCreate, CheerResponse
 from app.domains.cheer.service import upsert_cheer
 
-from app.domains.player.schema import PlayerListItem, PlayerLockRequest, PlayerUpdateAdmin
-from app.domains.player.service import lock_player, update_player_admin, get_player_list, change_player_pin
+from app.domains.player.schema import PlayerListItem, PlayerLockRequest, PlayerUpdateAdmin, PlayerVisibilityRequest
+from app.domains.player.service import lock_player, update_player_admin, get_player_list, change_player_pin, set_player_visibility
 
 from app.domains.login_log.schema import LoginLogResponse
 from app.domains.login_log.service import get_all_login_logs
@@ -117,6 +121,36 @@ async def admin_update_mission(
     _: dict = Depends(get_current_admin),
 ):
     return await update_mission(db, mission_id, data, role="admin")
+
+
+@router.post("/missions/{mission_id}/revert", response_model=MissionResponse)
+async def revert_mission(
+    mission_id: int,
+    _: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """관리자 전용: 완료 미션을 active로 복구 + 포인트 자동 환수"""
+    result = await admin_revert_mission(db, mission_id)
+    await db.commit()
+    return result
+
+
+@router.delete("/missions/by-group/{group_id}", status_code=204)
+async def admin_delete_missions_by_group(
+    group_id: str,
+    db: AsyncSession = Depends(get_db),
+    _: dict = Depends(get_current_admin),
+):
+    """group_id가 같은 미션 전체 소프트 삭제 (모두에게 할당된 미션 일괄 삭제)"""
+    from datetime import datetime, timezone
+    from sqlalchemy import update as sql_update
+    now = datetime.now(timezone.utc)
+    await db.execute(
+        sql_update(Mission)
+        .where(Mission.group_id == group_id, Mission.deleted_at.is_(None))
+        .values(deleted_at=now)
+    )
+    await db.commit()
 
 
 @router.delete("/missions/{mission_id}", status_code=204)
@@ -248,6 +282,16 @@ async def admin_lock_player(
     return await lock_player(db, player_id, data)
 
 
+@router.patch("/players/{player_id}/visibility", response_model=PlayerListItem)
+async def admin_set_player_visibility(
+    player_id: int,
+    data: PlayerVisibilityRequest,
+    db: AsyncSession = Depends(get_db),
+    _: dict = Depends(get_current_admin),
+):
+    return await set_player_visibility(db, player_id, data)
+
+
 # ─── 알림 ────────────────────────────────────────────────
 @router.get("/notifications", response_model=list[NotificationResponse])
 async def admin_get_notifications(
@@ -302,6 +346,67 @@ async def admin_add_reply(
     _: dict = Depends(get_current_admin),
 ):
     return await add_reply(db, data)
+
+
+# ─── 주간 요약 ────────────────────────────────────────────
+@router.get("/weekly-summary")
+async def weekly_summary(
+    week_start: str,
+    _admin: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """Admin용 주간 요약: 플레이어별 × 요일별 미션 현황"""
+    from datetime import datetime, timedelta
+    from app.domains.player import service as player_service
+
+    start = datetime.strptime(week_start, "%Y-%m-%d").date()
+    end = start + timedelta(days=6)
+
+    players = await player_service.get_player_list(db)
+    result = []
+
+    for player in players:
+        if player.role != "player":
+            continue
+        missions = await get_missions_by_range(db, player.id, start, end)
+
+        daily_summary = {}
+        for day_offset in range(7):
+            d = start + timedelta(days=day_offset)
+            d_str = str(d)
+            day_missions = missions.get(d_str, [])
+            total = len(day_missions)
+            done = sum(1 for m in day_missions if m["status"] == "completed")
+            points = sum(m["point"] for m in day_missions if m["status"] == "completed")
+            pending = sum(1 for m in day_missions if m["status"] == "pending_approval")
+            daily_summary[d_str] = {
+                "total": total,
+                "done": done,
+                "points": points,
+                "pending": pending,
+            }
+
+        result.append({
+            "player_id": player.id,
+            "player_name": player.name,
+            "player_photo": player.photo,
+            "daily": daily_summary,
+        })
+
+    return {"week_start": week_start, "players": result}
+
+
+@router.post("/missions/bulk-approve")
+async def bulk_approve(
+    player_id: int,
+    date: str,
+    _admin: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """특정 플레이어의 특정 날짜 pending_approval 미션 전체 승인"""
+    count = await bulk_approve_missions(db, player_id, date)
+    await db.commit()
+    return {"approved": count, "player_id": player_id, "date": date}
 
 
 # ─── 로그인 로그 ──────────────────────────────────────────

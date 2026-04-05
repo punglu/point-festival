@@ -14,6 +14,7 @@ export interface MissionResponse {
   proposal_reason: string | null;
   rejection_reason: string | null;
   sort_order: number;
+  created_at?: string | null;
 }
 
 export interface CheerResponse {
@@ -84,6 +85,7 @@ export interface PlayerResponse {
   photo?: string | null;
   last_login: number | null;
   is_locked: boolean;
+  is_dashboard_visible: boolean;
 }
 
 // === API Functions ===
@@ -152,6 +154,13 @@ export const dashboardApi = {
   /** 현재 포인트 집계 주기 설정 조회 */
   getPointCycle: (signal?: AbortSignal) =>
     httpClient.get<ConfigResponse>('/api/configs/point_cycle', { signal }),
+
+  /** 전체 기간 누적 획득 포인트 (사용량 무관) */
+  getTotalEarned: (playerId: number, signal?: AbortSignal) =>
+    httpClient.get<{ total_earned: number }>('/api/daily-points/total-earned', {
+      params: { player_id: playerId },
+      signal,
+    }),
 
   /** 프로필 상태 메시지 수정 */
   updateStatusMsg: (playerId: number, statusMsg: string) =>

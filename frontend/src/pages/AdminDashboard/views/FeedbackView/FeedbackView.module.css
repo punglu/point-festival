@@ -58,6 +58,37 @@
 }
 .dateInput:focus { border-color: #4338CA; }
 
+.weekLabel {
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+  flex: 1;
+  text-align: center;
+}
+
+.todayBtn {
+  font-size: 12px;
+  padding: 6px 12px;
+  background: #4338CA;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.todayBtn:hover { background: #3730A3; }
+
+.dateDivider {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94A3B8;
+  text-align: center;
+  padding: 8px 0 4px;
+  border-top: 1px solid #F1F5F9;
+  margin-top: 8px;
+}
+
 /* ── 채팅 영역 ── */
 .chatArea {
   display: flex;

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { adminApi } from '../../../api/adminApi';
+import { getLocalToday } from '../../../../../shared/utils/dateUtils';
 import { useAdminToast } from '../../../hooks/useAdminToast';
 
 const ALL_KEYS = [
@@ -14,7 +15,7 @@ const ALL_KEYS = [
 type ConfigKey = typeof ALL_KEYS[number];
 type CheerSender = 'dad' | 'mom';
 
-const TODAY = new Date().toISOString().slice(0, 10);
+const TODAY = getLocalToday();
 
 export function useConfigView() {
   const { showToast } = useAdminToast();

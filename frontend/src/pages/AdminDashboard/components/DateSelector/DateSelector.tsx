@@ -1,4 +1,5 @@
 import styles from './DateSelector.module.css';
+import { getLocalToday, shiftDay } from '../../../../shared/utils/dateUtils';
 
 interface DateSelectorProps {
   selected: string;
@@ -6,9 +7,9 @@ interface DateSelectorProps {
 }
 
 function offset(days: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  const today = getLocalToday();
+  if (days === 0) return today;
+  return shiftDay(today, days);
 }
 
 export default function DateSelector({ selected, onSelect }: DateSelectorProps) {

@@ -197,6 +197,7 @@ async def authenticate_admin(
         "name": admin.display_name,
         "role": "admin",
         "is_admin": True,
+        "player_id": admin.player_id,
         "exp": datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_EXPIRE_MINUTES),
     }
     token = jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
@@ -204,6 +205,7 @@ async def authenticate_admin(
     return AdminLoginResponse(
         access_token=token,
         display_name=admin.display_name,
+        player_id=admin.player_id,
     )
 
 

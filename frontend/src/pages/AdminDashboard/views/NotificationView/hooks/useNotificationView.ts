@@ -3,7 +3,7 @@ import { adminApi } from '../../../api/adminApi';
 import { useAdminToast } from '../../../hooks/useAdminToast';
 import type { Notification } from '../../../types/admin.types';
 
-export type NotifFilter = 'all' | 'unread' | 'approval_request' | 'proposal' | 'system';
+export type NotifFilter = 'all' | 'unread' | 'approval_request' | 'proposal';
 
 export function useNotificationView() {
   const { showToast } = useAdminToast();
@@ -31,12 +31,16 @@ export function useNotificationView() {
     return () => ctrl.abort();
   }, [load]);
 
-  const filtered = notifications.filter((n) => {
+  // 승인요청/미션제안만 표시 (system·level_up·cycle_reset 제외)
+  const actionable = notifications.filter((n) =>
+    n.type === 'approval_request' || n.type === 'proposal'
+  );
+
+  const filtered = actionable.filter((n) => {
     switch (filter) {
       case 'unread':           return !n.is_read;
       case 'approval_request': return n.type === 'approval_request';
       case 'proposal':         return n.type === 'proposal';
-      case 'system':           return ['system', 'level_up', 'cycle_reset'].includes(n.type);
       default:                 return true;
     }
   });
@@ -56,7 +60,7 @@ export function useNotificationView() {
     } catch { showToast('error', '처리 실패'); }
   };
 
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
+  const unreadCount = actionable.filter((n) => !n.is_read).length;
 
   return {
     filtered, filter, setFilter, unreadCount, loading,

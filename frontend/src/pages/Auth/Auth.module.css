@@ -43,7 +43,11 @@
 
 /* ── 공통 Auth 헤더 (Indigo) ── */
 .authHeader {
-  background: var(--user-primary);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(255,255,255,0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.35) 0%, transparent 70%),
+    #4338CA;
   padding: 40px 20px 36px;
   text-align: center;
 }
@@ -152,7 +156,7 @@
 }
 
 .playerCard {
-  background: var(--user-surface);
+  background: linear-gradient(135deg, #F5F3FF 0%, #F0FDFA 100%);
   border-radius: var(--user-radius-card);
   padding: 16px;
   border: 2px solid var(--user-primary-border);
@@ -265,7 +269,11 @@
 
 /* ── PIN 입력 화면 ── */
 .pinHeader {
-  background: var(--user-primary);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(255,255,255,0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.35) 0%, transparent 70%),
+    #4338CA;
   padding: 28px 24px 32px;
   text-align: center;
 }
@@ -443,7 +451,11 @@
 
 /* ── 관리자 로그인 헤더 ── */
 .adminHeader {
-  background: var(--user-primary);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(255,255,255,0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.35) 0%, transparent 70%),
+    #4338CA;
   padding: 28px 24px 32px;
   text-align: center;
 }

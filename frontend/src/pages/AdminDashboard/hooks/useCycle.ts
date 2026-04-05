@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { formatDate } from '../../../shared/utils/dateUtils';
 
 export interface CycleInfo {
   startDate: string;
@@ -25,7 +26,7 @@ export function useCycle(referenceDate?: string): CycleInfo {
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
 
-    const fmt    = (d: Date) => d.toISOString().slice(0, 10);
+    const fmt    = (d: Date) => formatDate(d);
     const fmtDot = (d: Date) => fmt(d).replace(/-/g, '.');
 
     return {

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { adminApi } from '../../../api/adminApi';
+import { getLocalToday } from '../../../../../shared/utils/dateUtils';
 import { useCycle } from '../../../hooks/useCycle';
 import { useAdminToast } from '../../../hooks/useAdminToast';
 import type { Deduction, DailyPoint, Player } from '../../../types/admin.types';
@@ -7,7 +8,7 @@ import type { Deduction, DailyPoint, Player } from '../../../types/admin.types';
 export function usePointView() {
   const { showToast } = useAdminToast();
   const cycle = useCycle();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getLocalToday();
 
   const [players,        setPlayers]        = useState<Player[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);

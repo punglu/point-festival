@@ -6,7 +6,7 @@ import PointView from './views/PointView/PointView';
 import PlayerView from './views/PlayerView/PlayerView';
 import NotificationView from './views/NotificationView/NotificationView';
 import ConfigView from './views/ConfigView/ConfigView';
-import FeedbackView from './views/FeedbackView/FeedbackView';
+import ChatView from './views/ChatView/ChatView';
 
 export default function AdminDashboard() {
   return (
@@ -16,7 +16,7 @@ export default function AdminDashboard() {
         <Route path="missions"       element={<MissionView />} />
         <Route path="points"         element={<PointView />} />
         <Route path="players"        element={<PlayerView />} />
-        <Route path="chat"           element={<FeedbackView />} />
+        <Route path="chat"           element={<ChatView />} />
         <Route path="notifications"  element={<NotificationView />} />
         <Route path="config"         element={<ConfigView />} />
         <Route path="*"              element={<Navigate to="/admin" replace />} />

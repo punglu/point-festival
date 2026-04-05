@@ -1,4 +1,5 @@
 import styles from '../UserDashboard.module.css';
+import { getLocalToday, getYesterday, shiftDay } from '../../../shared/utils/dateUtils';
 
 interface Props {
   selectedDate: string;
@@ -7,9 +8,9 @@ interface Props {
 }
 
 export default function DateSelector({ selectedDate, quickDate, setSelectedDate }: Props) {
-  const today = new Date().toISOString().slice(0, 10);
-  const yesterday = (() => { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().slice(0, 10); })();
-  const tomorrow = (() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10); })();
+  const today    = getLocalToday();
+  const yesterday = getYesterday();
+  const tomorrow  = shiftDay(today, 1);
 
   return (
     <div className={styles.dateBar}>

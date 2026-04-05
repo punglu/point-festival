@@ -22,3 +22,7 @@ mc-images.tar
 
 # docs
 /docs/
+
+# Source assets (local originals only, deployed copies are in frontend/public/)
+/favicon-assets/
+/logo-assets/

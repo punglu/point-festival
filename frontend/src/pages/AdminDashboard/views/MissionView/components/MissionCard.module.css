@@ -4,9 +4,6 @@
   border: 0.5px solid #E2E8F0;
   border-left: 4px solid #E2E8F0;
   padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   transition: box-shadow 0.15s;
 }
 
@@ -19,11 +16,27 @@
 .borderRejected         { border-left-color: #94A3B8; background: #FAFAFA; }
 .borderProposed         { border-left-color: #818CF8; background: #F8F9FF; }
 
+/* 카드 내부 flex 구조 */
+.missionCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cardLeft {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Row 1: 플레이어뱃지 + 미션명 + 상태태그 */
 .topRow {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .missionText {
@@ -31,6 +44,7 @@
   font-weight: 600;
   color: #1E293B;
   flex: 1;
+  min-width: 0;
   line-height: 1.4;
 }
 
@@ -48,13 +62,6 @@
   flex-shrink: 0;
 }
 
-.metaRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
 .playerName {
   font-size: 11px;
   font-weight: 500;
@@ -62,15 +69,21 @@
   background: #EEF2FF;
   padding: 2px 8px;
   border-radius: 8px;
+  flex-shrink: 0;
 }
 
-.pointBadge {
-  font-size: 11px;
-  font-weight: 600;
-  color: #059669;
-  background: #D1FAE5;
-  padding: 2px 8px;
-  border-radius: 8px;
+/* Row 2: 메타 정보 */
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--muted, #94a3b8);
+  flex-wrap: wrap;
+}
+
+.metaDot {
+  opacity: 0.5;
 }
 
 .proposalReason {
@@ -82,12 +95,37 @@
   line-height: 1.4;
 }
 
+/* Row 3: 액션 버튼 */
 .actions {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
 }
 
+/* 우측 포인트 영역 */
+.cardRight {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+
+.pointNumber {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--brand-orange, #FFA500);
+  line-height: 1;
+}
+
+.pointUnit {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted, #94a3b8);
+  line-height: 1;
+}
+
+/* 버튼 공통 */
 .btnApprove {
   padding: 5px 12px;
   border-radius: 6px;
@@ -100,7 +138,6 @@
   font-family: inherit;
   transition: background 0.15s;
 }
-
 .btnApprove:hover { background: #047857; }
 
 .btnReject {
@@ -115,7 +152,6 @@
   font-family: inherit;
   transition: background 0.15s;
 }
-
 .btnReject:hover { background: #FEE2E2; }
 
 .btnEdit {
@@ -130,7 +166,6 @@
   font-family: inherit;
   transition: background 0.15s;
 }
-
 .btnEdit:hover { background: #E0E7FF; }
 
 .btnDelete {
@@ -145,7 +180,6 @@
   font-family: inherit;
   transition: background 0.15s;
 }
-
 .btnDelete:hover { background: #FEF2F2; color: #DC2626; }
 
 .btnUndo {
@@ -160,5 +194,9 @@
   font-family: inherit;
   transition: background 0.15s;
 }
-
 .btnUndo:hover { background: #F1F5F9; }
+
+/* 모바일 */
+@media (max-width: 480px) {
+  .pointNumber { font-size: 0.9rem; }
+}

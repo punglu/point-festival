@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import styles from './BatchCopyModal.module.css';
+import { formatDate } from '../../../../../shared/utils/dateUtils';
 import AdminModal from '../../../components/AdminModal/AdminModal';
 import { adminApi } from '../../../api/adminApi';
 import { useAdminToast } from '../../../hooks/useAdminToast';
@@ -15,7 +16,7 @@ interface Props {
 type SourceMode = 'today' | 'yesterday' | 'custom';
 type TargetMode = 'tomorrow' | 'week_rest' | 'next_week' | 'custom';
 
-function getDateStr(d: Date) { return d.toISOString().slice(0, 10); }
+function getDateStr(d: Date) { return formatDate(d); }
 
 function getTargetDates(mode: TargetMode, customDate: string): string[] {
   const today = new Date();

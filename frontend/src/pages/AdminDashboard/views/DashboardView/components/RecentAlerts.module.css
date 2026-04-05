@@ -49,6 +49,13 @@
 
 .item:last-child { border-bottom: none; }
 
+.itemClickable {
+  cursor: pointer;
+  transition: background 0.1s;
+  border-radius: 6px;
+}
+.itemClickable:hover { background: #F8FAFC; }
+
 .dot {
   width: 8px;
   height: 8px;

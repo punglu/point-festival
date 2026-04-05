@@ -17,3 +17,4 @@ class Mission(Base, SoftDeleteMixin, TimestampMixin):
     proposal_reason = Column(Text, nullable=True)
     rejection_reason = Column(Text, nullable=True)
     sort_order = Column(Integer, nullable=False, default=0)
+    group_id   = Column(String(36), nullable=True)

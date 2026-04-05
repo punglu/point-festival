@@ -12,6 +12,7 @@
 .item:hover { background: #FAFAFA; }
 .itemUnread { composes: item; background: #F8F7FF; }
 .itemUnread:hover { background: #F0EEFF; }
+.clickable:hover { box-shadow: inset 3px 0 0 #4338CA; }
 
 .dot {
   width: 8px;

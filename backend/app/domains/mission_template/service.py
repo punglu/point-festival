@@ -1,0 +1,345 @@
+"""미션 템플릿 서비스 — CRUD + Lazy Init 자동 생성"""
+from datetime import date, datetime, timezone
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from fastapi import HTTPException
+
+from app.domains.mission_template.models import MissionTemplate
+from app.domains.mission.models import Mission
+from app.domains.mission_template.schema import (
+    MissionTemplateCreate,
+    MissionTemplateUpdate,
+    MissionTemplateResponse,
+)
+
+
+# ── 요일 비트마스크 유틸 ──
+# 월=1, 화=2, 수=4, 목=8, 금=16, 토=32, 일=64
+DAY_BITS = {0: 1, 1: 2, 2: 4, 3: 8, 4: 16, 5: 32, 6: 64}  # Python weekday → bit
+
+
+def matches_day(bitmask: int, target_date: date) -> bool:
+    """주어진 날짜가 bitmask 요일에 해당하는지 확인"""
+    weekday = target_date.weekday()  # 0=월 ~ 6=일
+    return bool(bitmask & DAY_BITS.get(weekday, 0))
+
+
+async def list_templates(db: AsyncSession, player_id: int | None = None) -> list[MissionTemplateResponse]:
+    """
+    -- [SQL] 템플릿 목록 조회
+    -- SELECT * FROM mission_templates WHERE deleted_at IS NULL
+    --   [AND player_id = :player_id] ORDER BY created_at DESC;
+    """
+    stmt = select(MissionTemplate).where(MissionTemplate.deleted_at.is_(None))
+    if player_id:
+        stmt = stmt.where(MissionTemplate.player_id == player_id)
+    stmt = stmt.order_by(MissionTemplate.created_at.desc())
+    result = await db.execute(stmt)
+    return [MissionTemplateResponse.model_validate(t) for t in result.scalars().all()]
+
+
+def get_rolling_window() -> tuple[date, date]:
+    """
+    롤링 윈도우 범위: 오늘 ~ 다음 주 일요일
+    예) 오늘이 토요일(4/4)이면 → 4/4(토) ~ 4/12(일) = 9일간
+    예) 오늘이 월요일(3/30)이면 → 3/30(월) ~ 4/5(일) = 7일간 (이번 주만)
+    """
+    from datetime import timedelta
+    today = date.today()
+    days_until_sunday = 6 - today.weekday()  # weekday(): 0=월 ~ 6=일
+    this_sunday = today + timedelta(days=days_until_sunday)
+    next_sunday = this_sunday + timedelta(days=7)
+    return today, next_sunday
+
+
+async def generate_missions_for_range(
+    db: AsyncSession, start_date: date, end_date: date
+) -> int:
+    """
+    -- [SQL] 롤링 윈도우: 지정 범위의 각 날짜에 대해 템플릿 미션 일괄 생성
+    -- FOR each date IN [start_date .. end_date]:
+    --   기존 generate_missions_from_templates(db, date) 호출
+    --   → 중복 방지 로직(player_id, date, text, point 조합)이 이미 내장됨
+    --   → 이미 존재하는 미션은 스킵, 새로운 것만 INSERT
+    """
+    from datetime import timedelta
+    total_created = 0
+    current = start_date
+    while current <= end_date:
+        count = await generate_missions_from_templates(db, current)
+        total_created += count
+        current += timedelta(days=1)
+    await db.flush()
+    return total_created
+
+
+async def create_template(db: AsyncSession, data: MissionTemplateCreate) -> MissionTemplateResponse:
+    """
+    -- [SQL] 템플릿 생성
+    -- INSERT INTO mission_templates (player_id, text, point, day_of_week)
+    -- VALUES (:player_id, :text, :point, :day_of_week);
+    --
+    -- 생성 후: 롤링 윈도우(오늘~다음주 일요일) 범위 미션 즉시 생성
+    """
+    template = MissionTemplate(
+        player_id=data.player_id,
+        text=data.text,
+        point=data.point,
+        day_of_week=data.day_of_week,
+        group_id=getattr(data, 'group_id', None),
+    )
+    db.add(template)
+    await db.flush()
+    await db.refresh(template)
+
+    # ★ 롤링 윈도우: 즉시 미션 생성
+    start, end = get_rolling_window()
+    await generate_missions_for_range(db, start, end)
+
+    return MissionTemplateResponse.model_validate(template)
+
+
+async def update_template(db: AsyncSession, template_id: int, data: MissionTemplateUpdate) -> MissionTemplateResponse:
+    """
+    -- [SQL] 템플릿 수정 + 미래 미실행 미션 갱신
+    -- UPDATE mission_templates SET text=:text, point=:point, day_of_week=:dow, is_active=:active
+    -- WHERE id = :id AND deleted_at IS NULL;
+    --
+    -- 수정 후: 오늘 이후의 active 미션(해당 템플릿 기반) Soft Delete → 롤링 윈도우 재생성
+    """
+    from datetime import timedelta
+    from sqlalchemy import update as sql_update
+    from app.domains.mission.models import Mission
+
+    result = await db.execute(
+        select(MissionTemplate).where(
+            MissionTemplate.id == template_id, MissionTemplate.deleted_at.is_(None)
+        )
+    )
+    template = result.scalar_one_or_none()
+    if not template:
+        raise HTTPException(status_code=404, detail="템플릿을 찾을 수 없습니다")
+
+    # 수정 전 원본 값 보존 (미션 매칭용)
+    old_text = template.text
+    old_point = template.point
+
+    for field, value in data.model_dump(exclude_unset=True).items():
+        setattr(template, field, value)
+
+    await db.flush()
+
+    # ★ 미래 미실행 미션 정리 (오늘 이후, active만, 원본 값 기준 매칭)
+    today = date.today()
+    now_utc = datetime.now(timezone.utc)
+    cleanup_stmt = (
+        sql_update(Mission)
+        .where(
+            Mission.player_id == template.player_id,
+            Mission.text == old_text,
+            Mission.point == old_point,
+            Mission.proposed_by == "template",
+            Mission.status == "active",
+            Mission.date > today,
+            Mission.deleted_at.is_(None),
+        )
+        .values(
+            deleted_at=now_utc,
+            msg="[시스템] 스케줄 수정으로 인한 재생성",
+        )
+    )
+    await db.execute(cleanup_stmt)
+
+    # ★ 수정된 템플릿 기준으로 롤링 윈도우 재생성 (오늘 이후부터)
+    _, end_date = get_rolling_window()
+    tomorrow = today + timedelta(days=1)
+    await generate_missions_for_range(db, tomorrow, end_date)
+
+    await db.refresh(template)
+    return MissionTemplateResponse.model_validate(template)
+
+
+async def delete_template(db: AsyncSession, template_id: int) -> None:
+    """
+    -- [SQL] 템플릿 삭제 및 관련 미션 일괄 정리 (Option B + 주간 범위 한정)
+    --
+    -- 1. 템플릿 Soft Delete
+    -- UPDATE mission_templates SET deleted_at = NOW()
+    -- WHERE id = :template_id AND deleted_at IS NULL;
+    --
+    -- 2. 해당 템플릿 기반 미완료 미션 Soft Delete (이번 주 범위 한정)
+    -- UPDATE missions
+    -- SET deleted_at = NOW(), msg = '[시스템] 스케줄 삭제로 인한 자동 취소'
+    -- WHERE player_id = :pid AND text = :text AND point = :point
+    --   AND proposed_by = 'template' AND status = 'active'
+    --   AND date >= :week_start AND date <= :week_end
+    --   AND deleted_at IS NULL;
+    """
+    from datetime import timedelta
+    from sqlalchemy import update as sql_update
+    from app.domains.mission.models import Mission
+
+    # 1. 템플릿 조회
+    result = await db.execute(
+        select(MissionTemplate).where(
+            MissionTemplate.id == template_id, MissionTemplate.deleted_at.is_(None)
+        )
+    )
+    template = result.scalar_one_or_none()
+    if not template:
+        raise HTTPException(status_code=404, detail="템플릿을 찾을 수 없습니다")
+
+    # 2. 롤링 윈도우 범위 계산 (이번 주 월요일 ~ 다음 주 일요일)
+    today = date.today()
+    week_start = today - timedelta(days=today.weekday())        # 이번 주 월요일
+    _, rolling_end = get_rolling_window()                       # 다음 주 일요일까지
+    week_end = rolling_end
+
+    # 3. 관련 미션 연쇄 Soft Delete (이번 주, active만)
+    now_utc = datetime.now(timezone.utc)
+    cleanup_stmt = (
+        sql_update(Mission)
+        .where(
+            Mission.player_id == template.player_id,
+            Mission.text == template.text,
+            Mission.point == template.point,
+            Mission.proposed_by == "template",
+            Mission.status == "active",
+            Mission.date >= week_start,
+            Mission.date <= week_end,
+            Mission.deleted_at.is_(None),
+        )
+        .values(
+            deleted_at=now_utc,
+            msg="[시스템] 스케줄 삭제로 인한 자동 취소",
+        )
+    )
+    await db.execute(cleanup_stmt)
+
+    # 4. 템플릿 본체 Soft Delete
+    template.deleted_at = now_utc
+    await db.flush()
+
+
+async def delete_templates_by_group(db: AsyncSession, group_id: str) -> None:
+    """
+    -- [SQL] group_id가 동일한 템플릿 전체 Soft Delete + 관련 미션 연쇄 정리
+    -- SELECT * FROM mission_templates WHERE group_id = :group_id AND deleted_at IS NULL;
+    -- for each: 개별 delete_template 호출 (cascade 미션 정리 포함)
+    """
+    result = await db.execute(
+        select(MissionTemplate).where(
+            MissionTemplate.group_id == group_id,
+            MissionTemplate.deleted_at.is_(None),
+        )
+    )
+    templates = result.scalars().all()
+    for tmpl in templates:
+        await delete_template(db, tmpl.id)
+
+
+async def generate_missions_from_templates(db: AsyncSession, target_date: date) -> int:
+    """
+    Lazy Init: 오늘 요일에 해당하는 활성 템플릿을 missions에 자동 생성.
+    중복 방지: last_generated_date가 target_date와 같으면 스킵.
+    추가 방어: (player_id, date, text, point) 조합으로 이미 존재하면 스킵.
+
+    -- [SQL] Lazy Init 조회
+    -- SELECT * FROM mission_templates
+    -- WHERE is_active = TRUE AND deleted_at IS NULL
+    --   AND (last_generated_date IS NULL OR last_generated_date < :target_date);
+    --
+    -- [SQL] 중복 확인
+    -- SELECT 1 FROM missions
+    -- WHERE player_id = :pid AND date = :date AND text = :text AND point = :point
+    --   AND deleted_at IS NULL LIMIT 1;
+    --
+    -- [SQL] 미션 생성
+    -- INSERT INTO missions (player_id, date, text, point, status, sender, proposed_by, sort_order)
+    -- VALUES (:pid, :date, :text, :point, 'active', '관리자', 'template', :order);
+    """
+    from app.domains.mission.models import Mission
+
+    stmt = select(MissionTemplate).where(
+        MissionTemplate.is_active.is_(True),
+        MissionTemplate.deleted_at.is_(None),
+        (MissionTemplate.last_generated_date.is_(None))
+        | (MissionTemplate.last_generated_date < target_date),
+    )
+    result = await db.execute(stmt)
+    templates = result.scalars().all()
+
+    created_count = 0
+    for tmpl in templates:
+        if not matches_day(tmpl.day_of_week, target_date):
+            continue
+
+        # 중복 확인
+        dup_check = await db.execute(
+            select(Mission.id).where(
+                Mission.player_id == tmpl.player_id,
+                Mission.date == target_date,
+                Mission.text == tmpl.text,
+                Mission.point == tmpl.point,
+                Mission.deleted_at.is_(None),
+            ).limit(1)
+        )
+        if dup_check.scalar_one_or_none() is not None:
+            # 이미 존재 → last_generated_date만 갱신
+            tmpl.last_generated_date = target_date
+            continue
+
+        # 미션 생성
+        mission = Mission(
+            player_id=tmpl.player_id,
+            date=target_date,
+            text=tmpl.text,
+            point=tmpl.point,
+            status="active",
+            sender="관리자",
+            proposed_by="template",
+            sort_order=0,
+        )
+        db.add(mission)
+        tmpl.last_generated_date = target_date
+        created_count += 1
+
+    await db.flush()
+    return created_count
+
+
+async def get_week_remaining_missions(
+    db: AsyncSession, player_id: int, start_date: date, end_date: date
+) -> list[dict]:
+    """
+    주간 남은 미션 조회: start_date~end_date 범위에서 status='active'인 미션 목록 반환.
+
+    -- [SQL] 주간 남은 미션
+    -- SELECT id, date, text, point, status FROM missions
+    -- WHERE player_id = :pid AND date BETWEEN :start AND :end
+    --   AND status = 'active' AND deleted_at IS NULL
+    -- ORDER BY date ASC, sort_order ASC;
+    """
+    stmt = (
+        select(Mission)
+        .where(
+            Mission.player_id == player_id,
+            Mission.date >= start_date,
+            Mission.date <= end_date,
+            Mission.status == "active",
+            Mission.deleted_at.is_(None),
+        )
+        .order_by(Mission.date.asc(), Mission.sort_order.asc())
+    )
+    result = await db.execute(stmt)
+    missions = result.scalars().all()
+    return [
+        {
+            "id": m.id,
+            "date": str(m.date),
+            "text": m.text,
+            "point": m.point,
+            "status": m.status,
+        }
+        for m in missions
+    ]

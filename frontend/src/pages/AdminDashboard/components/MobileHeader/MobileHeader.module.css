@@ -43,15 +43,33 @@
 }
 
 .brandText {
-  color: #E0E7FF;
-  font-size: 14px;
-  font-weight: 600;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  margin-top: 2px;
 }
 
 .actions {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.homeBtn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+.homeBtn:hover {
+  background: rgba(165, 180, 252, 0.15);
 }
 
 .iconBtn {
@@ -83,6 +101,34 @@
   border: 1.5px solid #312E81;
 }
 
+.headerChatBtn {
+  position: relative;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  padding: 8px;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.headerChatBadge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #EF4444;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
 .avatar {
   width: 28px;
   height: 28px;
@@ -95,4 +141,12 @@
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+  overflow: hidden;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }

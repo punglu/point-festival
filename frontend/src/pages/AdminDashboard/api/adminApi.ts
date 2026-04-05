@@ -21,6 +21,9 @@ export const adminApi = {
   lockPlayer: (id: number, isLocked: boolean, signal?: AbortSignal) =>
     httpClient.patch<Player>(`/api/admin/players/${id}/lock`, { is_locked: isLocked }, { signal }),
 
+  setPlayerVisibility: (id: number, data: { is_visible?: boolean; is_dashboard_visible?: boolean }, signal?: AbortSignal) =>
+    httpClient.patch<Player>(`/api/admin/players/${id}/visibility`, data, { signal }),
+
   changePlayerPin: (id: number, pin: string, signal?: AbortSignal) =>
     httpClient.patch(`/api/admin/players/${id}/pin`, { pin }, { signal }),
 
@@ -34,10 +37,10 @@ export const adminApi = {
   getMissions: (params: { player_id?: number; date?: string }, signal?: AbortSignal) =>
     httpClient.get<Mission[]>('/api/admin/missions', { params, signal }),
 
-  createMission: (data: { player_id: number; date: string; text: string; point: number }, signal?: AbortSignal) =>
+  createMission: (data: { player_id: number; date: string; text: string; point: number; group_id?: string }, signal?: AbortSignal) =>
     httpClient.post<Mission>('/api/admin/missions', data, { signal }),
 
-  updateMission: (id: number, data: Partial<Pick<Mission, 'text' | 'point' | 'status'>>, signal?: AbortSignal) =>
+  updateMission: (id: number, data: Partial<Pick<Mission, 'text' | 'point' | 'status'> & { msg?: string | null }>, signal?: AbortSignal) =>
     httpClient.patch<Mission>(`/api/admin/missions/${id}`, data, { signal }),
 
   updateMissionStatus: (id: number, status: string, rejectionReason?: string, signal?: AbortSignal) =>
@@ -46,7 +49,13 @@ export const adminApi = {
   deleteMission: (id: number, signal?: AbortSignal) =>
     httpClient.delete(`/api/admin/missions/${id}`, { signal }),
 
-  batchCopyMissions: (data: { player_id: number; source_date: string; target_date: string; mission_ids: number[] }, signal?: AbortSignal) =>
+  deleteMissionGroup: (groupId: string, signal?: AbortSignal) =>
+    httpClient.delete(`/api/admin/missions/by-group/${groupId}`, { signal }),
+
+  revertMission: (id: number, signal?: AbortSignal) =>
+    httpClient.post<Mission>(`/api/admin/missions/${id}/revert`, {}, { signal }),
+
+  batchCopyMissions: (data: { player_id: number; source_date: string; target_date: string; mission_ids: number[]; point_overrides?: Record<number, number> }, signal?: AbortSignal) =>
     httpClient.post<Mission[]>('/api/admin/missions/clone-selected', data, { signal }),
 
   cloneMissions: (data: { source_player_id: number; source_date: string; target_date: string; point_overrides?: Record<number, number> }, signal?: AbortSignal) =>

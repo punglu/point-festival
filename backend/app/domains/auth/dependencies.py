@@ -65,6 +65,38 @@ async def get_current_admin(
     return admin
 
 
+async def get_current_chat_user(token: str = Depends(oauth2_scheme)) -> dict:
+    """Player 또는 Admin 토큰 모두 허용 — chat 전용 의존성
+    player token: sub=player_id
+    admin token:  player_id claim 사용
+    """
+    try:
+        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
+        role = payload.get("role")
+        if role == "player":
+            return {"player_id": int(payload["sub"])}
+        elif role == "admin":
+            pid = payload.get("player_id")
+            if not pid:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Admin 계정에 player_id가 없습니다",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            return {"player_id": int(pid)}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="유효하지 않은 토큰 역할입니다",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="유효하지 않은 토큰입니다",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
 async def get_admin_user(current_user: dict = Depends(get_current_user)) -> dict:
     """Admin 권한 검증 — is_admin=False이면 403 (Player PIN 기반 레거시)"""
     if not current_user["is_admin"]:

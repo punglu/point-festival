@@ -1,0 +1,13 @@
+.container {
+  height: calc(100vh - 120px);
+  min-height: 500px;
+}
+
+.noPlayer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 120px);
+  color: #64748B;
+  font-size: 14px;
+}

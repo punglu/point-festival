@@ -29,6 +29,7 @@ export interface AdminLoginResponse {
   access_token: string;
   token_type: string;
   display_name: string;
+  player_id: number | null;
   is_admin: boolean;
 }
 

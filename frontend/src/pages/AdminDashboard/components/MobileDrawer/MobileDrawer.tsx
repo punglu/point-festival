@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import styles from './MobileDrawer.module.css';
 import { ADMIN_MENU } from '../../constants/admin.constants';
 import { useAdminAuth } from '../../hooks/useAdminAuth';
+import AdminBrandLogo from '../AdminBrandLogo/AdminBrandLogo';
 
 interface Props {
   open: boolean;
@@ -41,8 +42,7 @@ export default function MobileDrawer({ open, onClose, currentPath }: Props) {
       <div className={open ? styles.drawerOpen : styles.drawer}>
         <div className={styles.drawerHead}>
           <div className={styles.drawerBrand}>
-            <img src="/favicon-192x192.png" alt="포인트 잔치" className={styles.brandLogo} />
-            <span className={styles.brandText}>포인트 잔치</span>
+            <AdminBrandLogo />
           </div>
           <button className={styles.closeBtn} onClick={onClose} aria-label="닫기">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">

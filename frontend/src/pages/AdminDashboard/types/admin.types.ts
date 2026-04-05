@@ -6,7 +6,9 @@ export interface Player {
   status_msg: string | null;
   photo: string | null;
   last_login: number | null;
-  is_locked: boolean;
+  is_locked:            boolean;
+  is_visible:           boolean;
+  is_dashboard_visible: boolean;
 }
 
 // ===== 미션 =====
@@ -30,6 +32,7 @@ export interface Mission {
   proposal_reason: string | null;
   rejection_reason: string | null;
   sort_order: number;
+  group_id: string | null;
   created_at: string;
   updated_at: string;
 }

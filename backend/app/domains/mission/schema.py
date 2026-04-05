@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 from pydantic import BaseModel, Field, field_validator
 
@@ -12,6 +12,7 @@ class MissionCreate(BaseModel):
     msg: Optional[str] = None
     status: str = "active"
     sort_order: int = 0
+    group_id: Optional[str] = None
 
 
 class MissionUpdate(BaseModel):
@@ -49,6 +50,8 @@ class MissionResponse(BaseModel):
     proposal_reason: Optional[str]
     rejection_reason: Optional[str]
     sort_order: int
+    group_id: Optional[str] = None
+    created_at: Optional[datetime] = None
 
     model_config = {"from_attributes": True}
 
@@ -72,6 +75,8 @@ class MissionCloneSelectedRequest(BaseModel):
     target_date: date
     player_id: int
     mission_ids: list[int]
+    point_overrides: Optional[dict[int, int]] = None
+    # key: 원본 mission_id, value: 변경할 포인트. None이면 원본 포인트 그대로 복제
 
     @field_validator('mission_ids')
     @classmethod

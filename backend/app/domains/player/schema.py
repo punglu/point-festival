@@ -23,13 +23,20 @@ class PlayerLockRequest(BaseModel):
     is_locked: bool
 
 
+class PlayerVisibilityRequest(BaseModel):
+    is_visible:            bool | None = None
+    is_dashboard_visible:  bool | None = None
+
+
 class PlayerListItem(BaseModel):
     id: int
     name: str
     role: str
     status_msg: Optional[str] = None
     last_login: int | None = None
-    is_locked: bool = False
+    is_locked:            bool = False
+    is_visible:           bool = True
+    is_dashboard_visible: bool = True
     photo: Optional[str] = None
     total_points: int = 0
 

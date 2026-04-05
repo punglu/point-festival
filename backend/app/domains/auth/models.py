@@ -30,5 +30,6 @@ class AdminAuth(Base, SoftDeleteMixin):
     username = Column(String(50), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
     display_name = Column(String(50), nullable=False)
+    player_id = Column(Integer, ForeignKey("players.id"), nullable=True)
     created_at = Column(DateTime, default=func.now(), nullable=False)
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)

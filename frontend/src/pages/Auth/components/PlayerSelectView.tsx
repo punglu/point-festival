@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import styles from '../Auth.module.css';
 import PlayerCard from './PlayerCard';
 import { authApi } from '../api/authApi';
+import MainLogo from '../../../shared/components/MainLogo';
 
 function calcLevel(totalPoints: number, thresholds: Record<number, number>): number {
   let level = 1;
@@ -58,8 +59,7 @@ export default function PlayerSelectView({ onPlayerSelect, onAdminClick }: Props
     <div className={styles.authView}>
       {/* Indigo 헤더 */}
       <div className={styles.authHeader}>
-        <img src="/logo-login.png" alt="포인트 잔치" className={styles.brandLogo} />
-        <h1 className={styles.authTitle}>포인트 잔치</h1>
+        <MainLogo size="md" />
         <p className={styles.authSubtitle}>플레이어를 선택하세요</p>
       </div>
 

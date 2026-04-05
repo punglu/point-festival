@@ -123,6 +123,22 @@ async def get_point_cycle_summary(
     )
 
 
+async def get_total_earned(db: AsyncSession, player_id: int) -> int:
+    """
+    -- [SQL] 전체 기간 누적 획득 포인트 (사용량 무관)
+    -- SELECT COALESCE(SUM(earned), 0) FROM daily_points
+    -- WHERE player_id = :player_id AND deleted_at IS NULL;
+    """
+    stmt = select(
+        sa_func.coalesce(sa_func.sum(DailyPoint.earned), 0)
+    ).where(
+        DailyPoint.player_id == player_id,
+        DailyPoint.deleted_at.is_(None),
+    )
+    result = await db.execute(stmt)
+    return int(result.scalar())
+
+
 async def get_daily_points_admin(
     db: AsyncSession,
     player_id: Optional[int] = None,

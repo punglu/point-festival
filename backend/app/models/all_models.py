@@ -9,3 +9,5 @@ from app.domains.daily_point.models import DailyPoint    # noqa: F401
 from app.domains.notification.models import Notification  # noqa: F401
 from app.domains.config.models import AppConfig          # noqa: F401
 from app.domains.login_log.models import LoginLog        # noqa: F401
+from app.domains.mission_template.models import MissionTemplate  # noqa: F401
+from app.domains.chat.models import ChatMessage                  # noqa: F401

@@ -1,7 +1,7 @@
 # CLAUDE.md — 프로젝트 컨텍스트 (매 세션 필독)
 
 > **프로젝트:** 마인크래프트 포인트 잔치 — 모던 스택 마이그레이션
-> **최종 갱신:** 2026-04-03 | Phase 5 완료 + 핫픽스 3건 적용, Phase 6 설계 대기
+> **최종 갱신:** 2026-04-04 | Phase 5 완료 + REFACTORING_0404 적용 (AdminDashboard Views 구조 전면 개편), Phase 6 설계 대기
 > **이 파일은 프로젝트의 SSOT입니다. 매 세션 시작 시 반드시 읽으세요.**
 
 ---
@@ -88,11 +88,17 @@
 ```
 mc-point-festival/
 ├── CLAUDE.md                    ← 이 파일
+├── docs/CLAUDE.md               # CLAUDE.md 사본 (문서 보관용)
 ├── .env
 ├── .gitignore
 ├── docker-compose.yml           # 개발용
 ├── docker-compose.prod.yml      # 운영용 (Synology NAS)
 ├── deploy.sh                    # OrbStack → NAS 배포
+├── e2e_scenario_test.py         # E2E 시나리오 테스트 (v1)
+├── e2e_scenario_test_v2.py      # E2E 시나리오 테스트 (v2)
+├── wrapper.py                   # 테스트 래퍼
+├── favicon-assets/              # 파비콘 원본 이미지 (11종)
+└── logo-assets/                 # 로고 원본 이미지 (5종)
 │
 ├── database/
 │   └── init.sql                 # 12 테이블 + Seed (admin_auth 포함)
@@ -104,6 +110,7 @@ mc-point-festival/
 │       ├── main.py              # FastAPI 앱 + 라우터 등록
 │       ├── config.py            # pydantic-settings
 │       ├── database.py          # AsyncSession
+│       ├── dependencies.py      # 앱 레벨 공통 의존성 (REFACTORING_0404 신규)
 │       ├── models/
 │       │   ├── base.py          # Base + Mixin
 │       │   └── all_models.py    # Junction Hub (11개 모델)
@@ -137,11 +144,16 @@ mc-point-festival/
 │       │   └── global.css       # CSS Variables + 테마 격리
 │       ├── shared/
 │       │   ├── api/httpClient.ts
-│       │   ├── stores/useAuthStore.ts  # setLogin + adminLogin + logout
-│       │   ├── utils/compressImage.ts  # Canvas 기반 이미지 압축 (200px, JPEG 75%)
+│       │   ├── stores/
+│       │   │   ├── useAuthStore.ts     # setLogin + adminLogin + logout
+│       │   │   └── useToastStore.ts    # Toast 전역 상태 (REFACTORING_0404 신규)
+│       │   ├── utils/
+│       │   │   ├── compressImage.ts    # Canvas 기반 이미지 압축 (200px, JPEG 75%)
+│       │   │   └── favicon.ts          # 파비콘 동적 전환 유틸 (REFACTORING_0404 신규)
 │       │   └── components/
 │       │       ├── Button/
-│       │       └── PhotoUpload/        # 재사용 사진 업로드 컴포넌트
+│       │       ├── PhotoUpload/        # 재사용 사진 업로드 컴포넌트
+│       │       └── Toast/              # ToastContainer (REFACTORING_0404 신규)
 │       └── pages/
 │           ├── Auth/            # ✅ Phase 1 + Phase 5 (Login Hub 리팩토링)
 │           │   ├── index.tsx    # 3모드 허브 (select/pin/admin)
@@ -172,25 +184,57 @@ mc-point-festival/
 │           │   │   ├── StatDetailModal.tsx
 │           │   │   ├── CheerModal.tsx
 │           │   │   ├── ExpBar.tsx
-│           │   │   ├── MissionProgressBar.tsx
+│           │   │   ├── MissionProgressBar.tsx + MissionProgressBar.module.css
 │           │   │   └── ConfettiEffect.tsx
 │           │   ├── hooks/useDashboard.ts
 │           │   └── api/dashboardApi.ts
-│           └── AdminDashboard/  # ✅ Phase 4
+│           └── AdminDashboard/  # ✅ Phase 4 + REFACTORING_0404 전면 개편
 │               ├── index.tsx
-│               ├── AdminDashboard.module.css
-│               ├── components/
-│               │   ├── AdminNav.tsx
-│               │   ├── MissionManager.tsx
-│               │   ├── MissionCloneModal.tsx
-│               │   ├── PointManager.tsx
-│               │   ├── PlayerManager.tsx
-│               │   ├── CheerEditor.tsx
-│               │   ├── FeedbackViewer.tsx
-│               │   ├── NotificationManager.tsx
-│               │   └── ConfigManager.tsx
+│               ├── AdminLayout.tsx + AdminLayout.module.css  # 레이아웃 래퍼
+│               ├── types/admin.types.ts
+│               ├── constants/admin.constants.ts
+│               ├── api/adminApi.ts
 │               ├── hooks/
-│               └── api/
+│               │   ├── useAdminAuth.ts
+│               │   ├── useAdminData.ts
+│               │   ├── useAdminToast.ts
+│               │   └── useCycle.ts
+│               ├── components/              # AdminDashboard 내 공유 컴포넌트
+│               │   ├── AdminModal/
+│               │   ├── AdminToast/
+│               │   ├── CycleIndicator/
+│               │   ├── DateSelector/
+│               │   ├── MobileDrawer/
+│               │   ├── MobileHeader/
+│               │   ├── PlayerBadge/
+│               │   ├── PlayerTab/
+│               │   ├── Sidebar/
+│               │   └── StatCard/
+│               └── views/                   # View 단위 수직 응집 (REFACTORING_0404)
+│                   ├── DashboardView/
+│                   │   ├── DashboardView.tsx + DashboardView.module.css
+│                   │   └── components/      # PlayerStatusCard, MissionRanking, etc.
+│                   ├── MissionView/
+│                   │   ├── MissionView.tsx + MissionView.module.css
+│                   │   ├── components/      # MissionCard, MissionCardEdit, BatchCopyModal, etc.
+│                   │   └── hooks/
+│                   ├── PlayerView/
+│                   │   ├── PlayerView.tsx + PlayerView.module.css
+│                   │   ├── components/      # PlayerProfileCard, AddPlayerModal, LoginLogTable, etc.
+│                   │   └── hooks/usePlayerView.ts
+│                   ├── PointView/
+│                   │   ├── PointView.tsx + PointView.module.css
+│                   │   ├── components/      # PlayerPointSummary, DeductionList, AddDeductionModal, etc.
+│                   │   └── hooks/usePointView.ts
+│                   ├── FeedbackView/
+│                   │   └── FeedbackView.tsx + FeedbackView.module.css
+│                   ├── NotificationView/
+│                   │   ├── NotificationView.tsx + NotificationView.module.css
+│                   │   └── components/      # NotificationFilter, NotificationItem
+│                   └── ConfigView/
+│                       ├── ConfigView.tsx + ConfigView.module.css
+│                       ├── components/
+│                       └── hooks/
 │
 └── _legacy/                     # ✅ Phase 1에서 이동 완료
     ├── index.html
@@ -413,7 +457,32 @@ mc-point-festival/
 
 ---
 
-## 14. 잔여 사항
+## 14. REFACTORING_0404 (2026-04-04)
+
+### 주요 변경 범위
+| 영역 | 변경 내용 |
+|---|---|
+| AdminDashboard FE | 평면 `components/` → `views/[ViewName]/` 수직 응집 구조로 전면 개편 |
+| AdminDashboard FE | `AdminLayout.tsx` 레이아웃 래퍼 신규, `types/`, `constants/` 디렉토리 추가 |
+| AdminDashboard FE | 공유 훅 4종 신규: `useAdminAuth`, `useAdminData`, `useAdminToast`, `useCycle` |
+| shared/ | `Toast/ToastContainer` + `useToastStore` 신규 |
+| shared/ | `utils/favicon.ts` 신규 (파비콘 동적 전환) |
+| BE | `backend/app/dependencies.py` 앱 레벨 공통 의존성 파일 신규 |
+| 루트 | `e2e_scenario_test.py`, `e2e_scenario_test_v2.py`, `wrapper.py` 추가 |
+| 루트 | `favicon-assets/` (11종), `logo-assets/` (5종) 추가 |
+| UserDashboard | `MissionProgressBar.module.css` 분리, CSS 전면 개편 |
+| Auth | `Auth.module.css` 대규모 개편 (로그인 화면 UI 개선) |
+
+### REFACTORING_0404에서 확립된 패턴
+- **Views 수직 응집**: AdminDashboard는 `views/[ViewName]/` 단위로 컴포넌트+훅+CSS 응집. 각 View는 독립 디렉토리 유지
+- **AdminDashboard 내부 Shared**: 2개+ View에서 쓰이는 컴포넌트는 `AdminDashboard/components/`로 승격 (전역 `src/shared/`와 구분)
+- **Toast 시스템**: `useToastStore` (Zustand) + `ToastContainer` (shared). admin/user 양쪽에서 활용 가능
+- **Favicon 유틸**: `shared/utils/favicon.ts`로 이벤트/일반 파비콘 동적 전환
+- **AdminLayout 분리**: 레이아웃(Sidebar+Header) 관심사를 `AdminLayout.tsx`로 분리, `index.tsx`는 라우팅/상태만 담당
+
+---
+
+## 15. 잔여 사항
 
 | # | 항목 | 상태 | 비고 |
 |---|---|---|---|
@@ -424,14 +493,14 @@ mc-point-festival/
 
 ---
 
-## 15. Phase 6 Task 목록 (다음)
+## 16. Phase 6 Task 목록 (다음)
 
 > Phase 6 설계 미착수.
 > **Phase 6: Home Page + Legacy (index.html 다크테마 마이그레이션)**
 
 ---
 
-## 16. 보고 형식
+## 17. 보고 형식
 
 ### 작업 시작
 ```
@@ -453,7 +522,7 @@ Task ID: [PX-XXX]
 
 ---
 
-## 17. 주의사항
+## 18. 주의사항
 
 - **설계서에 없는 파일을 임의로 생성하지 마세요.** 실행 프롬프트에 명시된 파일만 생성합니다.
 - **전역 CSS 파일을 추가하지 마세요.** global.css, reset.css 외 전역 스타일 금지.

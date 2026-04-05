@@ -1,0 +1,41 @@
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  animation: fadeFloat 0.6s ease-out;
+}
+
+@keyframes fadeFloat {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cluster {
+  object-fit: contain;
+}
+
+.title {
+  font-family: 'Black Han Sans', sans-serif;
+  color: white;
+  margin-top: 4px;
+}
+
+/* sm: 사이드바, 헤더 */
+.sm .cluster { width: 36px; height: 36px; }
+.sm .title { display: none; }
+
+/* md: 로그인 페이지 */
+.md .cluster { width: 144px; height: 144px; margin-bottom: -18px; }
+.md .title { font-size: 1.7rem; }
+.md { gap: 2px; }
+
+/* lg: 스플래시 등 */
+.lg .cluster { width: 120px; height: 120px; }
+.lg .title { font-size: 1.6rem; }

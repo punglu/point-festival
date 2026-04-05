@@ -26,6 +26,20 @@ export default function PlayerView() {
     } catch { /* silent */ }
   };
 
+  const handleToggleLoginVisibility = async (player: Player) => {
+    try {
+      await adminApi.setPlayerVisibility(player.id, { is_visible: !player.is_visible });
+      reload();
+    } catch { /* silent */ }
+  };
+
+  const handleToggleDashboardVisibility = async (player: Player) => {
+    try {
+      await adminApi.setPlayerVisibility(player.id, { is_dashboard_visible: !player.is_dashboard_visible });
+      reload();
+    } catch { /* silent */ }
+  };
+
   return (
     <div className={styles.view}>
       <div className={styles.header}>
@@ -50,6 +64,8 @@ export default function PlayerView() {
                 onChangePin={() => setPinTarget(p)}
                 onChangePhoto={() => setPhotoTarget(p)}
                 onToggleLock={() => handleToggleLock(p)}
+                onToggleLoginVisibility={() => handleToggleLoginVisibility(p)}
+                onToggleDashboardVisibility={() => handleToggleDashboardVisibility(p)}
                 onDelete={() => deletePlayer(p.id)}
               />
             ))}

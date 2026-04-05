@@ -8,7 +8,6 @@ const TABS: Tab[] = [
   { key: 'unread',           label: '읽지 않음' },
   { key: 'approval_request', label: '승인 요청' },
   { key: 'proposal',         label: '미션 제안' },
-  { key: 'system',           label: '시스템' },
 ];
 
 interface Props {

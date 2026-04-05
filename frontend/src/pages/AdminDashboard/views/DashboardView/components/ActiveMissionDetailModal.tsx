@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from './DashboardModal.module.css';
+import { getLocalToday } from '../../../../../shared/utils/dateUtils';
 import AdminModal from '../../../components/AdminModal/AdminModal';
 import PlayerTab from '../../../components/PlayerTab/PlayerTab';
 import type { Mission, Player } from '../../../types/admin.types';
@@ -24,7 +25,7 @@ const STATUS_COLOR: Record<string, string> = {
 
 export default function ActiveMissionDetailModal({ open, onClose, missions, players, cycle }: Props) {
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getLocalToday();
 
   const filtered = missions.filter((m) =>
     m.status === 'active' &&

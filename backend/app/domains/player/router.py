@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.dependencies import get_current_user
+from app.domains.auth.dependencies import get_current_user as get_player_only
 from app.domains.player.schema import PlayerCreate, PlayerListItem, PlayerUpdate
 from app.domains.player.service import (
     create_player, get_player_by_id, get_player_list,
@@ -14,17 +15,17 @@ router = APIRouter(prefix="/api/players", tags=["Player"])
 
 @router.get("", response_model=list[PlayerListItem])
 async def list_players(db: AsyncSession = Depends(get_db)):
-    """플레이어 목록 조회 (Auth 페이지 PlayerSelector용, admin 제외)"""
-    return await get_player_list(db)
+    """플레이어 목록 조회 (Auth 페이지 PlayerSelector용, admin 제외, is_visible=true만)"""
+    return await get_player_list(db, visible_only=True)
 
 
 @router.get("/me", response_model=PlayerListItem)
 async def get_me(
-    user: dict = Depends(get_current_user),
+    user: dict = Depends(get_player_only),
     db: AsyncSession = Depends(get_db),
 ):
-    """현재 로그인 사용자 정보"""
-    return await get_player_by_id(db, int(user["sub"]))
+    """현재 로그인 사용자 정보 (player 토큰 전용)"""
+    return await get_player_by_id(db, user["player_id"])
 
 
 @router.post("", response_model=PlayerListItem, status_code=201)

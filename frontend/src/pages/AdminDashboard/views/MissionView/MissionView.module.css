@@ -51,6 +51,54 @@
 }
 .btnSecondary:hover { background: #EEF2FF; }
 
+.bulkApproveBtn {
+  background: #EEF2FF;
+  color: #4338CA;
+  border: 0.5px solid #C7D2FE;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 12px;
+}
+
+.bulkApproveBtn:hover {
+  background: #E0E7FF;
+}
+
+.actionBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 0.5px solid #E2E8F0;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  color: #374151;
+  transition: background 0.15s;
+  height: 32px;
+  box-sizing: border-box;
+}
+
+.actionBtn:hover {
+  background: #F5F3FF;
+}
+
 .filters {
   display: flex;
   align-items: center;
@@ -134,4 +182,6 @@
 @media (max-width: 768px) {
   .view { padding: 16px; }
   .grid { grid-template-columns: 1fr; }
+  .actionBar { gap: 6px; }
+  .actionBtn { font-size: 11px; padding: 5px 10px; }
 }

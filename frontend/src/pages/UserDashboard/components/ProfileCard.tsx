@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from '../UserDashboard.module.css';
 import { DailyPointResponse, dashboardApi } from '../api/dashboardApi';
-import ExpBar from './ExpBar';
+import AppIcon from '../../../shared/components/AppIcon';
 
 interface Props {
   player: { id: number; name: string; role: string } | null;
@@ -10,17 +10,41 @@ interface Props {
   dailyPoint: DailyPointResponse | null;
   pendingPoints: number;
   levelThresholds: Record<string, number> | null;
+  totalEarned?: number;
   onStatClick?: (type: 'earned' | 'balance' | 'pending') => void;
 }
 
+function calcLevel(totalPoints: number, levelThresholds: Record<string, number> | null): {
+  level: number;
+  progressPercent: number;
+  nextThreshold: number | null;
+} {
+  if (!levelThresholds) return { level: 1, progressPercent: 0, nextThreshold: null };
+  const levels = Object.entries(levelThresholds)
+    .map(([lv, pts]) => ({ level: Number(lv), points: pts }))
+    .sort((a, b) => b.points - a.points);
+  let currentLevel = 1;
+  for (const { level, points } of levels) {
+    if (totalPoints >= points) { currentLevel = level; break; }
+  }
+  const currentThreshold = levelThresholds[String(currentLevel)] ?? 0;
+  const nextThreshold = levelThresholds[String(currentLevel + 1)] ?? null;
+  let progressPercent = 100;
+  if (nextThreshold !== null) {
+    const range = nextThreshold - currentThreshold;
+    const progress = totalPoints - currentThreshold;
+    progressPercent = range > 0 ? Math.min(Math.round((progress / range) * 100), 100) : 100;
+  }
+  return { level: currentLevel, progressPercent, nextThreshold };
+}
+
 export default function ProfileCard({
-  player, photo, initialStatusMsg = '', dailyPoint, pendingPoints, levelThresholds, onStatClick,
+  player, photo, initialStatusMsg = '', dailyPoint, pendingPoints, levelThresholds, totalEarned = 0, onStatClick,
 }: Props) {
   const [statusMsg, setStatusMsg] = useState(initialStatusMsg);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // 서버에서 로드된 초기값 반영
   useEffect(() => {
     setStatusMsg(initialStatusMsg);
   }, [initialStatusMsg]);
@@ -48,40 +72,52 @@ export default function ProfileCard({
 
   const earned = dailyPoint?.earned ?? 0;
   const balance = dailyPoint?.balance ?? 0;
+  const { level, progressPercent, nextThreshold } = calcLevel(totalEarned, levelThresholds);
 
   return (
     <div className={styles.profileCard}>
-      {/* 프로필 행: 아바타 + 이름 + ExpBar */}
-      <div className={styles.profileRow}>
+      {/* Row 1: 아바타 + 말풍선 상태메시지 */}
+      <div className={styles.profileRow1}>
         {photo ? (
-          <img src={photo} alt={player?.name ?? ''} className={styles.avatarImg} />
+          <img src={photo} alt={player?.name ?? ''} className={styles.profileAvatarLg} />
         ) : (
-          <div className={styles.avatar}>
+          <div className={styles.profileAvatarLgInitial}>
             {player?.name?.[0] ?? '?'}
           </div>
         )}
-        <div className={styles.profileInfo}>
-          <div className={styles.playerName}>{player?.name ?? '—'}</div>
-          <ExpBar totalPoints={balance} levelThresholds={levelThresholds} />
+        <div className={styles.profileBubbleWrap}>
+          <input
+            className={styles.profileBubbleInput}
+            placeholder="상태 메시지를 입력하세요..."
+            value={statusMsg}
+            onChange={e => setStatusMsg(e.target.value)}
+            onBlur={handleStatusSave}
+            onKeyDown={handleKeyDown}
+            disabled={saving}
+            maxLength={200}
+          />
+          {saved && <span className={styles.statusSaved}>저장됨</span>}
         </div>
       </div>
 
-      {/* 상태 메시지 */}
-      <div className={styles.statusRow}>
-        <input
-          className={styles.statusInput}
-          placeholder="상태 메시지를 입력하세요..."
-          value={statusMsg}
-          onChange={e => setStatusMsg(e.target.value)}
-          onBlur={handleStatusSave}
-          onKeyDown={handleKeyDown}
-          disabled={saving}
-          maxLength={200}
-        />
-        {saved && <span className={styles.statusSaved}>저장됨</span>}
+      {/* Row 2: 이름 + 레벨 + EXP바 + 미션 갯수 */}
+      <div className={styles.profileRow2}>
+        <span className={styles.profileNameInline}>{player?.name ?? '—'}</span>
+        <span className={styles.profileLvBadge}>Lv.{level}</span>
+        <div className={styles.profileExpInline}>
+          <div className={styles.profileExpTrackInline}>
+            <div
+              className={styles.profileExpFillInline}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
+        <span className={styles.profileMissionCount}>
+          {totalEarned}P / {nextThreshold !== null ? `${nextThreshold}P` : 'MAX'}
+        </span>
       </div>
 
-      {/* 스탯 카드 3개 (Duolingo 3D) */}
+      {/* 스탯 카드 3개 */}
       <div className={styles.statGrid}>
         <button className={`${styles.statCard} ${styles.statCardCompleted}`} onClick={() => onStatClick?.('earned')}>
           <div className={styles.statNumber}>{earned}P</div>
@@ -92,7 +128,7 @@ export default function ProfileCard({
           <div className={styles.statLabel}>남은 미션</div>
         </button>
         <button className={`${styles.statCard} ${styles.statCardPoints}`} onClick={() => onStatClick?.('balance')}>
-          <div className={styles.statNumber}>{balance}P</div>
+          <div className={styles.statNumber}><AppIcon name="gem" size={16} /> {balance}P</div>
           <div className={styles.statLabel}>현재 보유</div>
         </button>
       </div>

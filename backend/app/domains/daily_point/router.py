@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.domains.daily_point.schema import DailyPointAdjust, DailyPointResponse, PointCycleSummary
 from app.domains.daily_point.service import (
-    get_daily_point, get_daily_points_range, adjust_daily_point, get_point_cycle_summary,
+    get_daily_point, get_daily_points_range, adjust_daily_point,
+    get_point_cycle_summary, get_total_earned,
 )
 
 router = APIRouter(prefix="/api/daily-points", tags=["DailyPoint"])
@@ -43,6 +44,16 @@ async def get_cycle_summary(
 ):
     """주기별 포인트 집계 조회 (daily/weekly/monthly/quarterly/yearly)"""
     return await get_point_cycle_summary(db, player_id, target_date, cycle)
+
+
+@router.get("/total-earned")
+async def total_earned(
+    player_id: int = Query(...),
+    db: AsyncSession = Depends(get_db),
+):
+    """전체 기간 누적 획득 포인트 합계 (사용량 무관)"""
+    total = await get_total_earned(db, player_id)
+    return {"total_earned": total}
 
 
 @router.post("/", response_model=DailyPointResponse, status_code=201)

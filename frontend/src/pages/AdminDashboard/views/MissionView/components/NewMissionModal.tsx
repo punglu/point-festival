@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from './NewMissionModal.module.css';
+import { getLocalToday, shiftDay } from '../../../../../shared/utils/dateUtils';
 import AdminModal from '../../../components/AdminModal/AdminModal';
 import { POINT_QUICK_VALUES } from '../../../constants/admin.constants';
 import type { Player } from '../../../types/admin.types';
@@ -9,14 +10,14 @@ interface Props {
   onClose:     () => void;
   players:     Player[];
   defaultDate: string;
-  onCreate:    (data: { player_id: number; date: string; text: string; point: number }) => Promise<void>;
+  onCreate:    (data: { player_id: number; date: string; text: string; point: number; group_id?: string }) => Promise<void>;
 }
 
 type DateMode = 'today' | 'tomorrow' | 'custom';
 
 export default function NewMissionModal({ open, onClose, players, defaultDate, onCreate }: Props) {
-  const today    = new Date().toISOString().slice(0, 10);
-  const tomorrow = (() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10); })();
+  const today    = getLocalToday();
+  const tomorrow = shiftDay(today, 1);
 
   const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>([]);
   const [text,      setText]      = useState('');
@@ -45,8 +46,12 @@ export default function NewMissionModal({ open, onClose, players, defaultDate, o
     if (!text.trim() || selectedPlayerIds.length === 0) return;
     setSubmitting(true);
     try {
+      // 2명 이상에게 할당 시 같은 group_id 공유 → 이후 일괄 삭제 가능
+      const groupId = selectedPlayerIds.length > 1 ? crypto.randomUUID() : undefined;
       await Promise.all(
-        selectedPlayerIds.map((pid) => onCreate({ player_id: pid, date: getDate(), text: text.trim(), point }))
+        selectedPlayerIds.map((pid) =>
+          onCreate({ player_id: pid, date: getDate(), text: text.trim(), point, group_id: groupId })
+        )
       );
       setText(''); setPoint(10); setSelectedPlayerIds([]);
       onClose();

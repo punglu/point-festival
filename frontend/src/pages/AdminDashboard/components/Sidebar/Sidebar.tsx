@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import { ADMIN_MENU } from '../../constants/admin.constants';
 import { useAdminAuth } from '../../hooks/useAdminAuth';
+import AdminBrandLogo from '../AdminBrandLogo/AdminBrandLogo';
 
 interface Props {
   currentPath: string;
@@ -36,7 +37,7 @@ function Icon({ name, className }: { name: string; className?: string }) {
 }
 
 export default function Sidebar({ currentPath, onNavigate }: Props) {
-  const { adminDisplayName, logout } = useAdminAuth();
+  const { adminDisplayName, adminPhoto, logout } = useAdminAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -53,12 +54,8 @@ export default function Sidebar({ currentPath, onNavigate }: Props) {
   return (
     <aside className={styles.sidebar}>
       {/* 브랜드 */}
-      <div className={styles.brand}>
-        <img src="/favicon-192x192.png" alt="포인트 잔치" className={styles.brandLogo} />
-        <div className={styles.brandInfo}>
-          <div className={styles.brandText}>포인트 잔치</div>
-          <div className={styles.brandSub}>관리자 패널</div>
-        </div>
+      <div className={styles.brand} onClick={() => navigate('/admin')} style={{ cursor: 'pointer' }}>
+        <AdminBrandLogo showSub />
       </div>
 
       {/* 내비게이션 */}
@@ -100,7 +97,10 @@ export default function Sidebar({ currentPath, onNavigate }: Props) {
       {/* 프로필 */}
       <div className={styles.profile}>
         <div className={styles.profileAvatar}>
-          {(adminDisplayName ?? 'A').charAt(0).toUpperCase()}
+          {adminPhoto
+            ? <img src={adminPhoto} alt={adminDisplayName ?? ''} className={styles.profileAvatarImg} />
+            : (adminDisplayName ?? 'A').charAt(0).toUpperCase()
+          }
         </div>
         <div className={styles.profileInfo}>
           <div className={styles.profileName}>{adminDisplayName ?? '관리자'}</div>
