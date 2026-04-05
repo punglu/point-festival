@@ -63,15 +63,16 @@ export default function DashboardView() {
         </div>
       )}
 
-      {/* 스탯 카드 4종 — 순서: 총 발행 → 활성 → 승인대기 → 완료 */}
+      {/* 스탯 카드 4종 — 순서: 이번 주기 진행률 → 활성 → 승인대기 → 완료 */}
       <div className={`${styles.statGrid} ${selectedCard ? styles.statGridHasSelection : ''}`}>
         <div
           className={`${styles.statCardWrap} ${selectedCard === 'points' ? styles.statCardSelected : ''}`}
           onClick={() => handleCardClick('points')}
         >
           <StatCard
-            label="총 발행 포인트"
-            value={`${stats.totalPointsIssued}pt`}
+            label="이번 주기 진행률"
+            value={`${stats.cycleRate}%`}
+            subtext={`완료 ${stats.completedThisWeek} / 전체 ${stats.cycleTotal}`}
           />
         </div>
         <div

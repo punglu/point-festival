@@ -62,6 +62,7 @@ export default function ChatModal({ isOpen, onClose, myId, myName: _myName, embe
   const [messages, setMessages]           = useState<ChatMessage[]>([]);
   const [inputText, setInputText]         = useState('');
   const [loading, setLoading]             = useState(false);
+  const [playerListOpen, setPlayerListOpen] = useState(false);
   const messagesEndRef                    = useRef<HTMLDivElement>(null);
   const pollRef                           = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -133,8 +134,25 @@ export default function ChatModal({ isOpen, onClose, myId, myName: _myName, embe
 
   const content = (
     <div className={`${styles.modal} ${embedded ? styles.embedded : ''}`}>
+      {/* 모바일 아코디언 토글 — 데스크탑 숨김, embedded 전용 */}
+      {embedded && (
+        <button
+          className={styles.accordionToggle}
+          onClick={() => setPlayerListOpen(prev => !prev)}
+        >
+          <span className={styles.toggleIcon}>{playerListOpen ? '▲' : '▼'}</span>
+          <span>{selectedPartner ? selectedPartner.name : '사용자 선택'}</span>
+          <span className={styles.toggleHint}>{playerListOpen ? '접기' : '목록 보기'}</span>
+        </button>
+      )}
+
       {/* 좌측: 대화 상대 사이드바 */}
-      <div className={`${styles.sidebar} ${embedded ? styles.sidebarWide : ''}`}>
+      <div className={[
+        styles.sidebar,
+        embedded ? styles.sidebarWide : '',
+        embedded ? styles.playerListWrapper : '',
+        embedded && playerListOpen ? styles.playerListOpen : '',
+      ].filter(Boolean).join(' ')}>
         <div className={styles.sidebarHeader}>
           {embedded ? '대화 목록' : '💬'}
         </div>
@@ -143,7 +161,7 @@ export default function ChatModal({ isOpen, onClose, myId, myName: _myName, embe
             <button
               key={p.player_id}
               className={`${styles.partnerItem} ${selectedPartner?.player_id === p.player_id ? styles.partnerActive : ''}`}
-              onClick={() => setSelectedPartner(p)}
+              onClick={() => { setSelectedPartner(p); if (embedded) setPlayerListOpen(false); }}
             >
               <div className={styles.partnerAvatarWrap}>
                 <Avatar name={p.name} photo={p.photo} size={36} />

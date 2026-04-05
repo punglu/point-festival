@@ -15,8 +15,8 @@ router = APIRouter(prefix="/api/players", tags=["Player"])
 
 @router.get("", response_model=list[PlayerListItem])
 async def list_players(db: AsyncSession = Depends(get_db)):
-    """플레이어 목록 조회 (Auth 페이지 PlayerSelector용, admin 제외, is_visible=true만)"""
-    return await get_player_list(db, visible_only=True)
+    """플레이어 목록 조회 (Auth 페이지 PlayerSelector용, admin 제외)"""
+    return await get_player_list(db)
 
 
 @router.get("/me", response_model=PlayerListItem)

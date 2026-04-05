@@ -1,7 +1,7 @@
 """미션 템플릿 서비스 — CRUD + Lazy Init 자동 생성"""
 from datetime import date, datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func, update as sql_update
 from fastapi import HTTPException
 
 from app.domains.mission_template.models import MissionTemplate
@@ -306,6 +306,157 @@ async def generate_missions_from_templates(db: AsyncSession, target_date: date) 
 
     await db.flush()
     return created_count
+
+
+async def batch_delete_template_and_missions(
+    db: AsyncSession,
+    template_ids: list[int],
+    delete_missions: bool = False,
+    mission_date_start: date | None = None,
+    mission_date_end: date | None = None,
+) -> dict:
+    """
+    -- [SQL] 반복미션 일괄삭제
+    --
+    -- 1. 대상 템플릿 조회
+    -- SELECT * FROM mission_templates WHERE id IN (:ids) AND deleted_at IS NULL;
+    --
+    -- 2. 템플릿 소프트 삭제
+    -- UPDATE mission_templates SET deleted_at = NOW() WHERE id IN (:ids);
+    --
+    -- 3. (delete_missions=true) 생성된 미션 소프트 삭제
+    --    completed 미션은 제외, pending_approval 포함
+    -- UPDATE missions SET deleted_at = NOW()
+    -- WHERE player_id = :pid AND text = :text
+    --   AND date BETWEEN :start AND :end
+    --   AND status != 'completed' AND deleted_at IS NULL;
+    """
+    from datetime import datetime, timezone
+    from app.domains.mission.models import Mission
+
+    now_utc = datetime.now(timezone.utc)
+
+    # 1. 대상 템플릿 조회
+    stmt = select(MissionTemplate).where(
+        MissionTemplate.id.in_(template_ids),
+        MissionTemplate.deleted_at.is_(None),
+    )
+    result = await db.execute(stmt)
+    templates = result.scalars().all()
+
+    if not templates:
+        raise HTTPException(status_code=404, detail="삭제할 템플릿을 찾을 수 없습니다")
+
+    # 2. 템플릿 소프트 삭제
+    template_count = 0
+    for tmpl in templates:
+        tmpl.deleted_at = now_utc
+        template_count += 1
+
+    # 3. 생성된 미션 삭제 (옵션)
+    mission_count = 0
+    pending_count = 0
+    if delete_missions and mission_date_start and mission_date_end:
+        for tmpl in templates:
+            # pending_approval 건수 조회 (경고용)
+            pending_stmt = select(func.count()).where(
+                Mission.player_id == tmpl.player_id,
+                Mission.text == tmpl.text,
+                Mission.date >= mission_date_start,
+                Mission.date <= mission_date_end,
+                Mission.status == "pending_approval",
+                Mission.deleted_at.is_(None),
+            )
+            pending_result = await db.execute(pending_stmt)
+            pending_count += pending_result.scalar() or 0
+
+            # completed 제외, 나머지 삭제
+            mission_stmt = (
+                sql_update(Mission)
+                .where(
+                    Mission.player_id == tmpl.player_id,
+                    Mission.text == tmpl.text,
+                    Mission.date >= mission_date_start,
+                    Mission.date <= mission_date_end,
+                    Mission.status != "completed",
+                    Mission.deleted_at.is_(None),
+                )
+                .values(deleted_at=now_utc)
+            )
+            result = await db.execute(mission_stmt)
+            mission_count += result.rowcount
+
+    await db.flush()
+
+    return {
+        "deleted_templates": template_count,
+        "deleted_missions": mission_count,
+        "preserved_completed": "completed 미션은 보존됨",
+        "pending_deleted": pending_count,
+    }
+
+
+async def batch_delete_preview(
+    db: AsyncSession,
+    template_ids: list[int],
+    delete_missions: bool = False,
+    mission_date_start: date | None = None,
+    mission_date_end: date | None = None,
+) -> dict:
+    """
+    -- [SQL] 반복미션 일괄삭제 미리보기 (실제 삭제 없이 영향 범위 반환)
+    -- SELECT COUNT(*) FROM mission_templates WHERE id IN (:ids) AND deleted_at IS NULL;
+    -- SELECT COUNT(*) FROM missions WHERE ... (조건별 건수)
+    """
+    from app.domains.mission.models import Mission
+
+    # 템플릿 건수
+    tmpl_stmt = select(func.count()).where(
+        MissionTemplate.id.in_(template_ids),
+        MissionTemplate.deleted_at.is_(None),
+    )
+    tmpl_result = await db.execute(tmpl_stmt)
+    template_count = tmpl_result.scalar() or 0
+
+    mission_count = 0
+    completed_count = 0
+    pending_count = 0
+
+    if delete_missions and mission_date_start and mission_date_end:
+        templates = (await db.execute(
+            select(MissionTemplate).where(
+                MissionTemplate.id.in_(template_ids),
+                MissionTemplate.deleted_at.is_(None),
+            )
+        )).scalars().all()
+
+        for tmpl in templates:
+            base_where = [
+                Mission.player_id == tmpl.player_id,
+                Mission.text == tmpl.text,
+                Mission.date >= mission_date_start,
+                Mission.date <= mission_date_end,
+                Mission.deleted_at.is_(None),
+            ]
+
+            # 삭제 대상 (completed 제외)
+            active_stmt = select(func.count()).where(*base_where, Mission.status != "completed")
+            mission_count += (await db.execute(active_stmt)).scalar() or 0
+
+            # 보존 대상 (completed)
+            comp_stmt = select(func.count()).where(*base_where, Mission.status == "completed")
+            completed_count += (await db.execute(comp_stmt)).scalar() or 0
+
+            # 경고 대상 (pending_approval)
+            pend_stmt = select(func.count()).where(*base_where, Mission.status == "pending_approval")
+            pending_count += (await db.execute(pend_stmt)).scalar() or 0
+
+    return {
+        "template_count": template_count,
+        "mission_count": mission_count,
+        "completed_count": completed_count,
+        "pending_count": pending_count,
+    }
 
 
 async def get_week_remaining_missions(

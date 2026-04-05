@@ -10,7 +10,6 @@ interface Props {
   onChangePin:                  () => void;
   onChangePhoto:                () => void;
   onToggleLock:                 () => void;
-  onToggleLoginVisibility:      () => void;
   onToggleDashboardVisibility:  () => void;
   onDelete:                     () => void;
 }
@@ -18,7 +17,7 @@ interface Props {
 export default function PlayerProfileCard({
   player, index, achievementRate, totalMissions,
   onChangePin, onChangePhoto, onToggleLock,
-  onToggleLoginVisibility, onToggleDashboardVisibility, onDelete,
+  onToggleDashboardVisibility, onDelete,
 }: Props) {
   const color = PLAYER_COLORS[index % PLAYER_COLORS.length];
 
@@ -36,7 +35,6 @@ export default function PlayerProfileCard({
           <div className={styles.name}>{player.name}</div>
           {player.status_msg && <div className={styles.statusMsg}>{player.status_msg}</div>}
           {player.is_locked && <div className={styles.lockedBadge}>잠금됨</div>}
-          {!player.is_visible && <div className={styles.hiddenBadge}>로그인 숨김</div>}
           {!player.is_dashboard_visible && <div className={styles.hiddenBadge}>대시보드 숨김</div>}
         </div>
       </div>
@@ -61,9 +59,6 @@ export default function PlayerProfileCard({
         <button className={styles.btnAction} onClick={onChangePhoto}>사진 변경</button>
         <button className={player.is_locked ? styles.btnDanger : styles.btnAction} onClick={onToggleLock}>
           {player.is_locked ? '잠금 해제' : '잠금'}
-        </button>
-        <button className={player.is_visible ? styles.btnAction : styles.btnWarning} onClick={onToggleLoginVisibility}>
-          {player.is_visible ? '로그인 숨김' : '로그인 노출'}
         </button>
         <button className={player.is_dashboard_visible ? styles.btnAction : styles.btnWarning} onClick={onToggleDashboardVisibility}>
           {player.is_dashboard_visible ? '대시보드 숨김' : '대시보드 노출'}

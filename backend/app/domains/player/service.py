@@ -12,7 +12,7 @@ from app.domains.auth.models import PlayerAuth
 from app.domains.player.schema import PlayerCreate, PlayerListItem, PlayerLockRequest, PlayerUpdate, PlayerUpdateAdmin, PlayerVisibilityRequest
 
 
-async def get_player_list(db: AsyncSession, visible_only: bool = False) -> list[PlayerListItem]:
+async def get_player_list(db: AsyncSession) -> list[PlayerListItem]:
     """플레이어 목록 조회 (role='admin' 제외 + 잠금 상태 + 사진 + 총 포인트 포함)
 
     -- [SQL] 플레이어 목록 + 잠금 상태 + 총 포인트 조회 (admin 제외)
@@ -25,7 +25,7 @@ async def get_player_list(db: AsyncSession, visible_only: bool = False) -> list[
     -- FROM players p
     -- LEFT JOIN player_auth pa ON pa.player_id = p.id
     -- LEFT JOIN points pts ON pts.player_id = p.id
-    -- WHERE p.deleted_at IS NULL AND p.role != 'admin' [AND p.is_visible = TRUE]
+    -- WHERE p.deleted_at IS NULL AND p.role != 'admin'
     -- ORDER BY p.id;
     """
     points_subq = (
@@ -38,15 +38,11 @@ async def get_player_list(db: AsyncSession, visible_only: bool = False) -> list[
         .subquery()
     )
 
-    conditions = [Player.deleted_at.is_(None), Player.role != "admin"]
-    if visible_only:
-        conditions.append(Player.is_visible.is_(True))
-
     result = await db.execute(
         select(Player, PlayerAuth.lock_until, points_subq.c.total_points)
         .outerjoin(PlayerAuth, PlayerAuth.player_id == Player.id)
         .outerjoin(points_subq, points_subq.c.player_id == Player.id)
-        .where(*conditions)
+        .where(Player.deleted_at.is_(None), Player.role != "admin")
         .order_by(Player.id)
     )
     rows = result.all()
@@ -60,7 +56,6 @@ async def get_player_list(db: AsyncSession, visible_only: bool = False) -> list[
             photo=player.photo,
             last_login=player.last_login,
             is_locked=player.is_locked or bool(lock_until and now_ms < lock_until),
-            is_visible=player.is_visible,
             is_dashboard_visible=player.is_dashboard_visible,
             total_points=int(total_points or 0),
         )
@@ -145,10 +140,10 @@ async def update_player_admin(db: AsyncSession, player_id: int, data: PlayerUpda
 
 
 async def set_player_visibility(db: AsyncSession, player_id: int, data: PlayerVisibilityRequest) -> PlayerListItem:
-    """Admin 전용 — 로그인/대시보드 노출 여부 설정
+    """Admin 전용 — 대시보드 노출 여부 설정
 
     -- [SQL] 플레이어 노출 상태 변경
-    -- UPDATE players SET is_visible = :is_visible, is_dashboard_visible = :is_dashboard_visible, updated_at = NOW()
+    -- UPDATE players SET is_dashboard_visible = :is_dashboard_visible, updated_at = NOW()
     -- WHERE id = :player_id AND deleted_at IS NULL;
     """
     stmt = select(Player).where(Player.id == player_id, Player.deleted_at.is_(None))
@@ -156,8 +151,6 @@ async def set_player_visibility(db: AsyncSession, player_id: int, data: PlayerVi
     player = result.scalar_one_or_none()
     if not player:
         raise HTTPException(status_code=404, detail="플레이어를 찾을 수 없습니다")
-    if data.is_visible is not None:
-        player.is_visible = data.is_visible
     if data.is_dashboard_visible is not None:
         player.is_dashboard_visible = data.is_dashboard_visible
     await db.commit()
@@ -184,18 +177,21 @@ async def lock_player(db: AsyncSession, player_id: int, data: PlayerLockRequest)
 
 
 async def change_player_pin(db: AsyncSession, player_id: int, pin: str) -> None:
-    """Admin 전용 — 플레이어 PIN 변경 (bcrypt 해시)
+    """Admin 전용 — 플레이어 PIN 변경 (bcrypt 해시, player_auth 없으면 신규 생성)
 
-    -- [SQL] 플레이어 인증 정보 조회 후 PIN 해시 업데이트
+    -- [SQL] 플레이어 인증 정보 조회 후 PIN 해시 업데이트 (없으면 INSERT)
     -- SELECT * FROM player_auth WHERE player_id = :player_id AND deleted_at IS NULL;
     -- UPDATE player_auth SET pin_hash = :new_hash WHERE id = :id;
+    -- or INSERT INTO player_auth (player_id, pin_hash) VALUES (:player_id, :new_hash);
     """
     stmt = select(PlayerAuth).where(PlayerAuth.player_id == player_id, PlayerAuth.deleted_at.is_(None))
     result = await db.execute(stmt)
     auth = result.scalar_one_or_none()
-    if not auth:
-        raise HTTPException(status_code=404, detail="플레이어 인증 정보를 찾을 수 없습니다")
-    auth.pin_hash = bcrypt.hashpw(pin.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    new_hash = bcrypt.hashpw(pin.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    if auth:
+        auth.pin_hash = new_hash
+    else:
+        db.add(PlayerAuth(player_id=player_id, pin_hash=new_hash))
     await db.commit()
 
 

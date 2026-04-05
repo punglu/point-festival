@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import date as DateType
+from typing import Optional
 
 
 class MissionTemplateCreate(BaseModel):
@@ -28,3 +29,10 @@ class MissionTemplateResponse(BaseModel):
     group_id: str | None = None
 
     model_config = {"from_attributes": True}
+
+
+class BatchDeleteRequest(BaseModel):
+    template_ids: list[int]
+    delete_missions: bool = False
+    mission_date_start: Optional[DateType] = None
+    mission_date_end: Optional[DateType] = None

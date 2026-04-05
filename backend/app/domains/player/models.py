@@ -21,7 +21,6 @@ class Player(Base, SoftDeleteMixin, TimestampMixin):
     status_msg = Column(String(200), nullable=True)
     last_login = Column(BigInteger, nullable=True)
     is_locked            = Column(Boolean, default=False, nullable=False, server_default="false")
-    is_visible           = Column(Boolean, default=True,  nullable=False, server_default="true")
     is_dashboard_visible = Column(Boolean, default=True,  nullable=False, server_default="true")
 
     __table_args__ = (

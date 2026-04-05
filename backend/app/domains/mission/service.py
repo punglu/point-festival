@@ -633,3 +633,44 @@ async def bulk_approve_missions(db: AsyncSession, player_id: int, date_str: str)
     )
     result = await db.execute(stmt)
     return result.rowcount
+
+
+async def get_cycle_mission_progress(db: AsyncSession, date_from: date, date_to: date) -> dict:
+    """주기 범위 전체 플레이어 미션 진행률 집계
+
+    -- [SQL] 주기 내 미션 총 건수 + 완료 건수
+    -- SELECT
+    --     COUNT(*) as total,
+    --     COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed
+    -- FROM missions
+    -- WHERE date BETWEEN :date_from AND :date_to
+    --   AND deleted_at IS NULL;
+    -- 진행률 = ROUND(completed / total * 100, 1)  (total=0 → 0.0)
+    """
+    from sqlalchemy import case as sa_case
+
+    stmt = select(
+        func.count().label("total"),
+        func.count(
+            sa_case((Mission.status == "completed", 1))
+        ).label("completed"),
+    ).where(
+        Mission.date >= date_from,
+        Mission.date <= date_to,
+        Mission.deleted_at.is_(None),
+    )
+
+    result = await db.execute(stmt)
+    row = result.first()
+
+    total = row.total if row else 0
+    completed = row.completed if row else 0
+    rate = round(completed / total * 100, 1) if total > 0 else 0.0
+
+    return {
+        "total": total,
+        "completed": completed,
+        "rate": rate,
+        "date_from": str(date_from),
+        "date_to": str(date_to),
+    }

@@ -7,7 +7,6 @@ export interface Player {
   photo: string | null;
   last_login: number | null;
   is_locked:            boolean;
-  is_visible:           boolean;
   is_dashboard_visible: boolean;
 }
 
@@ -104,7 +103,8 @@ export interface DashboardStats {
   totalActiveMissions: number;
   pendingApproval: number;
   completedThisWeek: number;
-  totalPointsIssued: number;
+  cycleTotal: number;
+  cycleRate: number;
   todayNewMissions: number;
   weeklyGoal: number;
 }

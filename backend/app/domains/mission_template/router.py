@@ -10,6 +10,7 @@ from app.domains.mission_template.schema import (
     MissionTemplateCreate,
     MissionTemplateUpdate,
     MissionTemplateResponse,
+    BatchDeleteRequest,
 )
 
 router = APIRouter(prefix="/api/mission-templates", tags=["mission-templates"])
@@ -66,6 +67,40 @@ async def delete_template(
 ):
     await template_service.delete_template(db, template_id)
     await db.commit()
+
+
+@router.post("/batch-delete", status_code=200)
+async def batch_delete(
+    data: BatchDeleteRequest,
+    _admin: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """반복미션 일괄삭제 (템플릿 + 선택적으로 생성된 미션)"""
+    result = await template_service.batch_delete_template_and_missions(
+        db,
+        template_ids=data.template_ids,
+        delete_missions=data.delete_missions,
+        mission_date_start=data.mission_date_start,
+        mission_date_end=data.mission_date_end,
+    )
+    await db.commit()
+    return result
+
+
+@router.post("/batch-delete/preview", status_code=200)
+async def batch_delete_preview(
+    data: BatchDeleteRequest,
+    _admin: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """삭제 미리보기: 실제 삭제 없이 영향 범위만 반환"""
+    return await template_service.batch_delete_preview(
+        db,
+        template_ids=data.template_ids,
+        delete_missions=data.delete_missions,
+        mission_date_start=data.mission_date_start,
+        mission_date_end=data.mission_date_end,
+    )
 
 
 @router.post("/generate", status_code=200)

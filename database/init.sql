@@ -11,7 +11,6 @@ CREATE TABLE players (
     status_msg      VARCHAR(200),
     last_login      BIGINT,
     is_locked             BOOLEAN NOT NULL DEFAULT FALSE,
-    is_visible            BOOLEAN NOT NULL DEFAULT TRUE,
     is_dashboard_visible  BOOLEAN NOT NULL DEFAULT TRUE,
     created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -203,8 +202,9 @@ INSERT INTO players (name, role) VALUES
 
 INSERT INTO player_auth (player_id, pin_hash, is_admin) VALUES
     (1, '$2b$12$Obp2TMVO6SxsBI4wBsPG2uPGexUoBzIgE4rDSiA0clxw.Pbd5lGlq', FALSE),
-    (2, '$2b$12$Obp2TMVO6SxsBI4wBsPG2uPGexUoBzIgE4rDSiA0clxw.Pbd5lGlq', FALSE);
-    -- (3, '...', TRUE);  -- 관리자 PIN auth 제거
+    (2, '$2b$12$Obp2TMVO6SxsBI4wBsPG2uPGexUoBzIgE4rDSiA0clxw.Pbd5lGlq', FALSE),
+    (3, '$2b$12$Obp2TMVO6SxsBI4wBsPG2uPGexUoBzIgE4rDSiA0clxw.Pbd5lGlq', FALSE),
+    (4, '$2b$12$Obp2TMVO6SxsBI4wBsPG2uPGexUoBzIgE4rDSiA0clxw.Pbd5lGlq', FALSE);
 
 -- 해시 생성: python3 -c "import bcrypt; print(bcrypt.hashpw(b'admin1234', bcrypt.gensalt(12)).decode())"
 -- 아래 해시는 실제 'admin1234'와 매칭 검증 완료

@@ -35,6 +35,7 @@ from app.domains.mission.service import (
     clone_missions,
     get_missions_by_range,
     bulk_approve_missions,
+    get_cycle_mission_progress,
 )
 
 from app.domains.deduction.schema import DeductionCreate, DeductionUpdate, DeductionResponse
@@ -357,6 +358,21 @@ async def admin_add_reply(
     _: dict = Depends(get_current_admin),
 ):
     return await add_reply(db, data)
+
+
+# ─── 주기 진행률 ──────────────────────────────────────────
+@router.get("/cycle-progress")
+async def cycle_progress(
+    date_from: str,
+    date_to: str,
+    _: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    """주기 범위 전체 플레이어 미션 진행률 (total/completed/rate)"""
+    from datetime import datetime as dt_cls
+    start = dt_cls.strptime(date_from, "%Y-%m-%d").date()
+    end = dt_cls.strptime(date_to, "%Y-%m-%d").date()
+    return await get_cycle_mission_progress(db, start, end)
 
 
 # ─── 주간 요약 ────────────────────────────────────────────

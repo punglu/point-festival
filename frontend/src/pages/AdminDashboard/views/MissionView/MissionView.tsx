@@ -8,6 +8,7 @@ import ProposedMissionSection from './components/ProposedMissionSection';
 import NewMissionModal from './components/NewMissionModal';
 import WeeklyGrid from './components/WeeklyGrid';
 import TemplateModal from './components/TemplateModal';
+import TemplateManager from './components/TemplateManager';
 import ImportMissionModal from './components/ImportMissionModal';
 import type { Mission } from '../../types/admin.types';
 
@@ -30,11 +31,12 @@ export default function MissionView() {
     reload, findTemplateForMission,
   } = useMissionView();
 
-  const [editingId,         setEditingId]         = useState<number | null>(null);
-  const [addMissionOpen,    setAddMissionOpen]    = useState(false);
-  const [templateModalOpen, setTemplateModalOpen] = useState(false);
-  const [importModalOpen,   setImportModalOpen]   = useState(false);
-  const [editingTemplate,   setEditingTemplate]   = useState<Template | null>(null);
+  const [editingId,            setEditingId]            = useState<number | null>(null);
+  const [addMissionOpen,       setAddMissionOpen]       = useState(false);
+  const [templateModalOpen,    setTemplateModalOpen]    = useState(false);
+  const [templateManagerOpen,  setTemplateManagerOpen]  = useState(false);
+  const [importModalOpen,      setImportModalOpen]      = useState(false);
+  const [editingTemplate,      setEditingTemplate]      = useState<Template | null>(null);
 
   const handleGridCellSelect = (playerId: number, date: string) => {
     setSelectedDate(date);
@@ -114,9 +116,9 @@ export default function MissionView() {
           ➕ 일반 미션 추가
         </button>
 
-        {/* 반복 미션 추가 */}
-        <button className={styles.actionBtn} onClick={() => { setEditingTemplate(null); setTemplateModalOpen(true); }}>
-          🔄 반복 미션 추가
+        {/* 반복미션 관리 */}
+        <button className={styles.actionBtn} onClick={() => setTemplateManagerOpen(true)}>
+          🔄 반복미션 관리
         </button>
       </div>
 
@@ -181,6 +183,23 @@ export default function MissionView() {
         players={players}
         defaultDate={selectedDate}
         onCreate={createMission}
+      />
+
+      {/* 반복미션 관리 모달 */}
+      <TemplateManager
+        isOpen={templateManagerOpen}
+        onClose={() => setTemplateManagerOpen(false)}
+        players={players}
+        onOpenCreateModal={() => {
+          setTemplateManagerOpen(false);
+          setEditingTemplate(null);
+          setTemplateModalOpen(true);
+        }}
+        onOpenEditModal={(template) => {
+          setTemplateManagerOpen(false);
+          setEditingTemplate({ ...template, group_id: template.group_id ?? null });
+          setTemplateModalOpen(true);
+        }}
       />
 
       {/* 반복 미션 추가/편집 모달 */}

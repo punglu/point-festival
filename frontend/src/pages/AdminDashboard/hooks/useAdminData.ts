@@ -65,13 +65,16 @@ export function useAdminData() {
 
   // ── 대시보드 통계 파생 ──
   const today = getLocalToday();
+  const cycleCompleted = missions.filter((m) =>
+    m.status === 'completed' && m.date >= cycle.startDate && m.date <= cycle.endDate
+  ).length;
+  const cycleTotal = missions.length;
   const stats: DashboardStats = {
     totalActiveMissions: missions.filter((m) => m.status === 'active').length,
     pendingApproval:     missions.filter((m) => m.status === 'pending_approval').length,
-    completedThisWeek:   missions.filter((m) =>
-      m.status === 'completed' && m.date >= cycle.startDate && m.date <= cycle.endDate
-    ).length,
-    totalPointsIssued:   dailyPoints.reduce((sum, dp) => sum + dp.earned, 0),
+    completedThisWeek:   cycleCompleted,
+    cycleTotal,
+    cycleRate:           cycleTotal > 0 ? Math.round((cycleCompleted / cycleTotal) * 100) : 0,
     todayNewMissions:    missions.filter((m) => m.date === today).length,
     weeklyGoal:          15,
   };

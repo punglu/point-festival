@@ -122,12 +122,12 @@ export default function BalanceSection({ missions, players, cycleLabel }: Balanc
             <div className={styles.verticalBars}>
               {balances.map(b => (
                 <div key={`a-${b.id}`} className={styles.vBar}>
-                  <div className={styles.vBarValue} style={{ color: '#3C3489' }}>
-                    {b.assignedPoints > 0 ? `${b.assignedPoints}P` : '0'}
+                  <div className={styles.vBarValue} style={{ color: '#3C3489', visibility: b.assignedPoints > 0 ? 'visible' : 'hidden' }}>
+                    {b.assignedPoints > 0 ? `${b.assignedPoints}P` : '\u00A0'}
                   </div>
                   <div
                     className={`${styles.vBarBlock} ${styles.vBarPurple}`}
-                    style={{ height: `${maxAssigned > 0 ? (b.assignedPoints / maxAssigned) * 100 : 0}%`, minHeight: '2px' }}
+                    style={{ height: `${maxAssigned > 0 ? Math.max(4, Math.round((b.assignedPoints / maxAssigned) * 60)) : 4}px` }}
                   />
                   <div className={styles.vBarName}>{b.name}</div>
                 </div>
@@ -144,12 +144,12 @@ export default function BalanceSection({ missions, players, cycleLabel }: Balanc
             <div className={styles.verticalBars}>
               {balances.map(b => (
                 <div key={`e-${b.id}`} className={styles.vBar}>
-                  <div className={styles.vBarValue} style={{ color: '#27500A' }}>
-                    {b.donePoints > 0 ? `${b.donePoints}P` : '0'}
+                  <div className={styles.vBarValue} style={{ color: '#27500A', visibility: b.donePoints > 0 ? 'visible' : 'hidden' }}>
+                    {b.donePoints > 0 ? `${b.donePoints}P` : '\u00A0'}
                   </div>
                   <div
                     className={`${styles.vBarBlock} ${styles.vBarGreen}`}
-                    style={{ height: `${maxEarned > 0 ? (b.donePoints / maxEarned) * 100 : 0}%`, minHeight: '2px' }}
+                    style={{ height: `${maxEarned > 0 ? Math.max(4, Math.round((b.donePoints / maxEarned) * 60)) : 4}px` }}
                   />
                   <div className={styles.vBarName}>{b.name}</div>
                 </div>

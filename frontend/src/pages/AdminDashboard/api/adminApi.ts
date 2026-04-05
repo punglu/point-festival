@@ -21,7 +21,7 @@ export const adminApi = {
   lockPlayer: (id: number, isLocked: boolean, signal?: AbortSignal) =>
     httpClient.patch<Player>(`/api/admin/players/${id}/lock`, { is_locked: isLocked }, { signal }),
 
-  setPlayerVisibility: (id: number, data: { is_visible?: boolean; is_dashboard_visible?: boolean }, signal?: AbortSignal) =>
+  setPlayerVisibility: (id: number, data: { is_dashboard_visible?: boolean }, signal?: AbortSignal) =>
     httpClient.patch<Player>(`/api/admin/players/${id}/visibility`, data, { signal }),
 
   changePlayerPin: (id: number, pin: string, signal?: AbortSignal) =>
