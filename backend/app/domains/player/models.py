@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, String, Integer, BigInteger, Text, CheckConstraint
+from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import Base, SoftDeleteMixin, TimestampMixin
 
 
@@ -19,7 +20,8 @@ class Player(Base, SoftDeleteMixin, TimestampMixin):
     )
     photo = Column(Text, nullable=True)
     status_msg = Column(String(200), nullable=True)
-    last_login = Column(BigInteger, nullable=True)
+    last_login    = Column(BigInteger, nullable=True)
+    total_earned: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
     is_locked            = Column(Boolean, default=False, nullable=False, server_default="false")
     is_dashboard_visible = Column(Boolean, default=True,  nullable=False, server_default="true")
 

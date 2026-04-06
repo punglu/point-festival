@@ -51,7 +51,7 @@ export default function DashboardView() {
         <div className={styles.headerActions}>
           <button className={styles.btnRefresh} onClick={reload}>새로고침</button>
           <button className={styles.btnNew} onClick={() => navigate('/admin/missions')}>
-            + 새 미션
+            🗂️ 미션 관리
           </button>
         </div>
       </div>

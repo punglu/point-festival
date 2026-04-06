@@ -99,13 +99,107 @@ async def create_template(db: AsyncSession, data: MissionTemplateCreate) -> Miss
     return MissionTemplateResponse.model_validate(template)
 
 
+async def _propagate_template_change(
+    db: AsyncSession,
+    template_id: int,
+    new_text: str,
+    new_point: int,
+    old_point: int,
+) -> None:
+    """템플릿 수정 시 기존 배정 미션 전파 (상태별 정책 적용)
+
+    -- [SQL] 1) 비완료 미션 일괄 UPDATE (active/pending_approval/failed/rejected)
+    -- UPDATE missions SET text = :text, point = :new_point, updated_at = NOW()
+    -- WHERE template_id = :tid
+    --   AND status IN ('active', 'pending_approval', 'failed', 'rejected')
+    --   AND deleted_at IS NULL;
+    --
+    -- [SQL] 2) 완료 미션: 건수·날짜 조회 → point UPDATE → daily_points 차액 보정
+    -- SELECT player_id, date FROM missions
+    -- WHERE template_id = :tid AND status = 'completed' AND deleted_at IS NULL;
+    --
+    -- UPDATE missions SET text = :text, point = :new_point, updated_at = NOW()
+    -- WHERE template_id = :tid AND status = 'completed' AND deleted_at IS NULL;
+    --
+    -- FOR each (player_id, date):
+    --   UPDATE daily_points
+    --   SET earned = earned + :delta, balance = balance + :delta
+    --   WHERE player_id = :pid AND date = :date;
+    """
+    from sqlalchemy import update as sql_update
+    from app.domains.mission.models import Mission
+
+    now_utc = datetime.now(timezone.utc)
+    delta = new_point - old_point
+
+    # 1) 비완료 미션: text + point 직접 갱신
+    await db.execute(
+        sql_update(Mission)
+        .where(
+            Mission.template_id == template_id,
+            Mission.status.in_(["active", "pending_approval", "failed", "rejected"]),
+            Mission.deleted_at.is_(None),
+        )
+        .values(text=new_text, point=new_point, updated_at=now_utc)
+    )
+
+    # 2) 완료 미션: 먼저 (player_id, date) 수집 → 이후 daily_points 차액 보정
+    completed_result = await db.execute(
+        select(Mission.player_id, Mission.date).where(
+            Mission.template_id == template_id,
+            Mission.status == "completed",
+            Mission.deleted_at.is_(None),
+        )
+    )
+    completed_rows = completed_result.all()
+
+    # 완료 미션 text + point 갱신
+    await db.execute(
+        sql_update(Mission)
+        .where(
+            Mission.template_id == template_id,
+            Mission.status == "completed",
+            Mission.deleted_at.is_(None),
+        )
+        .values(text=new_text, point=new_point, updated_at=now_utc)
+    )
+
+    # daily_points 차액 보정 + total_earned 보정 (포인트가 변경된 경우에만)
+    if delta != 0 and completed_rows:
+        from app.domains.daily_point.service import adjust_daily_point
+        from app.domains.daily_point.schema import DailyPointAdjust
+        from app.domains.mission.service import _sync_total_earned
+        from collections import defaultdict
+
+        # daily_points: 날짜별 1건씩 보정
+        for row in completed_rows:
+            await adjust_daily_point(db, DailyPointAdjust(
+                player_id=row.player_id,
+                date=row.date,
+                earned_delta=delta,
+                spent_delta=0,
+            ))
+
+        # total_earned: 플레이어별 완료 미션 수 × delta → 1회 호출
+        player_count: dict[int, int] = defaultdict(int)
+        for row in completed_rows:
+            player_count[row.player_id] += 1
+
+        for pid, count in player_count.items():
+            await _sync_total_earned(db, pid, delta * count)
+
+
 async def update_template(db: AsyncSession, template_id: int, data: MissionTemplateUpdate) -> MissionTemplateResponse:
     """
-    -- [SQL] 템플릿 수정 + 미래 미실행 미션 갱신
+    -- [SQL] 템플릿 수정 + 배정 미션 전파
     -- UPDATE mission_templates SET text=:text, point=:point, day_of_week=:dow, is_active=:active
     -- WHERE id = :id AND deleted_at IS NULL;
     --
-    -- 수정 후: 오늘 이후의 active 미션(해당 템플릿 기반) Soft Delete → 롤링 윈도우 재생성
+    -- 전파 정책 (_propagate_template_change):
+    --   active/pending_approval/failed/rejected → text + point 직접 UPDATE
+    --   completed → text + point UPDATE + daily_points 차액 보정
+    --
+    -- day_of_week 변경 시: 미래 active 미션 Soft Delete → 롤링 윈도우 재생성
     """
     from datetime import timedelta
     from sqlalchemy import update as sql_update
@@ -120,40 +214,39 @@ async def update_template(db: AsyncSession, template_id: int, data: MissionTempl
     if not template:
         raise HTTPException(status_code=404, detail="템플릿을 찾을 수 없습니다")
 
-    # 수정 전 원본 값 보존 (미션 매칭용)
-    old_text = template.text
     old_point = template.point
+    old_day_of_week = template.day_of_week
 
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(template, field, value)
 
     await db.flush()
 
-    # ★ 미래 미실행 미션 정리 (오늘 이후, active만, 원본 값 기준 매칭)
-    today = date.today()
-    now_utc = datetime.now(timezone.utc)
-    cleanup_stmt = (
-        sql_update(Mission)
-        .where(
-            Mission.player_id == template.player_id,
-            Mission.text == old_text,
-            Mission.point == old_point,
-            Mission.proposed_by == "template",
-            Mission.status == "active",
-            Mission.date > today,
-            Mission.deleted_at.is_(None),
-        )
-        .values(
-            deleted_at=now_utc,
-            msg="[시스템] 스케줄 수정으로 인한 재생성",
-        )
-    )
-    await db.execute(cleanup_stmt)
+    new_text = template.text
+    new_point = template.point
+    day_changed = old_day_of_week != template.day_of_week
 
-    # ★ 수정된 템플릿 기준으로 롤링 윈도우 재생성 (오늘 이후부터)
-    _, end_date = get_rolling_window()
-    tomorrow = today + timedelta(days=1)
-    await generate_missions_for_range(db, tomorrow, end_date)
+    # ★ 상태별 전파: 기존 배정 미션 text/point 갱신 + 완료 미션 daily_points 보정
+    await _propagate_template_change(db, template_id, new_text, new_point, old_point)
+
+    # ★ 요일 변경 시: 미래 active 미션 재생성
+    #    _propagate_template_change에서 이미 갱신됐지만 요일이 맞지 않는 날짜는 삭제 후 재생성
+    if day_changed:
+        today = date.today()
+        now_utc = datetime.now(timezone.utc)
+        await db.execute(
+            sql_update(Mission)
+            .where(
+                Mission.template_id == template_id,
+                Mission.status == "active",
+                Mission.date > today,
+                Mission.deleted_at.is_(None),
+            )
+            .values(deleted_at=now_utc, msg="[시스템] 스케줄 수정으로 인한 재생성")
+        )
+        _, end_date = get_rolling_window()
+        tomorrow = today + timedelta(days=1)
+        await generate_missions_for_range(db, tomorrow, end_date)
 
     await db.refresh(template)
     return MissionTemplateResponse.model_validate(template)
@@ -299,6 +392,7 @@ async def generate_missions_from_templates(db: AsyncSession, target_date: date) 
             sender="관리자",
             proposed_by="template",
             sort_order=0,
+            template_id=tmpl.id,
         )
         db.add(mission)
         tmpl.last_generated_date = target_date

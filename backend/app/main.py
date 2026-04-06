@@ -17,6 +17,7 @@ from app.domains.login_log.router import router as login_log_router
 from app.domains.admin.router import router as admin_router
 from app.domains.mission_template.router import router as mission_template_router
 from app.domains.chat.router import router as chat_router
+from app.domains.level_tier.router import router as level_tier_router
 
 
 @asynccontextmanager
@@ -63,6 +64,7 @@ app.include_router(login_log_router)
 app.include_router(admin_router)
 app.include_router(mission_template_router)
 app.include_router(chat_router)
+app.include_router(level_tier_router)
 
 
 @app.get("/api/health")

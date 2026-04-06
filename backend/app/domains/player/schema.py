@@ -37,5 +37,6 @@ class PlayerListItem(BaseModel):
     is_dashboard_visible: bool = True
     photo: Optional[str] = None
     total_points: int = 0
+    total_earned: int = 0
 
     model_config = {"from_attributes": True}

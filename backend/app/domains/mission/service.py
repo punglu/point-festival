@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update as sql_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.mission.models import Mission
@@ -12,6 +12,25 @@ from app.domains.mission.schema import (
     MissionCloneRequest, MissionCloneResponse, MissionCloneSelectedRequest,
     MissionCreate, MissionUpdate, MissionPropose, MissionResponse,
 )
+
+async def _sync_total_earned(db: AsyncSession, player_id: int, delta: int) -> None:
+    """
+    -- [SQL] players.total_earned 증감 (ACID 트랜잭션 내에서 호출)
+    -- UPDATE players SET total_earned = total_earned + :delta, updated_at = NOW()
+    -- WHERE id = :player_id AND deleted_at IS NULL;
+    """
+    from app.domains.player.models import Player
+
+    stmt = (
+        sql_update(Player)
+        .where(Player.id == player_id, Player.deleted_at.is_(None))
+        .values(
+            total_earned=Player.total_earned + delta,
+            updated_at=datetime.now(timezone.utc),
+        )
+    )
+    await db.execute(stmt)
+
 
 def get_week_range(d: date) -> tuple[date, date]:
     """ISO 기준 주간 범위 반환 (월요일 ~ 일요일)"""
@@ -215,6 +234,7 @@ async def admin_revert_mission(db: AsyncSession, mission_id: int) -> MissionResp
         earned_delta=-mission.point,
         spent_delta=0,
     ))
+    await _sync_total_earned(db, mission.player_id, -mission.point)
 
     await db.refresh(mission)
     return MissionResponse.model_validate(mission)
@@ -311,6 +331,7 @@ async def _sync_daily_point_on_status_change(
             earned_delta=earned_delta,
             spent_delta=0,
         ))
+        await _sync_total_earned(db, mission.player_id, earned_delta)
 
 
 async def update_mission(
@@ -611,16 +632,29 @@ async def get_missions_by_range(
 
 async def bulk_approve_missions(db: AsyncSession, player_id: int, date_str: str) -> int:
     """
-    -- [SQL] 일괄 승인
+    -- [SQL] 일괄 승인 + total_earned 동기화
+    -- SELECT SUM(point) FROM missions
+    --   WHERE player_id = :pid AND date = :date AND status = 'pending_approval' AND deleted_at IS NULL;
     -- UPDATE missions SET status = 'completed', updated_at = NOW()
-    -- WHERE player_id = :pid AND date = :date AND status = 'pending_approval'
-    --   AND deleted_at IS NULL;
+    --   WHERE player_id = :pid AND date = :date AND status = 'pending_approval' AND deleted_at IS NULL;
+    -- UPDATE players SET total_earned = total_earned + :sum_points WHERE id = :pid;
     """
-    from sqlalchemy import update as sql_update
+    from sqlalchemy import func as sql_func
     from datetime import datetime as dt_class
 
     target_date = dt_class.strptime(date_str, "%Y-%m-%d").date()
 
+    # 1) 승인 대상 포인트 합계 조회
+    sum_stmt = select(sql_func.coalesce(sql_func.sum(Mission.point), 0)).where(
+        Mission.player_id == player_id,
+        Mission.date == target_date,
+        Mission.status == "pending_approval",
+        Mission.deleted_at.is_(None),
+    )
+    sum_result = await db.execute(sum_stmt)
+    total_points = int(sum_result.scalar())
+
+    # 2) 일괄 상태 변경
     stmt = (
         sql_update(Mission)
         .where(
@@ -632,6 +666,11 @@ async def bulk_approve_missions(db: AsyncSession, player_id: int, date_str: str)
         .values(status="completed", updated_at=datetime.now(timezone.utc))
     )
     result = await db.execute(stmt)
+
+    # 3) total_earned 동기화
+    if total_points > 0:
+        await _sync_total_earned(db, player_id, total_points)
+
     return result.rowcount
 
 

@@ -10,6 +10,7 @@ CREATE TABLE players (
     photo           TEXT,
     status_msg      VARCHAR(200),
     last_login      BIGINT,
+    total_earned    INTEGER NOT NULL DEFAULT 0,
     is_locked             BOOLEAN NOT NULL DEFAULT FALSE,
     is_dashboard_visible  BOOLEAN NOT NULL DEFAULT TRUE,
     created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -47,6 +48,7 @@ CREATE TABLE missions (
     rejection_reason TEXT,
     sort_order      INTEGER NOT NULL DEFAULT 0,
     group_id        VARCHAR(36),
+    template_id     INTEGER,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at      TIMESTAMPTZ
@@ -71,6 +73,27 @@ CREATE TABLE mission_templates (
 CREATE INDEX idx_mission_templates_player ON mission_templates(player_id);
 CREATE INDEX idx_mission_templates_group ON mission_templates(group_id) WHERE group_id IS NOT NULL;
 COMMENT ON COLUMN mission_templates.day_of_week IS 'Bitmask: 1=월 2=화 4=수 8=목 16=금 32=토 64=일. 127=매일';
+
+-- missions.template_id FK (mission_templates 정의 이후 추가)
+ALTER TABLE missions
+    ADD CONSTRAINT fk_missions_template
+    FOREIGN KEY (template_id) REFERENCES mission_templates(id) ON DELETE SET NULL;
+CREATE INDEX idx_missions_template ON missions(template_id) WHERE template_id IS NOT NULL;
+
+-- 3-2. Level Tiers (레벨 구간 정의)
+CREATE TABLE level_tiers (
+    id              SERIAL PRIMARY KEY,
+    job_code        VARCHAR(20) NOT NULL DEFAULT 'COMMON',
+    level           INTEGER NOT NULL,
+    title           VARCHAR(100) NOT NULL,
+    required_points INTEGER NOT NULL DEFAULT 0,
+    icon_path       VARCHAR(300),
+    milestone_type  VARCHAR(30),
+    milestone_data  JSONB,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT uq_job_level UNIQUE (job_code, level)
+);
 
 -- 4. Cheer Messages
 CREATE TABLE cheer_messages (
@@ -215,10 +238,22 @@ INSERT INTO admin_auth (username, password, display_name, player_id) VALUES
 INSERT INTO app_configs (key, value) VALUES
     ('photos.dad', ''),
     ('photos.mom', ''),
-    ('level.thresholds', '{"1":0,"2":50,"3":150,"4":300,"5":500}'),
     ('cheer.senders', '[{"key":"dad","label":"아빠","color":"var(--blue)","emoji":"👨"},{"key":"mom","label":"엄마","color":"#db2777","emoji":"👩"}]'),
     ('point_cycle', 'weekly')
   ON CONFLICT (key) DO NOTHING;
+
+INSERT INTO level_tiers (job_code, level, title, required_points) VALUES
+    ('COMMON', 1,  '새싹 모험가',           0),
+    ('COMMON', 2,  '돌 검 용사',           30),
+    ('COMMON', 3,  '철 검 기사',           80),
+    ('COMMON', 4,  '다이아 전사',         150),
+    ('COMMON', 5,  '네더 탐험가',         250),
+    ('COMMON', 6,  '엔더 사냥꾼',         380),
+    ('COMMON', 7,  '위더 정복자',         550),
+    ('COMMON', 8,  '엔드 드래곤 슬레이어', 750),
+    ('COMMON', 9,  '전설의 마스터',      1000),
+    ('COMMON', 10, '월드 챔피언',        1300)
+  ON CONFLICT (job_code, level) DO NOTHING;
 
 INSERT INTO missions (player_id, date, text, point, status, sender, sort_order) VALUES
     (1, CURRENT_DATE, '오늘의 첫 로그인!', 5,  'completed', '아빠', 0),

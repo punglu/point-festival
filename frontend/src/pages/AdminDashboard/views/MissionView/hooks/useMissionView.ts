@@ -85,13 +85,19 @@ export function useMissionView() {
 
   const reject = async (id: number, reason = '') => {
     try {
+      const mission = missions.find((m) => m.id === id);
+      // proposed → rejected (제안 자체를 거절)
       // pending_approval → active 복귀 (플레이어가 다시 요청 가능)
-      // 거절 사유는 msg 필드에 저장 → 플레이어 화면에 표시됨
+      const isProposal = mission?.status === 'proposed';
+      const newStatus  = isProposal ? 'rejected' : 'active';
+      const defaultMsg = isProposal
+        ? '[관리자] 제안이 거절되었습니다'
+        : '[관리자] 다시 확인 후 재요청해주세요';
       await adminApi.updateMission(id, {
-        status: 'active',
-        msg: reason || '[관리자] 다시 확인 후 재요청해주세요',
+        status: newStatus,
+        msg: reason || defaultMsg,
       });
-      showToast('success', '거절 처리됨 (미션 재활성화)');
+      showToast('success', isProposal ? '제안 거절됨' : '거절 처리됨 (미션 재활성화)');
       load();
     } catch { showToast('error', '처리 실패'); }
   };

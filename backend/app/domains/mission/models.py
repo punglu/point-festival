@@ -16,5 +16,6 @@ class Mission(Base, SoftDeleteMixin, TimestampMixin):
     proposed_by = Column(String(20), nullable=True)
     proposal_reason = Column(Text, nullable=True)
     rejection_reason = Column(Text, nullable=True)
-    sort_order = Column(Integer, nullable=False, default=0)
-    group_id   = Column(String(36), nullable=True)
+    sort_order  = Column(Integer, nullable=False, default=0)
+    group_id    = Column(String(36), nullable=True)
+    template_id = Column(Integer, ForeignKey("mission_templates.id", ondelete="SET NULL"), nullable=True)
