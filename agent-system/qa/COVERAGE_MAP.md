@@ -2,7 +2,8 @@
 
 Observed from source on `2026-07-26`; no listed test was run for this policy
 addition. Three executable API scripts were relocated from `docs/` to
-`tests/api/` without content changes; this map is an index, not a backlog.
+`tests/api/`; only invocation-path comments and trailing whitespace changed.
+This map is an index, not a backlog.
 
 | Journey ID | User or system behavior | Tier | Test Path | Evidence Level | Last Verified | Git Ref | Known Gap |
 |---|---|---|---|---|---|---|---|
