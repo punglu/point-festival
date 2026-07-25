@@ -5,7 +5,6 @@ from app.models.base import Base, SoftDeleteMixin, TimestampMixin
 
 class PlayerAuth(Base, SoftDeleteMixin, TimestampMixin):
     """플레이어 인증 정보 (PIN, 잠금 상태)
-    Firebase 원본: mc_player_auth/{playerId}
     """
     __tablename__ = "player_auth"
 

@@ -26,6 +26,18 @@ Create only `AGENTS.md` and `agent-system/**`. Do not change product code,
 - The active task remains `IN_PROGRESS` with `Verification: NOT_TESTED`;
   implementation is `SUCCEEDED` and the phase is `IMPLEMENTED / QA_PENDING`.
   This session does not self-award final QA PASS.
+- PM-approved follow-up scope adds the minimal bottom-up test policy and
+  source-verified coverage map under `agent-system/qa/`. Existing test files
+  are indexed at their current paths and are not executed by this addition.
+- PM-approved layout follow-up relocates three ignored executable API scripts
+  from `docs/` to `tests/api/` while preserving scenario logic; only invocation
+  path comments and three trailing-whitespace lines were normalized. Live
+  references in `wrapper.py`, the current project tree in `CLAUDE.md`, and the
+  Coverage Map were updated. Historical references are left unchanged.
+- PM-approved cleanup follow-up removes retired cloud-service configuration and
+  migration materials, the stale tracked `docs/CLAUDE.md` copy, and ignored
+  local favicon source assets. Runtime favicon files under `frontend/public/`
+  remain in place.
 
 ## Commands and results
 
@@ -44,6 +56,14 @@ Create only `AGENTS.md` and `agent-system/**`. Do not change product code,
   `/tmp` fixture, then removed. It produced the expected warnings for duplicate
   active Task ID/completed-active entry, missing handoff, and duplicate Decision
   ID; all report-only commands retained exit `0`.
+- Test policy extension: source discovery found `backend/tests/test_weekly.py`,
+  four Playwright specs under `tests/e2e/specs/`, and three executable scripts
+  formerly under `docs/`. No product test was executed; every Coverage Map row
+  is `SOURCE_VERIFIED` and `NOT_RUN_IN_THIS_TASK`.
+- Layout check: the three files now under `tests/api/` retained their original
+  SHA-256 hashes. `wrapper.py`, live `CLAUDE.md` project-tree references, and
+  script invocation comments point at the new paths. `git diff --check` and
+  `python3 agent-system/tools/check_all.py` exited `0`.
 
 ## Drive status
 

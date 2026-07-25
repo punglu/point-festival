@@ -8,13 +8,13 @@
 
 ## 1. 프로젝트 개요
 
-가족용 포인트 관리 웹 서비스를 바닐라 JS + Firebase에서 React + FastAPI + PostgreSQL로 마이그레이션합니다.
+가족용 포인트 관리 웹 서비스입니다.
 
 | As-Is | To-Be |
 |---|---|
 | 바닐라 JS (3개 HTML) | React (Vite + TypeScript) |
-| Firebase RTDB | PostgreSQL 16.9 LTS |
-| Firebase Hosting | Docker 3-Tier (Synology NAS) |
+| Data store | PostgreSQL 16.9 LTS |
+| Hosting | Docker 3-Tier (Synology NAS) |
 | 전역 CSS 1개 (1,589줄) | CSS Modules 캡슐화 |
 | PIN 평문 | bcrypt 해시 + JWT |
 
@@ -95,8 +95,8 @@ mc-point-festival/
 ├── docker-compose.yml           # 개발용
 ├── docker-compose.prod.yml      # 운영용 (Synology NAS)
 ├── deploy.sh                    # OrbStack → NAS 배포
-├── e2e_scenario_test.py         # E2E 시나리오 테스트 (v1)
-├── e2e_scenario_test_v2.py      # E2E 시나리오 테스트 (v2)
+├── tests/api/e2e_scenario_test.py    # E2E API 시나리오 테스트 (v1)
+├── tests/api/e2e_scenario_test_v2.py # E2E API 시나리오 테스트 (v2)
 ├── wrapper.py                   # 테스트 래퍼
 ├── favicon-assets/              # 파비콘 원본 이미지 (11종)
 └── logo-assets/                 # 로고 원본 이미지 (5종)
@@ -247,9 +247,9 @@ mc-point-festival/
 
 ---
 
-## 6. 도메인 매핑 (Firebase → PostgreSQL)
+## 6. 도메인 매핑
 
-| # | Firebase 노드 | BE 도메인 | DB 테이블 | Phase |
+| # | Source node | BE 도메인 | DB 테이블 | Phase |
 |---|---|---|---|---|
 | 1 | mc_players | player | players | ✅ 1 |
 | 2 | mc_player_auth | auth | player_auth | ✅ 1 |
@@ -278,7 +278,6 @@ mc-point-festival/
 | **5** | **Login Hub + Admin 인증 분리** | **✅ 완료** |
 | 6 | Home Page + Legacy (index.html 다크테마) | 대기 |
 | **7** | **프로덕션 배포 준비 + 운영 패치** | **🚀 진행중** |
-| 8 | Data Migration (Firebase→PostgreSQL ETL) | 대기 |
 
 ---
 

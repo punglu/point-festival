@@ -13,6 +13,10 @@ mc-images.tar
 # Env
 .env
 
+# Retired cloud-service artifacts
+/.firebase/
+/.firebaserc
+
 # IDE
 .vscode/
 .idea/

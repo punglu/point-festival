@@ -5,7 +5,6 @@ from app.models.base import Base, SoftDeleteMixin, TimestampMixin
 
 class Player(Base, SoftDeleteMixin, TimestampMixin):
     """플레이어(아이) 프로필
-    Firebase 원본: mc_players/{playerId}
     Gemini C-4: role 필드 (RBAC)
     """
     __tablename__ = "players"

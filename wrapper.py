@@ -17,5 +17,5 @@ requests.Session.request = new_request
 requests.request = requests.Session().request
 
 # 원본 스크립트 실행
-with open('e2e_scenario_test.py', 'r') as f:
+with open('tests/api/e2e_scenario_test.py', 'r') as f:
     exec(f.read(), {'__name__': '__main__'})

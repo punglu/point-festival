@@ -1,9 +1,0 @@
-{
-  "projects": {
-    "default": "mark-point-festivals",
-    "Prod": "mark-point-festivals",
-    "dev": "mark-point-festivals-dev"
-  },
-  "targets": {},
-  "etags": {}
-}
