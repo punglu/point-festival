@@ -89,7 +89,6 @@
 ```
 mc-point-festival/
 ├── CLAUDE.md                    ← 이 파일
-├── docs/CLAUDE.md               # CLAUDE.md 사본 (문서 보관용)
 ├── .env
 ├── .gitignore
 ├── docker-compose.yml           # 개발용
@@ -98,7 +97,6 @@ mc-point-festival/
 ├── tests/api/e2e_scenario_test.py    # E2E API 시나리오 테스트 (v1)
 ├── tests/api/e2e_scenario_test_v2.py # E2E API 시나리오 테스트 (v2)
 ├── wrapper.py                   # 테스트 래퍼
-├── favicon-assets/              # 파비콘 원본 이미지 (11종)
 └── logo-assets/                 # 로고 원본 이미지 (5종)
 │
 ├── database/

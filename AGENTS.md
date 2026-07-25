@@ -14,6 +14,10 @@ Google Drive, and chat history are supporting evidence only.
 Read task-specific decisions, QA evidence, incidents, and integration guidance
 only when the active task requires them.
 
+QA policy, Coverage Map, and Task QA evidence are respectively located at
+`agent-system/qa/TEST_POLICY.md`, `agent-system/qa/COVERAGE_MAP.md`, and
+`agent-system/qa/<TASK-ID>.md`.
+
 ## Working contract
 
 - Declare intended files in `agent-system/relay/current.md` before editing.
