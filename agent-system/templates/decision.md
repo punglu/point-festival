@@ -8,7 +8,7 @@
 - git_ref: ``
 - environment: ``
 - evidence: ``
-- Supersedes: `none`
+- Supersedes: `NONE`
 - secrets_redacted: `true`
 
 ## Decision

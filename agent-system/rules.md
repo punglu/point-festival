@@ -34,6 +34,9 @@ Keep these axes separate:
    scope, and next action.
 5. Decisions are write-once. A changed decision creates a new decision with a
    `Supersedes` reference; it does not rewrite the old record.
+   New records use `Supersedes: NONE` when there is no predecessor. The decision
+   checker accepts legacy empty forms (`N/A`, `NA`, `NOT_APPLICABLE`, `-`, `—`,
+   or blank) for compatibility.
 6. QA PASS requires actual execution evidence. The implementation session cannot
    award its own final QA PASS.
 7. Do not manually edit both an SSOT and its mirror. Generated mirrors require a

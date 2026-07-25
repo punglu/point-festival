@@ -38,3 +38,19 @@ QA PASS is self-awarded.
 - Reworked Decision validation to collect IDs before validation, warn missing
   and self `Supersedes`, and compare index IDs in both directions.
 - Normal checks and a repository-external fixture completed with exit `0`.
+
+## Post-QA metadata supplement
+
+- Metadata completed by: `AGENT-SYSTEM-V0.1-FIX-002`
+- Final Commit: `f7a66b2b91c1d78fcefcd4b65484a240b316f270`
+- Changed Files: `AGENTS.md`, `CLAUDE.md`, `agent-system/active.md`,
+  `agent-system/relay/current.md`, `agent-system/qa/COVERAGE_MAP.md`,
+  `agent-system/tools/check_decision_ids.py`,
+  `agent-system/handoffs/active/AGENT-SYSTEM-V0.1-FIX-001.md`, and
+  `agent-system/qa/AGENT-SYSTEM-V0.1-FIX-001.md`
+- Verification: `QA COMPLETE / CONDITIONAL`
+- Independent QA: `AGENT-SYSTEM-V0.1-QA-002`
+- Remaining defect: `Supersedes: N/A` normalization; addressed by FIX-002.
+
+This supplement was recorded after the original implementation. It does not
+alter the historical start-state metadata above.

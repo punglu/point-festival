@@ -9,6 +9,15 @@ from pathlib import Path
 
 ROOT = Path(os.environ.get("AGENT_SYSTEM_ROOT", Path(__file__).resolve().parents[2]))
 DECISIONS = ROOT / "agent-system" / "decisions"
+EMPTY_SUPERSEDES_ALIASES = {"", "NONE", "N/A", "NA", "NOT_APPLICABLE", "-", "—"}
+
+
+def normalize_optional_decision_id(value: str) -> str | None:
+    """Return a Decision ID, or None for the documented empty-value aliases."""
+    normalized = value.strip()
+    if normalized.upper() in EMPTY_SUPERSEDES_ALIASES:
+        return None
+    return normalized
 
 
 def main() -> int:
@@ -31,7 +40,8 @@ def main() -> int:
             print(f"WARNING duplicate Decision ID {decision_id}: {', '.join(path.name for path in paths)}")
     decision_ids = set(records)
     for path, (decision_id, supersedes_id) in supersedes_by_path.items():
-        if supersedes_id.lower() in {"none", "—", "-"}:
+        supersedes_id = normalize_optional_decision_id(supersedes_id)
+        if supersedes_id is None:
             continue
         if supersedes_id == decision_id:
             print(f"WARNING {decision_id} self-supersedes: {path.name}")

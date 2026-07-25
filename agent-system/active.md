@@ -28,3 +28,16 @@ are separate axes.
 - Phase note: `IMPLEMENTED / QA_PENDING`
 - Handoff: `agent-system/handoffs/active/AGENT-SYSTEM-V0.1-FIX-001.md`
 - Declared scope: `CLAUDE.md`, `AGENTS.md`, `agent-system/qa/**`, `agent-system/tools/check_decision_ids.py`, active/relay/handoff state only
+
+## AGENT-SYSTEM-V0.1-FIX-002
+
+- Task ID: `AGENT-SYSTEM-V0.1-FIX-002`
+- Lifecycle: `IN_PROGRESS`
+- Decision: `DESIGN_APPROVED`
+- Verification: `NOT_TESTED`
+- Execution: `SUCCEEDED`
+- Implementer: `Codex /root`
+- QA: `independent Codex pending`
+- Phase note: `IMPLEMENTED / QA_PENDING`
+- Handoff: `agent-system/handoffs/active/AGENT-SYSTEM-V0.1-FIX-002.md`
+- Declared scope: `agent-system/tools/check_decision_ids.py`, minimal rules/template updates, FIX-001 metadata supplement, and active/relay/handoff/QA state only
