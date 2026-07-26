@@ -2,6 +2,10 @@
 
 ## Status and authority
 
+**Status: APPROVED_WITH_DECISIONS / v0.1 (2026-07-26).** The five previously
+bounded PM gates are approved decisions; their implementation rollout remains
+subject to the CURRENT/TARGET/LEGACY labels below.
+
 These guides localize the directly reviewed Outlook Hub and Viblot materials for this repository. They are a repository-local development reference, not a replacement for source, runtime evidence, PM decisions, or Agent System rules.
 
 Authority order is: PM decision, measured repository/runtime evidence, this guide, then external source guidance. `docs/` is user-managed; this `engineering/` directory is the canonical local location for these guides.
@@ -22,6 +26,7 @@ Every rule is marked as one of:
 | [Backend guide](BACKEND_GUIDE.md) | FastAPI/async SQLAlchemy domain practices and API/DB gates |
 | [Frontend guide](FRONTEND_GUIDE.md) | React/Vite page structure, transport, state, UI, PWA, and journeys |
 | [Testing guide](TESTING_GUIDE.md) | test tiers, isolated runtime, evidence, and device work |
+| [Operating DB backup and migration plan](OPERATING_DB_BACKUP_MIGRATION_PLAN.md) | approval-bound backup, restore, and initial Alembic adoption plan |
 | [Provenance and PM gates](PROVENANCE_AND_PM_GATES.md) | adoption record and unresolved architectural choices |
 
 ## Direct source set
@@ -55,4 +60,6 @@ The concrete source-document IDs and the adoption decisions are retained in [Pro
 
 ## Deliberately not decided here
 
-This guide does not choose a universal transaction owner, a global response envelope, a migration SSOT, or a generated-contract strategy. Those are the bounded PM gates in the provenance guide.
+The approved decisions choose a UoW direction, compatibility-first responses,
+`init.sql` bootstrap plus future Alembic increments, OpenAPI-generated boundary
+types, and scoped rules/guards. They do not retroactively rewrite current code.

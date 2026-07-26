@@ -1,4 +1,6 @@
-# Provenance, Adoption, and PM Gates
+# Provenance, Adoption, and Approved Decisions
+
+**Status: APPROVED_WITH_DECISIONS / v0.1 — 2026-07-26.**
 
 ## Directly reviewed Drive sources
 
@@ -31,27 +33,27 @@
 | QA | ADAPT evidence rigor | ADAPT risk boundaries | approved risk-based policy |
 | Generated artifacts | ADOPT | ADOPT | change source then regenerate |
 
-## PM_GATE-01 — transaction boundary
+## APPROVED DECISION-01 — transaction boundary
 
 **Current evidence:** async `AsyncSession` is used, but `await db.commit()` is found in routers and services. Representative paths include `domains/chat/router.py`, `domains/mission_template/router.py`, `domains/auth/service.py`, `domains/daily_point/service.py`, and `domains/mission/service.py`.
 
-**Decision:** choose router-owned commit, service-owned transaction, or staged migration. Do not normalize existing behavior incidentally.
+**Approved:** a top-level use-case Unit of Work owns the transaction and performs one commit or rollback. Routers/services/helpers are no-commit. Existing mixed code is LEGACY and is migrated only with its changed domain.
 
-## PM_GATE-02 — API response envelope
+## APPROVED DECISION-02 — API response contract
 
-**Current evidence:** current routers use typed models, lists, and dictionaries; no global envelope is measured. **Decision:** retain shapes, apply an envelope only to new APIs, or create adapters after consumer audit.
+**Current evidence:** current routers use typed models, lists, and dictionaries; no global envelope is measured. **Approved:** preserve those shapes; new singleton APIs use typed direct bodies, new lists prefer `{items,total,cursor?}`, and standardized errors are introduced incrementally.
 
-## PM_GATE-03 — migration SSOT
+## APPROVED DECISION-03 — migration SSOT
 
-**Current evidence:** `database/init.sql` initializes local schema/seed; Alembic is a dependency but no canonical chain was verified. **Decision:** init-only, or init bootstrap plus incremental migration system. Require backup/restore rehearsal before an operating-data migration.
+**Approved:** `database/init.sql` remains bootstrap and Alembic becomes incremental SSOT after a frozen baseline. First operating use requires schema comparison, backup, and restore rehearsal.
 
-## PM_GATE-04 — contracts/OpenAPI
+## APPROVED DECISION-04 — contracts/OpenAPI
 
-**Current evidence:** Pydantic/OpenAPI are present; frontend types are local and handwritten. **Decision:** manual local types with boundary audit, generated OpenAPI types, or a contracts package. Avoid a big-bang field rename.
+**Approved:** OpenAPI-generated types are used at Phase 0–1 API boundaries; local feature/view models remain. A contracts package is deferred until independent WebSocket or multi-runtime versioning warrants it.
 
-## PM_GATE-05 — rules/guards scope
+## APPROVED DECISION-05 — rules/guards scope
 
-**Current evidence:** mission transitions are represented in `domains/mission/service.py`; no general rules/guards layer is established. **Decision:** apply pure rules only to approval, points/levels, RBAC, and other high-risk transitions; do not force them onto ordinary CRUD.
+**Approved:** pure rules apply to approval, points/levels, authority, subscription, chat membership, and irreversible/audited transitions. BE guards cover auth, RBAC, ownership, tenant boundary, and IDOR; FE rules remain UX-only.
 
 ## Rejected direct imports
 

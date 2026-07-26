@@ -19,6 +19,7 @@ The Coverage Map is a compact index, not a completion log. It currently records 
 - `docker-compose.phase0.yml` defines a separate test stack with host ports 15432 (PostgreSQL), 18000 (backend), and 13000 (frontend), volume `phase0_pg_data`, and network `mc_phase0_network`.
 - Playwright starts/reuses that isolated project through `tests/e2e/playwright.config.ts`.
 - `database/init.sql` is mounted read-only at first database initialization.
+- API scenario scripts default to the isolated port through `PHASE0_API_BASE_URL=http://localhost:18000`; they must never default to an unrelated project on port 8000.
 - The project must not stop or modify another Compose project, its volume, or an operational DB.
 
 ## TARGET CONTRACT — risk-based verification
@@ -50,6 +51,18 @@ Existing Playwright coverage includes login, mission, admin, and logout/admin fl
 
 Viewport automation is valuable but does not replace physical device evidence.
 
+## CURRENT baseline commands
+
+```bash
+docker compose -p mc_phase0 --env-file .env.phase0.example -f docker-compose.phase0.yml up -d --build
+PHASE0_API_BASE_URL=http://localhost:18000 bash tests/api/test_weekly_api.sh
+PHASE0_API_BASE_URL=http://localhost:18000 python3 tests/api/e2e_scenario_test_v2.py
+cd backend && python3 -m pytest -q
+cd tests/e2e && npm test
+```
+
+These commands exercise synthetic data only. They neither connect to nor alter the running `outlook-hub` project.
+
 ## LEGACY CONDITION / DEFERRED
 
 - API scenario scripts exist but need controlled local credentials/data and cleanup; their current map status is source-verified rather than executed.
@@ -59,3 +72,11 @@ Viewport automation is valuable but does not replace physical device evidence.
 ## QA conduct
 
 Do not delete/skip/weaken assertions to pass. Preserve traces/screenshots/video for failures without secrets or personal data. Do not run writer and independent QA concurrently in one worktree. LOW metadata corrections do not automatically open recursive QA loops.
+
+## APPROVED migration rehearsal direction
+
+`database/init.sql` bootstraps a new database. After baseline freeze, incremental
+changes use Alembic and must include a backup/restore rehearsal plan, schema
+comparison before initial operating stamp, row-count/invariant checks, and a
+rollback point. This is a plan requirement, not authorization to access an
+operating database.

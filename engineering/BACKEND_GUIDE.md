@@ -43,23 +43,32 @@ Sources: family-platform Backend draft (adapted), Outlook BE guide (thin control
 
 Do not mechanically normalize these patterns in unrelated changes. Any behavioral refactor must be separately scoped and independently QAed.
 
-## PM_GATE-01 — async transaction boundary
+## APPROVED DECISION-01 — async transaction boundary
 
 **Evidence:** current async code commits in both layers; Outlook's current guide prefers router one-commit, while Viblot's DRAFT prefers service-owned transactions.
 
-**Decision needed:** choose a future convention for a new multi-domain write: router-owned request commit, service-owned transaction, or a staged migration. Until decided, each change must preserve its affected domain's transaction semantics and document commit/rollback behavior.
+**Approved:** a top-level use-case Unit of Work opens the transaction, commits
+once on success, and rolls back on error. Router/service/helper code is
+no-commit; services may `add()`/`flush()`. Existing mixed commits remain LEGACY
+until the relevant domain is deliberately migrated.
 
-## PM_GATE-02 — API response envelope
+## APPROVED DECISION-02 — API response contract
 
-Current endpoints return typed models, lists, and dictionaries; no repository-wide envelope exists. Do not wrap existing APIs globally. PM may choose existing shape, an envelope for new endpoints, or an adapter migration after consumer audit.
+Current endpoints return typed models, lists, and dictionaries; no repository-wide envelope exists. Preserve them. New singleton endpoints return typed bodies; new lists prefer `{items,total,cursor?}`. Standard error bodies (`code`, `message`, `details`, optional `trace_id`) are a TARGET and are not a global retrofit.
 
-## PM_GATE-03 — schema/migration SSOT
+## APPROVED DECISION-03 — schema/migration SSOT
 
-`database/init.sql` is current bootstrap evidence; Alembic is a dependency but not a measured canonical chain. PM must decide whether bootstrap remains the only mechanism or whether init becomes bootstrap plus approved incremental migrations. No schema change proceeds on a documentation assumption.
+`database/init.sql` remains the new-DB bootstrap baseline. After baseline freeze,
+Alembic is the incremental migration SSOT; ORM changes and revisions travel
+together. Operating DB work requires schema comparison, backup, and restore
+rehearsal before a first stamp.
 
-## PM_GATE-04 — contracts and generated types
+## APPROVED DECISION-04 — OpenAPI type contract
 
-Pydantic schemas/OpenAPI are current API sources. There is no verified contracts package or generated-type pipeline. PM must decide whether to retain manual feature types with boundary checks, generate OpenAPI types, or create contracts.
+Pydantic/OpenAPI are the Phase 0–1 wire source. Generate types at the API
+boundary, never edit generated output, and map to feature/view types internally.
+Reconsider a contracts package only for independently versioned WebSocket or
+multi-runtime contracts.
 
 ## Backend verification minimums
 

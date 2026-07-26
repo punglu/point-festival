@@ -32,7 +32,9 @@
 - Keep a new capability local-first; consider shared promotion only after a second actual consumer. Do not reorganize all pages into a new feature tree merely to match Viblot's DRAFT layout.
 - UI permissions, button visibility, and route guards improve UX but never replace backend RBAC/ownership enforcement.
 - Core mutations (points, approval, roles, subscriptions, message membership) must not be treated as successful before server confirmation.
-- Keep API wire changes compatible with actual backend responses. There is no generated contract pipeline today; do not invent a client-side camelCase contract without an API decision.
+- Keep API wire changes compatible with actual backend responses. Phase 0–1 uses
+  OpenAPI-generated types at the API boundary; generated files are not edited
+  and page/view types remain local mappings.
 - Use CSS Modules and the existing shared component/token surfaces. Respect safe-area, keyboard, mobile/tablet, and desktop requirements when a surface is affected; do not import Outlook's desktop visual tokens or layout rules.
 
 ## LEGACY CONDITION

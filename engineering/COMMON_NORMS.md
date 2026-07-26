@@ -49,12 +49,21 @@ Source: `agent-system/qa/TEST_POLICY.md`, family-platform Testing draft, and app
 
 Existing domain code has different transaction conventions and a mix of route and service responsibilities. It remains compatible behavior, not proof that new work may choose arbitrarily. See the backend guide and PM_GATE-01.
 
-## PM_GATE / DEFERRED
+## APPROVED DECISIONS — 2026-07-26
 
-- **PM_GATE-01:** canonical async transaction boundary.
-- **PM_GATE-02:** API response-envelope strategy.
-- **PM_GATE-03:** `database/init.sql` and Alembic/migration SSOT.
-- **PM_GATE-04:** OpenAPI/generated types versus a contracts package.
-- **PM_GATE-05:** scope for rules/guards in core transitions.
+1. **Transaction ownership:** use-case Unit of Work owns one commit/rollback;
+   routers, services, and helpers are no-commit. Existing mixed commits are
+   LEGACY and migrate only with the modified domain.
+2. **API responses:** retain existing response compatibility; new singleton
+   endpoints return typed bodies and new lists prefer `{items,total,cursor?}`.
+   Standard error shape is a TARGET, not a global retrofit.
+3. **Migration SSOT:** `database/init.sql` is bootstrap; after baseline freeze,
+   Alembic is the incremental migration SSOT. Backup/restore rehearsal precedes
+   operating DB adoption.
+4. **Wire types:** Phase 0–1 uses OpenAPI-generated types at API boundaries;
+   generated files are never hand-edited and feature/view models remain local.
+5. **Rules/guards:** pure rules cover high-risk transitions only; common BE
+   guards cover auth, RBAC, ownership, tenant boundaries, and IDOR. FE rules are
+   UX-only.
 
-The five gates are deliberately capped; their evidence and options are in [Provenance and PM gates](PROVENANCE_AND_PM_GATES.md).
+The approval evidence and rollout limits are in [Provenance and PM gates](PROVENANCE_AND_PM_GATES.md).
