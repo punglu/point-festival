@@ -4,6 +4,7 @@ import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import { useAuthStore } from './shared/stores/useAuthStore';
 import ToastContainer from './shared/components/Toast/ToastContainer';
+import { FamilyContextLoader } from './shared/family/FamilyContextLoader';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isLoggedIn } = useAuthStore();
@@ -20,6 +21,7 @@ function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <>
+      <FamilyContextLoader>
       <BrowserRouter>
         <Routes>
           {/* "/" → 플레이어 선택 + PIN 인증 */}
@@ -57,6 +59,7 @@ export default function App() {
           />
         </Routes>
       </BrowserRouter>
+      </FamilyContextLoader>
       <ToastContainer />
     </>
   );
