@@ -3,19 +3,6 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
-## PHASE1-NARAN-PLATFORM-SHELL-001
-
-- Task ID: PHASE1-NARAN-PLATFORM-SHELL-001
-- Lifecycle: IN_PROGRESS
-- Decision: DESIGN_APPROVED
-- Verification: NOT_TESTED
-- Execution: SUCCEEDED
-- Phase Note: IMPLEMENTED / QA_PENDING
-- Handoff: agent-system/handoffs/active/PHASE1-NARAN-PLATFORM-SHELL-001.md
-- QA Evidence: agent-system/qa/PHASE1-NARAN-PLATFORM-SHELL-001.md
-- Independent QA: required — frontend account/family state, permission navigation, legacy dashboard integration, and Family-switch isolation
-- Next Action: independent Frontend state/permission QA; do not push before PASS
-
 ## PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001
 
 - Task ID: PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001

@@ -6,9 +6,9 @@
 - git_ref: `9cce458f75df2a251176dc0628da1c152a98098e`
 - environment: `local macOS workspace; isolated runtime only`
 - secrets_redacted: `true`
-- Verification: `QA_PENDING`
+- Verification: `PASS`
 - Self-check only: `true`
-- Independent QA: `pending — required for Frontend Account/Family state and permission navigation`
+- Independent QA: `complete — PASS (independent read-only Shell QA)`
 - Git repository is SSOT.
 
 ## Scope
@@ -33,6 +33,14 @@ journeys. No final PASS is claimed by the implementation session.
 The UI baseline is Chromium viewport emulation only. Physical-device Safari,
 standalone PWA, keyboard, Android Back, and Push are not claimed.
 
+## Independent QA verdict
+
+`PASS` after clean synthetic reseeding. The independent reviewer reran the
+Shell suite only and observed `25/25 PASS` in 13.4 seconds. An earlier run
+started after the deliberately mutating RBAC API suite had closed the synthetic
+Alpha Family, so its Family-switch failure was rejected as fixture-state
+contamination rather than a product finding. No files were modified by QA.
+
 ## Closeout Synchronization
 
 - Contract: `v1`
@@ -42,7 +50,7 @@ standalone PWA, keyboard, Android Back, and Push are not claimed.
 - HANDOFF Path: `agent-system/handoffs/active/PHASE1-NARAN-PLATFORM-SHELL-001.md`
 - QA EVIDENCE: `UPDATED`
 - QA Evidence Path: `agent-system/qa/PHASE1-NARAN-PLATFORM-SHELL-001.md`
-- Independent QA: `pending`
+- Independent QA: `complete`
 - COVERAGE MAP: `UPDATED`
 - COVERAGE MAP Reason: `E2E-NARAN-SHELL-001 indexes executed Shell tests and the capture manifest.`
 - CLOSEOUT GATE: `PASS`
