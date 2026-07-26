@@ -101,7 +101,7 @@ or push.
 - ACTIVE: `UPDATED`
 - ACTIVE Evidence: `agent-system/active.md` contains this open QA-pending task.
 - HANDOFF: `UPDATED`
-- HANDOFF Path: `agent-system/handoffs/active/CLOSEOUT-REGRESSION-FIXTURE-PERSISTENCE-001.md`
+- HANDOFF Path: `agent-system/handoffs/archive/2026-07/CLOSEOUT-REGRESSION-FIXTURE-PERSISTENCE-001.md`
 - QA EVIDENCE: `UPDATED`
 - QA Evidence Path: `agent-system/qa/CLOSEOUT-REGRESSION-FIXTURE-PERSISTENCE-001.md`
 - Independent QA: `pending`
@@ -111,3 +111,17 @@ or push.
 
 Closeout Gate PASS records synchronized documentation only. It is not an
 independent QA verdict, lifecycle completion, graduation, or push approval.
+
+## Post-closeout archival supplement
+
+- Archived By Task: `AGENT-SYSTEM-V0.1-CLOSEOUT-001`
+- Original QA Finding: `CLOSEOUT-REGRESSION-FIXTURE-PERSISTENCE-QA-001`
+  blocked closeout on the invalid `AGENT-CLOSEOUT-003` source ref.
+- Resolution Task: `CLOSEOUT-COVERAGE-REF-FIX-001`
+- PM Residual-Risk Decision: Standalone independent QA for the single metadata
+  correction was explicitly waived; the PM accepted residual risk and authorized
+  closeout resumption at `fcdc16b0d40483080978314ea5d21fd972326d96`.
+- Final Verification: `PASS` by PM-authorized waiver for the resolved metadata
+  blocker; this is not represented as a newly executed independent QA verdict.
+- Historical Integrity: The historical 23/23 execution evidence and prior QA
+  finding remain unchanged; this supplement records the later resolution only.

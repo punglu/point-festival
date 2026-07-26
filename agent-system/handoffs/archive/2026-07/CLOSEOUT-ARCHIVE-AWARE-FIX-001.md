@@ -100,7 +100,7 @@ active closure, or push.
 - ACTIVE: `UPDATED`
 - ACTIVE Evidence: `agent-system/active.md` records this task as IMPLEMENTED / QA_PENDING and keeps CLOSEOUT-GATE-001 blocked by this fix.
 - HANDOFF: `UPDATED`
-- HANDOFF Path: `agent-system/handoffs/active/CLOSEOUT-ARCHIVE-AWARE-FIX-001.md`
+- HANDOFF Path: `agent-system/handoffs/archive/2026-07/CLOSEOUT-ARCHIVE-AWARE-FIX-001.md`
 - QA EVIDENCE: `UPDATED`
 - QA Evidence Path: `agent-system/qa/CLOSEOUT-ARCHIVE-AWARE-FIX-001.md`
 - Independent QA: `pending`
@@ -111,3 +111,17 @@ active closure, or push.
 Closeout Gate PASS means the documentation synchronization is complete only; it
 does not mean independent QA PASS, lifecycle completion, graduation, or push
 approval.
+
+## Post-closeout archival supplement
+
+- Archived By Task: `AGENT-SYSTEM-V0.1-CLOSEOUT-001`
+- Final Verification: `PASS`
+- Resolution Chain: The original independent QA conditional finding required
+  source-backed persistent regression coverage. That coverage was delivered by
+  `CLOSEOUT-REGRESSION-FIXTURE-PERSISTENCE-001`; its source-ref blocker was
+  corrected by `CLOSEOUT-COVERAGE-REF-FIX-001`.
+- PM Residual-Risk Decision: The PM explicitly waived standalone independent
+  QA for the one-cell coverage-ref correction and authorized closeout resumption
+  at `fcdc16b0d40483080978314ea5d21fd972326d96`.
+- Historical Integrity: Prior QA and correction records remain intact; this
+  supplement records their final resolution relationship only.

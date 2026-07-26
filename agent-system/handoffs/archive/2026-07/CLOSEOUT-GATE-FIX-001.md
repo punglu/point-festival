@@ -117,7 +117,7 @@ active closure, graduation, or push.
 - ACTIVE Evidence: `agent-system/active.md` records CLOSEOUT-GATE-001 as QA
   blocked and CLOSEOUT-GATE-FIX-001 as IMPLEMENTED / QA_PENDING.
 - HANDOFF: `UPDATED`
-- HANDOFF Path: `agent-system/handoffs/active/CLOSEOUT-GATE-FIX-001.md`
+- HANDOFF Path: `agent-system/handoffs/archive/2026-07/CLOSEOUT-GATE-FIX-001.md`
 - QA EVIDENCE: `UPDATED`
 - QA Evidence Path: `agent-system/qa/CLOSEOUT-GATE-FIX-001.md`
 - Independent QA: `pending`
@@ -128,3 +128,12 @@ active closure, graduation, or push.
 Closeout Gate PASS records only synchronized closeout documentation; it is not
 independent QA PASS, lifecycle completion, PM approval, graduation, or push
 authorization.
+
+## Post-closeout archival supplement
+
+- Archived By Task: `AGENT-SYSTEM-V0.1-CLOSEOUT-001`
+- Final Independent QA: `CLOSEOUT-GATE-QA-002`
+- Final Verification: `PASS`
+- Historical Integrity: The implementation self-check and original QA-pending
+  record above are retained; this later supplement records the completed
+  independent-QA lifecycle outcome.

@@ -113,7 +113,7 @@ deployment, migration, historical bulk rewrites, graduation, or push.
 - ACTIVE: `UPDATED`
 - ACTIVE Evidence: `agent-system/active.md` contains the open QA_PENDING task record.
 - HANDOFF: `UPDATED`
-- HANDOFF Path: `agent-system/handoffs/active/CLOSEOUT-GATE-001.md`
+- HANDOFF Path: `agent-system/handoffs/archive/2026-07/CLOSEOUT-GATE-001.md`
 - QA EVIDENCE: `UPDATED`
 - QA Evidence Path: `agent-system/qa/CLOSEOUT-GATE-001.md`
 - Independent QA: `pending`
@@ -136,3 +136,14 @@ QA PASS, lifecycle completion, PM approval, graduation, or push authorization.
 - Historical Integrity: The original implementation record is retained as the
   contemporaneous implementation report. This append-only section records the
   independent QA finding and does not present the original claim as correct.
+
+## Post-closeout archival supplement
+
+- Archived By Task: `AGENT-SYSTEM-V0.1-CLOSEOUT-001`
+- Final Independent QA: `CLOSEOUT-GATE-QA-002`
+- Final Verification: `PASS`
+- Resolution: The original `QA BLOCKED` finding remains above. It was resolved
+  by `CLOSEOUT-GATE-FIX-001`, which received the recorded final independent QA
+  PASS before this handoff was archived.
+- Historical Integrity: The original implementation and correction records are
+  retained; this is a later lifecycle-location supplement only.
