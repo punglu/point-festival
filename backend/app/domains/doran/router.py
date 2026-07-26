@@ -5,9 +5,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.domains.doran import service
-from app.domains.doran.schemas import MessageCreate, MessageListResponse, MessageResponse, ParticipantCreate, ParticipantResponse, ReadStateResponse, ReadStateUpdate, RoomCreate, RoomResponse, RoomUpdate, ServiceActionPublish
+from app.domains.doran.schemas import MessageCreate, MessageListResponse, MessageResponse, ParticipantCreate, ParticipantResponse, ReadStateResponse, ReadStateUpdate, RoomCreate, RoomResponse, RoomUpdate, ServiceActionPublish, ServiceRoomOnboardResponse
 from app.domains.doran.service_actor import get_current_service_principal
 from app.domains.doran.models import ServicePrincipal
+from app.domains.doran.ingress_limits import enforce_service_body_limit
 
 router = APIRouter(prefix="/api/families/{family_id}/doran", tags=["doran"])
 
@@ -87,7 +88,7 @@ async def put_read_state(family_id: int, room_id: UUID, data: ReadStateUpdate, u
     participant, state, unread = await service.read_state(db, user, family_id, room_id, data.last_read_sequence)
     return ReadStateResponse(participant_id=participant.id, last_read_sequence=state.last_read_sequence, unread_count=unread, updated_at=state.updated_at)
 
-@router.post("/service/actions", response_model=MessageResponse, status_code=201)
+@router.post("/service/actions", response_model=MessageResponse, status_code=201, dependencies=[Depends(enforce_service_body_limit)])
 async def publish_service_action(
     family_id: int,
     data: ServiceActionPublish,
@@ -95,3 +96,12 @@ async def publish_service_action(
     db: AsyncSession = Depends(get_db),
 ):
     return message_out(await service.publish_service_action(db, principal, family_id, data))
+
+@router.post("/services/{service_code}/room", response_model=ServiceRoomOnboardResponse, status_code=200)
+async def onboard_service_room(family_id: int, service_code: str, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    room, participant = await service.onboard_self_into_service_room(db, user, family_id, service_code)
+    return ServiceRoomOnboardResponse(
+        room_id=room.id, family_group_id=room.family_group_id, service_code=service_code,
+        participant_id=participant.id, room_role=participant.room_role,
+        status=participant.status, joined_sequence=participant.joined_sequence,
+    )

@@ -59,7 +59,7 @@ database_module.AsyncSessionLocal = async_sessionmaker(_test_engine, class_=Asyn
 engine = database_module.engine
 AsyncSessionLocal = database_module.AsyncSessionLocal
 
-TRUNCATE_ROOTS = "players, accounts, family_groups"
+TRUNCATE_ROOTS = "players, accounts, family_groups, service_outbox_events"
 
 
 @pytest_asyncio.fixture(autouse=True)

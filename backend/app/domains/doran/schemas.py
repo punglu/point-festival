@@ -109,6 +109,20 @@ class ReadStateResponse(BaseModel):
     updated_at: datetime
 
 
+class ServiceRoomOnboardResponse(BaseModel):
+    """Response for self-onboarding into a Family's canonical SERVICE Room.
+    Deliberately excludes Binding/Principal internals (id, allowed_actions,
+    credential) - a Family member only needs to know their own Room and
+    Participant state."""
+    room_id: UUID
+    family_group_id: int
+    service_code: str
+    participant_id: UUID
+    room_role: str
+    status: str
+    joined_sequence: int
+
+
 class ServiceActionPublish(BaseModel):
     """The only shape a Service Principal may submit. There is no client-set
     family_id, sender, sequence, Principal id, or free-form executable payload

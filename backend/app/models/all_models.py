@@ -18,3 +18,4 @@ from app.domains.family.models import (  # noqa: F401
 )
 from app.domains.doran.models import DoranRoom, DoranDirectPair, DoranParticipant, DoranMessage, DoranParticipantReadState  # noqa: F401
 from app.domains.doran.models import ServicePrincipal, DoranServiceBinding, DoranServiceAuditLog  # noqa: F401
+from app.domains.service_outbox.models import ServiceOutboxEvent  # noqa: F401
