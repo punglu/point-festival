@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16.9-alpine
+    restart: "no"
+    environment:
+      POSTGRES_DB: ${PHASE2_DB_NAME}
+      POSTGRES_USER: ${PHASE2_DB_USER}
+      POSTGRES_PASSWORD: ${PHASE2_DB_PASSWORD}
+    ports:
+      - "15435:5432"
+    volumes:
+      - phase2_pg_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PHASE2_DB_USER} -d ${PHASE2_DB_NAME}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  phase2_pg_data:
+
+networks:
+  default:
+    name: mc_phase2_network

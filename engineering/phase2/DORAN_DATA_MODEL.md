@@ -1,6 +1,6 @@
 # Doran Data Model
 
-**Status:** TARGET / no migration or schema change in this task.
+**Status:** APPROVED DECISION / Foundation migration `0002_doran_messaging_foundation`.
 
 ```text
 FamilyGroup 1 ── * ConversationRoom 1 ── * ConversationParticipant * ── 1 Account
@@ -35,12 +35,10 @@ Message 1 ── * MessageRevision (only if edit policy is approved)
 
 ## Ordering and cursor
 
-Recommended target is a Room-local monotonic `sequence_number`, backed by a
-unique `(room_id, sequence_number)` index. Database insertion, not WebSocket
-arrival, is canonical ordering. Cursor lists use `(sequence_number, id)` to
-remain deterministic. The allocation mechanism is PM Gate 2: a locked Room
-counter or equivalent transaction-safe PostgreSQL approach must be selected in
-implementation.
+**APPROVED DECISION-02:** Room-local monotonic `sequence`, backed by a unique
+`(room_id, sequence)` index. Database insertion, not WebSocket arrival, is
+canonical ordering. `next_message_sequence` is atomically incremented in the
+message transaction. Cursor lists use `(sequence, id)` to remain deterministic.
 
 ## Lifecycle and retention
 

@@ -29,6 +29,7 @@ class FamilyMembership(Base, SoftDeleteMixin, TimestampMixin):
     joined_at = Column(DateTime(timezone=True), nullable=True)
     __table_args__ = (
         UniqueConstraint("account_id", "family_group_id", name="uq_family_memberships_account_family"),
+        UniqueConstraint("id", "family_group_id", name="uq_family_memberships_id_family"),
         CheckConstraint("relationship IN ('mother', 'father', 'child', 'guardian', 'grandparent', 'other', 'unknown')", name="ck_family_memberships_relationship"),
         CheckConstraint("status IN ('invited', 'active', 'suspended', 'left', 'removed')", name="ck_family_memberships_status"),
     )

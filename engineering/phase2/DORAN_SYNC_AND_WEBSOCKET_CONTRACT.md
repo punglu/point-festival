@@ -1,6 +1,6 @@
 # Doran Sync and WebSocket Contract
 
-**Status:** TARGET / HTTP and database remain canonical; no WebSocket is implemented.
+**Status:** APPROVED FOUNDATION HTTP CONTRACT / HTTP and database remain canonical; no WebSocket is implemented.
 
 ## HTTP candidate surface
 
@@ -14,7 +14,10 @@ DELETE    /api/families/{family_id}/doran/rooms/{room_id}/messages/{message_id}
 PUT       /api/families/{family_id}/doran/rooms/{room_id}/read-state
 ```
 
-Lists use `{items, total, cursor?}` and a sequence cursor. Every path first
+Lists use `{items, total, cursor?}` and a sequence cursor. `after_sequence` and
+`before_sequence` are mutually exclusive; initial requests return latest-N,
+`before_sequence` pages history, and `after_sequence` synchronizes reconnects.
+Every path first
 authenticates Account, resolves active Membership, checks subscription and
 permission, then checks resource Family and active Room participant.
 

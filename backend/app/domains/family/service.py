@@ -25,6 +25,10 @@ FAMILY_SERVICES_MANAGE = "family.services.manage"
 
 
 def _legacy_identity(user: dict) -> tuple[str, str, str]:
+    # The legacy dependency exposes player_id/is_admin.  Keep the Foundation
+    # adapter compatible while never trusting a client supplied Account id.
+    if "player_id" in user:
+        return "markpoint", "player_auth", str(user["player_id"])
     if user.get("role") == "admin":
         return "markpoint", "admin_auth", str(user["sub"])
     return "markpoint", "player_auth", str(user["sub"])

@@ -19,6 +19,7 @@ from app.domains.mission_template.router import router as mission_template_route
 from app.domains.chat.router import router as chat_router
 from app.domains.level_tier.router import router as level_tier_router
 from app.domains.family.router import router as family_router
+from app.domains.doran.router import router as doran_router
 
 
 @asynccontextmanager
@@ -67,6 +68,7 @@ app.include_router(mission_template_router)
 app.include_router(chat_router)
 app.include_router(level_tier_router)
 app.include_router(family_router)
+app.include_router(doran_router)
 
 
 @app.get("/api/health")
