@@ -72,7 +72,12 @@ async def get_family(family_id: int, user: dict = Depends(get_current_user), db:
 
 @router.patch("/api/families/{family_id}", response_model=FamilyResponse)
 async def update_family(family_id: int, data: FamilyUpdate, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    await service.require_permission(db, user, family_id, service.FAMILY_SERVICES_MANAGE)
+    required_permission = (
+        service.FAMILY_OWNERSHIP_MANAGE
+        if data.status is not None
+        else service.FAMILY_SERVICES_MANAGE
+    )
+    await service.require_permission(db, user, family_id, required_permission)
     family = await service.get_family(db, family_id)
     if data.name is not None:
         family.name = data.name

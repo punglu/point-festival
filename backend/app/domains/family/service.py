@@ -11,6 +11,8 @@ from app.domains.family.models import (
     MembershipRoleAssignment, Permission, Role, RolePermission,
     ServiceSubscription,
 )
+from app.domains.auth.models import AdminAuth, PlayerAuth
+from app.domains.player.models import Player
 
 
 FAMILY_READ = "family.read"
@@ -30,6 +32,38 @@ def _legacy_identity(user: dict) -> tuple[str, str, str]:
 
 async def resolve_current_account(db: AsyncSession, user: dict) -> Account:
     legacy_system, identity_type, identity_id = _legacy_identity(user)
+    try:
+        legacy_id = int(identity_id)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="유효하지 않은 레거시 인증입니다")
+
+    if identity_type == "player_auth":
+        legacy_identity = (
+            await db.execute(
+                select(PlayerAuth.id)
+                .join(Player, Player.id == PlayerAuth.player_id)
+                .where(
+                    PlayerAuth.player_id == legacy_id,
+                    PlayerAuth.deleted_at.is_(None),
+                    Player.deleted_at.is_(None),
+                )
+            )
+        ).scalar_one_or_none()
+    else:
+        legacy_identity = (
+            await db.execute(
+                select(AdminAuth.id)
+                .outerjoin(Player, Player.id == AdminAuth.player_id)
+                .where(
+                    AdminAuth.id == legacy_id,
+                    AdminAuth.deleted_at.is_(None),
+                    (AdminAuth.player_id.is_(None) | Player.deleted_at.is_(None)),
+                )
+            )
+        ).scalar_one_or_none()
+    if legacy_identity is None:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="활성 레거시 인증이 필요합니다")
+
     stmt = (
         select(Account)
         .join(LegacyIdentityMapping, LegacyIdentityMapping.account_id == Account.id)
@@ -68,6 +102,9 @@ async def get_active_membership(db: AsyncSession, account_id: int, family_id: in
 
 
 async def effective_permissions(db: AsyncSession, membership: FamilyMembership) -> Set[str]:
+    family = await db.get(FamilyGroup, membership.family_group_id)
+    if family is None or family.status != "active" or family.deleted_at is not None:
+        return set()
     stmt = (
         select(Permission.code, Role.scope_type, Role.service_code)
         .join(RolePermission, RolePermission.permission_id == Permission.id)
@@ -148,10 +185,16 @@ async def get_family(db: AsyncSession, family_id: int) -> FamilyGroup:
 
 
 async def active_memberships_for_account(db: AsyncSession, account_id: int) -> list[FamilyMembership]:
-    stmt = select(FamilyMembership).where(
-        FamilyMembership.account_id == account_id,
-        FamilyMembership.status == "active",
-        FamilyMembership.deleted_at.is_(None),
+    stmt = (
+        select(FamilyMembership)
+        .join(FamilyGroup, FamilyGroup.id == FamilyMembership.family_group_id)
+        .where(
+            FamilyMembership.account_id == account_id,
+            FamilyMembership.status == "active",
+            FamilyMembership.deleted_at.is_(None),
+            FamilyGroup.status == "active",
+            FamilyGroup.deleted_at.is_(None),
+        )
     )
     return list((await db.execute(stmt)).scalars())
 
@@ -194,11 +237,22 @@ async def _active_owner_count(db: AsyncSession, family_id: int) -> int:
     return len((await db.execute(stmt)).all())
 
 
+async def _lock_family_for_owner_change(db: AsyncSession, family_id: int) -> None:
+    """Serialize owner removal/suspension decisions for a single Family."""
+    family = (
+        await db.execute(select(FamilyGroup).where(FamilyGroup.id == family_id).with_for_update())
+    ).scalars().first()
+    if family is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="가족을 찾을 수 없습니다")
+
+
 async def update_membership(db: AsyncSession, membership: FamilyMembership, relationship: Optional[str], membership_status: Optional[str]) -> FamilyMembership:
     if membership_status in {"suspended", "left", "removed"}:
         roles = await family_roles(db, membership.id)
-        if any(role.scope_type == "FAMILY" and role.code == "owner" for role in roles) and await _active_owner_count(db, membership.family_group_id) <= 1:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="마지막 Owner는 비활성화할 수 없습니다")
+        if any(role.scope_type == "FAMILY" and role.code == "owner" for role in roles):
+            await _lock_family_for_owner_change(db, membership.family_group_id)
+            if await _active_owner_count(db, membership.family_group_id) <= 1:
+                raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="마지막 Owner는 비활성화할 수 없습니다")
     if relationship is not None:
         membership.relationship = relationship
     if membership_status is not None:
@@ -243,8 +297,10 @@ async def revoke_assignment(db: AsyncSession, family_id: int, assignment_id: int
     role = await db.get(Role, assignment.role_id)
     if membership is None or role is None or membership.family_group_id != family_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="역할 부여를 찾을 수 없습니다")
-    if role.scope_type == "FAMILY" and role.code == "owner" and membership.status == "active" and await _active_owner_count(db, family_id) <= 1:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="마지막 Owner 역할은 제거할 수 없습니다")
+    if role.scope_type == "FAMILY" and role.code == "owner" and membership.status == "active":
+        await _lock_family_for_owner_change(db, family_id)
+        if await _active_owner_count(db, family_id) <= 1:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="마지막 Owner 역할은 제거할 수 없습니다")
     assignment.revoked_at = datetime.now(timezone.utc)
     await db.commit()
 

@@ -1,8 +1,8 @@
 # Current Relay
 
-Current Task: PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001
+Current Task: PHASE1-ACCOUNT-FAMILY-RBAC-FOUNDATION-001
 
-- Status: IMPLEMENTED / PM_REVIEW_REQUIRED
-- Modified scope: `engineering/phase1/` target contract, data model, permission matrix, legacy identity mapping, threat model, Foundation plan, and task evidence only.
-- Evidence: PM RBAC decision directly read; current legacy Auth/User/Player/JWT, `database/init.sql`, frontend auth state/routes, and local engineering guides measured; static checks warning 0.
-- Next action: PM resolves the five bounded gates, then start `PHASE1-ACCOUNT-FAMILY-RBAC-FOUNDATION-001`. Do not implement schema, migration, auth, or RBAC until then.
+- Status: IMPLEMENTED / QA_PENDING
+- Modified scope: approved Phase 1 documents; Alembic baseline/foundation migration; Account/Family/RBAC models, APIs, guards, synthetic legacy adapter seed; frontend account/family context; isolated API+DB tests and evidence.
+- Evidence: isolated `mc_phase1` migration stamp/upgrade/downgrade/upgrade and RBAC API+DB suite passed; existing Phase 0 API/Playwright regressions passed. Independent QA remains required.
+- Next action: independent security/DB QA only; do not alter product code concurrently and do not push until QA PASS.
