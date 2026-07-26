@@ -15,6 +15,8 @@
 
 Frontend Node/npm and ESLint contract, lint/build results, isolated Compose runtime, and existing Playwright runtime configuration.
 
+- Implementation Commit: `e8f597a1eca2e5f50f93b0f855b150779b2f7eb1`
+
 ## Commands, exit codes, and results
 
 - Node/npm selected through Volta: Node `20.19.0`, npm `10.8.2`.
