@@ -1538,6 +1538,164 @@ export interface paths {
         patch: operations["update_service_api_families__family_id__services__service_code__patch"];
         trace?: never;
     };
+    "/api/families/{family_id}/doran/rooms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Rooms */
+        get: operations["list_rooms_api_families__family_id__doran_rooms_get"];
+        put?: never;
+        /** Create Room */
+        post: operations["create_room_api_families__family_id__doran_rooms_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/doran/rooms/{room_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Room */
+        get: operations["get_room_api_families__family_id__doran_rooms__room_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Patch Room */
+        patch: operations["patch_room_api_families__family_id__doran_rooms__room_id__patch"];
+        trace?: never;
+    };
+    "/api/families/{family_id}/doran/rooms/{room_id}/participants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Participants */
+        get: operations["participants_api_families__family_id__doran_rooms__room_id__participants_get"];
+        put?: never;
+        /** Add Participant */
+        post: operations["add_participant_api_families__family_id__doran_rooms__room_id__participants_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/doran/rooms/{room_id}/participants/{participant_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove Participant */
+        delete: operations["remove_participant_api_families__family_id__doran_rooms__room_id__participants__participant_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/doran/rooms/{room_id}/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Leave */
+        post: operations["leave_api_families__family_id__doran_rooms__room_id__leave_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/doran/rooms/{room_id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Messages */
+        get: operations["messages_api_families__family_id__doran_rooms__room_id__messages_get"];
+        put?: never;
+        /** Send */
+        post: operations["send_api_families__family_id__doran_rooms__room_id__messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/doran/rooms/{room_id}/messages/{message_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Message */
+        delete: operations["delete_message_api_families__family_id__doran_rooms__room_id__messages__message_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/doran/rooms/{room_id}/read-state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Read State */
+        get: operations["get_read_state_api_families__family_id__doran_rooms__room_id__read_state_get"];
+        /** Put Read State */
+        put: operations["put_read_state_api_families__family_id__doran_rooms__room_id__read_state_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/doran/service/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish Service Action */
+        post: operations["publish_service_action_api_families__family_id__doran_service_actions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -2037,6 +2195,60 @@ export interface components {
             /** Status */
             status?: string | null;
         };
+        /** MessageCreate */
+        MessageCreate: {
+            /** Client Message Id */
+            client_message_id: string;
+            /** Body */
+            body: string;
+        };
+        /** MessageListResponse */
+        MessageListResponse: {
+            /** Items */
+            items: components["schemas"]["MessageResponse"][];
+            /** Total */
+            total?: null;
+            /** Cursor */
+            cursor: Record<string, never>;
+        };
+        /** MessageResponse */
+        MessageResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Room Id
+             * Format: uuid
+             */
+            room_id: string;
+            /** Sequence */
+            sequence: number;
+            /** Sender Participant Id */
+            sender_participant_id: string | null;
+            /** Message Type */
+            message_type: string;
+            /** Body */
+            body: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Deleted At */
+            deleted_at: string | null;
+            /** Deleted */
+            deleted: boolean;
+            /** Tombstone */
+            tombstone?: string | null;
+            /** Service Code */
+            service_code?: string | null;
+            /** Service Payload Version */
+            service_payload_version?: number | null;
+            /** Service Payload */
+            service_payload?: Record<string, never> | null;
+        };
         /** MissionCloneRequest */
         MissionCloneRequest: {
             /** Source Player Id */
@@ -2266,6 +2478,42 @@ export interface components {
              */
             created_at: string;
         };
+        /** ParticipantCreate */
+        ParticipantCreate: {
+            /** Family Membership Id */
+            family_membership_id: number;
+            /**
+             * Room Role
+             * @default member
+             * @enum {string}
+             */
+            room_role: "room_admin" | "member";
+        };
+        /** ParticipantResponse */
+        ParticipantResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Family Membership Id */
+            family_membership_id: number;
+            /** Room Role */
+            room_role: string;
+            /** Status */
+            status: string;
+            /** Joined Sequence */
+            joined_sequence: number;
+            /** Left Sequence */
+            left_sequence: number | null;
+            /**
+             * Joined At
+             * Format: date-time
+             */
+            joined_at: string;
+            /** Left At */
+            left_at: string | null;
+        };
         /** PlayerCreate */
         PlayerCreate: {
             /** Name */
@@ -2387,6 +2635,28 @@ export interface components {
             /** Label */
             label: string;
         };
+        /** ReadStateResponse */
+        ReadStateResponse: {
+            /**
+             * Participant Id
+             * Format: uuid
+             */
+            participant_id: string;
+            /** Last Read Sequence */
+            last_read_sequence: number;
+            /** Unread Count */
+            unread_count: number;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ReadStateUpdate */
+        ReadStateUpdate: {
+            /** Last Read Sequence */
+            last_read_sequence: number;
+        };
         /** RoleAssignmentCreate */
         RoleAssignmentCreate: {
             /** Role Code */
@@ -2415,6 +2685,80 @@ export interface components {
             scope_type: string;
             /** Service Code */
             service_code?: string | null;
+        };
+        /** RoomCreate */
+        RoomCreate: {
+            /**
+             * Room Type
+             * @enum {string}
+             */
+            room_type: "DIRECT" | "GROUP" | "SERVICE";
+            /** Title */
+            title?: string | null;
+            /** Target Membership Id */
+            target_membership_id?: number | null;
+            /** Participant Membership Ids */
+            participant_membership_ids?: number[];
+        };
+        /** RoomResponse */
+        RoomResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Room Type */
+            room_type: string;
+            /** Title */
+            title: string | null;
+            /** Status */
+            status: string;
+            /** Next Message Sequence */
+            next_message_sequence: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** RoomUpdate */
+        RoomUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Status */
+            status?: ("active" | "read_only" | "closed") | null;
+        };
+        /**
+         * ServiceActionPublish
+         * @description The only shape a Service Principal may submit. There is no client-set
+         *     family_id, sender, sequence, Principal id, or free-form executable payload
+         *     - family_id comes from the URL like every other Doran endpoint, and only
+         *     an allow-listed action type/version plus a small display snapshot may be
+         *     submitted here.
+         */
+        ServiceActionPublish: {
+            /**
+             * Room Id
+             * Format: uuid
+             */
+            room_id: string;
+            /** Action Type */
+            action_type: string;
+            /** Schema Version */
+            schema_version: number;
+            /** Source */
+            source: string;
+            /** Source Event Id */
+            source_event_id: string;
+            /** Snapshot */
+            snapshot?: Record<string, never>;
         };
         /** ServiceSubscriptionCreate */
         ServiceSubscriptionCreate: {
@@ -5652,6 +5996,481 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SubscriptionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_rooms_api_families__family_id__doran_rooms_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_room_api_families__family_id__doran_rooms_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoomCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_room_api_families__family_id__doran_rooms__room_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patch_room_api_families__family_id__doran_rooms__room_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoomUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    participants_api_families__family_id__doran_rooms__room_id__participants_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParticipantResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_participant_api_families__family_id__doran_rooms__room_id__participants_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ParticipantCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParticipantResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_participant_api_families__family_id__doran_rooms__room_id__participants__participant_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+                participant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParticipantResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    leave_api_families__family_id__doran_rooms__room_id__leave_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParticipantResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    messages_api_families__family_id__doran_rooms__room_id__messages_get: {
+        parameters: {
+            query?: {
+                after_sequence?: number | null;
+                before_sequence?: number | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    send_api_families__family_id__doran_rooms__room_id__messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_message_api_families__family_id__doran_rooms__room_id__messages__message_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+                message_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_read_state_api_families__family_id__doran_rooms__room_id__read_state_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadStateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    put_read_state_api_families__family_id__doran_rooms__room_id__read_state_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReadStateUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadStateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_service_action_api_families__family_id__doran_service_actions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceActionPublish"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
                 };
             };
             /** @description Validation Error */

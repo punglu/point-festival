@@ -97,6 +97,9 @@ class DoranMessage(Base):
     service_code = Column(String(50), nullable=True)
     service_payload_version = Column(Integer, nullable=True)
     service_payload = Column(JSONB, nullable=True)
+    service_principal_id = Column(Integer, ForeignKey("service_principals.id", ondelete="RESTRICT"), nullable=True)
+    source = Column(String(100), nullable=True)
+    source_event_id = Column(String(128), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
     deleted_by_account_id = Column(Integer, ForeignKey("accounts.id", ondelete="RESTRICT"), nullable=True)
@@ -106,6 +109,15 @@ class DoranMessage(Base):
         UniqueConstraint("sender_participant_id", "room_id", "client_message_id", name="uq_doran_messages_sender_client"),
         CheckConstraint("message_type IN ('TEXT', 'SYSTEM', 'SERVICE_ACTION')", name="ck_doran_messages_type"),
         CheckConstraint("(message_type = 'TEXT' AND body IS NOT NULL AND length(body) BETWEEN 1 AND 4000) OR message_type <> 'TEXT'", name="ck_doran_messages_text_body"),
+        # A Service Principal must never be attributable as a human sender, and a
+        # human/system message must never carry a Service Principal identity -
+        # this is the DB-level backstop for "service cannot impersonate a user".
+        CheckConstraint(
+            "(message_type = 'SERVICE_ACTION' AND service_principal_id IS NOT NULL AND sender_participant_id IS NULL "
+            "AND service_code IS NOT NULL AND source IS NOT NULL AND source_event_id IS NOT NULL) "
+            "OR (message_type <> 'SERVICE_ACTION' AND service_principal_id IS NULL AND source IS NULL AND source_event_id IS NULL)",
+            name="ck_doran_messages_service_actor",
+        ),
     )
 
 
@@ -117,4 +129,73 @@ class DoranParticipantReadState(Base):
     __table_args__ = (CheckConstraint("last_read_sequence >= 0", name="ck_doran_read_state_nonnegative"),)
 
 
+class ServicePrincipal(Base, TimestampMixin):
+    """An Attached Service's own identity - never a user Account, never a JWT.
+
+    Only ``credential_hash`` is persisted; the plaintext secret is returned to
+    the caller exactly once at issuance and is not recoverable afterward.
+    """
+    __tablename__ = "service_principals"
+    id = Column(Integer, primary_key=True)
+    service_code = Column(String(50), nullable=False)
+    display_name = Column(String(100), nullable=False)
+    credential_id = Column(String(64), nullable=False, unique=True)
+    credential_hash = Column(String(255), nullable=False)
+    status = Column(String(20), nullable=False, server_default="active")
+    revoked_at = Column(DateTime(timezone=True), nullable=True)
+    __table_args__ = (CheckConstraint("status IN ('active', 'revoked')", name="ck_service_principals_status"),)
+
+
+class DoranServiceBinding(Base, TimestampMixin):
+    """The only source of Service-publish authority: a Principal is bound to
+    exactly one Room in one Family with an explicit action allowlist. Family
+    service subscription, Room admin, and this Binding are evaluated together
+    and none of the three substitutes for another."""
+    __tablename__ = "doran_service_bindings"
+    id = Column(Integer, primary_key=True)
+    service_principal_id = Column(Integer, ForeignKey("service_principals.id", ondelete="RESTRICT"), nullable=False)
+    family_group_id = Column(Integer, ForeignKey("family_groups.id", ondelete="RESTRICT"), nullable=False)
+    room_id = Column(UUID(as_uuid=True), nullable=False)
+    allowed_actions = Column(JSONB, nullable=False)
+    status = Column(String(20), nullable=False, server_default="active")
+    __table_args__ = (
+        ForeignKeyConstraint(["room_id", "family_group_id"], ["doran_rooms.id", "doran_rooms.family_group_id"], ondelete="RESTRICT"),
+        UniqueConstraint("service_principal_id", "room_id", name="uq_doran_service_binding_principal_room"),
+        CheckConstraint("status IN ('active', 'inactive')", name="ck_doran_service_bindings_status"),
+    )
+
+
+class DoranServiceAuditLog(Base):
+    """Minimal audit trail: identifiers and a result code only - never a
+    credential, token, message body, or full Action payload. family_group_id
+    and room_id are intentionally NOT foreign keys, so a denied attempt against
+    a nonexistent/foreign Family or Room can still be recorded."""
+    __tablename__ = "doran_service_audit_log"
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    event_type = Column(String(40), nullable=False)
+    service_principal_id = Column(Integer, ForeignKey("service_principals.id", ondelete="RESTRICT"), nullable=True)
+    family_group_id = Column(Integer, nullable=True)
+    room_id = Column(UUID(as_uuid=True), nullable=True)
+    result_code = Column(String(20), nullable=False)
+    detail = Column(String(200), nullable=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    __table_args__ = (
+        CheckConstraint(
+            "event_type IN ('principal_created','principal_revoked','binding_created','binding_activated',"
+            "'binding_deactivated','publish_success','replay_detected','permission_denied','schema_denied')",
+            name="ck_doran_service_audit_event_type",
+        ),
+    )
+
+
 Index("ix_doran_messages_room_sequence", DoranMessage.room_id, DoranMessage.sequence)
+Index(
+    "uq_doran_messages_service_idempotency",
+    DoranMessage.service_principal_id,
+    DoranMessage.source,
+    DoranMessage.source_event_id,
+    unique=True,
+    postgresql_where=DoranMessage.message_type == "SERVICE_ACTION",
+)
+Index("ix_doran_service_bindings_principal", DoranServiceBinding.service_principal_id)
+Index("ix_doran_service_audit_log_principal_created", DoranServiceAuditLog.service_principal_id, DoranServiceAuditLog.created_at)

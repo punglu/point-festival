@@ -222,6 +222,49 @@ async def run_concurrent(factories: list[Callable[[], Awaitable]]) -> list:
     return await asyncio.gather(*tasks, return_exceptions=True)
 
 
+from app.domains.doran import service as doran_service  # noqa: E402
+
+
+def service_headers(credential_id: str, secret: str) -> dict:
+    return {"Authorization": f"Bearer {credential_id}.{secret}"}
+
+
+@dataclass
+class ServiceActor:
+    principal_id: int
+    credential_id: str
+    secret: str
+    headers: dict
+    binding_id: int
+    room_id: object
+
+
+async def create_service_actor(
+    db,
+    family_id: int,
+    *,
+    service_code: str = "mission",
+    name: str = "mission-service",
+    allowed_actions: list[dict] | None = None,
+) -> ServiceActor:
+    """Issues a Service Principal and binds it to a brand-new SERVICE Room in
+    the given Family, matching create_service_binding()'s Room-per-Binding
+    design. Returns everything a test needs to authenticate and to know which
+    Room it may publish into."""
+    if allowed_actions is None:
+        allowed_actions = [{"action_type": "mission_approved", "schema_version": 1}]
+    principal, secret = await doran_service.create_service_principal(db, service_code, name)
+    binding, room = await doran_service.create_service_binding(db, principal.id, family_id, allowed_actions)
+    return ServiceActor(
+        principal_id=principal.id,
+        credential_id=principal.credential_id,
+        secret=secret,
+        headers=service_headers(principal.credential_id, secret),
+        binding_id=binding.id,
+        room_id=room.id,
+    )
+
+
 @pytest_asyncio.fixture
 async def family_env(db, client):
     """One family, two linked actors: `admin` (Doran room_admin service role,
@@ -238,3 +281,12 @@ async def family_env(db, client):
         "client": client,
         "db": db,
     }
+
+
+@pytest_asyncio.fixture
+async def service_env(family_env):
+    """family_env plus one active Service Principal bound to a fresh SERVICE
+    Room in that Family, allow-listing the 'mission_approved' v1 action."""
+    actor = await create_service_actor(family_env["db"], family_env["family_id"])
+    family_env["service"] = actor
+    return family_env
