@@ -39,9 +39,135 @@ async def _outbox_rows(db, family_id: int | None = None) -> list:
     return list((await db.execute(stmt, params)).mappings().all())
 
 
+async def _concurrent(coroutines):
+    """Run each business operation in its own real PostgreSQL session."""
+    return await run_concurrent(coroutines)
+
+
+async def _complete_in_own_session(mission_id: int):
+    async with AsyncSessionLocal() as session:
+        try:
+            result = await mission_service.update_mission_status(session, mission_id, "completed", role="admin")
+            return ("completed", result.status)
+        except Exception as exc:
+            await session.rollback()
+            return ("rejected", getattr(exc, "status_code", type(exc).__name__))
+
+
 # ---------------------------------------------------------------------------
 # Outbox 1-10
 # ---------------------------------------------------------------------------
+
+async def test_outbox_00_same_mission_eight_concurrent_completions_are_serialized(family_env):
+    """A Mission lock must allow one completion and reject stale followers.
+
+    This is deliberately separate sessions over real PostgreSQL: a shared
+    AsyncSession would not exercise row-lock serialization.
+    """
+    db, member, family_id = family_env["db"], family_env["member"], family_env["family_id"]
+    mission = Mission(player_id=member.player_id, date=date.today(), text="eight-complete", point=41, status="active")
+    db.add(mission)
+    await db.commit()
+
+    results = await _concurrent([lambda: _complete_in_own_session(mission.id) for _ in range(8)])
+    assert [result[0] for result in results].count("completed") == 1, results
+    assert [result[1] for result in results if result[0] == "rejected"] == [400] * 7
+
+    row = (
+        await db.execute(
+            text(
+                "SELECT m.status, dp.earned, p.total_earned, "
+                "(SELECT count(*) FROM service_outbox_events WHERE aggregate_id = m.id::text) "
+                "FROM missions m JOIN players p ON p.id = m.player_id "
+                "JOIN daily_points dp ON dp.player_id = m.player_id AND dp.date = m.date WHERE m.id = :id"
+            ),
+            {"id": mission.id},
+        )
+    ).one()
+    assert row == ("completed", 41, 41, 1)
+
+    delivered = await worker.run_once(db)
+    assert delivered["published"] == 1
+    message_count = (
+        await db.execute(
+            text(
+                "SELECT count(*) FROM doran_messages dm JOIN service_outbox_events o "
+                "ON o.source_event_id = dm.source_event_id WHERE o.aggregate_id = :id"
+            ),
+            {"id": str(mission.id)},
+        )
+    ).scalar_one()
+    assert message_count == 1
+
+
+async def test_outbox_00_same_mission_eight_concurrent_reverts_are_serialized(family_env):
+    db, member = family_env["db"], family_env["member"]
+    mission = await _complete_mission(db, member.player_id, point=43, text_="eight-revert")
+
+    async def revert_in_own_session():
+        async with AsyncSessionLocal() as session:
+            try:
+                result = await mission_service.admin_revert_mission(session, mission.id)
+                await session.commit()
+                return ("reverted", result.status)
+            except Exception as exc:
+                await session.rollback()
+                return ("rejected", getattr(exc, "status_code", type(exc).__name__))
+
+    results = await _concurrent([revert_in_own_session for _ in range(8)])
+    assert [result[0] for result in results].count("reverted") == 1, results
+    assert [result[1] for result in results if result[0] == "rejected"] == [404] * 7
+    row = (
+        await db.execute(
+            text(
+                "SELECT m.status, dp.earned, p.total_earned FROM missions m "
+                "JOIN players p ON p.id = m.player_id JOIN daily_points dp "
+                "ON dp.player_id = m.player_id AND dp.date = m.date WHERE m.id = :id"
+            ),
+            {"id": mission.id},
+        )
+    ).one()
+    assert row == ("active", 0, 0)
+
+
+async def test_outbox_00_concurrent_bulk_approval_counts_locked_pending_rows_once(family_env):
+    db, member = family_env["db"], family_env["member"]
+    points = [7, 11, 13]
+    for point in points:
+        db.add(Mission(player_id=member.player_id, date=date.today(), text=f"bulk-{point}", point=point, status="pending_approval"))
+    await db.commit()
+
+    async def approve_in_own_session():
+        async with AsyncSessionLocal() as session:
+            count = await mission_service.bulk_approve_missions(session, member.player_id, str(date.today()))
+            await session.commit()
+            return count
+
+    results = await _concurrent([approve_in_own_session, approve_in_own_session])
+    assert sorted(results) == [0, 3]
+    total = (await db.execute(text("SELECT total_earned FROM players WHERE id = :id"), {"id": member.player_id})).scalar_one()
+    completed = (await db.execute(text("SELECT count(*) FROM missions WHERE player_id = :id AND status = 'completed'"), {"id": member.player_id})).scalar_one()
+    outbox = (await db.execute(text("SELECT count(*) FROM service_outbox_events"))).scalar_one()
+    assert (total, completed, outbox) == (sum(points), 3, 0)
+
+
+async def test_outbox_00_recompletion_has_two_distinct_occurrence_events(family_env):
+    db, member, family_id = family_env["db"], family_env["member"], family_env["family_id"]
+    mission = Mission(player_id=member.player_id, date=date.today(), text="recomplete", point=29, status="active")
+    db.add(mission)
+    await db.commit()
+    await mission_service.update_mission_status(db, mission.id, "completed", role="admin")
+    await mission_service.admin_revert_mission(db, mission.id)
+    await db.commit()
+    await mission_service.update_mission_status(db, mission.id, "completed", role="admin")
+
+    rows = await _outbox_rows(db, family_id)
+    assert len(rows) == 2
+    assert len({row["source_event_id"] for row in rows}) == 2
+    assert (await db.execute(text("SELECT total_earned FROM players WHERE id = :id"), {"id": member.player_id})).scalar_one() == 29
+    delivered = await worker.run_once(db)
+    assert delivered["published"] == 2
+    assert (await db.execute(text("SELECT count(*) FROM doran_messages WHERE family_group_id = :id"), {"id": family_id})).scalar_one() == 2
 
 async def test_outbox_01_business_success_creates_one_row(family_env):
     db, member = family_env["db"], family_env["member"]

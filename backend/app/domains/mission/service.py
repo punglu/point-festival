@@ -211,14 +211,17 @@ async def admin_revert_mission(db: AsyncSession, mission_id: int) -> MissionResp
     from app.domains.daily_point.service import adjust_daily_point
     from app.domains.daily_point.schema import DailyPointAdjust
 
+    # Serialize the status check and the compensating point write.  Filtering
+    # by status in SQL would let a waiting concurrent caller observe no row
+    # without first taking the Mission lock; inspect the freshly locked row
+    # instead so exactly one revert may apply its negative point delta.
     stmt = select(Mission).where(
         Mission.id == mission_id,
-        Mission.status == "completed",
         Mission.deleted_at.is_(None),
-    )
+    ).with_for_update()
     result = await db.execute(stmt)
     mission = result.scalar_one_or_none()
-    if not mission:
+    if not mission or mission.status != "completed":
         raise HTTPException(status_code=404, detail="완료된 미션을 찾을 수 없습니다")
 
     now_utc = datetime.now(timezone.utc)
@@ -342,6 +345,10 @@ async def _emit_mission_completed_event(db: AsyncSession, mission: Mission) -> N
         "completed_at": occurred_at.isoformat(),
     }
     for membership in memberships:
+        # This identifies one completed occurrence, not a Mission forever:
+        # after an authorized revert/reactivation, a later completion must
+        # produce a distinct event.  Mission-row serialization prevents a
+        # concurrent duplicate occurrence from reaching this point.
         source_event_id = f"mission-completed:{mission.id}:{membership.family_group_id}:{occurred_at.isoformat()}"
         await outbox_service.enqueue_event(
             db,
@@ -399,7 +406,14 @@ async def update_mission(
     -- UPDATE missions SET text = :text, point = :point, status = :status, ...
     -- WHERE id = :id AND deleted_at IS NULL;
     """
-    stmt = select(Mission).where(Mission.id == mission_id, Mission.deleted_at.is_(None))
+    # Point changes and Outbox enqueueing are derived from the previous status.
+    # Lock the Mission before reading it so a concurrent transition waits, then
+    # validates against the committed latest status rather than a stale value.
+    stmt = (
+        select(Mission)
+        .where(Mission.id == mission_id, Mission.deleted_at.is_(None))
+        .with_for_update()
+    )
     result = await db.execute(stmt)
     mission = result.scalar_one_or_none()
     if not mission:
@@ -696,39 +710,33 @@ async def bulk_approve_missions(db: AsyncSession, player_id: int, date_str: str)
     --   WHERE player_id = :pid AND date = :date AND status = 'pending_approval' AND deleted_at IS NULL;
     -- UPDATE players SET total_earned = total_earned + :sum_points WHERE id = :pid;
     """
-    from sqlalchemy import func as sql_func
     from datetime import datetime as dt_class
 
     target_date = dt_class.strptime(date_str, "%Y-%m-%d").date()
 
-    # 1) 승인 대상 포인트 합계 조회
-    sum_stmt = select(sql_func.coalesce(sql_func.sum(Mission.point), 0)).where(
+    # Lock the actual pending rows first.  A concurrent bulk approval waits
+    # here, then sees no remaining pending rows and therefore cannot apply the
+    # already-consumed point total a second time.
+    pending_stmt = select(Mission).where(
         Mission.player_id == player_id,
         Mission.date == target_date,
         Mission.status == "pending_approval",
         Mission.deleted_at.is_(None),
-    )
-    sum_result = await db.execute(sum_stmt)
-    total_points = int(sum_result.scalar())
+    ).with_for_update()
+    pending = list((await db.execute(pending_stmt)).scalars())
+    total_points = sum(mission.point for mission in pending)
 
-    # 2) 일괄 상태 변경
-    stmt = (
-        sql_update(Mission)
-        .where(
-            Mission.player_id == player_id,
-            Mission.date == target_date,
-            Mission.status == "pending_approval",
-            Mission.deleted_at.is_(None),
-        )
-        .values(status="completed", updated_at=datetime.now(timezone.utc))
-    )
-    result = await db.execute(stmt)
+    # Keep the existing bulk-event policy: no Doran Outbox event is emitted.
+    now_utc = datetime.now(timezone.utc)
+    for mission in pending:
+        mission.status = "completed"
+        mission.updated_at = now_utc
 
     # 3) total_earned 동기화
     if total_points > 0:
         await _sync_total_earned(db, player_id, total_points)
 
-    return result.rowcount
+    return len(pending)
 
 
 async def get_cycle_mission_progress(db: AsyncSession, date_from: date, date_to: date) -> dict:
