@@ -43,3 +43,30 @@ itself QA PASS or update graduated history.
 Verify all accepted empty aliases, exact missing/self/index warnings, FIX-001
 supplement accuracy, Drive metadata/read-back, and preservation of pre-existing
 dirty changes.
+
+## Post-QA Metadata Supplement
+
+- Supplemented By Task: `AGENT-SYSTEM-V0.1-FIX-003`
+- Supplement Reason: Independent QA `AGENT-SYSTEM-V0.1-QA-003` found that the
+  original handoff lacked explicit end HEAD, final commit, and changed-files
+  metadata.
+- Branch: `dev`
+- Start HEAD: `f7a66b2b91c1d78fcefcd4b65484a240b316f270`
+- End HEAD: `a2979706fb86237cdba3978accb0fe84d55f2f40`
+- Final Commit: `a2979706fb86237cdba3978accb0fe84d55f2f40`
+- Changed Files (measured with `git show --name-only --format= a297970`):
+  - `agent-system/active.md`
+  - `agent-system/handoffs/active/AGENT-SYSTEM-V0.1-FIX-001.md`
+  - `agent-system/handoffs/active/AGENT-SYSTEM-V0.1-FIX-002.md`
+  - `agent-system/qa/AGENT-SYSTEM-V0.1-FIX-002.md`
+  - `agent-system/relay/current.md`
+  - `agent-system/rules.md`
+  - `agent-system/templates/decision.md`
+  - `agent-system/tools/check_decision_ids.py`
+- Independent QA: `AGENT-SYSTEM-V0.1-QA-003`
+- QA Verdict: `QA COMPLETE / CONDITIONAL`
+- Remaining Issue: Local handoff metadata was incomplete; this supplement
+  supplies the missing measured metadata only.
+- Historical Integrity: The original FIX-002 handoff text above is retained.
+  This section is a post-QA record added after implementation by FIX-003; it
+  does not represent a contemporaneous original implementation record.
