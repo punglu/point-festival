@@ -68,3 +68,18 @@ unreachable for some malformed artifacts. No checker change is included here.
 
 Closeout Gate PASS is documentation synchronization only. Independent QA is
 pending and this evidence makes no final PASS claim.
+
+## Post-QA Coverage Ref Correction
+
+- Correction Task: `CLOSEOUT-COVERAGE-REF-FIX-001`
+- QA Finding: `CLOSEOUT-REGRESSION-FIXTURE-PERSISTENCE-QA-001` identified an
+  invalid Git Ref in `AGENT-CLOSEOUT-003`.
+- Original Git Ref: invalid non-object value recorded in `AGENT-CLOSEOUT-003`
+- Corrected Git Ref: `e1ee71061606a20b94d175caeef2ed06386c7381`
+- Verification: the original value is not a Git object; the corrected value is
+  a `commit` containing the `agent-system/tests/test_check_closeout.py`
+  permanent-regression implementation.
+- Historical Integrity: the original implementation evidence is retained; this
+  append-only section records the later independent-QA correction.
+- Independent QA: `pending`
+- CLOSEOUT RESTART: `HOLD`
