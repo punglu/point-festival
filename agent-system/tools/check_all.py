@@ -10,7 +10,7 @@ HERE = Path(__file__).resolve().parent
 
 
 def main() -> int:
-    for name in ("check_active.py", "check_handoff_refs.py", "check_decision_ids.py"):
+    for name in ("check_active.py", "check_handoff_refs.py", "check_decision_ids.py", "check_closeout.py"):
         print(f"== {name} ==", flush=True)
         subprocess.run([sys.executable, str(HERE / name)], check=False)
     print("INFO report-only mode complete; exit code remains 0 by design")

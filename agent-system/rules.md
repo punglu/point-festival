@@ -53,6 +53,33 @@ Keep these axes separate:
   change common SSOT or make a final completion decision.
 - `docs/` remains user-managed and outside this system.
 
+## Mandatory closeout synchronization (Closeout Contract v1)
+
+New tasks must declare `Closeout Contract: v1` and, before their normal end
+report, record a Closeout Synchronization block in the task handoff. The block
+must review `ACTIVE`, `HANDOFF`, `QA EVIDENCE`, and `COVERAGE MAP`. Existing
+historical tasks are not retroactively rewritten; an existing open task adopts
+the contract on its next modification.
+
+- `ACTIVE`, `HANDOFF`, and `QA EVIDENCE` must be `UPDATED` for a normal
+  closeout report and point to the current task-specific records.
+- `COVERAGE MAP` is reviewed for every task. It is `UPDATED` when a test path,
+  behavior, tier, journey, execution evidence, known gap, environment status,
+  or Agent System static check changes. Otherwise it is
+  `NO_CHANGE_REQUIRED` with a non-empty, specific reason; do not touch the map
+  merely to satisfy the contract.
+- A `BLOCKED` area makes `CLOSEOUT GATE` `BLOCKED`. A `PASS` gate is invalid
+  unless ACTIVE, HANDOFF, and QA EVIDENCE are all `UPDATED`.
+- `CLOSEOUT GATE: PASS` means only that the four documentation obligations are
+  synchronized. It does not mean `Lifecycle: COMPLETED`, independent QA PASS,
+  PM approval, graduation, or push approval. An implementation task may retain
+  `Verification: NOT_TESTED` and `QA_PENDING`; the implementer's self-check
+  never substitutes for independent QA.
+
+The report-only `agent-system/tools/check_closeout.py` checks v1 task records.
+Its warnings are evidence for correction, not an automatic state transition or
+blocking CI gate. Keep Coverage Map entries bottom-up and source-backed.
+
 ## Document grades
 
 | Grade | Location | Rule |

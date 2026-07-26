@@ -54,3 +54,19 @@ are separate axes.
 - Phase note: `IMPLEMENTED / QA_PENDING`
 - Handoff: `agent-system/handoffs/active/AGENT-SYSTEM-V0.1-FIX-003.md`
 - Declared scope: `FIX-002 local handoff metadata supplement and FIX-003 active/relay/handoff/QA evidence only`
+
+## CLOSEOUT-GATE-001
+
+- Task ID: `CLOSEOUT-GATE-001`
+- Lifecycle: `IN_PROGRESS`
+- Decision: `DESIGN_APPROVED`
+- Verification: `NOT_TESTED`
+- Execution: `SUCCEEDED`
+- Closeout Contract: `v1`
+- Implementer: `Codex /root`
+- QA: `independent Codex pending`
+- Phase note: `IMPLEMENTED / QA_PENDING`
+- Handoff: `agent-system/handoffs/active/CLOSEOUT-GATE-001.md`
+- QA Evidence: `agent-system/qa/CLOSEOUT-GATE-001.md`
+- Next action: `Independent Codex QA of contract, checker fixtures, Coverage Map, Drive read-back, and dirty-state preservation`
+- Declared scope: `Agent System closeout contract, report-only checker, templates, Decision, Coverage Map, and task evidence only`

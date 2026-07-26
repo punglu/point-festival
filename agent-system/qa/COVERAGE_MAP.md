@@ -15,6 +15,7 @@ This map is an index, not a backlog.
 | `E2E-MISSION-001` | Logged-in mission list and proposal control visibility | `TIER 3 JOURNEY` | `tests/e2e/specs/02-mission.spec.ts` | `SOURCE_VERIFIED` | `NOT_RUN_IN_THIS_TASK` | `e2a6f08` | Docker-backed runtime and credentials not run. |
 | `E2E-ADMIN-001` | Admin entry form and post-login route | `TIER 3 JOURNEY` | `tests/e2e/specs/03-admin.spec.ts` | `SOURCE_VERIFIED` | `NOT_RUN_IN_THIS_TASK` | `e2a6f08` | Docker-backed runtime and credentials not run. |
 | `E2E-FLOW-001` | Player logout and administrator access workflow | `TIER 3 JOURNEY` | `tests/e2e/specs/04-flow.spec.ts` | `SOURCE_VERIFIED` | `NOT_RUN_IN_THIS_TASK` | `e2a6f08` | Docker-backed runtime and credentials not run. |
+| `AGENT-CLOSEOUT-001` | Detect missing or inconsistent mandatory Task closeout synchronization | `TIER 0 STATIC` | `agent-system/tools/check_closeout.py` | `SELF_CHECKED` | `2026-07-26` | `PENDING_IMPLEMENTATION_COMMIT` | Independent QA pending; report-only checker does not transition task state. |
 
 Add rows bottom-up when a real test is added or verified. Keep per-task commands
 and raw results in Task QA evidence, not here.

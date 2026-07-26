@@ -33,5 +33,8 @@ QA policy, Coverage Map, and Task QA evidence are respectively located at
 - Do not place credentials, tokens, personal data, or raw secret-bearing logs in
   repository or Drive artifacts.
 - The PM performs `git push`. Agents may commit only when the task authorizes it.
+- Before ending any task, complete mandatory closeout synchronization for active,
+  handoff, QA evidence, and Coverage Map. A task cannot report completion when
+  its Closeout Contract is missing or blocked.
 
 Detailed rules: `agent-system/rules.md`.
