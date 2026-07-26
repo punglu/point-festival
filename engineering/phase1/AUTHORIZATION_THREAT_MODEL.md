@@ -1,6 +1,6 @@
 # Authorization Threat Model: Account, Family, and RBAC
 
-**Status: TARGET CONTRACT / PM_REVIEW_REQUIRED (2026-07-26)**
+**Status: APPROVED FOUNDATION THREAT MODEL / v0.1 (2026-07-26)**
 
 | Threat | Backend control | Required Foundation evidence |
 | --- | --- | --- |

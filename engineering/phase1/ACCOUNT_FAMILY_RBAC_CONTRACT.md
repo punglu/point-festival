@@ -1,6 +1,6 @@
 # Account, Family, and Multirole RBAC Contract
 
-**Status: TARGET CONTRACT / PM_REVIEW_REQUIRED (2026-07-26)**
+**Status: APPROVED DECISIONS / v0.1 (2026-07-26)**
 **Authority:** PM decision `PM-DECISION-RBAC-MULTIROLE-001` (Drive ID
 `12J43Bd7BEdxPxLupJv9vsQlKf133kWicaka8tkLKVO4`), directly reviewed for
 this contract. Git remains the implementation SSOT.
@@ -11,6 +11,20 @@ This is the target authorization contract for the Naran platform. It is not an
 implemented schema, migration, JWT payload, API change, or retrofit of the
 contained MarkPoint application. The current MarkPoint implementation remains
 **LEGACY REFERENCE / NOT FULLY VALIDATED**.
+
+## Approved Foundation decisions
+
+1. Multiple active Owners are allowed; each Family keeps at least one active
+   Owner, and Owner is a Membership Role rather than a `family_groups.owner_id`.
+2. `roles` is a unified registry with `scope_type` (`FAMILY` or `SERVICE`) and
+   nullable `service_code`; its scoped code is unique.
+3. Family-scoped APIs use `/api/families/{family_id}/...`; JWT identifies only
+   the Account, and server-side Membership/resource checks establish authority.
+4. v1 uses Role-Permission unions only. Explicit grants and denies are absent;
+   default deny applies.
+5. Legacy bootstrap creates one reviewed Family candidate per installation only
+   with an explicit Owner mapping. Relationships default to `unknown`/`other`,
+   and identity ambiguity blocks operating activation.
 
 The contract separates four things that are currently conflated in legacy code:
 

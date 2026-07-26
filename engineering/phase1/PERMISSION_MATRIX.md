@@ -1,6 +1,6 @@
 # Phase 1 Permission Matrix
 
-**Status: TARGET CONTRACT / PM_REVIEW_REQUIRED (2026-07-26)**
+**Status: APPROVED FOUNDATION REGISTRY / v0.1 (2026-07-26)**
 
 This is a minimum registry, not a preallocation of every future permission.
 `ALLOW` means an explicit permission bundle is expected; `OWN_ONLY` means the

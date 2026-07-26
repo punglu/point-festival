@@ -1,8 +1,8 @@
 # Account, Family, and RBAC Target Data Model
 
-**Status: TARGET CONTRACT / PM_REVIEW_REQUIRED (2026-07-26)**
-**Implementation status:** no table, column, migration, or seed is created by
-this document.
+**Status: APPROVED FOUNDATION MODEL / v0.1 (2026-07-26)**
+**Implementation status:** implemented for isolated synthetic migration only;
+operating schema comparison, stamp, and mapping remain Human Gates.
 
 ## Model overview
 

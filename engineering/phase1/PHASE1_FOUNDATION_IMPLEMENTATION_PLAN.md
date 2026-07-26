@@ -1,6 +1,6 @@
 # Phase 1 Foundation Implementation Plan
 
-**Status: TARGET PLAN / PM_REVIEW_REQUIRED (2026-07-26)**
+**Status: APPROVED FOUNDATION PLAN / v0.1 (2026-07-26)**
 
 ## Work packages
 
@@ -52,12 +52,12 @@ non-mutation, and the mapping report.
    canonical.
 5. Legacy login/role removal is a later, separately approved change.
 
-## PM Gates (maximum five)
+## Applied PM decisions
 
 | Decision item | Options | Recommendation | Impact | Default if undecided |
 | --- | --- | --- | --- | --- |
-| Owner cardinality and transfer | exactly one owner; multiple owners with minimum one | allow multiple active owners, require at least one, atomic transfer/removal | schema constraints, governance UI, recovery | do not implement owner removal/transfer; retain owner-protected workflow |
-| Role scope storage | one scoped `roles` registry; split family/service role tables; unscoped roles | one `roles` table with explicit scope plus separate assignment paths | query, admin UI, migration complexity | implement family roles only; defer service-role assignment |
-| Family context transport | path; header; body/query; selected context server-side | explicit API context selected per request, server checks membership/resource; final wire location must be approved | API shape, frontend switcher, audit | no cross-family resource APIs; resolve only server-known default/context |
-| Explicit grants/denies in v1 | role-only; grants; grants + denies | role-to-permission plus service roles only | schema and policy complexity | default deny; no per-user exception rows |
-| Initial Family mapping | one legacy household; operator-selected grouping; invite/onboarding only | operator-reviewed mapping report; no automatic owner/relationship inference | migration timeline and user access | create no active Membership for ambiguous rows |
+| Owner cardinality and transfer | multiple active Owners; minimum one; atomic transfer/removal | applied | schema constraints, governance UI, recovery | last Owner removal is rejected |
+| Role scope storage | unified scoped `roles` registry plus assignment-path validation | applied | query, admin UI, migration complexity | service roles remain inactive without a subscription |
+| Family context transport | `/api/families/{family_id}/...` plus server Membership/resource checks | applied | API shape and frontend active-family selection | caller ID alone never authorizes |
+| Explicit grants/denies in v1 | Role-Permission union only | applied | no exception-row schema | default deny |
+| Initial Family mapping | reviewed bootstrap mapping with explicit Owner input | applied | migration timeline and user access | ambiguous identities remain unlinked |

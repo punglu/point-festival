@@ -1,6 +1,6 @@
 # Legacy Identity Mapping and Migration Plan
 
-**Status: TARGET CONTRACT / PM_REVIEW_REQUIRED (2026-07-26)**
+**Status: APPROVED FOUNDATION MAPPING DIRECTION / v0.1 (2026-07-26)**
 **Legacy source:** contained MarkPoint only; no operating database was accessed.
 
 ## Measured legacy identity surfaces
