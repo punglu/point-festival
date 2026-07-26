@@ -1,7 +1,7 @@
 # Current Relay
 
-Current Task: PHASE0-DEV-RUNTIME-RECOVERY-001
+Current Task: PHASE0-DEVELOPMENT-GUIDE-LOCALIZATION-001
 
-- Intended files: frontend/package.json, frontend/package-lock.json, frontend/eslint.config.js, docker-compose.phase0.yml, .env.phase0.example, tests/e2e/playwright.config.ts, agent-system/active.md, agent-system/relay/current.md, agent-system/handoffs/active/PHASE0-DEV-RUNTIME-RECOVERY-001.md, agent-system/qa/PHASE0-DEV-RUNTIME-RECOVERY-001.md, agent-system/qa/COVERAGE_MAP.md
-- Forbidden: product behavior, database schema/migrations, backend business logic, RBAC, outlook-hub containers/volumes, production resources, push
-- High-risk writer: this session only (Compose and common agent state)
+- Intended files: AGENTS.md, engineering/README.md, engineering/COMMON_NORMS.md, engineering/BACKEND_GUIDE.md, engineering/FRONTEND_GUIDE.md, engineering/TESTING_GUIDE.md, engineering/PROVENANCE_AND_PM_GATES.md, agent-system/active.md, agent-system/relay/current.md, agent-system/handoffs/active/PHASE0-DEVELOPMENT-GUIDE-LOCALIZATION-001.md, agent-system/qa/PHASE0-DEVELOPMENT-GUIDE-LOCALIZATION-001.md
+- Forbidden: Backend, Frontend, DB schema/migrations, tests, dependencies, Docker/Compose, production/NAS resources, dirty-state cleanup, push
+- High-risk writer: this session only (common agent state)

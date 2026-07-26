@@ -38,3 +38,5 @@ QA policy, Coverage Map, and Task QA evidence are respectively located at
   its Closeout Contract is missing or blocked.
 
 Detailed rules: `agent-system/rules.md`.
+
+Canonical development guides: [`engineering/README.md`](engineering/README.md).
