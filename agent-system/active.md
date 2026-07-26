@@ -3,6 +3,19 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
+## PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001
+
+- Task ID: PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED
+- Verification: NOT_TESTED
+- Execution: SUCCEEDED
+- Phase Note: IMPLEMENTED / PM_REVIEW_REQUIRED
+- Handoff: agent-system/handoffs/active/PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001.md
+- QA Evidence: agent-system/qa/PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001.md
+- Independent QA: not_applicable — contract design; Foundation implementation requires independent QA
+- Next Action: PM review of five bounded Phase 1 architecture gates before Foundation implementation
+
 ## PHASE0-LEGACY-CONTAINMENT-AND-REFERENCE-BASELINE-001
 
 - Task ID: PHASE0-LEGACY-CONTAINMENT-AND-REFERENCE-BASELINE-001
