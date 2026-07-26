@@ -6,8 +6,9 @@
 - observed_at: `2026-07-26T10:08:08+09:00`
 - Branch: `dev`
 - Start HEAD: `4edaf50a9d07557d6ca2fbc3a4d71cd400858f0c`
-- End HEAD: `PENDING_IMPLEMENTATION_COMMIT`
-- Final Commit: `PENDING_COVERAGE_METADATA_COMMIT`
+- End HEAD: `35ff2afac81d2886ba3d8797eb2d503ff280e40e` (parser implementation commit)
+- Final Commit: `PENDING_COVERAGE_METADATA_COMMIT` (reported after this
+  metadata-only commit; a commit cannot contain its own content-addressed ID)
 - Lifecycle: `IN_PROGRESS`
 - Decision: `DESIGN_APPROVED`
 - Verification: `NOT_TESTED`
