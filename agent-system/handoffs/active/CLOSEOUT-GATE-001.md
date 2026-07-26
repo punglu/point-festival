@@ -6,8 +6,9 @@
 - observed_at: `2026-07-26T10:00:00+09:00`
 - Branch: `dev`
 - Start HEAD: `452196f160321691a3a84f707c1854047d3820b9`
-- End HEAD: `PENDING_AUTHORIZED_COMMIT`
-- Final Commit: `PENDING_AUTHORIZED_COMMIT`
+- End HEAD: `7d31e99c25579cc2760c379f13a6361dc439cee2` (implementation commit)
+- Final Commit: `PENDING_METADATA_COMMIT` (the final metadata-only commit cannot
+  contain its own content-addressed ID; it is measured in the final report)
 - Lifecycle: `IN_PROGRESS`
 - Decision: `DESIGN_APPROVED`
 - Verification: `NOT_TESTED`
@@ -40,7 +41,33 @@
 
 ## Commands and Exit Codes
 
-- Required static checks and the 15 external fixtures: pending final measurement.
+- `python3 -m py_compile agent-system/tools/*.py`: exit `0`
+- `python3 agent-system/tools/check_closeout.py`: exit `0`, warnings `0` for this task.
+- `python3 agent-system/tools/check_active.py`: exit `0`
+- `python3 agent-system/tools/check_handoff_refs.py`: exit `0`
+- `python3 agent-system/tools/check_decision_ids.py`: exit `0`
+- `python3 agent-system/tools/check_all.py`: exit `0`
+- `git diff --check`: exit `0`
+- `git diff --cached --check`: exit `0`
+- 15 external `check_closeout.py` fixtures: all expected results matched; each exit `0`.
+
+| # | Fixture | Expected | Actual | Exit | Match |
+|---|---|---|---|---:|---|
+| 1 | Normal implementation QA_PENDING | no warning | no warning | 0 | yes |
+| 2 | Contract marker absent | contract warning | contract warning | 0 | yes |
+| 3 | Handoff absent | missing handoff warning | warning | 0 | yes |
+| 4 | QA evidence absent | missing QA evidence warning | warning | 0 | yes |
+| 5 | Coverage Map review absent | missing/invalid value warning | warning | 0 | yes |
+| 6 | NO_CHANGE_REQUIRED reason absent | empty-reason warning | warning | 0 | yes |
+| 7 | NO_CHANGE_REQUIRED with specific reason | no warning | no warning | 0 | yes |
+| 8 | Area BLOCKED with gate PASS | gate/blocked warning | warning | 0 | yes |
+| 9 | HANDOFF not UPDATED with gate PASS | gate/handoff warning | warning | 0 | yes |
+| 10 | QA EVIDENCE BLOCKED with gate PASS | gate/QA-evidence warning | warning | 0 | yes |
+| 11 | Task ID mismatch | Task-ID mismatch warning | warning | 0 | yes |
+| 12 | Invalid status | invalid-status warning | warning | 0 | yes |
+| 13 | Implementation QA_PENDING | gate PASS allowed; no warning | no warning | 0 | yes |
+| 14 | Independent QA valid verdict | no warning | no warning | 0 | yes |
+| 15 | Historical task without marker | no retroactive warning | no warning | 0 | yes |
 - Tests Run: report-only Agent System static checks and external checker fixtures.
 - Tests Not Run: product, runtime, API, Playwright, Docker, Firebase, migration, and dependency tests (forbidden scope).
 
@@ -56,12 +83,18 @@
 
 ## Drive Evidence
 
-- Pending authorized upload and read-back; Git repository is SSOT.
+- Implementation evidence: `15efawGa2MG2Pd6XVMjuklacrq9HRCjB_`
+- Implementation report: `1zn1hl8jlt0y8M7PmcNJ_W8bzUfKvw1M_`
+- Decision snapshot: `19ciezdmKc9iLC30K-w2tCVlGjVl4f4-X`
+- Coverage Map snapshot: `1e-uRH030yztSOYzwYRLA1zgR-Nh7pb7q`
+- Read-back: completed for all four new files; title, Task/Decision identity,
+  commit metadata, contract status, and source content matched. Git repository is SSOT.
 
 ## Coverage Map Review
 
 - Coverage Map Review: `UPDATED`
-- Reason: This task adds the `TIER 0 STATIC` closeout-contract checker. Its Coverage Map row uses an explicit pending implementation commit reference because a commit cannot contain its own content-addressed ID.
+- Reason: This task adds the `TIER 0 STATIC` closeout-contract checker. The
+  Coverage Map row records the measured implementation commit `7d31e99`.
 
 ## Next First Action
 

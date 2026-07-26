@@ -6,8 +6,9 @@
 - observed_at: `2026-07-26T10:00:00+09:00`
 - Branch: `dev`
 - Start HEAD: `452196f160321691a3a84f707c1854047d3820b9`
-- End HEAD: `PENDING_AUTHORIZED_COMMIT`
-- Final Commit: `PENDING_AUTHORIZED_COMMIT`
+- End HEAD: `7d31e99c25579cc2760c379f13a6361dc439cee2` (implementation commit)
+- Final Commit: `PENDING_METADATA_COMMIT` (measured in the final report after
+  the metadata-only commit)
 - Lifecycle: `IN_PROGRESS`
 - Verification: `NOT_TESTED`
 - Execution: `SUCCEEDED`
@@ -24,8 +25,17 @@ not award an independent QA verdict.
 
 ## Commands, exit codes, and results
 
-Pending final measurement: py_compile, individual report-only checks,
-check_all, whitespace checks, and 15 external fixtures.
+- `python3 -m py_compile agent-system/tools/*.py`: `0`
+- `check_closeout.py`, `check_active.py`, `check_handoff_refs.py`,
+  `check_decision_ids.py`, and `check_all.py`: each `0`
+- `git diff --check` and `git diff --cached --check`: each `0`
+- External fixture results: 15/15 expectation matches; every fixture exit `0`.
+
+| Fixtures | Expected/actual | Exit | Match |
+|---|---|---:|---|
+| 1 normal, 7 no-change with reason, 13 QA_PENDING, 14 independent verdict, 15 historical markerless | no warnings | 0 each | yes |
+| 2 missing contract, 3 missing handoff, 4 missing QA evidence, 5 missing map review, 6 empty map reason | required warnings | 0 each | yes |
+| 8 blocked/PASS, 9 handoff-not-updated/PASS, 10 QA-evidence-blocked/PASS, 11 Task-ID mismatch, 12 invalid status | required consistency warnings | 0 each | yes |
 
 ## Coverage Map review
 
@@ -34,7 +44,11 @@ check_all, whitespace checks, and 15 external fixtures.
 
 ## Drive Evidence
 
-Pending authorized upload/read-back. Git repository is SSOT.
+- Implementation evidence: `15efawGa2MG2Pd6XVMjuklacrq9HRCjB_`
+- Implementation report: `1zn1hl8jlt0y8M7PmcNJ_W8bzUfKvw1M_`
+- Decision snapshot: `19ciezdmKc9iLC30K-w2tCVlGjVl4f4-X`
+- Coverage Map snapshot: `1e-uRH030yztSOYzwYRLA1zgR-Nh7pb7q`
+- Read-back completed; Git repository is SSOT.
 
 ## Closeout review
 

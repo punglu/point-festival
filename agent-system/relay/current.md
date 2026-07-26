@@ -12,4 +12,4 @@ task stops; do not append history.
 - High-risk files: `agent-system/active.md`, `agent-system/relay/current.md` — single writer `Codex /root`
 - Forbidden files: `CLAUDE.md`, `backend/**`, `frontend/**`, `database/**`, `tests/**`, `docs/**`, `scripts/**`, compose/deploy files, `.gitignore`, product configuration, existing Drive artifacts, and unrelated existing dirty files
 - Handoff path: `agent-system/handoffs/active/CLOSEOUT-GATE-001.md`
-- State: `RUNNING / closeout contract implementation`
+- State: `IMPLEMENTED / QA_PENDING`

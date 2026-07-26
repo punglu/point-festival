@@ -5,7 +5,7 @@
 - Status: `DESIGN_APPROVED`
 - Created at: `2026-07-26`
 - Author: `PM-approved Task CLOSEOUT-GATE-001`
-- Git ref: `PENDING_IMPLEMENTATION_COMMIT`
+- Git ref: `7d31e99c25579cc2760c379f13a6361dc439cee2` (implementation commit)
 - Environment: `repository policy`
 - Evidence: `CLOSEOUT-GATE-001 implementation evidence and report-only static checker`
 - Supersedes: `DEC-2026-001-agent-system-v0.1`
