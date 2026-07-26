@@ -12,3 +12,7 @@ from app.domains.login_log.models import LoginLog        # noqa: F401
 from app.domains.mission_template.models import MissionTemplate  # noqa: F401
 from app.domains.chat.models import ChatMessage                  # noqa: F401
 from app.domains.level_tier.models import LevelTier              # noqa: F401
+from app.domains.family.models import (  # noqa: F401
+    Account, FamilyGroup, FamilyMembership, Role, Permission, RolePermission,
+    MembershipRoleAssignment, ServiceSubscription, LegacyIdentityMapping,
+)
