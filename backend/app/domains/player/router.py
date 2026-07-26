@@ -2,8 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.dependencies import get_current_user
-from app.domains.auth.dependencies import get_current_user as get_player_only
+from app.dependencies import get_current_player, require_admin, require_self_player_id
 from app.domains.player.schema import PlayerCreate, PlayerListItem, PlayerUpdate
 from app.domains.player.service import (
     create_player, get_player_by_id, get_player_list,
@@ -21,7 +20,7 @@ async def list_players(db: AsyncSession = Depends(get_db)):
 
 @router.get("/me", response_model=PlayerListItem)
 async def get_me(
-    user: dict = Depends(get_player_only),
+    user: dict = Depends(get_current_player),
     db: AsyncSession = Depends(get_db),
 ):
     """현재 로그인 사용자 정보 (player 토큰 전용)"""
@@ -29,18 +28,31 @@ async def get_me(
 
 
 @router.post("", response_model=PlayerListItem, status_code=201)
-async def add_player(data: PlayerCreate, db: AsyncSession = Depends(get_db)):
+async def add_player(
+    data: PlayerCreate,
+    db: AsyncSession = Depends(get_db),
+    _: dict = Depends(require_admin),
+):
     """플레이어 등록 (Admin 전용)"""
     return await create_player(db, data)
 
 
 @router.patch("/{player_id}", response_model=PlayerListItem)
-async def edit_player(player_id: int, data: PlayerUpdate, db: AsyncSession = Depends(get_db)):
+async def edit_player(
+    player_id: int,
+    data: PlayerUpdate,
+    user: dict = Depends(get_current_player),
+    db: AsyncSession = Depends(get_db),
+):
     """플레이어 정보 수정 (상태 메시지)"""
-    return await update_player(db, player_id, data)
+    return await update_player(db, require_self_player_id(user, player_id), data)
 
 
 @router.delete("/{player_id}", status_code=204)
-async def remove_player(player_id: int, db: AsyncSession = Depends(get_db)):
+async def remove_player(
+    player_id: int,
+    db: AsyncSession = Depends(get_db),
+    _: dict = Depends(require_admin),
+):
     """플레이어 소프트 삭제 (admin 계정 삭제 불가)"""
     await soft_delete_player(db, player_id)

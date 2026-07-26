@@ -8,7 +8,7 @@ from app.domains.notification.models import Notification
 from app.domains.notification.schema import NotificationCreate, NotificationResponse
 
 
-async def get_unread_notifications(db: AsyncSession) -> list[NotificationResponse]:
+async def get_unread_notifications(db: AsyncSession, player_id: int) -> list[NotificationResponse]:
     """
     -- [SQL] 읽지 않은 알림 목록 조회
     -- SELECT * FROM notifications
@@ -17,7 +17,11 @@ async def get_unread_notifications(db: AsyncSession) -> list[NotificationRespons
     """
     stmt = (
         select(Notification)
-        .where(Notification.is_read.is_(False), Notification.deleted_at.is_(None))
+        .where(
+            Notification.player_id == player_id,
+            Notification.is_read.is_(False),
+            Notification.deleted_at.is_(None),
+        )
         .order_by(Notification.created_at.desc())
     )
     result = await db.execute(stmt)
@@ -68,14 +72,15 @@ async def create_notification(db: AsyncSession, data: NotificationCreate) -> Not
     return NotificationResponse.model_validate(notif)
 
 
-async def mark_as_read(db: AsyncSession, notification_id: int) -> None:
+async def mark_as_read(db: AsyncSession, notification_id: int, player_id: Optional[int] = None) -> None:
     """
     -- [SQL] 알림 읽음 처리
     -- UPDATE notifications SET is_read = TRUE WHERE id = :id AND deleted_at IS NULL;
     """
-    stmt = select(Notification).where(
-        Notification.id == notification_id, Notification.deleted_at.is_(None)
-    )
+    filters = [Notification.id == notification_id, Notification.deleted_at.is_(None)]
+    if player_id is not None:
+        filters.append(Notification.player_id == player_id)
+    stmt = select(Notification).where(*filters)
     result = await db.execute(stmt)
     notif = result.scalar_one_or_none()
     if not notif:
@@ -84,16 +89,15 @@ async def mark_as_read(db: AsyncSession, notification_id: int) -> None:
     await db.commit()
 
 
-async def mark_all_as_read(db: AsyncSession) -> int:
+async def mark_all_as_read(db: AsyncSession, player_id: Optional[int] = None) -> int:
     """
     -- [SQL] 전체 알림 읽음 처리
     -- UPDATE notifications SET is_read = TRUE WHERE is_read = FALSE AND deleted_at IS NULL;
     """
-    stmt = (
-        update(Notification)
-        .where(Notification.is_read.is_(False), Notification.deleted_at.is_(None))
-        .values(is_read=True)
-    )
+    filters = [Notification.is_read.is_(False), Notification.deleted_at.is_(None)]
+    if player_id is not None:
+        filters.append(Notification.player_id == player_id)
+    stmt = update(Notification).where(*filters).values(is_read=True)
     result = await db.execute(stmt)
     await db.commit()
     return result.rowcount

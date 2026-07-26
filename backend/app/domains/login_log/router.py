@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
+from app.dependencies import require_admin
 from app.domains.login_log.schema import LoginLogResponse
 from app.domains.login_log.service import get_login_logs_by_player
 
@@ -12,6 +13,7 @@ router = APIRouter(prefix="/api/login-logs", tags=["LoginLog"])
 async def list_logs(
     player_id: int = Query(...),
     limit: int = Query(50, le=200),
+    _: dict = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
     """플레이어의 로그인 이력 조회"""
