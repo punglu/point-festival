@@ -297,6 +297,124 @@ async def set_service_binding_status(db: AsyncSession, binding_id: int, new_stat
     return binding
 
 
+async def bootstrap_service_principal(db: AsyncSession, service_code: str, display_name: str) -> ServicePrincipal:
+    """Idempotent get-or-create for an internal, code-only Service Principal
+    such as the in-process Outbox Worker's own identity. No plaintext secret
+    is minted on the get path: an in-process caller (the Worker) authenticates
+    by holding this trusted ORM row directly, never a Bearer credential - see
+    app/workers/service_outbox.py."""
+    principal = (
+        await db.execute(
+            select(ServicePrincipal).where(
+                ServicePrincipal.service_code == service_code, ServicePrincipal.status == "active"
+            )
+        )
+    ).scalars().first()
+    if principal is not None:
+        return principal
+    principal, _secret = await create_service_principal(db, service_code, display_name)
+    return principal
+
+
+async def ensure_canonical_service_binding(
+    db: AsyncSession, principal: ServicePrincipal, family_id: int, allowed_actions: list[dict]
+) -> DoranServiceBinding:
+    """Idempotent get-or-create of the one canonical SERVICE Room+Binding for
+    (principal, family) - never one Room per event. Safe under concurrent
+    Workers: a creation race is resolved by the
+    uq_doran_service_binding_principal_family constraint the same way
+    publish_service_action resolves a concurrent message race."""
+    existing = (
+        await db.execute(
+            select(DoranServiceBinding).where(
+                DoranServiceBinding.service_principal_id == principal.id,
+                DoranServiceBinding.family_group_id == family_id,
+            )
+        )
+    ).scalars().first()
+    if existing is not None:
+        return existing
+    try:
+        binding, _room = await create_service_binding(db, principal.id, family_id, allowed_actions)
+        return binding
+    except IntegrityError:
+        await db.rollback()
+        return (
+            await db.execute(
+                select(DoranServiceBinding).where(
+                    DoranServiceBinding.service_principal_id == principal.id,
+                    DoranServiceBinding.family_group_id == family_id,
+                )
+            )
+        ).scalars().one()
+
+
+async def onboard_self_into_service_room(db: AsyncSession, user: dict, family_id: int, service_code: str) -> tuple[DoranRoom, DoranParticipant]:
+    """Self-onboarding only: the calling user is added as a Participant in
+    their own Family's canonical SERVICE Room for `service_code`, if (and
+    only if) that Binding already exists and is active. This never creates a
+    Binding, never adds any other Family member, and never auto-enrolls every
+    Family - a user must actually call this (e.g. opening the service's
+    screen or a future Dock) before they see anything in that Room."""
+    _, membership = await context(db, user, family_id)
+    await _require_permission(db, membership, READ)
+    if not await subscription_active(db, family_id):
+        raise denied("Doran subscription이 필요합니다")
+
+    binding = (
+        await db.execute(
+            select(DoranServiceBinding).where(
+                DoranServiceBinding.family_group_id == family_id,
+            ).join(ServicePrincipal, ServicePrincipal.id == DoranServiceBinding.service_principal_id).where(
+                ServicePrincipal.service_code == service_code,
+            )
+        )
+    ).scalars().first()
+    if binding is None or binding.status != "active":
+        raise HTTPException(status_code=404, detail="이 서비스는 아직 이 가족에 연결되지 않았습니다")
+
+    room = await _room(db, family_id, binding.room_id)
+    if room.room_type != "SERVICE" or room.status != "active":
+        raise HTTPException(status_code=404, detail="이 서비스는 아직 이 가족에 연결되지 않았습니다")
+
+    existing = (
+        await db.execute(
+            select(DoranParticipant).where(
+                DoranParticipant.room_id == room.id,
+                DoranParticipant.family_membership_id == membership.id,
+                DoranParticipant.status == "active",
+            )
+        )
+    ).scalars().first()
+    if existing is not None:
+        return room, existing
+    try:
+        # Unlike a GROUP Room (where hiding pre-join history is the intended
+        # social boundary - see add_participant), a SERVICE Room is a
+        # broadcast log for the whole Family: onboarding late must not hide
+        # events that already happened, so visibility starts from sequence 0.
+        participant = DoranParticipant(
+            family_group_id=family_id, room_id=room.id, family_membership_id=membership.id,
+            room_role="member", status="active", joined_sequence=0,
+        )
+        db.add(participant)
+        await db.flush()
+        await db.commit()
+        return room, participant
+    except IntegrityError:
+        await db.rollback()
+        existing = (
+            await db.execute(
+                select(DoranParticipant).where(
+                    DoranParticipant.room_id == room.id,
+                    DoranParticipant.family_membership_id == membership.id,
+                    DoranParticipant.status == "active",
+                )
+            )
+        ).scalars().one()
+        return room, existing
+
+
 def _same_service_event(existing: DoranMessage, room_pk, schema_version: int, action_type: str, snapshot: dict) -> bool:
     payload = existing.service_payload or {}
     return (

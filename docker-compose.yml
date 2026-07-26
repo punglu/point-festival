@@ -37,6 +37,20 @@ services:
       retries: 3
       start_period: 15s
 
+  service-outbox-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mc-service-outbox-worker
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - PYTHONPATH=/app
+    command: python -m app.workers.service_outbox
+
   frontend:
     build:
       context: ./frontend

@@ -9,6 +9,7 @@ D: a service cannot impersonate a user TEXT sender).
 from __future__ import annotations
 
 import bcrypt
+import pytest
 from sqlalchemy import text
 
 from app.domains.doran import service as doran_service
@@ -152,8 +153,13 @@ async def test_07_inactive_binding_blocked(service_env):
 
 
 # ---------------------------------------------------------------------------
-# 8. publishing into a non-SERVICE Room is blocked (defense in depth: even a
-#    Binding row pointing at a GROUP Room must not be honored)
+# 8. publishing into a non-SERVICE Room is blocked (defense in depth). As of
+#    R2-B2 this is enforced twice: publish_service_action() re-checks
+#    room.room_type at request time (still true below via the app-layer
+#    check on an inactive/non-existent Binding), and
+#    fn_doran_service_binding_room_guard (migration 0004) now refuses to let
+#    such a Binding row exist in the database at all - the raw-SQL bypass
+#    this test used to use to construct the scenario is itself blocked.
 # ---------------------------------------------------------------------------
 
 async def test_08_non_service_room_publish_blocked(service_env):
@@ -165,12 +171,16 @@ async def test_08_non_service_room_publish_blocked(service_env):
         headers=service_env["admin"].headers,
     )
     group_room_id = group_room.json()["id"]
-    await db.execute(
-        text("INSERT INTO doran_service_bindings (service_principal_id, family_group_id, room_id, allowed_actions, status) "
-             "VALUES (:pid, :fid, :rid, '[{\"action_type\": \"mission_approved\", \"schema_version\": 1}]'::jsonb, 'active')"),
-        {"pid": svc.principal_id, "fid": family_id, "rid": group_room_id},
-    )
-    await db.commit()
+    with pytest.raises(Exception, match="must reference a SERVICE Room"):
+        await db.execute(
+            text("INSERT INTO doran_service_bindings (service_principal_id, family_group_id, room_id, allowed_actions, status) "
+                 "VALUES (:pid, :fid, :rid, '[{\"action_type\": \"mission_approved\", \"schema_version\": 1}]'::jsonb, 'active')"),
+            {"pid": svc.principal_id, "fid": family_id, "rid": group_room_id},
+        )
+    await db.rollback()
+
+    # Publishing against a Room no Binding was ever created for is still
+    # blocked the ordinary way (app-layer binding lookup finds nothing).
     resp = await client.post(
         f"/api/families/{family_id}/doran/service/actions",
         json={"room_id": group_room_id, "action_type": "mission_approved", "schema_version": 1,

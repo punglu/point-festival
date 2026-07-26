@@ -19,6 +19,18 @@ message, DB CHECK/unique-index integrity, and a full `0002→0003→0002→0003`
 migration cycle with zero residue). Rows 30 and 31 below are updated to
 reflect this; the rest of this document's draft evaluation is unchanged.
 
+**R2-B2 addendum (2026-07-26):** the Reliable Service Slice closed the R2-B1
+gaps this document had left open - a generic Transactional Outbox, one real
+owning-service integration (Mark Point mission completion), a dedicated
+Worker, SERVICE Room self-onboarding, the 32KB ingress body limit, a
+credential-timing mitigation, and a PostgreSQL trigger backstop for
+Binding/Room integrity - plus a full Mark Point -> Outbox -> Worker -> Doran
+-> user-visible-message E2E path. Self-test PASS (28/28 required items,
+backend 67/67, Playwright 9/9, Naran Shell 25/25, migration cycle
+`0003→0004→0003→0004` zero residue); independent QA is still pending before
+merge (see the Outbox operations memo and API contract sections below). Rows
+39-42 are updated accordingly.
+
 | Requirement | Current draft evidence | Status | Reusable | Required change | Risk / test required |
 | --- | --- | --- | --- | --- | --- |
 | Family-scoped Room and composite Family boundary | migration/router QA passed Family scope and cross-Family denial | MATCH | yes | retain only after R2 naming/permission review | PostgreSQL IDOR regression |
@@ -37,9 +49,9 @@ reflect this; the rest of this document's draft evaluation is unchanged.
 | `room_admin` role | draft uses room owner/admin terminology | CONFLICT | no | replace Room role naming; keep Family owner distinct | permission/role API test |
 | Platform operator boundary | no complete Platform role model | MISSING | no | specify/implement no-bypass boundary separately | independent authorization QA |
 | Service Principal and Binding | R2-B1 implemented (`ServicePrincipal`, `DoranServiceBinding`, `SERVICE_ACTION` ingress, migration `0003`); independent QA PASS | MATCH | yes | Principal/Binding management HTTP API deferred pending Platform Operator auth (PM-approved) | scope/impersonation tests passed (cross-service, cross-Family, inactive binding/subscription, non-SERVICE room) |
-| service event idempotency/outbox | consumer-side `source_event_id` idempotency implemented and QA-passed (sequential + 8-worker concurrent replay, conflicting-payload 409); producer-side Transactional Outbox still absent | PARTIAL | yes (idempotency) / no (outbox) | Transactional Outbox and owning-service delivery integration | R2-B2: outbox delivery-guarantee and failure/replay tests |
-| audit and privacy controls | no complete audit design/implementation | MISSING | no | R2-B audit without body/credential leakage | audit redaction tests |
-| resource limits | no approved resource-limit implementation | MISSING | no | approve values then enforce page/body/rate/caps | boundary/load tests |
+| service event idempotency/outbox | R2-B2: generic `service_outbox_events` Outbox (PENDING/PROCESSING/PUBLISHED/DEAD, bounded retry+backoff, `FOR UPDATE SKIP LOCKED` claim) + dedicated Worker (`app/workers/service_outbox.py`) wired to one real owning service (Mark Point `mission.completed`); self-tested for rollback-atomicity, retry-no-duplicate, concurrent-claim safety, lease recovery, and publish-then-crash convergence | MATCH | yes | none for this slice; a second owning service is just a new `ALLOWED_ACTIONS_BY_OWNER` entry | independent QA of Outbox failure-recovery and DB integrity (R2-B2 focused QA) |
+| audit and privacy controls | R2-B1 audit log (secret/token/body-free) confirmed by QA; R2-B2 adds no new audit surface (Worker calls the same audited `publish_service_action`) | MATCH | yes | none | none additional |
+| resource limits | R2-B2: 32KB application-level Doran Service ingress cap (streamed, not Content-Length-trusting) + matching nginx path-scoped `client_max_body_size`; full-request-size policy for any *other* future endpoint remains unset | PARTIAL | yes (Service ingress) | Approve limits for any future attachment/upload API separately - this cap is intentionally not global | boundary tests passed (at/over 32KB, length-unaware stream) |
 | Dock preference backend | absent | MISSING | no | Account+Family preference and optimistic version | multi-device conflict tests |
 | WebSocket/Push/UI timeline | intentionally absent | MISSING | no | later realtime/UX phases | cursor/revoke/performance QA |
 
@@ -87,3 +99,88 @@ of both QA failures before new capability work.
 
 The remaining implementation-level choices are configuration wiring and API
 shape consistent with these decisions, not unresolved product-policy gates.
+
+## R2-B2 Outbox operations memo
+
+**Running the Worker.** `python -m app.workers.service_outbox` from `backend/`
+(env vars as for the API process). In `docker-compose.yml` it is the
+`service-outbox-worker` service, sharing the backend image, one process -
+running more than one replica is safe (see concurrency note below) but is not
+required for this slice's volume.
+
+**Claim.** Each tick claims up to 10 rows via `FOR UPDATE SKIP LOCKED` -
+PENDING rows due for (re)attempt, plus PROCESSING rows whose 30s lease
+expired (a Worker died mid-delivery). No process-local lock anywhere; running
+multiple Worker replicas concurrently is safe by construction and is
+self-tested (`test_outbox_07_two_workers_no_double_claim`,
+`test_outbox_08_expired_lease_recovered`).
+
+**Retry and backoff.** `compute_backoff_seconds(attempt) = min(30 * 2^(attempt-1), 3600)`
+(30s, 60s, 120s, ... capped at 1h). After `MAX_ATTEMPTS = 8` the row moves to
+`DEAD` and stops being retried. `last_error_code` records a short tag (e.g.
+`http_404`, `worker_error`) - never a full exception message, payload, or
+credential.
+
+**DEAD rows.** There is no automatic requeue path in this slice - an
+operator reviewing `service_outbox_events WHERE status = 'DEAD'` and deciding
+whether to manually flip a row back to `PENDING` (after fixing whatever made
+delivery permanently fail - e.g. activating a Family's Doran subscription) is
+a deliberate Human Gate, not an oversight. Automating this is an R2-B3
+candidate once real DEAD-rate data exists.
+
+**Delivery guarantee.** At-least-once from the Worker's side; Doran's own
+`source_event_id` idempotency (R2-B1) makes the visible result exactly-once.
+A Worker crash between "Doran committed the message" and "Outbox row marked
+PUBLISHED" is not a bug: the next attempt reuses the same stored
+`source_event_id`, gets the same message back from Doran, and marks the row
+PUBLISHED - see `test_outbox_09_and_10_publish_then_crash_then_converges`.
+
+**Adding a second owning service.** Add one entry to both
+`ALLOWED_ACTIONS_BY_OWNER` and `PRINCIPAL_DISPLAY_NAME_BY_OWNER` in
+`app/workers/service_outbox.py`, and call `service_outbox.service.enqueue_event`
+from that service's own confirmation transaction (see Mark Point's
+`_emit_mission_completed_event` in `mission/service.py` for the reference
+shape). No Worker, Outbox, or Doran code changes are needed.
+
+**Known gap, stated plainly:** only `mission/service.py`'s single-mission
+`update_mission_status` -> `completed` transition is wired to the Outbox.
+`bulk_approve_missions` (the Admin "일괄 승인" bulk path) confirms points via
+a bulk `UPDATE` that never loads individual `Mission` rows and is **not**
+wired to the Outbox in this slice - completing missions through bulk-approve
+today produces no Doran event. Closing this requires either looping
+per-mission enqueue calls after the bulk `UPDATE ... RETURNING`, or a
+deliberate product decision that bulk-approved missions are digested
+differently; treat this as an R2-B3 decision point, not an accidental defect
+in the code delivered here.
+
+## R2-B2 API and payload contract for the next UI step
+
+These two endpoints are the only Doran surface the next UI Slice needs; both
+already exist and are self-tested end-to-end.
+
+**Self-onboarding** (user JWT, once per Family member before they can see the
+service's Room):
+```
+POST /api/families/{family_id}/doran/services/{service_code}/room
+-> 200 ServiceRoomOnboardResponse { room_id, family_group_id, service_code,
+                                     participant_id, room_role, status, joined_sequence }
+```
+Idempotent (repeat calls return the same `participant_id`, never a second
+Participant row). 403 if the caller's Family membership/Doran permission/Doran
+subscription isn't active; 404 if this service has no active Binding for this
+Family yet (i.e. nothing to onboard into).
+
+**Reading messages** (existing R2-A endpoint, unchanged - `SERVICE_ACTION`
+items are already mixed into the same list a Room's TEXT messages come from):
+```
+GET /api/families/{family_id}/doran/rooms/{room_id}/messages
+-> item.message_type == "SERVICE_ACTION"
+   item.service_code == "mark-point"
+   item.service_payload == { action_type: "mission.completed",
+                              snapshot: { mission_id, mission_title, player_id,
+                                          player_display_name, awarded_points,
+                                          completed_at } }
+```
+`service_payload.snapshot` is exactly Mark Point's display-minimum snapshot -
+stable field names the next UI Slice can render directly, e.g. `"{player_display_name}가 '{mission_title}' 미션을 완료하고 {awarded_points}P를 받았습니다."`
+This is a payload-shape preview only, not approved UI copy.

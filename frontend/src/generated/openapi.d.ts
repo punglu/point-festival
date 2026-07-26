@@ -1696,6 +1696,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/families/{family_id}/doran/services/{service_code}/room": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Onboard Service Room */
+        post: operations["onboard_service_room_api_families__family_id__doran_services__service_code__room_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -2759,6 +2776,35 @@ export interface components {
             source_event_id: string;
             /** Snapshot */
             snapshot?: Record<string, never>;
+        };
+        /**
+         * ServiceRoomOnboardResponse
+         * @description Response for self-onboarding into a Family's canonical SERVICE Room.
+         *     Deliberately excludes Binding/Principal internals (id, allowed_actions,
+         *     credential) - a Family member only needs to know their own Room and
+         *     Participant state.
+         */
+        ServiceRoomOnboardResponse: {
+            /**
+             * Room Id
+             * Format: uuid
+             */
+            room_id: string;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Service Code */
+            service_code: string;
+            /**
+             * Participant Id
+             * Format: uuid
+             */
+            participant_id: string;
+            /** Room Role */
+            room_role: string;
+            /** Status */
+            status: string;
+            /** Joined Sequence */
+            joined_sequence: number;
         };
         /** ServiceSubscriptionCreate */
         ServiceSubscriptionCreate: {
@@ -6471,6 +6517,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    onboard_service_room_api_families__family_id__doran_services__service_code__room_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                service_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceRoomOnboardResponse"];
                 };
             };
             /** @description Validation Error */

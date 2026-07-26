@@ -302,6 +302,60 @@ async def create_mission(db: AsyncSession, data: MissionCreate) -> MissionRespon
     return MissionResponse.model_validate(mission)
 
 
+async def _emit_mission_completed_event(db: AsyncSession, mission: Mission) -> None:
+    """R2-B2: append a Transactional Outbox row for this mission's completion,
+    in the SAME transaction as the point confirmation above - a rollback of
+    this mission update takes the Outbox row with it (see
+    service_outbox.service.enqueue_event).
+
+    Best-effort only in one specific, well-understood sense: most legacy
+    players have no linked Account/Family yet (see
+    family.service.resolve_current_account), and that is not an error - there
+    is simply no Family to target, so nothing is enqueued. Any other failure
+    is left to propagate and roll back the whole mission-completion
+    transaction with it; Mark Point's own point ledger must never silently
+    diverge from what the Outbox recorded.
+
+    Mark Point remains the SSOT for mission status and point balance - this
+    only ever appends a display-minimum snapshot for Doran to relay, never a
+    business decision.
+    """
+    from app.domains.family import service as family_service
+    from app.domains.service_outbox import service as outbox_service
+
+    try:
+        account = await family_service.resolve_current_account(db, {"player_id": mission.player_id})
+    except HTTPException:
+        return
+    memberships = await family_service.active_memberships_for_account(db, account.id)
+    if not memberships:
+        return
+
+    player_name = await _get_player_name(db, mission.player_id)
+    occurred_at = datetime.now(timezone.utc)
+    payload = {
+        "mission_id": mission.id,
+        "mission_title": mission.text,
+        "player_id": mission.player_id,
+        "player_display_name": player_name,
+        "awarded_points": mission.point,
+        "completed_at": occurred_at.isoformat(),
+    }
+    for membership in memberships:
+        source_event_id = f"mission-completed:{mission.id}:{membership.family_group_id}:{occurred_at.isoformat()}"
+        await outbox_service.enqueue_event(
+            db,
+            owner_service="mark-point",
+            event_type="mission.completed",
+            event_version=1,
+            aggregate_type="mission",
+            aggregate_id=str(mission.id),
+            source_event_id=source_event_id,
+            family_id=membership.family_group_id,
+            payload=payload,
+        )
+
+
 async def _sync_daily_point_on_status_change(
     db: AsyncSession,
     mission: Mission,
@@ -332,6 +386,9 @@ async def _sync_daily_point_on_status_change(
             spent_delta=0,
         ))
         await _sync_total_earned(db, mission.player_id, earned_delta)
+
+    if new_status == "completed" and old_status != "completed":
+        await _emit_mission_completed_event(db, mission)
 
 
 async def update_mission(
