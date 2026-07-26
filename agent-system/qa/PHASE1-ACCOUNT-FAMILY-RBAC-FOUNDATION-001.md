@@ -68,3 +68,19 @@ context omission, closed-family path denial, cross-family membership-ID denial,
 and soft-deleted legacy Player adapter denial. Frontend lint/build, backend
 pytest (`6 passed`), Agent checks, and Git whitespace checks also passed.
 Independent QA re-verification remains required.
+
+## Independent QA Final Verdict
+
+- Verdict: `PASS`
+- Candidate verification covered the initial four blockers and confirmed:
+  Admin lifecycle denial with DB status unchanged; Owner lifecycle persistence;
+  suspended/closed Family context omission and path denial; current Player and
+  Admin soft-delete rechecks for previously issued JWTs; default Compose DB
+  execution of the API+DB suite; cross-Family membership-ID denial; Owner,
+  subscription, and ambiguous-mapping invariants.
+- Additional regressions: frontend lint/build, backend pytest (`6 passed`),
+  weekly API (`6/6`), legacy authorization suite, synthetic scenario (`87/87`),
+  Playwright (`9 passed`), Agent checks, and Git whitespace checks passed.
+- Independent from implementer: `true`
+- Git repository is SSOT. Operating DB schema stamp and reviewed identity
+  mapping are intentionally unperformed Human Gates.

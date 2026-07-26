@@ -3,19 +3,6 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
-## PHASE1-ACCOUNT-FAMILY-RBAC-FOUNDATION-001
-
-- Task ID: PHASE1-ACCOUNT-FAMILY-RBAC-FOUNDATION-001
-- Lifecycle: IN_PROGRESS
-- Decision: DESIGN_APPROVED
-- Verification: NOT_TESTED
-- Execution: SUCCEEDED
-- Phase Note: IMPLEMENTED / QA_PENDING
-- Handoff: agent-system/handoffs/active/PHASE1-ACCOUNT-FAMILY-RBAC-FOUNDATION-001.md
-- QA Evidence: agent-system/qa/PHASE1-ACCOUNT-FAMILY-RBAC-FOUNDATION-001.md
-- Independent QA: required — schema, migration, authentication/RBAC, family boundary, and legacy mapping
-- Next Action: independent security/DB QA of migrations, family boundaries, permission evaluation, Owner invariant, adapter mappings, and existing regressions before push
-
 ## PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001
 
 - Task ID: PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001

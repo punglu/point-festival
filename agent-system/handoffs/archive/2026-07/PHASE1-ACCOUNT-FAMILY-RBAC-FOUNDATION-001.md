@@ -6,10 +6,10 @@
 - git_ref: `fa6fb65d1a79a01342da9695a9156f08a0e5f1fb`
 - environment: `local macOS workspace; isolated synthetic database only`
 - secrets_redacted: `true`
-- Lifecycle: `IN_PROGRESS`
+- Lifecycle: `COMPLETED`
 - Decision: `DESIGN_APPROVED`
-- Verification: `NOT_TESTED`
-- Execution: `RUNNING`
+- Verification: `PASS`
+- Execution: `SUCCEEDED`
 - Closeout Contract: `v1`
 - Branch: `dev`
 - Start HEAD: `fa6fb65d1a79a01342da9695a9156f08a0e5f1fb`
@@ -111,16 +111,30 @@ record preserves the initial QA block rather than replacing it with a PASS.
 - The API+DB suite now defaults to the committed isolated Compose credentials.
   With no DB override variables, the suite passed all `30` reported checks.
 
+## Independent QA Final Verdict
+
+- Verdict: `PASS`
+- QA scope: migration head/idempotent upgrade, default-deny Foundation routes,
+  cross-Family path and membership-ID substitution, multi-role/subscription
+  gating, multiple-Owner invariant, inactive Family context/path behavior,
+  Player/Admin soft-delete adapter behavior, legacy compatibility, static
+  checks, and dirty-state preservation.
+- Historical QA result: the initial `BLOCKED / RBAC CORE DEFECT` finding is
+  preserved above. The correction was independently reverified without product
+  scope expansion.
+- Push condition: independent QA condition is satisfied; operating DB stamp,
+  reviewed bootstrap mapping, and actual identity migration remain Human Gates.
+
 ## Closeout Synchronization
 
 - Contract: `v1`
 - ACTIVE: `UPDATED`
 - ACTIVE Evidence: `agent-system/active.md`
 - HANDOFF: `UPDATED`
-- HANDOFF Path: `agent-system/handoffs/active/PHASE1-ACCOUNT-FAMILY-RBAC-FOUNDATION-001.md`
+- HANDOFF Path: `agent-system/handoffs/archive/2026-07/PHASE1-ACCOUNT-FAMILY-RBAC-FOUNDATION-001.md`
 - QA EVIDENCE: `UPDATED`
 - QA Evidence Path: `agent-system/qa/PHASE1-ACCOUNT-FAMILY-RBAC-FOUNDATION-001.md`
-- Independent QA: `pending`
+- Independent QA: `complete — PASS`
 - COVERAGE MAP: `UPDATED`
 - COVERAGE MAP Reason: `new executable API/DB tests are in scope and will be recorded with measured execution evidence`
 - CLOSEOUT GATE: `PASS`
