@@ -15,7 +15,7 @@
 
 Frontend Node/npm and ESLint contract, lint/build results, isolated Compose runtime, and existing Playwright runtime configuration.
 
-- Implementation Commit: `e8f597a1eca2e5f50f93b0f855b150779b2f7eb1`
+- Implementation Commits: `e8f597a1eca2e5f50f93b0f855b150779b2f7eb1`, `5bfa862d971e7a99027b5abba4a09f07b23f84cc`
 
 ## Commands, exit codes, and results
 

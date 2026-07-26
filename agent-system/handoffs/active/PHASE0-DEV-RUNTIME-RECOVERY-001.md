@@ -12,8 +12,8 @@
 - Closeout Contract: `v1`
 - Branch: `dev`
 - Start HEAD: `bcef1a4c00d41bf37719596af0c8876a236ff129`
-- End HEAD: `e8f597a1eca2e5f50f93b0f855b150779b2f7eb1`
-- Final Commit: `e8f597a1eca2e5f50f93b0f855b150779b2f7eb1`
+- End HEAD: `5bfa862d971e7a99027b5abba4a09f07b23f84cc`
+- Final Commit: `5bfa862d971e7a99027b5abba4a09f07b23f84cc`
 
 ## Goal
 
@@ -51,7 +51,7 @@ Product behavior, schema/migrations, backend business logic, RBAC, production re
 - Known Gaps: Chromium was installed into the local Playwright cache; it is not a repository artifact. API scenario tests remain out of scope.
 - QA Status: self-check only; no independent QA task requested for this tooling/runtime bundle
 - Drive Evidence: not requested
-- Coverage Map Review: UPDATED — backend unit and all four existing E2E entries now carry measured self-check evidence with implementation source ref `e8f597a`.
+- Coverage Map Review: UPDATED — backend unit and all four existing E2E entries now carry measured self-check evidence with implementation source ref `e8f597a`; the Node/npm project pin is in `5bfa862`.
 
 ## Next agent first action
 
