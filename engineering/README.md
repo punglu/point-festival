@@ -58,6 +58,15 @@ The concrete source-document IDs and the adoption decisions are retained in [Pro
 - Shared HTTP client and session-expiry behavior: `frontend/src/shared/api/httpClient.ts`
 - Existing test policy and evidence map: `agent-system/qa/TEST_POLICY.md` and `agent-system/qa/COVERAGE_MAP.md`
 
+## Legacy implementation status
+
+The current MarkPoint implementation is **LEGACY REFERENCE / NOT FULLY
+VALIDATED**. It is useful for workflow, vocabulary, data-meaning, and migration
+research, but it is not a source of truth for authorization, API, transaction,
+ownership, state-transition, idempotency, error-handling, or frontend type
+contracts. See [Legacy reference baseline](LEGACY_MARKPOINT_REFERENCE.md) and
+[Legacy API security matrix](LEGACY_API_SECURITY_MATRIX.md).
+
 ## Deliberately not decided here
 
 The approved decisions choose a UoW direction, compatibility-first responses,

@@ -51,6 +51,14 @@ Source: `agent-system/qa/TEST_POLICY.md`, family-platform Testing draft, and app
 
 Existing domain code has different transaction conventions and a mix of route and service responsibilities. It remains compatible behavior, not proof that new work may choose arbitrarily. See the backend guide and PM_GATE-01.
 
+## LEGACY REFERENCE / NOT FULLY VALIDATED
+
+The contained MarkPoint implementation is a reference for journeys, language,
+data meaning, and migration candidates only. It must not be copied as a platform
+contract for authorization, caller-supplied IDs, API shape, transactions, state
+transitions, idempotency, error handling, silent failure behavior, or frontend
+types. New-platform contracts take precedence when they differ.
+
 ## APPROVED DECISIONS — 2026-07-26
 
 1. **Transaction ownership:** use-case Unit of Work owns one commit/rollback;

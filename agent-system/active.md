@@ -3,6 +3,19 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
+## PHASE0-LEGACY-CONTAINMENT-AND-REFERENCE-BASELINE-001
+
+- Task ID: PHASE0-LEGACY-CONTAINMENT-AND-REFERENCE-BASELINE-001
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED
+- Verification: PASS
+- Execution: SUCCEEDED
+- Phase Note: PHASE0 LEGACY CONTAINMENT COMPLETE / PM_REVIEW_PENDING
+- Handoff: agent-system/handoffs/active/PHASE0-LEGACY-CONTAINMENT-AND-REFERENCE-BASELINE-001.md
+- QA Evidence: agent-system/qa/PHASE0-LEGACY-CONTAINMENT-AND-REFERENCE-BASELINE-001.md
+- Independent QA: complete — PASS (independent read-only security QA)
+- Next Action: Phase 0 automated baseline is ready for PM closeout confirmation; push is authorized by this task's passing conditions
+
 ## PHASE0-AUTOMATED-GAP-CLOSEOUT-001
 
 - Task ID: PHASE0-AUTOMATED-GAP-CLOSEOUT-001

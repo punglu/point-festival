@@ -1,8 +1,7 @@
 # Current Relay
 
-Current Task: PHASE0-AUTOMATED-GAP-CLOSEOUT-001
+Current Task: PHASE0-LEGACY-CONTAINMENT-AND-REFERENCE-BASELINE-001
 
-- Status: BLOCKED / CORE DEFECT
-- Evidence scope: agent-system/active.md, agent-system/relay/current.md, agent-system/handoffs/active/PHASE0-AUTOMATED-GAP-CLOSEOUT-001.md, agent-system/qa/PHASE0-AUTOMATED-GAP-CLOSEOUT-001.md, agent-system/qa/COVERAGE_MAP.md
-- Finding: unauthenticated and cross-user mission/point/notification access, plus unauthenticated mission mutation, were measured against isolated synthetic runtime port 18000.
-- Next action: PM triage followed by a single-writer authorization/ownership fix with independent QA. No Phase 0 automated closeout, archive, or push.
+- Status: QA COMPLETE / PASS — PM closeout review pending
+- Evidence: independent read-only security QA passed the 91-operation OpenAPI/matrix crosswalk, anonymous sensitive-route sweep, A-to-B read/write/delete denial, administrator preservation, chat pair isolation, DB invariants, and existing regression suites.
+- Next action: final static check and task-authorized `dev` push; do not create tenant/role/schema work in this task.
