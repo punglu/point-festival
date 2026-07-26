@@ -55,6 +55,11 @@ input, select, textarea {
   font-family: 'Pretendard', sans-serif;
 }
 
+:focus-visible {
+  outline: 3px solid var(--brand-skyblue);
+  outline-offset: 3px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

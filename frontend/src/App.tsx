@@ -5,6 +5,10 @@ import AdminDashboard from './pages/AdminDashboard';
 import { useAuthStore } from './shared/stores/useAuthStore';
 import ToastContainer from './shared/components/Toast/ToastContainer';
 import { FamilyContextLoader } from './shared/family/FamilyContextLoader';
+import { NaranAppShell } from './platform/shell/NaranAppShell';
+import { DoranLanding } from './platform/pages/DoranLanding';
+import { FamilyLanding } from './platform/pages/FamilyLanding';
+import { AccessBoundary } from './platform/access/AccessBoundary';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isLoggedIn } = useAuthStore();
@@ -39,9 +43,7 @@ export default function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <div data-domain="user">
-                  <UserDashboard />
-                </div>
+                <NaranAppShell><div data-domain="user"><UserDashboard /></div></NaranAppShell>
               </ProtectedRoute>
             }
           />
@@ -51,11 +53,18 @@ export default function App() {
             path="/admin/*"
             element={
               <AdminProtectedRoute>
-                <div data-domain="admin">
-                  <AdminDashboard />
-                </div>
+                <NaranAppShell><div data-domain="admin"><AdminDashboard /></div></NaranAppShell>
               </AdminProtectedRoute>
             }
+          />
+
+          <Route
+            path="/naran/doran"
+            element={<ProtectedRoute><NaranAppShell><DoranLanding /></NaranAppShell></ProtectedRoute>}
+          />
+          <Route
+            path="/naran/family"
+            element={<ProtectedRoute><NaranAppShell><AccessBoundary permission="family.read"><FamilyLanding /></AccessBoundary></NaranAppShell></ProtectedRoute>}
           />
         </Routes>
       </BrowserRouter>

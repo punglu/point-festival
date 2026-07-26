@@ -11,7 +11,8 @@ from app.domains.family.schema import (
     AccountContextResponse, FamilyCreate, FamilyResponse, FamilySummary,
     FamilyUpdate, MembershipCreate, MembershipSummary, MembershipUpdate,
     RoleAssignmentCreate, RoleAssignmentResponse, RoleSummary,
-    ServiceSubscriptionCreate, ServiceSubscriptionUpdate, SubscriptionResponse,
+    ServiceSubscriptionCreate, ServiceSubscriptionSummary, ServiceSubscriptionUpdate,
+    SubscriptionResponse,
 )
 
 
@@ -33,19 +34,27 @@ async def _membership_summary(db: AsyncSession, membership: FamilyMembership) ->
     )
 
 
+async def _family_summary(db: AsyncSession, family, membership: FamilyMembership) -> FamilySummary:
+    return FamilySummary(
+        id=family.id,
+        name=family.name,
+        status=family.status,
+        membership=await _membership_summary(db, membership),
+        permissions=sorted(await service.effective_permissions(db, membership)),
+        services=[
+            ServiceSubscriptionSummary(service_code=item.service_code, status=item.status)
+            for item in await service.list_subscriptions(db, family.id)
+        ],
+    )
+
+
 @router.get("/api/account-context", response_model=AccountContextResponse)
 async def account_context(user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     account = await service.resolve_current_account(db, user)
     families = []
     for membership in await service.active_memberships_for_account(db, account.id):
         family = await service.get_family(db, membership.family_group_id)
-        families.append(FamilySummary(
-            id=family.id,
-            name=family.name,
-            status=family.status,
-            membership=await _membership_summary(db, membership),
-            permissions=sorted(await service.effective_permissions(db, membership)),
-        ))
+        families.append(await _family_summary(db, family, membership))
     return AccountContextResponse(account_id=account.id, display_name=account.display_name, families=families)
 
 

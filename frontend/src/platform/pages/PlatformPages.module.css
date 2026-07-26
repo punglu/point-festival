@@ -1,0 +1,6 @@
+.page { max-width: 680px; margin: 5vh auto; border: 1px solid #e4e5f0; border-radius: 18px; padding: 32px; background: #fff; box-shadow: 0 12px 36px rgba(46, 38, 94, .06); }
+.page h1 { margin: 2px 0 10px; color: #29233f; }
+.page p { color: #62657b; }
+.eyebrow { margin: 0; color: #5d45a2 !important; font-size: 13px; font-weight: 800; }
+.badge { display: inline-block; border-radius: 999px; padding: 5px 10px; background: #eeeafa; color: #543e9a; font-size: 13px; font-weight: 700; }
+.muted { font-size: 14px; }

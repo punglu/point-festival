@@ -1,11 +1,11 @@
 {
-  "name": "마인크래프트 포인트 잔치",
-  "short_name": "포인트잔치",
-  "description": "아이들을 위한 미션과 포인트 관리 시스템",
+  "name": "나란 — 가족 플랫폼",
+  "short_name": "나란",
+  "description": "가족을 나란히 연결하는 플랫폼. 마크포인트와 도란 서비스를 제공합니다.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
-  "theme_color": "#7c3aed",
+  "theme_color": "#5D45A2",
   "icons": [
     {
       "src": "/favicon-192x192.png",

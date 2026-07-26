@@ -95,6 +95,8 @@ def main() -> int:
     alpha_id = alpha["id"]
     if "family.roles.assign" not in alpha["permissions"]:
         fail("owner A lacks family.roles.assign")
+    if {service["service_code"]: service["status"] for service in alpha["services"]}.get("markpoint") != "active":
+        fail("account context omits Alpha's active MarkPoint subscription")
     context_other = expect("other family context", call("GET", "/api/account-context", token=other_family), 200).json()
     beta = family_for(context_other, "Synthetic Family Beta")
     if beta["id"] == alpha_id:

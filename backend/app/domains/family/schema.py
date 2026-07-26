@@ -57,6 +57,7 @@ class FamilySummary(BaseModel):
     status: str
     membership: MembershipSummary
     permissions: List[str] = []
+    services: List['ServiceSubscriptionSummary'] = []
 
 
 class AccountContextResponse(BaseModel):
@@ -81,5 +82,10 @@ class RoleAssignmentResponse(BaseModel):
 class SubscriptionResponse(BaseModel):
     id: int
     family_group_id: int
+    service_code: str
+    status: str
+
+
+class ServiceSubscriptionSummary(BaseModel):
     service_code: str
     status: str

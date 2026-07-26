@@ -147,7 +147,7 @@ export interface paths {
         put?: never;
         /**
          * Add Mission
-         * @description 미션 추가
+         * @description Legacy direct creation is retained only for an administrator.
          */
         post: operations["add_mission_api_missions__post"];
         delete?: never;
@@ -1380,6 +1380,164 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/account-context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Account Context */
+        get: operations["account_context_api_account_context_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Families */
+        get: operations["list_families_api_families_get"];
+        put?: never;
+        /** Create Family */
+        post: operations["create_family_api_families_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Family */
+        get: operations["get_family_api_families__family_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Family */
+        patch: operations["update_family_api_families__family_id__patch"];
+        trace?: never;
+    };
+    "/api/families/{family_id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Members */
+        get: operations["list_members_api_families__family_id__members_get"];
+        put?: never;
+        /** Create Membership */
+        post: operations["create_membership_api_families__family_id__members_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/members/{membership_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Membership */
+        patch: operations["update_membership_api_families__family_id__members__membership_id__patch"];
+        trace?: never;
+    };
+    "/api/families/{family_id}/members/{membership_id}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Role Assignments */
+        get: operations["list_role_assignments_api_families__family_id__members__membership_id__roles_get"];
+        put?: never;
+        /** Create Role Assignment */
+        post: operations["create_role_assignment_api_families__family_id__members__membership_id__roles_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/members/{membership_id}/roles/{assignment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Role Assignment */
+        delete: operations["delete_role_assignment_api_families__family_id__members__membership_id__roles__assignment_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Services */
+        get: operations["get_services_api_families__family_id__services_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/services/{service_code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Service */
+        post: operations["create_service_api_families__family_id__services__service_code__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Service */
+        patch: operations["update_service_api_families__family_id__services__service_code__patch"];
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -1401,6 +1559,15 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AccountContextResponse */
+        AccountContextResponse: {
+            /** Account Id */
+            account_id: number;
+            /** Display Name */
+            display_name: string;
+            /** Families */
+            families: components["schemas"]["FamilySummary"][];
+        };
         /** AdminLoginRequest */
         AdminLoginRequest: {
             /** Username */
@@ -1603,6 +1770,47 @@ export interface components {
             /** Amount */
             amount?: number | null;
         };
+        /** FamilyCreate */
+        FamilyCreate: {
+            /** Name */
+            name: string;
+        };
+        /** FamilyResponse */
+        FamilyResponse: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Status */
+            status: string;
+        };
+        /** FamilySummary */
+        FamilySummary: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Status */
+            status: string;
+            membership: components["schemas"]["MembershipSummary"];
+            /**
+             * Permissions
+             * @default []
+             */
+            permissions: string[];
+            /**
+             * Services
+             * @default []
+             */
+            services: components["schemas"]["ServiceSubscriptionSummary"][];
+        };
+        /** FamilyUpdate */
+        FamilyUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Status */
+            status?: string | null;
+        };
         /** FeedbackCreate */
         FeedbackCreate: {
             /** Player Id */
@@ -1788,6 +1996,46 @@ export interface components {
              * @default 로그인 성공
              */
             message: string;
+        };
+        /** MembershipCreate */
+        MembershipCreate: {
+            /** Account Id */
+            account_id: number;
+            /**
+             * Relationship
+             * @default unknown
+             */
+            relationship: string;
+            /**
+             * Status
+             * @default active
+             */
+            status: string;
+        };
+        /** MembershipSummary */
+        MembershipSummary: {
+            /** Id */
+            id: number;
+            /** Account Id */
+            account_id: number;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Relationship */
+            relationship: string;
+            /** Status */
+            status: string;
+            /**
+             * Roles
+             * @default []
+             */
+            roles: components["schemas"]["RoleSummary"][];
+        };
+        /** MembershipUpdate */
+        MembershipUpdate: {
+            /** Relationship */
+            relationship?: string | null;
+            /** Status */
+            status?: string | null;
         };
         /** MissionCloneRequest */
         MissionCloneRequest: {
@@ -2138,6 +2386,66 @@ export interface components {
             day_count: number;
             /** Label */
             label: string;
+        };
+        /** RoleAssignmentCreate */
+        RoleAssignmentCreate: {
+            /** Role Code */
+            role_code: string;
+            /** Service Code */
+            service_code?: string | null;
+        };
+        /** RoleAssignmentResponse */
+        RoleAssignmentResponse: {
+            /** Id */
+            id: number;
+            /** Membership Id */
+            membership_id: number;
+            role: components["schemas"]["RoleSummary"];
+            /**
+             * Assigned At
+             * Format: date-time
+             */
+            assigned_at: string;
+        };
+        /** RoleSummary */
+        RoleSummary: {
+            /** Code */
+            code: string;
+            /** Scope Type */
+            scope_type: string;
+            /** Service Code */
+            service_code?: string | null;
+        };
+        /** ServiceSubscriptionCreate */
+        ServiceSubscriptionCreate: {
+            /**
+             * Status
+             * @default active
+             */
+            status: string;
+        };
+        /** ServiceSubscriptionSummary */
+        ServiceSubscriptionSummary: {
+            /** Service Code */
+            service_code: string;
+            /** Status */
+            status: string;
+        };
+        /** ServiceSubscriptionUpdate */
+        ServiceSubscriptionUpdate: {
+            /** Status */
+            status: string;
+        };
+        /** SubscriptionResponse */
+        SubscriptionResponse: {
+            /** Id */
+            id: number;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Service Code */
+            service_code: string;
+            /** Status */
+            status: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -4901,6 +5209,449 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LevelTierResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    account_context_api_account_context_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountContextResponse"];
+                };
+            };
+        };
+    };
+    list_families_api_families_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyResponse"][];
+                };
+            };
+        };
+    };
+    create_family_api_families_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FamilyCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_family_api_families__family_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_family_api_families__family_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FamilyUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_members_api_families__family_id__members_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_membership_api_families__family_id__members_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MembershipCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_membership_api_families__family_id__members__membership_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                membership_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MembershipUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_role_assignments_api_families__family_id__members__membership_id__roles_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                membership_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleAssignmentResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_role_assignment_api_families__family_id__members__membership_id__roles_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                membership_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoleAssignmentCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleAssignmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_role_assignment_api_families__family_id__members__membership_id__roles__assignment_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                membership_id: number;
+                assignment_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_services_api_families__family_id__services_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_service_api_families__family_id__services__service_code__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                service_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceSubscriptionCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_service_api_families__family_id__services__service_code__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                service_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceSubscriptionUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionResponse"];
                 };
             };
             /** @description Validation Error */

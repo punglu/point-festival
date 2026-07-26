@@ -51,6 +51,7 @@ async def main() -> None:
             "owner_b": FamilyMembership(family_group_id=alpha.id, account_id=accounts["owner_b"].id, relationship="other", status="active", joined_at=now),
             "admin": FamilyMembership(family_group_id=alpha.id, account_id=accounts["admin"].id, relationship="other", status="active", joined_at=now),
             "participant": FamilyMembership(family_group_id=alpha.id, account_id=accounts["participant"].id, relationship="other", status="active", joined_at=now),
+            "owner_a_beta": FamilyMembership(family_group_id=beta.id, account_id=accounts["owner_a"].id, relationship="other", status="active", joined_at=now),
             "other": FamilyMembership(family_group_id=beta.id, account_id=accounts["other"].id, relationship="other", status="active", joined_at=now),
         }
         db.add_all(memberships.values())
@@ -64,6 +65,7 @@ async def main() -> None:
             MembershipRoleAssignment(membership_id=memberships["owner_b"].id, role_id=owner_role.id, assigned_by_account_id=accounts["owner_a"].id),
             MembershipRoleAssignment(membership_id=memberships["admin"].id, role_id=admin_role.id, assigned_by_account_id=accounts["owner_a"].id),
             MembershipRoleAssignment(membership_id=memberships["participant"].id, role_id=participant_role.id, assigned_by_account_id=accounts["owner_a"].id),
+            MembershipRoleAssignment(membership_id=memberships["owner_a_beta"].id, role_id=member_role.id, assigned_by_account_id=accounts["owner_a"].id),
             MembershipRoleAssignment(membership_id=memberships["other"].id, role_id=member_role.id, assigned_by_account_id=accounts["other"].id),
         ))
         db.add_all((

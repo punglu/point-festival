@@ -1,0 +1,51 @@
+.shell {
+  --naran-ink: #22243d;
+  --naran-surface: #ffffff;
+  --naran-wash: #f3f4ff;
+  --naran-primary: #5d45a2;
+  --naran-border: #e4e5f0;
+  min-height: 100dvh;
+  background: var(--naran-wash);
+  color: var(--naran-ink);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.header { display: flex; align-items: center; gap: 18px; min-height: 64px; padding: 0 24px; background: var(--naran-surface); border-bottom: 1px solid var(--naran-border); }
+.brand { color: var(--naran-primary); font-size: 22px; font-weight: 800; letter-spacing: -0.05em; text-decoration: none; }
+.familySwitcher { display: flex; align-items: center; gap: 8px; color: #5c6077; font-size: 13px; font-weight: 700; }
+.familySwitcher select { min-width: 150px; border: 1px solid var(--naran-border); border-radius: 8px; padding: 7px 30px 7px 10px; background: white; color: var(--naran-ink); }
+.accountArea { display: flex; align-items: center; gap: 12px; margin-left: auto; color: #5c6077; font-size: 14px; }
+.accountArea button, .stateNotice button { border: 0; border-radius: 8px; padding: 7px 10px; background: #eceaf8; color: #463586; font: inherit; cursor: pointer; }
+.body { display: grid; grid-template-columns: 200px minmax(0, 1fr); min-height: calc(100dvh - 64px); }
+.desktopNav { display: flex; flex-direction: column; gap: 4px; padding: 20px 12px; background: #f8f8ff; border-right: 1px solid var(--naran-border); }
+.navLink, .navActive { border-radius: 9px; padding: 10px 12px; color: #5c6077; font-size: 14px; font-weight: 700; text-decoration: none; }
+.navActive { background: #e8e4ff; color: #49368c; }
+.contextLabel { margin: 12px; color: #8e90a3; font-size: 12px; }
+.main { min-width: 0; padding: 20px; }
+.legacyMain { padding: 0; }
+.stateNotice { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 16px; border: 1px solid #dfdbf3; border-radius: 12px; padding: 12px 16px; background: #fff; }
+.stateNotice p { margin: 2px 0 0; color: #63667c; font-size: 14px; }
+.mobileNav { display: none; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
+
+@media (max-width: 767px) {
+  .shell { padding-bottom: calc(62px + env(safe-area-inset-bottom)); }
+  .header { min-height: 56px; padding: 0 14px; gap: 10px; }
+  .brand { font-size: 20px; }
+  .familySwitcher span, .accountArea span { display: none; }
+  .familySwitcher select { min-width: 122px; max-width: 42vw; }
+  .body { display: block; min-height: calc(100dvh - 56px); }
+  .desktopNav { display: none; }
+  .main { padding: 12px; }
+  .legacyMain { padding: 0; }
+  .stateNotice { align-items: flex-start; flex-direction: column; margin: 12px; }
+  .mobileNav { position: fixed; z-index: 20; right: env(safe-area-inset-right); bottom: env(safe-area-inset-bottom); left: env(safe-area-inset-left); display: flex; justify-content: space-around; border-top: 1px solid var(--naran-border); padding: 10px 8px; background: rgba(255, 255, 255, .96); backdrop-filter: blur(10px); }
+  .mobileNav a { color: #62657b; font-size: 12px; font-weight: 700; text-decoration: none; }
+  .mobileNav a[aria-current='page'] { color: var(--naran-primary); }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .body { grid-template-columns: 72px minmax(0, 1fr); }
+  .desktopNav { padding-inline: 8px; }
+  .navLink, .navActive { font-size: 12px; overflow: hidden; text-overflow: ellipsis; }
+}
