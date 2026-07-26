@@ -52,7 +52,7 @@ class FieldParsingTests(unittest.TestCase):
         self.assertEqual(CHECK_CLOSEOUT.field(text, "Field"), "")
 
 
-class ArchiveLifecycleTests(unittest.TestCase):
+class CloseoutFixtureHarness:
     """Exercise the installed checker, not a copy of its lifecycle logic."""
 
     task_id = "TASK-001"
@@ -63,6 +63,8 @@ class ArchiveLifecycleTests(unittest.TestCase):
         path.write_text(text, encoding="utf-8")
 
     def handoff(self, location: str, closeout: str = "") -> str:
+        if closeout == "missing-block":
+            return f"# Handoff\n- Task ID: `{self.task_id}`\n- Closeout Contract: `v1`\n"
         coverage = "`UPDATED`"
         reason = "`lifecycle fixture`"
         if closeout == "blank-reason":
@@ -104,27 +106,40 @@ class ArchiveLifecycleTests(unittest.TestCase):
         *,
         active: bool = False,
         active_handoff: bool = False,
+        active_handoffs: int | None = None,
         archived_handoffs: int = 0,
         graduate: bool = False,
+        graduate_entries: int | None = None,
         evidence: bool = True,
         relay: bool = False,
         handoff_closeout: str = "",
         evidence_task_id: str | None = None,
         historical: bool = False,
+        incomplete_active: bool = False,
+        archive_months: list[str] | None = None,
     ) -> str:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             if active:
-                self.write(root, "agent-system/active.md", self.active())
-            if active_handoff:
-                self.write(root, f"agent-system/handoffs/active/{self.task_id}.md", self.handoff("active", handoff_closeout))
+                active_text = self.active()
+                if incomplete_active:
+                    active_text = active_text.replace("- Execution: `SUCCEEDED`\n", "")
+                self.write(root, "agent-system/active.md", active_text)
+            active_handoff_count = int(active_handoff) if active_handoffs is None else active_handoffs
+            for number in range(active_handoff_count):
+                suffix = "" if number == 0 else f"-{number}"
+                self.write(root, f"agent-system/handoffs/active/{self.task_id}{suffix}.md", self.handoff("active", handoff_closeout))
+            archive_months = archive_months or ["2026-07"] * archived_handoffs
             for number in range(archived_handoffs):
                 suffix = "" if number == 0 else f"-{number}"
-                self.write(root, f"agent-system/handoffs/archive/2026-07/{self.task_id}{suffix}.md", self.handoff("archive/2026-07", handoff_closeout))
+                month = archive_months[number]
+                self.write(root, f"agent-system/handoffs/archive/{month}/{self.task_id}{suffix}.md", self.handoff(f"archive/{month}", handoff_closeout))
             if evidence:
                 self.write(root, f"agent-system/qa/{self.task_id}.md", self.evidence(evidence_task_id))
-            if graduate:
-                self.write(root, "agent-system/graduated/2026-07.md", f"- Task ID: `{self.task_id}`\n")
+            graduate_count = int(graduate) if graduate_entries is None else graduate_entries
+            for number in range(graduate_count):
+                suffix = "" if number == 0 else f"-{number}"
+                self.write(root, f"agent-system/graduated/2026-07{suffix}.md", f"- Task ID: `{self.task_id}`\n")
             if relay:
                 self.write(root, "agent-system/relay/current.md", f"- Task ID: `{self.task_id}`\n")
             if historical:
@@ -138,6 +153,9 @@ class ArchiveLifecycleTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stderr)
             return result.stdout
+
+
+class ArchiveLifecycleTests(CloseoutFixtureHarness, unittest.TestCase):
 
     def test_archive_lifecycle_contract(self) -> None:
         cases = [
@@ -161,6 +179,133 @@ class ArchiveLifecycleTests(unittest.TestCase):
             with self.subTest(label=label):
                 output = self.run_case(**kwargs)
                 self.assertEqual("[WARN]" in output, expect_warning, output)
+
+
+class PermanentCloseoutRegressionTests(CloseoutFixtureHarness, unittest.TestCase):
+    """Source-backed v1 contract matrix; each case invokes the real checker."""
+
+    def test_open_and_archived_contract_matrix(self) -> None:
+        cases = [
+            (
+                "normal OPEN task has no warning",
+                dict(active=True, active_handoff=True),
+                None,
+            ),
+            (
+                "OPEN task missing active record",
+                dict(active_handoff=True),
+                "active record is missing",
+            ),
+            (
+                "OPEN task missing active handoff",
+                dict(active=True),
+                "OPEN task requires exactly one active handoff",
+            ),
+            (
+                "OPEN task has incomplete active state",
+                dict(active=True, active_handoff=True, incomplete_active=True),
+                "active record is missing lifecycle, verification, or execution state",
+            ),
+            (
+                "OPEN task has duplicate active handoffs",
+                dict(active=True, active_handoffs=2),
+                "OPEN task requires exactly one active handoff",
+            ),
+            (
+                "OPEN task also has archive handoff",
+                dict(active=True, active_handoff=True, archived_handoffs=1, graduate=True),
+                "task exists in both handoffs/active and handoffs/archive",
+            ),
+            (
+                "OPEN task is also graduated",
+                dict(active=True, active_handoff=True, graduate=True),
+                "OPEN task is registered in graduated",
+            ),
+            (
+                "OPEN task has invalid closeout block",
+                dict(active=True, active_handoff=True, handoff_closeout="missing-block"),
+                "Closeout Synchronization block is missing",
+            ),
+            (
+                "OPEN task has empty no-change reason",
+                dict(active=True, active_handoff=True, handoff_closeout="blank-reason"),
+                "COVERAGE MAP is NO_CHANGE_REQUIRED but reason is empty",
+            ),
+            (
+                "normal ARCHIVED task has no warning",
+                dict(archived_handoffs=1, graduate=True),
+                None,
+            ),
+            (
+                "ARCHIVED task has duplicate archive handoffs across months",
+                dict(archived_handoffs=2, graduate=True, archive_months=["2026-06", "2026-07"]),
+                "ARCHIVED task requires exactly one archived handoff",
+            ),
+            (
+                "ARCHIVED task lacks graduated entry",
+                dict(archived_handoffs=1),
+                "archived task is missing graduated entry",
+            ),
+            (
+                "ARCHIVED task has duplicate graduate entries",
+                dict(archived_handoffs=1, graduate_entries=2),
+                "task has duplicate graduated entries",
+            ),
+            (
+                "ARCHIVED task retains active record",
+                dict(active=True, archived_handoffs=1, graduate=True),
+                "archived handoff exists but active record is still present",
+            ),
+            (
+                "ARCHIVED task retains active handoff",
+                dict(active_handoff=True, archived_handoffs=1, graduate=True),
+                "task exists in both handoffs/active and handoffs/archive",
+            ),
+            (
+                "ARCHIVED task remains in relay",
+                dict(archived_handoffs=1, graduate=True, relay=True),
+                "archived task is still declared in relay/current.md",
+            ),
+            (
+                "ARCHIVED task has malformed closeout block",
+                dict(archived_handoffs=1, graduate=True, handoff_closeout="missing-block"),
+                "Closeout Synchronization block is missing",
+            ),
+            (
+                "QA evidence only is not a valid task graph",
+                dict(),
+                "QA evidence declares Closeout Contract v1 but no active or archived handoff exists",
+            ),
+            (
+                "markerless historical archive remains outside v1 enforcement",
+                dict(evidence=False, historical=True),
+                None,
+            ),
+            (
+                "Task ID mismatch is reported",
+                dict(active=True, active_handoff=True, evidence_task_id="TASK-OTHER"),
+                "QA evidence is missing",
+            ),
+        ]
+        for label, kwargs, expected_warning in cases:
+            with self.subTest(label=label):
+                output = self.run_case(**kwargs)
+                self.assertNotIn("Traceback", output, output)
+                if expected_warning is None:
+                    self.assertNotIn("[WARN]", output, output)
+                else:
+                    self.assertIn(expected_warning, output, output)
+
+    def test_current_repository_is_clean_for_closeout_checker(self) -> None:
+        result = subprocess.run(
+            [os.environ.get("PYTHON", "python3"), str(TOOL)],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("Traceback", result.stdout + result.stderr)
+        self.assertNotIn("[WARN]", result.stdout, result.stdout)
 
 
 if __name__ == "__main__":

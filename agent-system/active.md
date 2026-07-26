@@ -103,3 +103,19 @@ are separate axes.
 - QA Evidence: `agent-system/qa/CLOSEOUT-ARCHIVE-AWARE-FIX-001.md`
 - Next action: `Independent Codex QA must verify OPEN/ARCHIVED lifecycle classification, parser regression coverage, archive fixtures, and existing dirty-state preservation`
 - Declared scope: `agent-system/tools/check_closeout.py`, `agent-system/tests/test_check_closeout.py`, Coverage Map, and task active/relay/handoff/QA evidence only`
+
+## CLOSEOUT-REGRESSION-FIXTURE-PERSISTENCE-001
+
+- Task ID: `CLOSEOUT-REGRESSION-FIXTURE-PERSISTENCE-001`
+- Lifecycle: `IN_PROGRESS`
+- Decision: `DESIGN_APPROVED`
+- Verification: `NOT_TESTED`
+- Execution: `SUCCEEDED`
+- Closeout Contract: `v1`
+- Implementer: `Codex /root/regression_fixture_persistence_writer`
+- QA: `independent Codex pending`
+- Phase note: `IMPLEMENTED / QA_PENDING`
+- Handoff: `agent-system/handoffs/active/CLOSEOUT-REGRESSION-FIXTURE-PERSISTENCE-001.md`
+- QA Evidence: `agent-system/qa/CLOSEOUT-REGRESSION-FIXTURE-PERSISTENCE-001.md`
+- Next action: `Independent Codex QA must verify the permanent matrix, historical evidence distinction, Finding 1 record, static checks, and dirty-state preservation`
+- Declared scope: `agent-system/tests/test_check_closeout.py`, optional test-only fixtures, Coverage Map, and task active/relay/handoff/QA evidence only`
