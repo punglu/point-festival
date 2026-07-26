@@ -16,3 +16,4 @@ from app.domains.family.models import (  # noqa: F401
     Account, FamilyGroup, FamilyMembership, Role, Permission, RolePermission,
     MembershipRoleAssignment, ServiceSubscription, LegacyIdentityMapping,
 )
+from app.domains.doran.models import DoranRoom, DoranDirectPair, DoranParticipant, DoranMessage, DoranParticipantReadState  # noqa: F401

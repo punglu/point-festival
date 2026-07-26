@@ -3,6 +3,19 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
+## PHASE2-DORAN-MESSAGING-CONTRACT-001
+
+- Task ID: PHASE2-DORAN-MESSAGING-CONTRACT-001
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED
+- Verification: NOT_TESTED
+- Execution: SUCCEEDED
+- Phase Note: IMPLEMENTED / PM_REVIEW_REQUIRED
+- Handoff: agent-system/handoffs/active/PHASE2-DORAN-MESSAGING-CONTRACT-001.md
+- QA Evidence: agent-system/qa/PHASE2-DORAN-MESSAGING-CONTRACT-001.md
+- Independent QA: not_applicable — contract design; implementation QA required
+- Next Action: PM review of five bounded Doran messaging gates before Foundation implementation
+
 ## PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001
 
 - Task ID: PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001
