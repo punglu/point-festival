@@ -133,9 +133,10 @@ export function useDashboard() {
 
   // 전체 누적 획득 포인트 로드 (포인트 변경 시 갱신)
   useEffect(() => {
-    if (!player) return;
+    const playerId = player?.id;
+    if (!playerId) return;
     const ctrl = new AbortController();
-    dashboardApi.getTotalEarned(player.id, ctrl.signal)
+    dashboardApi.getTotalEarned(playerId, ctrl.signal)
       .then((res) => { if (!ctrl.signal.aborted) setTotalEarned(res.data.total_earned); })
       .catch(() => {});
     return () => ctrl.abort();
@@ -143,7 +144,8 @@ export function useDashboard() {
 
   // 플레이어 사진 로드 (로그인 후 최초 1회)
   useEffect(() => {
-    if (!player) return;
+    const playerId = player?.id;
+    if (!playerId) return;
     const ctrl = new AbortController();
     dashboardApi.getMe(ctrl.signal)
       .then((res) => {

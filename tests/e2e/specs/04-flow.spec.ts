@@ -4,12 +4,11 @@ test.describe('통합 플로우', () => {
   test('플레이어 로그인 → 대시보드 → 로그아웃 → 홈 복귀', async ({ page }) => {
     // 로그인
     await page.goto('/');
-    await expect(page.locator('[class*="playerCard"], [class*="PlayerCard"]')).toBeVisible({ timeout: 10000 });
-    await page.locator('[class*="playerCard"], [class*="PlayerCard"]').first().click();
-    await page.locator('input[type="text"]').first().fill('1');
-    await page.locator('input[type="text"]').nth(1).fill('2');
-    await page.locator('input[type="text"]').nth(2).fill('3');
-    await page.locator('input[type="text"]').nth(3).fill('4');
+    await expect(page.locator('button[class*="playerCard"]').first()).toBeVisible({ timeout: 10000 });
+    await page.locator('button[class*="playerCard"]').first().click();
+    for (const digit of ['1', '2', '3', '4']) {
+      await page.getByRole('button', { name: digit, exact: true }).click();
+    }
     await expect(page).toHaveURL(/dashboard/, { timeout: 5000 });
 
     // 로그아웃
@@ -30,6 +29,6 @@ test.describe('통합 플로우', () => {
     await expect(page).toHaveURL(/admin/, { timeout: 5000 });
 
     // Admin 대시보드 요소 확인
-    await expect(page.locator('[class*="adminNav"], [class*="AdminNav"]')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('aside nav').first()).toBeVisible({ timeout: 5000 });
   });
 });
