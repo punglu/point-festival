@@ -8,9 +8,10 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.domains.family import service as family_service
-from app.domains.family.models import FamilyMembership, MembershipRoleAssignment, Permission, Role, RolePermission, ServiceSubscription
-from app.domains.doran.models import DoranDirectPair, DoranMessage, DoranParticipant, DoranParticipantReadState, DoranRoom
+from app.domains.family.models import FamilyGroup, FamilyMembership, MembershipRoleAssignment, Permission, Role, RolePermission, ServiceSubscription
+from app.domains.doran.models import DoranDirectPair, DoranMessage, DoranParticipant, DoranParticipantReadState, DoranRoom, DoranServiceAuditLog, DoranServiceBinding, ServicePrincipal
 from app.domains.doran.rules import canonical_direct_pair, visible_range
+from app.domains.doran.service_actor import issue_credential
 
 SERVICE_CODE = "doran"
 READ = "doran.messages.read"; SEND = "doran.messages.send"; CREATE = "doran.rooms.create"; MANAGE_ROOM = "doran.rooms.manage"; MANAGE_PARTICIPANTS = "doran.participants.manage"
@@ -229,3 +230,162 @@ async def remove_participant(db, user, family_id, room_id, participant_id, volun
         if not voluntary: target.removed_at = target.left_at
         await db.commit()
     return target
+
+
+# --- R2-B1: Service Principal, Service-Room Binding, SERVICE_ACTION publish -----
+# A Service Principal is not an Account: it never gets a Family Role or
+# room_admin, and this module's own admin helpers are the only issuance path
+# (no HTTP surface) - see service_actor.py and DORAN_SECURITY_AND_AUTHORIZATION.md.
+
+async def _audit(db, event_type, service_principal_id, family_group_id, room_id, result_code, detail=None):
+    db.add(DoranServiceAuditLog(
+        event_type=event_type, service_principal_id=service_principal_id,
+        family_group_id=family_group_id, room_id=room_id, result_code=result_code, detail=detail,
+    ))
+
+
+async def create_service_principal(db: AsyncSession, service_code: str, display_name: str) -> tuple[ServicePrincipal, str]:
+    credential_id, secret, credential_hash = issue_credential()
+    principal = ServicePrincipal(service_code=service_code, display_name=display_name, credential_id=credential_id, credential_hash=credential_hash, status="active")
+    db.add(principal)
+    await db.flush()
+    await _audit(db, "principal_created", principal.id, None, None, "success")
+    await db.commit()
+    await db.refresh(principal)
+    return principal, secret
+
+
+async def revoke_service_principal(db: AsyncSession, principal_id: int) -> ServicePrincipal:
+    principal = await db.get(ServicePrincipal, principal_id)
+    if principal is None: raise HTTPException(status_code=404, detail="Service Principal을 찾을 수 없습니다")
+    if principal.status != "revoked":
+        principal.status = "revoked"; principal.revoked_at = datetime.now(timezone.utc)
+        await _audit(db, "principal_revoked", principal.id, None, None, "success")
+        await db.commit(); await db.refresh(principal)
+    return principal
+
+
+async def create_service_binding(db: AsyncSession, service_principal_id: int, family_id: int, allowed_actions: list[dict]) -> tuple[DoranServiceBinding, DoranRoom]:
+    """Creates the SERVICE Room and its Binding atomically. A SERVICE Room has
+    no other creation path - it always exists because a Binding exists."""
+    principal = await db.get(ServicePrincipal, service_principal_id)
+    if principal is None or principal.status != "active":
+        raise HTTPException(status_code=422, detail="활성 Service Principal이 필요합니다")
+    family = await db.get(FamilyGroup, family_id)
+    if family is None or family.status != "active" or family.deleted_at is not None:
+        raise HTTPException(status_code=422, detail="활성 Family가 필요합니다")
+    room = DoranRoom(family_group_id=family_id, room_type="SERVICE", status="active", created_by_actor_type="SERVICE", created_by_account_id=None)
+    db.add(room)
+    await db.flush()
+    binding = DoranServiceBinding(service_principal_id=service_principal_id, family_group_id=family_id, room_id=room.id, allowed_actions=allowed_actions, status="active")
+    db.add(binding)
+    await db.flush()
+    await _audit(db, "binding_created", service_principal_id, family_id, room.id, "success")
+    await db.commit()
+    await db.refresh(binding); await db.refresh(room)
+    return binding, room
+
+
+async def set_service_binding_status(db: AsyncSession, binding_id: int, new_status: str) -> DoranServiceBinding:
+    if new_status not in ("active", "inactive"): raise HTTPException(status_code=422, detail="유효하지 않은 상태입니다")
+    binding = await db.get(DoranServiceBinding, binding_id)
+    if binding is None: raise HTTPException(status_code=404, detail="Binding을 찾을 수 없습니다")
+    if binding.status != new_status:
+        binding.status = new_status
+        await _audit(db, "binding_activated" if new_status == "active" else "binding_deactivated", binding.service_principal_id, binding.family_group_id, binding.room_id, "success")
+        await db.commit(); await db.refresh(binding)
+    return binding
+
+
+def _same_service_event(existing: DoranMessage, room_pk, schema_version: int, action_type: str, snapshot: dict) -> bool:
+    payload = existing.service_payload or {}
+    return (
+        existing.room_id == room_pk
+        and existing.service_payload_version == schema_version
+        and payload.get("action_type") == action_type
+        and payload.get("snapshot") == snapshot
+    )
+
+
+async def publish_service_action(db: AsyncSession, principal: ServicePrincipal, family_id: int, data) -> DoranMessage:
+    # Capture plain scalars up front - see send_message()'s comment on why
+    # touching an ORM object's attributes after db.rollback() is unsafe.
+    principal_id = principal.id
+    room_id = data.room_id
+
+    binding = (await db.execute(select(DoranServiceBinding).where(
+        DoranServiceBinding.service_principal_id == principal_id,
+        DoranServiceBinding.room_id == room_id,
+        DoranServiceBinding.family_group_id == family_id,
+    ))).scalars().first()
+    if binding is None or binding.status != "active":
+        await _audit(db, "permission_denied", principal_id, family_id, room_id, "denied", "binding_not_found_or_inactive")
+        await db.commit()
+        raise HTTPException(status_code=404, detail="발행 대상을 찾을 수 없습니다")
+
+    room = (await db.execute(select(DoranRoom).where(
+        DoranRoom.id == room_id, DoranRoom.family_group_id == family_id, DoranRoom.deleted_at.is_(None),
+    ))).scalars().first()
+    if room is None or room.room_type != "SERVICE" or room.status != "active":
+        await _audit(db, "permission_denied", principal_id, family_id, room_id, "denied", "room_not_service_or_inactive")
+        await db.commit()
+        raise HTTPException(status_code=404, detail="발행 대상을 찾을 수 없습니다")
+
+    if not await subscription_active(db, family_id):
+        await _audit(db, "permission_denied", principal_id, family_id, room_id, "denied", "subscription_inactive")
+        await db.commit()
+        raise HTTPException(status_code=404, detail="발행 대상을 찾을 수 없습니다")
+
+    allowed = any(
+        a.get("action_type") == data.action_type and int(a.get("schema_version", -1)) == data.schema_version
+        for a in (binding.allowed_actions or [])
+    )
+    if not allowed:
+        await _audit(db, "schema_denied", principal_id, family_id, room_id, "denied", "action_schema_not_allowed")
+        await db.commit()
+        raise HTTPException(status_code=422, detail="허용되지 않은 action schema입니다")
+
+    room_pk = room.id
+    existing = (await db.execute(select(DoranMessage).where(
+        DoranMessage.service_principal_id == principal_id,
+        DoranMessage.source == data.source,
+        DoranMessage.source_event_id == data.source_event_id,
+    ))).scalars().first()
+    if existing:
+        if not _same_service_event(existing, room_pk, data.schema_version, data.action_type, data.snapshot):
+            await _audit(db, "permission_denied", principal_id, family_id, room_pk, "conflict", "source_event_id_payload_conflict")
+            await db.commit()
+            raise HTTPException(status_code=409, detail="source_event_id payload conflict")
+        await _audit(db, "replay_detected", principal_id, family_id, room_pk, "idempotent")
+        await db.commit()
+        return existing
+
+    try:
+        sequence = (await db.execute(update(DoranRoom).where(DoranRoom.id == room_pk, DoranRoom.family_group_id == family_id).values(next_message_sequence=DoranRoom.next_message_sequence + 1).returning(DoranRoom.next_message_sequence))).scalar_one()
+        message = DoranMessage(
+            family_group_id=family_id, room_id=room_pk, sequence=sequence,
+            sender_participant_id=None, message_type="SERVICE_ACTION",
+            service_code=principal.service_code, service_payload_version=data.schema_version,
+            service_payload={"action_type": data.action_type, "snapshot": data.snapshot},
+            service_principal_id=principal_id, source=data.source, source_event_id=data.source_event_id,
+        )
+        db.add(message)
+        await db.flush()
+        await _audit(db, "publish_success", principal_id, family_id, room_pk, "success")
+        await db.commit()
+        return message
+    except IntegrityError:
+        await db.rollback()
+        existing = (await db.execute(select(DoranMessage).where(
+            DoranMessage.service_principal_id == principal_id,
+            DoranMessage.source == data.source,
+            DoranMessage.source_event_id == data.source_event_id,
+        ))).scalars().one()
+        if not _same_service_event(existing, room_pk, data.schema_version, data.action_type, data.snapshot):
+            await _audit(db, "permission_denied", principal_id, family_id, room_pk, "conflict", "source_event_id_payload_conflict")
+            await db.commit()
+            raise HTTPException(status_code=409, detail="source_event_id payload conflict")
+        await db.refresh(existing)
+        await _audit(db, "replay_detected", principal_id, family_id, room_pk, "idempotent")
+        await db.commit()
+        return existing

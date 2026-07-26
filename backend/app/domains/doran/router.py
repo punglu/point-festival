@@ -5,13 +5,23 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.domains.doran import service
-from app.domains.doran.schemas import MessageCreate, MessageListResponse, MessageResponse, ParticipantCreate, ParticipantResponse, ReadStateResponse, ReadStateUpdate, RoomCreate, RoomResponse, RoomUpdate
+from app.domains.doran.schemas import MessageCreate, MessageListResponse, MessageResponse, ParticipantCreate, ParticipantResponse, ReadStateResponse, ReadStateUpdate, RoomCreate, RoomResponse, RoomUpdate, ServiceActionPublish
+from app.domains.doran.service_actor import get_current_service_principal
+from app.domains.doran.models import ServicePrincipal
 
 router = APIRouter(prefix="/api/families/{family_id}/doran", tags=["doran"])
 
 def room_out(room): return RoomResponse.model_validate(room)
 def participant_out(item): return ParticipantResponse.model_validate(item)
-def message_out(item): return MessageResponse(id=item.id, room_id=item.room_id, sequence=item.sequence, sender_participant_id=item.sender_participant_id, message_type=item.message_type, body=None if item.deleted_at else item.body, created_at=item.created_at, deleted_at=item.deleted_at, deleted=item.deleted_at is not None, tombstone="Message deleted" if item.deleted_at else None)
+def message_out(item):
+    payload = item.service_payload or {}
+    return MessageResponse(
+        id=item.id, room_id=item.room_id, sequence=item.sequence, sender_participant_id=item.sender_participant_id,
+        message_type=item.message_type, body=None if item.deleted_at else item.body, created_at=item.created_at,
+        deleted_at=item.deleted_at, deleted=item.deleted_at is not None, tombstone="Message deleted" if item.deleted_at else None,
+        service_code=item.service_code, service_payload_version=item.service_payload_version,
+        service_payload=payload if item.message_type == "SERVICE_ACTION" else None,
+    )
 
 @router.get("/rooms", response_model=list[RoomResponse])
 async def list_rooms(family_id: int, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
@@ -76,3 +86,12 @@ async def get_read_state(family_id: int, room_id: UUID, user: dict = Depends(get
 async def put_read_state(family_id: int, room_id: UUID, data: ReadStateUpdate, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     participant, state, unread = await service.read_state(db, user, family_id, room_id, data.last_read_sequence)
     return ReadStateResponse(participant_id=participant.id, last_read_sequence=state.last_read_sequence, unread_count=unread, updated_at=state.updated_at)
+
+@router.post("/service/actions", response_model=MessageResponse, status_code=201)
+async def publish_service_action(
+    family_id: int,
+    data: ServiceActionPublish,
+    principal: ServicePrincipal = Depends(get_current_service_principal),
+    db: AsyncSession = Depends(get_db),
+):
+    return message_out(await service.publish_service_action(db, principal, family_id, data))

@@ -10,6 +10,15 @@ Status meanings: `MATCH` is reusable subject to tests; `PARTIAL` needs bounded
 change; `CONFLICT` violates R2; `MISSING` is absent; `QA_FAILED` has a proven
 failure and cannot be accepted as-is.
 
+**R2-B1 addendum (2026-07-26):** Service Principal and Service–Room Binding
+were implemented separately from this draft, in an isolated worktree, and
+independently QA-passed (`PHASE2-DORAN-R2B1-FOCUSED-QA-001` = PASS: credential
+security, permission boundary, real-PostgreSQL idempotency/concurrency
+including an 8-worker concurrent replay with zero HTTP 500 and one converged
+message, DB CHECK/unique-index integrity, and a full `0002→0003→0002→0003`
+migration cycle with zero residue). Rows 30 and 31 below are updated to
+reflect this; the rest of this document's draft evaluation is unchanged.
+
 | Requirement | Current draft evidence | Status | Reusable | Required change | Risk / test required |
 | --- | --- | --- | --- | --- | --- |
 | Family-scoped Room and composite Family boundary | migration/router QA passed Family scope and cross-Family denial | MATCH | yes | retain only after R2 naming/permission review | PostgreSQL IDOR regression |
@@ -27,8 +36,8 @@ failure and cannot be accepted as-is.
 | `doran_*` schema naming | draft uses `conversation_*` table model | CONFLICT | no | rename/rebase schema under approved migration plan; do not dual-write | migration compatibility review |
 | `room_admin` role | draft uses room owner/admin terminology | CONFLICT | no | replace Room role naming; keep Family owner distinct | permission/role API test |
 | Platform operator boundary | no complete Platform role model | MISSING | no | specify/implement no-bypass boundary separately | independent authorization QA |
-| Service Principal and Binding | schema/API absent | MISSING | no | R2-B Principal, Binding, allowlisted Action schema | scope/impersonation tests |
-| service event idempotency/outbox | absent | MISSING | no | transactional outbox and idempotent consumer | failure/replay tests |
+| Service Principal and Binding | R2-B1 implemented (`ServicePrincipal`, `DoranServiceBinding`, `SERVICE_ACTION` ingress, migration `0003`); independent QA PASS | MATCH | yes | Principal/Binding management HTTP API deferred pending Platform Operator auth (PM-approved) | scope/impersonation tests passed (cross-service, cross-Family, inactive binding/subscription, non-SERVICE room) |
+| service event idempotency/outbox | consumer-side `source_event_id` idempotency implemented and QA-passed (sequential + 8-worker concurrent replay, conflicting-payload 409); producer-side Transactional Outbox still absent | PARTIAL | yes (idempotency) / no (outbox) | Transactional Outbox and owning-service delivery integration | R2-B2: outbox delivery-guarantee and failure/replay tests |
 | audit and privacy controls | no complete audit design/implementation | MISSING | no | R2-B audit without body/credential leakage | audit redaction tests |
 | resource limits | no approved resource-limit implementation | MISSING | no | approve values then enforce page/body/rate/caps | boundary/load tests |
 | Dock preference backend | absent | MISSING | no | Account+Family preference and optimistic version | multi-device conflict tests |

@@ -1,9 +1,20 @@
 """Doran wire schemas.  Sender and participant identity never come from clients."""
 from __future__ import annotations
+import json
 from datetime import datetime
 from typing import Literal
 from uuid import UUID
 from pydantic import BaseModel, Field, model_validator
+
+# Conservative, code-enforced resource limits for the R2-B1 service ingress.
+# The R2 canonical docs mark resource limits as "no approved values" - these
+# are the proposed values enforced here pending PM sign-off (see closeout
+# report). Kept deliberately small: this is a display-minimum event envelope,
+# never a business-data payload.
+SERVICE_ACTION_TYPE_MAX_LENGTH = 60
+SERVICE_ACTION_SOURCE_MAX_LENGTH = 100
+SERVICE_ACTION_SOURCE_EVENT_ID_MAX_LENGTH = 128
+SERVICE_ACTION_SNAPSHOT_MAX_BYTES = 2000
 
 
 class RoomCreate(BaseModel):
@@ -77,6 +88,12 @@ class MessageResponse(BaseModel):
     deleted_at: datetime | None
     deleted: bool
     tombstone: str | None = None
+    # Populated only for SERVICE_ACTION; service_code is the owning-service
+    # reference, service_payload is the display-minimum snapshot. Never the
+    # Service Principal's own id/credential.
+    service_code: str | None = None
+    service_payload_version: int | None = None
+    service_payload: dict | None = None
 
 
 class MessageListResponse(BaseModel):
@@ -90,3 +107,24 @@ class ReadStateResponse(BaseModel):
     last_read_sequence: int
     unread_count: int
     updated_at: datetime
+
+
+class ServiceActionPublish(BaseModel):
+    """The only shape a Service Principal may submit. There is no client-set
+    family_id, sender, sequence, Principal id, or free-form executable payload
+    - family_id comes from the URL like every other Doran endpoint, and only
+    an allow-listed action type/version plus a small display snapshot may be
+    submitted here."""
+    room_id: UUID
+    action_type: str = Field(min_length=1, max_length=SERVICE_ACTION_TYPE_MAX_LENGTH)
+    schema_version: int = Field(ge=1, le=1000)
+    source: str = Field(min_length=1, max_length=SERVICE_ACTION_SOURCE_MAX_LENGTH)
+    source_event_id: str = Field(min_length=1, max_length=SERVICE_ACTION_SOURCE_EVENT_ID_MAX_LENGTH)
+    snapshot: dict = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def validate_snapshot_size(self):
+        size = len(json.dumps(self.snapshot, ensure_ascii=False, separators=(",", ":")))
+        if size > SERVICE_ACTION_SNAPSHOT_MAX_BYTES:
+            raise ValueError(f"snapshot exceeds {SERVICE_ACTION_SNAPSHOT_MAX_BYTES} byte limit")
+        return self
