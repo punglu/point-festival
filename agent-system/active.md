@@ -3,6 +3,19 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
+## PHASE0-AUTOMATED-GAP-CLOSEOUT-001
+
+- Task ID: PHASE0-AUTOMATED-GAP-CLOSEOUT-001
+- Lifecycle: SUSPENDED
+- Decision: DESIGN_APPROVED
+- Verification: BLOCKED
+- Execution: FAILED
+- Phase Note: BLOCKED / CORE DEFECT — CURRENT USER OWNERSHIP AND MUTATION AUTHORIZATION
+- Handoff: agent-system/handoffs/active/PHASE0-AUTOMATED-GAP-CLOSEOUT-001.md
+- QA Evidence: agent-system/qa/PHASE0-AUTOMATED-GAP-CLOSEOUT-001.md
+- Independent QA: required for a follow-up core authorization/ownership fix
+- Next Action: PM triage and a bounded core authorization/ownership repair task; do not resume automated closeout or push first
+
 ## PHASE0-DEV-RUNTIME-RECOVERY-001
 
 - Task ID: PHASE0-DEV-RUNTIME-RECOVERY-001

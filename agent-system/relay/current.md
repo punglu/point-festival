@@ -1,7 +1,8 @@
 # Current Relay
 
-Current Task: PHASE0-ENGINEERING-BASELINE-CLOSEOUT-001
+Current Task: PHASE0-AUTOMATED-GAP-CLOSEOUT-001
 
-- Intended files: engineering/*.md, frontend/package.json, frontend/package-lock.json, frontend/eslint.config.js, docker-compose.phase0.yml, .env.phase0.example, tests/api/**, tests/e2e/**, frontend evidence paths, agent-system/active.md, agent-system/relay/current.md, agent-system/handoffs/active/PHASE0-ENGINEERING-BASELINE-CLOSEOUT-001.md, agent-system/qa/PHASE0-ENGINEERING-BASELINE-CLOSEOUT-001.md, agent-system/qa/COVERAGE_MAP.md
-- Forbidden: production/NAS resources, existing Docker projects/volumes, DB schema/migrations, core backend business logic, RBAC behavior, existing user dirty paths, push
-- High-risk writer: this session only (Compose, shared tooling, and common agent state)
+- Status: BLOCKED / CORE DEFECT
+- Evidence scope: agent-system/active.md, agent-system/relay/current.md, agent-system/handoffs/active/PHASE0-AUTOMATED-GAP-CLOSEOUT-001.md, agent-system/qa/PHASE0-AUTOMATED-GAP-CLOSEOUT-001.md, agent-system/qa/COVERAGE_MAP.md
+- Finding: unauthenticated and cross-user mission/point/notification access, plus unauthenticated mission mutation, were measured against isolated synthetic runtime port 18000.
+- Next action: PM triage followed by a single-writer authorization/ownership fix with independent QA. No Phase 0 automated closeout, archive, or push.
