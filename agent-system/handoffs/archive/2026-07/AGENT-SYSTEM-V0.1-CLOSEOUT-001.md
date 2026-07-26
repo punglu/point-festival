@@ -70,7 +70,7 @@ existing user-owned dirty changes.
 - ACTIVE: `UPDATED`
 - ACTIVE Evidence: `agent-system/active.md` retains only this PM-review task.
 - HANDOFF: `UPDATED`
-- HANDOFF Path: `agent-system/handoffs/active/AGENT-SYSTEM-V0.1-CLOSEOUT-001.md`
+- HANDOFF Path: `agent-system/handoffs/archive/2026-07/AGENT-SYSTEM-V0.1-CLOSEOUT-001.md`
 - QA EVIDENCE: `UPDATED`
 - QA Evidence Path: `agent-system/qa/AGENT-SYSTEM-V0.1-CLOSEOUT-001.md`
 - Independent QA: `not_applicable`
