@@ -21,9 +21,19 @@ AREA_VALUES = {
 }
 
 
-def field(text: str, name: str) -> str:
-    match = re.search(rf"^- {re.escape(name)}:\s*`?([^`\n]+?)`?\s*$", text, re.M)
-    return match.group(1).strip() if match else ""
+def field(text: str, name: str) -> str | None:
+    """Return a named list field's same-line value, or ``None`` when absent.
+
+    A present field with no value intentionally returns ``""``.  Horizontal
+    whitespace is allowed around the value, but a field must never consume a
+    following Markdown line as its value.
+    """
+    match = re.search(
+        rf"^[ \t]*-[ \t]*{re.escape(name)}:[ \t]*`?([^\r\n`]*)`?[ \t]*\r?$",
+        text,
+        re.MULTILINE,
+    )
+    return match.group(1).strip() if match else None
 
 
 def active_entries() -> dict[str, dict[str, str]]:

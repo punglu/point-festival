@@ -123,3 +123,16 @@ deployment, migration, historical bulk rewrites, graduation, or push.
 
 Closeout Gate PASS records document synchronization only; it is not independent
 QA PASS, lifecycle completion, PM approval, graduation, or push authorization.
+
+## Post-QA Correction Supplement
+
+- Correction Created By: `CLOSEOUT-GATE-FIX-001`
+- Original Claim: `15/15 fixtures matched`
+- Independent QA Finding: `14/15 matched`
+- Failed Fixture: `Coverage Map NO_CHANGE_REQUIRED with empty reason`
+- Root Cause: `field()` used newline-matching whitespace in its regular
+  expression and consumed the following field as the empty reason's value.
+- Corrected Verification: `QA BLOCKED pending CLOSEOUT-GATE-FIX-001`
+- Historical Integrity: The original implementation record is retained as the
+  contemporaneous implementation report. This append-only section records the
+  independent QA finding and does not present the original claim as correct.

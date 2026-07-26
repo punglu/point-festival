@@ -58,6 +58,23 @@ are separate axes.
 ## CLOSEOUT-GATE-001
 
 - Task ID: `CLOSEOUT-GATE-001`
+- Lifecycle: `SUSPENDED`
+- Decision: `DESIGN_APPROVED`
+- Verification: `BLOCKED`
+- Execution: `SUCCEEDED`
+- Closeout Contract: `v1`
+- Implementer: `Codex /root`
+- QA: `independent Codex QA BLOCKED`
+- Phase note: `QA BLOCKED / FIX IN PROGRESS`
+- Handoff: `agent-system/handoffs/active/CLOSEOUT-GATE-001.md`
+- QA Evidence: `agent-system/qa/CLOSEOUT-GATE-001.md`
+- Next action: `CLOSEOUT-GATE-FIX-001 must repair same-line field parsing and add a regression test before independent QA reruns`
+- Blocking Task: `CLOSEOUT-GATE-FIX-001`
+- Declared scope: `Agent System closeout contract, report-only checker, templates, Decision, Coverage Map, and task evidence only`
+
+## CLOSEOUT-GATE-FIX-001
+
+- Task ID: `CLOSEOUT-GATE-FIX-001`
 - Lifecycle: `IN_PROGRESS`
 - Decision: `DESIGN_APPROVED`
 - Verification: `NOT_TESTED`
@@ -66,7 +83,7 @@ are separate axes.
 - Implementer: `Codex /root`
 - QA: `independent Codex pending`
 - Phase note: `IMPLEMENTED / QA_PENDING`
-- Handoff: `agent-system/handoffs/active/CLOSEOUT-GATE-001.md`
-- QA Evidence: `agent-system/qa/CLOSEOUT-GATE-001.md`
-- Next action: `Independent Codex QA of contract, checker fixtures, Coverage Map, Drive read-back, and dirty-state preservation`
-- Declared scope: `Agent System closeout contract, report-only checker, templates, Decision, Coverage Map, and task evidence only`
+- Handoff: `agent-system/handoffs/active/CLOSEOUT-GATE-FIX-001.md`
+- QA Evidence: `agent-system/qa/CLOSEOUT-GATE-FIX-001.md`
+- Next action: `Independent Codex QA must re-run empty-reason, CRLF, field-absence, parser, and 23-fixture checks plus correction evidence review`
+- Declared scope: `Agent System closeout parser, regression test, task evidence, Coverage Map, and active/relay state only`

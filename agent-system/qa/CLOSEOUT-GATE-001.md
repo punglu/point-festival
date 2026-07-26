@@ -63,3 +63,16 @@ not award an independent QA verdict.
 
 - Phase note: `IMPLEMENTED / QA_PENDING`
 - Verification remains `NOT_TESTED`; independent QA is required.
+
+## Post-QA Correction Supplement
+
+- Correction Created By: `CLOSEOUT-GATE-FIX-001`
+- Original Claim: `15/15 fixtures matched`
+- Independent QA Finding: `14/15 matched`
+- Failed Fixture: `Coverage Map NO_CHANGE_REQUIRED with empty reason`
+- Root Cause: `field()` used newline-matching whitespace in its regular
+  expression and consumed the following field as the empty reason's value.
+- Corrected Verification: `QA BLOCKED pending CLOSEOUT-GATE-FIX-001`
+- Historical Integrity: The original implementation evidence is retained as
+  the contemporaneous self-check. This append-only section records the
+  independent QA finding and does not rewrite the original claim.
