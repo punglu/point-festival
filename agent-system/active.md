@@ -69,7 +69,7 @@ are separate axes.
 - Handoff: `agent-system/handoffs/active/CLOSEOUT-GATE-001.md`
 - QA Evidence: `agent-system/qa/CLOSEOUT-GATE-001.md`
 - Next action: `CLOSEOUT-GATE-FIX-001 must repair same-line field parsing and add a regression test before independent QA reruns`
-- Blocking Task: `CLOSEOUT-GATE-FIX-001`
+- Blocking Task: `CLOSEOUT-ARCHIVE-AWARE-FIX-001`
 - Declared scope: `Agent System closeout contract, report-only checker, templates, Decision, Coverage Map, and task evidence only`
 
 ## CLOSEOUT-GATE-FIX-001
@@ -87,3 +87,19 @@ are separate axes.
 - QA Evidence: `agent-system/qa/CLOSEOUT-GATE-FIX-001.md`
 - Next action: `Independent Codex QA must re-run empty-reason, CRLF, field-absence, parser, and 23-fixture checks plus correction evidence review`
 - Declared scope: `Agent System closeout parser, regression test, task evidence, Coverage Map, and active/relay state only`
+
+## CLOSEOUT-ARCHIVE-AWARE-FIX-001
+
+- Task ID: `CLOSEOUT-ARCHIVE-AWARE-FIX-001`
+- Lifecycle: `IN_PROGRESS`
+- Decision: `DESIGN_APPROVED`
+- Verification: `NOT_TESTED`
+- Execution: `SUCCEEDED`
+- Closeout Contract: `v1`
+- Implementer: `Codex /root`
+- QA: `independent Codex pending`
+- Phase note: `IMPLEMENTED / QA_PENDING`
+- Handoff: `agent-system/handoffs/active/CLOSEOUT-ARCHIVE-AWARE-FIX-001.md`
+- QA Evidence: `agent-system/qa/CLOSEOUT-ARCHIVE-AWARE-FIX-001.md`
+- Next action: `Independent Codex QA must verify OPEN/ARCHIVED lifecycle classification, parser regression coverage, archive fixtures, and existing dirty-state preservation`
+- Declared scope: `agent-system/tools/check_closeout.py`, `agent-system/tests/test_check_closeout.py`, Coverage Map, and task active/relay/handoff/QA evidence only`
