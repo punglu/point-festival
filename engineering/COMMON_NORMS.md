@@ -1,5 +1,7 @@
 # Common Engineering Norms
 
+**Status: APPROVED_WITH_DECISIONS / v0.1 (2026-07-26).**
+
 ## CURRENT CONTRACT — authority and safety
 
 - Git worktree is implementation SSOT; Drive is a review/evidence layer. Source: `AGENTS.md`, `agent-system/rules.md`.

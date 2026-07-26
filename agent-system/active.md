@@ -28,3 +28,16 @@ are separate axes.
 - QA Evidence: agent-system/qa/PHASE0-DEVELOPMENT-GUIDE-LOCALIZATION-001.md
 - Independent QA: not_applicable — documentation localization; PM review required
 - Next Action: PM review of localized engineering contracts and five bounded gates
+
+## PHASE0-ENGINEERING-BASELINE-CLOSEOUT-001
+
+- Task ID: PHASE0-ENGINEERING-BASELINE-CLOSEOUT-001
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED
+- Verification: NOT_TESTED
+- Execution: SUCCEEDED
+- Phase Note: PHASE0 AUTOMATED BASELINE COMPLETE / PM_REVIEW_PENDING
+- Handoff: agent-system/handoffs/active/PHASE0-ENGINEERING-BASELINE-CLOSEOUT-001.md
+- QA Evidence: agent-system/qa/PHASE0-ENGINEERING-BASELINE-CLOSEOUT-001.md
+- Independent QA: not_applicable — implementation changed docs, tooling, generated API types, and tests only; no core code or contract behavior changed
+- Next Action: PM review, then PHASE0-DEVICE-AND-OPERATIONS-GATE-001 for physical-device and operating-DB rehearsal gates

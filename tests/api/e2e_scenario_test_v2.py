@@ -11,18 +11,20 @@ import requests
 import json
 import sys
 import threading
+import os
 from datetime import date, timedelta
 
 # ===== 설정 =====
 
-BASE = "http://localhost:8000"
+BASE = os.environ.get("PHASE0_API_BASE_URL", "http://localhost:18000")
 
 # [제언-A 반영] 고정 테스트 날짜 — 자정 경계 이슈 방지
 # 환경변수 TEST_DATE가 있으면 사용, 없으면 오늘
-import os
 TEST_DATE = os.environ.get("TEST_DATE", date.today().isoformat())
 TEST_TOMORROW = (date.fromisoformat(TEST_DATE) + timedelta(days=1)).isoformat()
 TEST_PREFIX = "e2e_test"  # 테스트 데이터 식별자
+ADMIN_USERNAME = os.environ.get("PHASE0_ADMIN_USERNAME", "dad")
+ADMIN_PASSWORD = os.environ.get("PHASE0_ADMIN_PASSWORD", "admin1234")
 
 # [제언-B 반영] 플레이어 캐시
 PLAYER_MAP: dict[str, dict] = {}    # { "유빈": {"id": 1, "name": "유빈", "role": "player"}, ... }
@@ -125,15 +127,14 @@ def init_cache_and_cleanup():
     players = requests.get(f"{BASE}/api/players").json()
     PLAYER_MAP = {p["name"]: p for p in players}
 
-    # [FIX] 관리자 수동 추가 (id=3, name='관리자', role='admin')
-    PLAYER_MAP["관리자"] = {"id": 3, "name": "관리자", "role": "admin"}
     print(f"  캐시: {list(PLAYER_MAP.keys())}")
 
-    # 관리자 토큰
-    admin = PLAYER_MAP["관리자"]
-    resp = requests.post(f"{BASE}/api/auth/login", json={
-        "player_id": admin["id"], "pin": "0000"
+    # 격리 synthetic DB의 admin_auth 계약을 사용한다. 운영 자격증명은 허용하지 않는다.
+    resp = requests.post(f"{BASE}/api/auth/admin/login", json={
+        "username": ADMIN_USERNAME, "password": ADMIN_PASSWORD
     })
+    if resp.status_code != 200:
+        raise RuntimeError(f"관리자 인증 실패: {resp.status_code} {resp.text}")
     ADMIN_TOKEN = resp.json()["access_token"]
 
     # 이전 테스트 데이터 정리
@@ -614,29 +615,25 @@ def scenario_d5_notification():
 
 
 def scenario_d6_config():
-    """설정 CRUD"""
+    """격리 runtime 전용 설정 Upsert/조회 — 운영 설정 키에 의존하지 않는다."""
     print(f"\n📋 시나리오 D6: 설정")
 
-    resp = requests.get(f"{BASE}/api/configs/level.thresholds", headers=auth(ADMIN_TOKEN))
-    if resp.status_code == 200:
-        result.ok("D6-1: 조회 성공")
-    else:
-        result.fail("D6-1: 조회 실패", resp.text)
-        return
-
-    original = resp.json().get("value", '{"1":0,"2":50,"3":150,"4":300,"5":500}')
-
-    resp = requests.put(f"{BASE}/api/configs/level.thresholds",
-        json={"value": '{"1":0,"2":60,"3":180,"4":350,"5":600}'},
+    key = f"{TEST_PREFIX}.phase0.config"
+    value = '{"fixture":true}'
+    resp = requests.put(f"{BASE}/api/configs/{key}",
+        json={"value": value},
         headers=auth(ADMIN_TOKEN))
     if resp.status_code == 200:
-        result.ok("D6-2: 수정 성공")
+        result.ok("D6-1: Upsert 성공")
     else:
-        result.fail("D6-2: 수정 실패", resp.text)
+        result.fail("D6-1: Upsert 실패", resp.text)
+        return
 
-    # 원복
-    requests.put(f"{BASE}/api/configs/level.thresholds",
-        json={"value": original}, headers=auth(ADMIN_TOKEN))
+    resp = requests.get(f"{BASE}/api/configs/{key}", headers=auth(ADMIN_TOKEN))
+    if resp.status_code == 200 and resp.json().get("value") == value:
+        result.ok("D6-2: 조회 및 값 보존 성공")
+    else:
+        result.fail("D6-2: 조회 또는 값 불일치", resp.text)
 
 
 def scenario_d7_cheer():
@@ -706,15 +703,15 @@ def scenario_d9_invalid_transitions():
     }, headers=auth(ADMIN_TOKEN))
     mid = resp.json()["id"]
 
-    # active → completed (직접 — 차단)
+    # admin은 active → completed 승인 전이를 허용한다.
     resp = requests.patch(f"{BASE}/api/missions/{mid}",
         json={"status": "completed"}, headers=auth(ADMIN_TOKEN))
-    if resp.status_code == 400:
-        result.ok("D9-1: active → completed 차단")
+    if resp.status_code == 200 and resp.json().get("status") == "completed":
+        result.ok("D9-1: admin active → completed 승인 허용")
     else:
-        result.fail("D9-1: 허용됨", f"status={resp.status_code}")
+        result.fail("D9-1: admin 승인 실패", f"status={resp.status_code}")
 
-    # active → rejected (차단)
+    # completed → rejected는 어떤 역할에도 허용되지 않는다.
     resp = requests.patch(f"{BASE}/api/missions/{mid}",
         json={"status": "rejected"}, headers=auth(ADMIN_TOKEN))
     if resp.status_code == 400:
@@ -759,6 +756,30 @@ def scenario_d10_concurrent_approve():
         result.ok("D10-2: 두 미션 모두 존재")
     else:
         result.fail("D10-2: 누락", f"dad={dad_found}, mom={mom_found}")
+
+
+def scenario_d11_level_and_chat_access():
+    """레벨 조회와 채팅 인증/목록 경계 — 쓰기 없는 synthetic baseline."""
+    print(f"\n📋 시나리오 D11: 레벨·채팅 접근")
+
+    tiers = requests.get(f"{BASE}/api/level-tiers", params={"job_code": "COMMON"})
+    if tiers.status_code == 200 and len(tiers.json()) > 0:
+        result.ok("D11-1: 레벨 tier 조회")
+    else:
+        result.fail("D11-1: 레벨 tier 조회 실패", tiers.text)
+
+    no_auth = requests.get(f"{BASE}/api/chat/partners")
+    if no_auth.status_code in (401, 403):
+        result.ok("D11-2: 비인증 채팅 접근 거부")
+    else:
+        result.fail("D11-2: 비인증 채팅 접근 허용", f"status={no_auth.status_code}")
+
+    child_token = login_player("유빈")
+    partners = requests.get(f"{BASE}/api/chat/partners", headers=auth(child_token))
+    if partners.status_code == 200 and isinstance(partners.json(), list):
+        result.ok("D11-3: 인증된 채팅 상대 조회")
+    else:
+        result.fail("D11-3: 인증된 채팅 상대 조회 실패", partners.text)
 
 
 # ===== 메인 =====
@@ -810,6 +831,7 @@ def main():
     scenario_d8_feedback()
     scenario_d9_invalid_transitions()
     scenario_d10_concurrent_approve()
+    scenario_d11_level_and_chat_access()
 
     # 정리
     print("\n🧹 테스트 데이터 정리...")

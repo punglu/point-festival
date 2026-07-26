@@ -10,15 +10,15 @@ import requests
 import json
 import sys
 import threading
+import os
 from datetime import date, timedelta
 
 # ===== 설정 =====
 
-BASE = "http://localhost:8000"
+BASE = os.environ.get("PHASE0_API_BASE_URL", "http://localhost:18000")
 
 # [제언-A 반영] 고정 테스트 날짜 — 자정 경계 이슈 방지
 # 환경변수 TEST_DATE가 있으면 사용, 없으면 오늘
-import os
 TEST_DATE = os.environ.get("TEST_DATE", date.today().isoformat())
 TEST_TOMORROW = (date.fromisoformat(TEST_DATE) + timedelta(days=1)).isoformat()
 TEST_PREFIX = "e2e_test"  # 테스트 데이터 식별자

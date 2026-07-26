@@ -1,5 +1,7 @@
 # Testing and QA Guide
 
+**Status: APPROVED_WITH_DECISIONS / v0.1 (2026-07-26).**
+
 ## CURRENT CONTRACT — test layers and evidence
 
 The local tier definitions are authoritative in `agent-system/qa/TEST_POLICY.md`:

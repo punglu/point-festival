@@ -1,5 +1,7 @@
 # Backend Development Guide
 
+**Status: APPROVED_WITH_DECISIONS / v0.1 (2026-07-26).**
+
 ## CURRENT CONTRACT — platform and layout
 
 - FastAPI assembles routers in `backend/app/main.py`; the application uses an async lifespan and imports domain routers directly.

@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-BASE="http://localhost:8000"
+BASE="${PHASE0_API_BASE_URL:-http://localhost:18000}"
 PASS=0
 FAIL=0
 

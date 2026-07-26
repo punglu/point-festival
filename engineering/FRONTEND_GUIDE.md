@@ -1,5 +1,7 @@
 # Frontend Development Guide
 
+**Status: APPROVED_WITH_DECISIONS / v0.1 (2026-07-26).**
+
 ## CURRENT CONTRACT — stack and entry points
 
 - React 18, TypeScript, Vite, CSS Modules, Axios, and Zustand are declared in `frontend/package.json`.
