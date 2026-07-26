@@ -97,7 +97,7 @@ def find_deduction(deductions: list, deduction_id: int) -> dict | None:
 
 def get_daily_point_for(token: str, player_id: int, target_date: str) -> dict | None:
     """[Critical-3 반영] daily_point 안전 조회"""
-    resp = requests.get(f"{BASE}/api/daily-points",
+    resp = requests.get(f"{BASE}/api/admin/daily-points",
         params={"player_id": player_id, "date": target_date},
         headers=auth(token))
     if resp.status_code != 200:
@@ -148,25 +148,25 @@ def cleanup_all_test_data():
     # 미션 정리
     for name, player in PLAYER_MAP.items():
         for d in [TEST_DATE, TEST_TOMORROW]:
-            resp = requests.get(f"{BASE}/api/missions",
+            resp = requests.get(f"{BASE}/api/admin/missions",
                 params={"player_id": player["id"], "date": d},
                 headers=auth(ADMIN_TOKEN))
             if resp.status_code == 200:
                 for m in resp.json():
                     if TEST_PREFIX in m.get("text", ""):
-                        requests.delete(f"{BASE}/api/missions/{m['id']}",
+                        requests.delete(f"{BASE}/api/admin/missions/{m['id']}",
                             headers=auth(ADMIN_TOKEN))
                         cleaned += 1
 
     # 차감 정리
     for name, player in PLAYER_MAP.items():
-        resp = requests.get(f"{BASE}/api/deductions",
+        resp = requests.get(f"{BASE}/api/admin/deductions",
             params={"player_id": player["id"], "date": TEST_DATE},
             headers=auth(ADMIN_TOKEN))
         if resp.status_code == 200:
             for d in resp.json():
                 if TEST_PREFIX in d.get("reason", ""):
-                    requests.delete(f"{BASE}/api/deductions/{d['id']}",
+                    requests.delete(f"{BASE}/api/admin/deductions/{d['id']}",
                         headers=auth(ADMIN_TOKEN))
                     cleaned += 1
 
@@ -183,7 +183,7 @@ def cleanup_scenario(label: str):
         if resp.status_code == 200:
             for m in resp.json():
                 if f"{TEST_PREFIX}_{label}" in m.get("text", ""):
-                    requests.delete(f"{BASE}/api/missions/{m['id']}",
+                    requests.delete(f"{BASE}/api/admin/missions/{m['id']}",
                         headers=auth(ADMIN_TOKEN))
 
 
@@ -200,7 +200,7 @@ def scenario_a_mission_cycle(admin_name: str, child_name: str, label: str):
     mission_point = 5
 
     # 1. 관리자 미션 할당
-    resp = requests.post(f"{BASE}/api/missions", json={
+    resp = requests.post(f"{BASE}/api/admin/missions", json={
         "player_id": child_id, "date": TEST_DATE,
         "text": mission_text, "point": mission_point,
     }, headers=auth(ADMIN_TOKEN))
@@ -233,7 +233,7 @@ def scenario_a_mission_cycle(admin_name: str, child_name: str, label: str):
         return
 
     # 4. 관리자 확인
-    resp = requests.get(f"{BASE}/api/missions",
+    resp = requests.get(f"{BASE}/api/admin/missions",
         params={"player_id": child_id, "date": TEST_DATE},
         headers=auth(ADMIN_TOKEN))
     m = find_mission(resp.json(), mission_id)
@@ -244,7 +244,7 @@ def scenario_a_mission_cycle(admin_name: str, child_name: str, label: str):
         return
 
     # 5. 관리자 승인
-    resp = requests.patch(f"{BASE}/api/missions/{mission_id}",
+    resp = requests.patch(f"{BASE}/api/admin/missions/{mission_id}",
         json={"status": "completed"}, headers=auth(ADMIN_TOKEN))
     if resp.status_code == 200 and resp.json()["status"] == "completed":
         result.ok(f"{label}-5: 관리자 승인")
@@ -282,7 +282,7 @@ def scenario_a_all(admin_name: str, label: str):
     # 각 아이에게 미션 생성
     mission_ids = {}
     for child in children:
-        resp = requests.post(f"{BASE}/api/missions", json={
+        resp = requests.post(f"{BASE}/api/admin/missions", json={
             "player_id": child["id"], "date": TEST_DATE,
             "text": mission_text, "point": 5,
         }, headers=auth(ADMIN_TOKEN))
@@ -309,7 +309,7 @@ def scenario_a_all(admin_name: str, label: str):
         # 승인 요청 → 관리자 승인
         requests.patch(f"{BASE}/api/missions/{mid}",
             json={"status": "pending_approval"}, headers=auth(ct))
-        requests.patch(f"{BASE}/api/missions/{mid}",
+        requests.patch(f"{BASE}/api/admin/missions/{mid}",
             json={"status": "completed"}, headers=auth(ADMIN_TOKEN))
 
         # 확인
@@ -351,7 +351,7 @@ def scenario_b1_propose_approve(child_name: str):
     result.ok("B1-1: 제안 완료")
 
     # 관리자 확인
-    resp = requests.get(f"{BASE}/api/missions",
+    resp = requests.get(f"{BASE}/api/admin/missions",
         params={"player_id": cid, "date": TEST_DATE}, headers=auth(ADMIN_TOKEN))
     m = find_mission(resp.json(), prop_id)
     if m and m["status"] == "proposed":
@@ -361,7 +361,7 @@ def scenario_b1_propose_approve(child_name: str):
         return
 
     # 승인
-    resp = requests.patch(f"{BASE}/api/missions/{prop_id}",
+    resp = requests.patch(f"{BASE}/api/admin/missions/{prop_id}",
         json={"status": "active"}, headers=auth(ADMIN_TOKEN))
     if resp.status_code == 200 and resp.json()["status"] == "active":
         result.ok("B1-3: 승인 (proposed → active)")
@@ -398,7 +398,7 @@ def scenario_b2_propose_reject(child_name: str):
     result.ok("B2-1: 제안 완료")
 
     # 관리자 확인
-    resp = requests.get(f"{BASE}/api/missions",
+    resp = requests.get(f"{BASE}/api/admin/missions",
         params={"player_id": cid, "date": TEST_DATE}, headers=auth(ADMIN_TOKEN))
     if find_mission(resp.json(), prop_id):
         result.ok("B2-2: 관리자 확인")
@@ -408,7 +408,7 @@ def scenario_b2_propose_reject(child_name: str):
 
     # 반려 + 사유
     reason = "게임은 미션으로 적절하지 않아요"
-    resp = requests.patch(f"{BASE}/api/missions/{prop_id}",
+    resp = requests.patch(f"{BASE}/api/admin/missions/{prop_id}",
         json={"status": "rejected", "rejection_reason": reason},
         headers=auth(ADMIN_TOKEN))
     if resp.status_code == 200 and resp.json()["status"] == "rejected":
@@ -443,7 +443,7 @@ def scenario_c_deduction(child_name: str):
     ct = login_player(child_name)
     cid = pid(child_name)
 
-    resp = requests.post(f"{BASE}/api/deductions", json={
+    resp = requests.post(f"{BASE}/api/admin/deductions", json={
         "player_id": cid, "date": TEST_DATE,
         "reason": f"{TEST_PREFIX}_C_게임초과", "amount": 5,
     }, headers=auth(ADMIN_TOKEN))
@@ -454,7 +454,7 @@ def scenario_c_deduction(child_name: str):
     result.ok("C-1: 차감 완료")
 
     # 내역 확인
-    resp = requests.get(f"{BASE}/api/deductions",
+    resp = requests.get(f"{BASE}/api/admin/deductions",
         params={"player_id": cid, "date": TEST_DATE}, headers=auth(ADMIN_TOKEN))
     d = find_deduction(resp.json(), did)
     if d and f"{TEST_PREFIX}_C" in d.get("reason", ""):
@@ -487,13 +487,13 @@ def scenario_d1_mission_edit():
     print(f"\n📋 시나리오 D1: 미션 편집")
 
     cid = pid("유빈")
-    resp = requests.post(f"{BASE}/api/missions", json={
+    resp = requests.post(f"{BASE}/api/admin/missions", json={
         "player_id": cid, "date": TEST_DATE,
         "text": f"{TEST_PREFIX}_D1_편집전", "point": 10,
     }, headers=auth(ADMIN_TOKEN))
     mid = resp.json()["id"]
 
-    resp = requests.patch(f"{BASE}/api/missions/{mid}",
+    resp = requests.patch(f"{BASE}/api/admin/missions/{mid}",
         json={"text": f"{TEST_PREFIX}_D1_편집후", "point": 20},
         headers=auth(ADMIN_TOKEN))
     if resp.status_code == 200:
@@ -513,7 +513,7 @@ def scenario_d2_complete_cancel():
     cid = pid("유빈")
     ct = login_player("유빈")
 
-    resp = requests.post(f"{BASE}/api/missions", json={
+    resp = requests.post(f"{BASE}/api/admin/missions", json={
         "player_id": cid, "date": TEST_DATE,
         "text": f"{TEST_PREFIX}_D2_완료취소", "point": 5,
     }, headers=auth(ADMIN_TOKEN))
@@ -522,11 +522,11 @@ def scenario_d2_complete_cancel():
     # active → pending_approval → completed
     requests.patch(f"{BASE}/api/missions/{mid}",
         json={"status": "pending_approval"}, headers=auth(ct))
-    requests.patch(f"{BASE}/api/missions/{mid}",
+    requests.patch(f"{BASE}/api/admin/missions/{mid}",
         json={"status": "completed"}, headers=auth(ADMIN_TOKEN))
 
     # completed → active (완료 취소)
-    resp = requests.patch(f"{BASE}/api/missions/{mid}",
+    resp = requests.patch(f"{BASE}/api/admin/missions/{mid}",
         json={"status": "active"}, headers=auth(ADMIN_TOKEN))
     if resp.status_code == 200 and resp.json()["status"] == "active":
         result.ok("D2: 완료 취소 성공 (completed → active)")
@@ -539,14 +539,14 @@ def scenario_d3_deduction_edit_delete():
     print(f"\n📋 시나리오 D3: 차감 편집/삭제")
 
     cid = pid("유현")
-    resp = requests.post(f"{BASE}/api/deductions", json={
+    resp = requests.post(f"{BASE}/api/admin/deductions", json={
         "player_id": cid, "date": TEST_DATE,
         "reason": f"{TEST_PREFIX}_D3_편집전", "amount": 10,
     }, headers=auth(ADMIN_TOKEN))
     did = resp.json()["id"]
 
     # 편집
-    resp = requests.patch(f"{BASE}/api/deductions/{did}",
+    resp = requests.patch(f"{BASE}/api/admin/deductions/{did}",
         json={"reason": f"{TEST_PREFIX}_D3_편집후", "amount": 15},
         headers=auth(ADMIN_TOKEN))
     if resp.status_code == 200:
@@ -559,7 +559,7 @@ def scenario_d3_deduction_edit_delete():
         result.fail("D3-1: 편집 실패", resp.text)
 
     # 삭제
-    resp = requests.delete(f"{BASE}/api/deductions/{did}", headers=auth(ADMIN_TOKEN))
+    resp = requests.delete(f"{BASE}/api/admin/deductions/{did}", headers=auth(ADMIN_TOKEN))
     if resp.status_code == 204:
         result.ok("D3-2: 차감 삭제 성공")
     else:
@@ -572,7 +572,7 @@ def scenario_d4_batch_copy():
 
     cid = pid("유빈")
     for t in [f"{TEST_PREFIX}_D4_원본A", f"{TEST_PREFIX}_D4_원본B"]:
-        requests.post(f"{BASE}/api/missions", json={
+        requests.post(f"{BASE}/api/admin/missions", json={
             "player_id": cid, "date": TEST_DATE, "text": t, "point": 10,
         }, headers=auth(ADMIN_TOKEN))
 
@@ -595,7 +595,7 @@ def scenario_d5_notification():
     """알림 조회 + 읽음"""
     print(f"\n📋 시나리오 D5: 알림")
 
-    resp = requests.get(f"{BASE}/api/notifications", headers=auth(ADMIN_TOKEN))
+    resp = requests.get(f"{BASE}/api/admin/notifications", headers=auth(ADMIN_TOKEN))
     if resp.status_code != 200:
         result.fail("D5-1: 조회 실패", resp.text)
         return
@@ -604,7 +604,7 @@ def scenario_d5_notification():
 
     unread = [n for n in notifs if not n["is_read"]]
     if unread:
-        resp = requests.patch(f"{BASE}/api/notifications/{unread[0]['id']}/read",
+        resp = requests.patch(f"{BASE}/api/admin/notifications/{unread[0]['id']}/read",
             headers=auth(ADMIN_TOKEN))
         if resp.status_code in (200, 204):
             result.ok("D5-2: 읽음 처리 성공")
@@ -620,7 +620,7 @@ def scenario_d6_config():
 
     key = f"{TEST_PREFIX}.phase0.config"
     value = '{"fixture":true}'
-    resp = requests.put(f"{BASE}/api/configs/{key}",
+    resp = requests.put(f"{BASE}/api/admin/configs/{key}",
         json={"value": value},
         headers=auth(ADMIN_TOKEN))
     if resp.status_code == 200:
@@ -629,8 +629,8 @@ def scenario_d6_config():
         result.fail("D6-1: Upsert 실패", resp.text)
         return
 
-    resp = requests.get(f"{BASE}/api/configs/{key}", headers=auth(ADMIN_TOKEN))
-    if resp.status_code == 200 and resp.json().get("value") == value:
+    resp = requests.get(f"{BASE}/api/admin/configs", headers=auth(ADMIN_TOKEN))
+    if resp.status_code == 200 and any(item.get("key") == key and item.get("value") == value for item in resp.json()):
         result.ok("D6-2: 조회 및 값 보존 성공")
     else:
         result.fail("D6-2: 조회 또는 값 불일치", resp.text)
@@ -640,7 +640,7 @@ def scenario_d7_cheer():
     """응원 메시지"""
     print(f"\n📋 시나리오 D7: 응원 메시지")
 
-    resp = requests.post(f"{BASE}/api/cheers", json={
+    resp = requests.put(f"{BASE}/api/admin/cheers/{TEST_DATE}", json={
         "date": TEST_DATE, "sender": "dad",
         "message": f"{TEST_PREFIX}_D7_화이팅",
     }, headers=auth(ADMIN_TOKEN))
@@ -697,14 +697,14 @@ def scenario_d9_invalid_transitions():
     print(f"\n📋 시나리오 D9: 전이 차단")
 
     cid = pid("유빈")
-    resp = requests.post(f"{BASE}/api/missions", json={
+    resp = requests.post(f"{BASE}/api/admin/missions", json={
         "player_id": cid, "date": TEST_DATE,
         "text": f"{TEST_PREFIX}_D9_전이차단", "point": 5,
     }, headers=auth(ADMIN_TOKEN))
     mid = resp.json()["id"]
 
     # admin은 active → completed 승인 전이를 허용한다.
-    resp = requests.patch(f"{BASE}/api/missions/{mid}",
+    resp = requests.patch(f"{BASE}/api/admin/missions/{mid}",
         json={"status": "completed"}, headers=auth(ADMIN_TOKEN))
     if resp.status_code == 200 and resp.json().get("status") == "completed":
         result.ok("D9-1: admin active → completed 승인 허용")
@@ -712,7 +712,7 @@ def scenario_d9_invalid_transitions():
         result.fail("D9-1: admin 승인 실패", f"status={resp.status_code}")
 
     # completed → rejected는 어떤 역할에도 허용되지 않는다.
-    resp = requests.patch(f"{BASE}/api/missions/{mid}",
+    resp = requests.patch(f"{BASE}/api/admin/missions/{mid}",
         json={"status": "rejected"}, headers=auth(ADMIN_TOKEN))
     if resp.status_code == 400:
         result.ok("D9-2: active → rejected 차단")
@@ -728,7 +728,7 @@ def scenario_d10_concurrent_approve():
     results_map = {"dad": None, "mom": None}
 
     def create_mission(sender, idx):
-        resp = requests.post(f"{BASE}/api/missions", json={
+        resp = requests.post(f"{BASE}/api/admin/missions", json={
             "player_id": cid, "date": TEST_DATE,
             "text": f"{TEST_PREFIX}_D10_{sender}", "point": 5,
         }, headers=auth(ADMIN_TOKEN))
@@ -747,7 +747,7 @@ def scenario_d10_concurrent_approve():
         result.fail("D10-1: 동시 생성 실패", f"results={results_map}")
 
     # 두 미션 모두 존재 확인
-    resp = requests.get(f"{BASE}/api/missions",
+    resp = requests.get(f"{BASE}/api/admin/missions",
         params={"player_id": cid, "date": TEST_DATE}, headers=auth(ADMIN_TOKEN))
     missions = resp.json()
     dad_found = any(f"{TEST_PREFIX}_D10_dad" in m.get("text", "") for m in missions)
@@ -762,7 +762,8 @@ def scenario_d11_level_and_chat_access():
     """레벨 조회와 채팅 인증/목록 경계 — 쓰기 없는 synthetic baseline."""
     print(f"\n📋 시나리오 D11: 레벨·채팅 접근")
 
-    tiers = requests.get(f"{BASE}/api/level-tiers", params={"job_code": "COMMON"})
+    child_token = login_player("유빈")
+    tiers = requests.get(f"{BASE}/api/level-tiers", params={"job_code": "COMMON"}, headers=auth(child_token))
     if tiers.status_code == 200 and len(tiers.json()) > 0:
         result.ok("D11-1: 레벨 tier 조회")
     else:
@@ -774,7 +775,6 @@ def scenario_d11_level_and_chat_access():
     else:
         result.fail("D11-2: 비인증 채팅 접근 허용", f"status={no_auth.status_code}")
 
-    child_token = login_player("유빈")
     partners = requests.get(f"{BASE}/api/chat/partners", headers=auth(child_token))
     if partners.status_code == 200 and isinstance(partners.json(), list):
         result.ok("D11-3: 인증된 채팅 상대 조회")
