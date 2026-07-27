@@ -33,6 +33,8 @@
 
 .roomListHeader {
   padding: var(--space-6) var(--space-6) var(--space-4);
+  background: linear-gradient(180deg, var(--color-brand-50) 0%, var(--color-surface) 100%);
+  border-bottom: 1px solid var(--color-line);
 }
 
 .roomListHeader h1 {
@@ -120,30 +122,60 @@
 
 .failedRow {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-2);
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
 }
 
 .retryButton {
-  border: 0;
-  border-bottom: 1px solid var(--color-danger);
-  background: none;
-  padding: 0;
+  min-height: var(--size-touch-min);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
   color: var(--color-danger);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity var(--duration-quick) ease;
+  transition: background-color var(--duration-quick) ease;
 }
 
 .retryButton:hover {
-  opacity: 0.75;
+  background: var(--color-brand-50);
 }
 
 .retryButton:focus-visible {
   outline: 2px solid var(--color-danger);
   outline-offset: 2px;
+}
+
+/*
+ * 1024px+: 도란을 몽글 Shell의 실제 workspace로 통합한다(§CP-4). 이전에는
+ * doranPage가 max-width 1100px의 독립 카드(자체 border/shadow/radius)로 떠 있어
+ * "모바일 카드를 확대한 프로토타입"처럼 보였다. Desktop에서는 카드 프레임을
+ * 제거하고 Shell의 .main 콘텐츠 영역에 그대로 이어붙인다. list/conversation 각
+ * pane은 스스로의 surface 배경을 유지해 시각 구분은 유지한다.
+ * min-height 산식은 NaranAppShell.module.css의 실제 .header(64px)+.main
+ * padding(20px×2) 값을 참조한다 — Shell 치수가 바뀌면 함께 재확인이 필요하다.
+ */
+@media (min-width: 1024px) {
+  .doranPage {
+    max-width: none;
+    min-height: calc(100dvh - 64px - 40px);
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .roomList {
+    background: var(--color-surface);
+  }
+
+  .roomPane {
+    background: var(--color-surface);
+  }
 }
 
 @media (max-width: 700px) {

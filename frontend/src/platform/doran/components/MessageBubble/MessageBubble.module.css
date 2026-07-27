@@ -62,10 +62,6 @@
   border-bottom-right-radius: var(--space-1);
 }
 
-.bubble.failed {
-  border: 1px solid var(--color-danger);
-}
-
 .footer {
   display: flex;
   align-items: center;
@@ -77,6 +73,11 @@
 
 .readStateText {
   font-size: 11px;
+}
+
+.readStateFailed {
+  color: var(--color-danger);
+  font-weight: 700;
 }
 
 .srOnly {

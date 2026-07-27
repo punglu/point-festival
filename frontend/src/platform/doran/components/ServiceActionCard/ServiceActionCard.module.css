@@ -21,11 +21,29 @@
   font-size: 11px;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
 .title {
   display: block;
-  margin-top: var(--space-3);
   color: var(--color-ink-900);
   font-size: 15px;
+}
+
+.pointLabel {
+  flex-shrink: 0;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-reward);
+  color: var(--color-ink-950);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .description {

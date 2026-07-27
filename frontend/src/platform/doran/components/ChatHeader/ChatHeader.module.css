@@ -12,6 +12,17 @@
   flex-shrink: 0;
 }
 
+/*
+ * Split view(list+conversation 동시 노출)에서는 목록이 항상 옆에 보이므로
+ * Back 버튼이 중복이다(§3 PM 정책, DoranLanding.module.css의 700px 분기와 동일 기준).
+ * Mobile Room List→상세 전환에서는 Back을 유지한다.
+ */
+@media (min-width: 701px) {
+  .backButton {
+    display: none;
+  }
+}
+
 .identity {
   min-width: 0;
   flex: 1;

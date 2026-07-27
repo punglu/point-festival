@@ -6,6 +6,7 @@ export interface ServiceActionCardProps {
   title: string;
   description?: string;
   timestamp: string;
+  pointLabel?: string;
   actionLabel?: string;
   onAction?: () => void;
 }
@@ -20,6 +21,7 @@ export default function ServiceActionCard({
   title,
   description,
   timestamp,
+  pointLabel,
   actionLabel,
   onAction,
 }: ServiceActionCardProps) {
@@ -29,7 +31,10 @@ export default function ServiceActionCard({
         <span className={styles.serviceLabel}>{serviceLabel}</span>
         <span className={styles.timestamp}>{timestamp}</span>
       </div>
-      <strong className={styles.title}>{title}</strong>
+      <div className={styles.titleRow}>
+        <strong className={styles.title}>{title}</strong>
+        {pointLabel && <span className={styles.pointLabel}>{pointLabel}</span>}
+      </div>
       {description && <p className={styles.description}>{description}</p>}
       {actionLabel && onAction && (
         <button type="button" className={styles.actionButton} onClick={onAction}>

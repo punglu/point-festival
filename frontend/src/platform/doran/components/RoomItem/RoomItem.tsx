@@ -1,3 +1,4 @@
+import { Avatar } from '../../../../shared/components/Avatar';
 import styles from './RoomItem.module.css';
 
 export type RoomKind = 'DIRECT' | 'GROUP' | 'SERVICE';
@@ -39,12 +40,15 @@ export default function RoomItem({
       onClick={onSelect}
       aria-current={selected ? 'true' : undefined}
     >
-      <span className={styles.kindTag} data-kind={kind}>
-        {kindLabel[kind]}
-      </span>
+      <Avatar alt={title} fallback={title.trim().charAt(0) || '와'} size={44} className={styles.avatar} />
       <span className={styles.meta}>
         <strong className={styles.title}>{title}</strong>
-        {preview && <span className={styles.preview}>{preview}</span>}
+        <span className={styles.subRow}>
+          <span className={styles.kindTag} data-kind={kind}>
+            {kindLabel[kind]}
+          </span>
+          {preview && <span className={styles.preview}>{preview}</span>}
+        </span>
       </span>
       <span className={styles.activity}>
         {activityLabel && <span className={styles.activityLabel}>{activityLabel}</span>}

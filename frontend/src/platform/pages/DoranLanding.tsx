@@ -53,11 +53,19 @@ function Conversation({ room, onBack }: ConversationProps) {
 
   const handleRetry = () => setComposeStatus('pending');
 
+  // SERVICE는 사람이 아니므로 참여자 Avatar를 표시하지 않는다 — DIRECT/GROUP만 관계 식별용
+  // Avatar를 보여준다(§8.16 avatar stack ≤4). 이름 첫 글자를 fallback으로 쓸 뿐 새 필드는 없다.
+  const participants =
+    room.kind !== 'SERVICE'
+      ? [{ id: room.id, name: room.name, avatarFallback: room.name.trim().charAt(0) || '와' }]
+      : undefined;
+
   return (
     <section className={styles.conversation} aria-label={`${room.name} 대화`}>
       <ChatHeader
         roomName={room.name}
         participantSummary={doranPreviewRoomLabels[room.kind]}
+        participants={participants}
         onBack={onBack}
         backLabel="대화 목록으로 돌아가기"
       />
@@ -68,6 +76,7 @@ function Conversation({ room, onBack }: ConversationProps) {
             title={serviceEvent.title}
             description={serviceEvent.description}
             timestamp={serviceEvent.timestamp}
+            pointLabel={serviceEvent.pointLabel}
           />
         ) : (
           <>
@@ -139,6 +148,23 @@ export function DoranLanding() {
       setSearchParams({}, { replace: true });
     }
   }, [roomIdParam, selected, setSearchParams]);
+
+  // Desktop split view는 첫 진입 시 기본 대화가 선택된 상태가 기본이다(§3 PM 정책).
+  // Mobile Room List 우선 정책은 바꾸지 않는다 — 기존 700px 분기 기준(§DoranLanding.module.css)과
+  // 동일한 폭에서만 판정한다. family context가 비동기로 로드되는 동안 pageState는
+  // 일시적으로 'disabled'이므로, pageState가 처음 'normal'이 되는 시점까지 기다려야
+  // 한다 — didAutoSelectRef는 그 판정 기회를 정확히 1회로 고정해, 이후 사용자가
+  // 목록으로 돌아가는 의도적 조작을 덮어쓰지 않는다.
+  const didAutoSelectRef = useRef(false);
+  useEffect(() => {
+    if (didAutoSelectRef.current) return;
+    if (pageState !== 'normal') return;
+    didAutoSelectRef.current = true;
+    if (searchParams.get('room')) return;
+    if (!window.matchMedia('(min-width: 701px)').matches) return;
+    const [firstRoom] = doranPreviewRooms;
+    if (firstRoom) setSearchParams({ room: firstRoom.id }, { replace: true });
+  }, [pageState, searchParams, setSearchParams]);
 
   const selectRoom = (id: string) => {
     if (selected) {
@@ -220,7 +246,9 @@ export function DoranLanding() {
             </div>
           ))}
         </div>
-        <p className={styles.previewNotice}>UX Gate 미리보기 · 실제 API 연결 전 화면입니다.</p>
+        {import.meta.env.DEV && (
+          <p className={styles.previewNotice}>UX Gate 미리보기 · 실제 API 연결 전 화면입니다.</p>
+        )}
       </aside>
       <div className={`${styles.roomPane} ${!selected ? styles.roomPaneEmptyMobile : ''}`}>
         {selected ? (

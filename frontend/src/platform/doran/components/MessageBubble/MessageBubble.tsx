@@ -54,13 +54,16 @@ export default function MessageBubble({
       )}
       <div className={styles.content}>
         {showSenderIdentity && sender && <span className={styles.senderName}>{sender.name}</span>}
-        <div className={[styles.bubble, readState === 'failed' ? styles.failed : ''].join(' ')}>{children}</div>
+        <div className={styles.bubble}>{children}</div>
         <div className={styles.footer}>
           <span className={styles.timestamp}>{timestamp}</span>
           {readState && (
             <>
-              <span className={styles.readStateText} aria-hidden="true">
-                {readState === 'read' ? '읽음' : readState === 'sent' ? '전송됨' : readState === 'sending' ? '전송 중' : '실패'}
+              <span
+                className={[styles.readStateText, readState === 'failed' ? styles.readStateFailed : ''].join(' ')}
+                aria-hidden="true"
+              >
+                {readState === 'read' ? '읽음' : readState === 'sent' ? '전송됨' : readState === 'sending' ? '전송 중' : '전송 실패'}
               </span>
               <span className={styles.srOnly}>{readStateLabel[readState]}</span>
             </>
