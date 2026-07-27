@@ -1,0 +1,37 @@
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-5);
+}
+
+.skeleton {
+  height: 16px;
+  border-radius: var(--radius-control);
+  background: linear-gradient(90deg, var(--color-line) 25%, var(--color-canvas) 50%, var(--color-line) 75%);
+  background-size: 200% 100%;
+  /* §8.28: infinite shimmer 금지 — 유한 반복 후 정지한 상태로 유지된다. */
+  animation: shimmer 1.4s ease 3;
+  animation-fill-mode: forwards;
+}
+
+.skeleton:last-of-type {
+  width: 60%;
+}
+
+.label {
+  color: var(--color-ink-500);
+  font-size: 13px;
+  text-align: center;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

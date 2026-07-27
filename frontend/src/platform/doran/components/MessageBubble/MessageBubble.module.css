@@ -1,0 +1,95 @@
+.row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  max-width: 100%;
+}
+
+.row.grouped-first,
+.row.grouped-single {
+  margin-top: var(--space-3);
+}
+
+.incoming {
+  justify-content: flex-start;
+}
+
+.outgoing {
+  justify-content: flex-end;
+}
+
+.avatarSlot {
+  display: inline-flex;
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  max-width: 78%;
+  min-width: 0;
+}
+
+.outgoing .content {
+  align-items: flex-end;
+}
+
+.senderName {
+  margin-bottom: 2px;
+  color: var(--color-ink-500);
+  font-size: 12px;
+}
+
+.bubble {
+  overflow-wrap: break-word;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.incoming .bubble {
+  background: var(--color-chat-other);
+  color: var(--color-ink-900);
+  border-bottom-left-radius: var(--space-1);
+}
+
+.outgoing .bubble {
+  background: var(--color-chat-own);
+  color: var(--color-surface);
+  border-bottom-right-radius: var(--space-1);
+}
+
+.bubble.failed {
+  border: 1px solid var(--color-danger);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  color: var(--color-ink-500);
+  font-size: 11px;
+}
+
+.readStateText {
+  font-size: 11px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .content {
+    max-width: 64%;
+  }
+}

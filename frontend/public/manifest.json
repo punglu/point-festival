@@ -1,7 +1,7 @@
 {
-  "name": "나란 — 가족 플랫폼",
-  "short_name": "나란",
-  "description": "가족을 나란히 연결하는 플랫폼. 마크포인트와 도란 서비스를 제공합니다.",
+  "name": "몽글 — 가족 플랫폼",
+  "short_name": "몽글",
+  "description": "가족을 나란히 연결하는 플랫폼. 마크포인트와 와글와글 서비스를 제공합니다.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",

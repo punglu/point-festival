@@ -1,0 +1,52 @@
+.card {
+  max-width: 420px;
+  background: var(--color-surface-soft);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.serviceLabel {
+  color: var(--color-success);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.timestamp {
+  color: var(--color-ink-500);
+  font-size: 11px;
+}
+
+.title {
+  display: block;
+  margin-top: var(--space-3);
+  color: var(--color-ink-900);
+  font-size: 15px;
+}
+
+.description {
+  margin: var(--space-1) 0 0;
+  color: var(--color-ink-700);
+  font-size: 14px;
+}
+
+.actionButton {
+  margin-top: var(--space-3);
+  min-height: var(--size-touch-min);
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: var(--color-brand-500);
+  color: var(--color-surface);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.actionButton:focus-visible {
+  outline: 2px solid var(--color-brand-700);
+  outline-offset: 2px;
+}

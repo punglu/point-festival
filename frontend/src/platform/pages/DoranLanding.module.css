@@ -1,0 +1,178 @@
+/*
+ * Doran 페이지 레이아웃 전용 CSS. Room/Message/ChatHeader/Composer/ServiceCard 등
+ * 개별 컴포넌트 시각은 각 shared component의 co-located CSS Module이 담당하며,
+ * 이 파일은 페이지 grid 배치와 상태 surface 래퍼만 소유한다.
+ * 값은 FAMILY_PLATFORM_DESIGN_IMPLEMENTATION_SOURCE_V1.md §5 semantic token만 사용한다.
+ */
+
+.pageState {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+}
+
+.doranPage {
+  max-width: 1100px;
+  min-height: min(720px, calc(100dvh - 160px));
+  margin: var(--space-5) auto;
+  display: grid;
+  grid-template-columns: minmax(295px, 360px) 1fr;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.roomList {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-line);
+  min-width: 0;
+}
+
+.roomListHeader {
+  padding: var(--space-6) var(--space-6) var(--space-4);
+}
+
+.roomListHeader h1 {
+  margin: 2px 0 var(--space-2);
+  color: var(--color-ink-900);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--color-brand-600);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.roomListDescription {
+  margin: 0;
+  color: var(--color-ink-500);
+  font-size: 14px;
+}
+
+.roomItems {
+  overflow: auto;
+  padding: var(--space-1) var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.previewNotice {
+  margin: auto var(--space-4) var(--space-4);
+  color: var(--color-ink-500);
+  font-size: 11px;
+}
+
+.roomPane {
+  min-width: 0;
+  display: flex;
+}
+
+.noSelection {
+  align-self: center;
+  width: 100%;
+  text-align: center;
+  color: var(--color-ink-500);
+  padding: var(--space-8);
+}
+
+.noSelectionAvatar {
+  margin: 0 auto;
+}
+
+.noSelection h2 {
+  margin: var(--space-3) 0 var(--space-1);
+  color: var(--color-ink-900);
+  font-size: 19px;
+}
+
+.noSelection p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.conversation {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: 100%;
+  min-height: 0;
+}
+
+.messages {
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-6);
+  background: var(--color-canvas);
+}
+
+.readOnlyNotice {
+  margin: 0;
+  padding: var(--space-4) var(--space-5) max(var(--space-4), env(safe-area-inset-bottom));
+  border-top: 1px solid var(--color-line);
+  color: var(--color-ink-500);
+  background: var(--color-surface);
+  font-size: 13px;
+}
+
+.failedRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.retryButton {
+  border: 0;
+  border-bottom: 1px solid var(--color-danger);
+  background: none;
+  padding: 0;
+  color: var(--color-danger);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity var(--duration-quick) ease;
+}
+
+.retryButton:hover {
+  opacity: 0.75;
+}
+
+.retryButton:focus-visible {
+  outline: 2px solid var(--color-danger);
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .doranPage {
+    min-height: calc(100dvh - 128px);
+    margin: 0 calc(var(--space-4) * -1);
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .roomList {
+    border-right: 0;
+  }
+
+  .roomListHiddenMobile {
+    display: none;
+  }
+
+  .roomPane {
+    min-height: calc(100dvh - 128px);
+  }
+
+  .roomPaneEmptyMobile {
+    display: none;
+  }
+
+  .messages {
+    padding: var(--space-4);
+  }
+}

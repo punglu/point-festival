@@ -10,12 +10,12 @@ interface NaranAppShellProps {
 
 const stateCopy = {
   loading: ['가족 정보를 확인하고 있어요', '계정과 가족 권한을 안전하게 불러오는 중입니다.'],
-  mapping_required: ['계정 연결이 필요해요', '현재 로그인은 유지되지만 나란 가족 기능을 사용하려면 검토된 계정 연결이 필요합니다.'],
-  no_available_family: ['사용 가능한 가족이 없어요', '활성 가족 구성원으로 연결된 뒤 나란 기능을 사용할 수 있습니다.'],
+  mapping_required: ['계정 연결이 필요해요', '현재 로그인은 유지되지만 몽글 가족 기능을 사용하려면 검토된 계정 연결이 필요합니다.'],
+  no_available_family: ['사용 가능한 가족이 없어요', '활성 가족 구성원으로 연결된 뒤 몽글 기능을 사용할 수 있습니다.'],
   family_selection_required: ['가족을 선택해주세요', '이 계정에 연결된 가족 중 하나를 선택하면 서비스와 권한을 불러옵니다.'],
-  session_expired: ['세션이 만료됐어요', '다시 로그인하면 나란 가족 정보를 안전하게 불러옵니다.'],
+  session_expired: ['세션이 만료됐어요', '다시 로그인하면 몽글 가족 정보를 안전하게 불러옵니다.'],
   forbidden: ['이 가족 정보를 열 수 없어요', '권한이 변경되었거나 접근이 허용되지 않은 상태입니다.'],
-  backend_unavailable: ['나란에 연결할 수 없어요', '잠시 후 다시 시도해주세요. 기존 마크포인트 화면은 별도 정책에 따라 유지됩니다.'],
+  backend_unavailable: ['몽글에 연결할 수 없어요', '잠시 후 다시 시도해주세요. 기존 마크포인트 화면은 별도 정책에 따라 유지됩니다.'],
 } as const;
 
 function FamilySwitcher() {
@@ -79,7 +79,7 @@ export function NaranAppShell({ children }: NaranAppShellProps) {
   const doranState = serviceStatus('doran');
   const navItems = [
     { to: '/dashboard', label: '마크포인트', visible: true },
-    { to: '/naran/doran', label: '도란', visible: hasFamily },
+    { to: '/naran/doran', label: '와글와글', visible: hasFamily },
     { to: '/naran/family', label: '가족', visible: hasFamily && hasPermission('family.read') },
     { to: '/admin/missions', label: '미션 관리', visible: hasFamily && hasPermission('markpoint.missions.manage') },
     { to: '/admin/points', label: '포인트 관리', visible: hasFamily && hasPermission('markpoint.points.adjust') },
@@ -94,7 +94,7 @@ export function NaranAppShell({ children }: NaranAppShellProps) {
   return (
     <div className={styles.shell} data-testid="naran-shell">
       <header className={styles.header}>
-        <Link className={styles.brand} to="/dashboard" aria-label="나란 홈">나란</Link>
+        <Link className={styles.brand} to="/dashboard" aria-label="몽글 홈">몽글</Link>
         <FamilySwitcher />
         <div className={styles.accountArea}>
           <span>{context?.display_name ?? (isAdmin ? '관리자' : '사용자')}</span>
@@ -103,7 +103,7 @@ export function NaranAppShell({ children }: NaranAppShellProps) {
       </header>
 
       <div className={styles.body}>
-        <nav className={styles.desktopNav} aria-label="나란 서비스 탐색">
+        <nav className={styles.desktopNav} aria-label="몽글 서비스 탐색">
           {navItems.filter((item) => item.visible).map((item) => (
             <NavLink key={item.to} to={item.to} className={({ isActive }) => isActive ? styles.navActive : styles.navLink}>
               {item.label}
@@ -119,14 +119,14 @@ export function NaranAppShell({ children }: NaranAppShellProps) {
       </div>
 
       {!isLegacyDashboard && (
-        <nav className={styles.mobileNav} aria-label="나란 모바일 탐색">
+        <nav className={styles.mobileNav} aria-label="몽글 모바일 탐색">
           <NavLink to="/dashboard">마크포인트</NavLink>
-          <NavLink to="/naran/doran">도란</NavLink>
+          <NavLink to="/naran/doran">와글와글</NavLink>
           <NavLink to="/naran/family">가족</NavLink>
         </nav>
       )}
       {doranState !== 'active' && location.pathname === '/naran/doran' && (
-        <span className={styles.srOnly}>도란은 아직 사용할 수 없는 서비스입니다.</span>
+        <span className={styles.srOnly}>와글와글은 아직 사용할 수 없는 서비스입니다.</span>
       )}
     </div>
   );

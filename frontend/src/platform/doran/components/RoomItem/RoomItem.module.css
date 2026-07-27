@@ -1,0 +1,104 @@
+.roomItem {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--size-touch-min);
+  padding: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-ink-900);
+  text-align: left;
+  cursor: pointer;
+}
+
+.roomItem:hover {
+  background: var(--color-brand-50);
+}
+
+.roomItem:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: -2px;
+}
+
+.selected {
+  background: var(--color-brand-100);
+}
+
+.kindTag {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-brand-100);
+  color: var(--color-brand-700);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.kindTag[data-kind='SERVICE'] {
+  background: var(--color-canvas);
+  color: var(--color-success);
+}
+
+.kindTag[data-kind='GROUP'] {
+  background: var(--color-brand-200);
+  color: var(--color-brand-700);
+}
+
+.meta {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 15px;
+}
+
+.preview {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-ink-500);
+  font-size: 13px;
+}
+
+.activity {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+}
+
+.activityLabel {
+  color: var(--color-ink-500);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.unreadBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--color-brand-500);
+  color: var(--color-surface);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

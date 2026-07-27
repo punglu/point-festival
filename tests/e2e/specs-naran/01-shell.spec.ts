@@ -46,14 +46,13 @@ test.describe('Naran platform shell', () => {
     await loginAsFirstPlayer(page);
     await page.getByLabel('활성 가족 선택').selectOption({ label: 'Synthetic Family Alpha' });
     await page.goto('/naran/doran');
-    await expect(page.getByRole('heading', { name: '도란' })).toBeVisible();
-    await expect(page.getByText(/아직 메시지나 대화방 기능은 제공하지 않습니다/)).toBeVisible();
+    await expect(page.getByRole('heading', { name: '와글와글' })).toBeVisible();
   });
 
   test('renders the responsive navigation landmark', async ({ page }) => {
     await loginAsFirstPlayer(page);
     await page.goto('/naran/doran');
-    await expect(page.getByRole('navigation', { name: /나란 (서비스 탐색|모바일 탐색)/ })).toHaveCount(1);
+    await expect(page.getByRole('navigation', { name: /몽글 (서비스 탐색|모바일 탐색)/ })).toHaveCount(1);
   });
 
   test('does not turn a direct Family URL into a permission grant', async ({ page }) => {

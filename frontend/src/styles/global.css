@@ -4,7 +4,7 @@
 
 :root {
   --bg: #f8fafc;
-  --card: #ffffff;
+  --card: var(--color-surface);
   --accent: #10b981;
   --blue: #3b82f6;
   --text: #1e293b;
@@ -22,6 +22,39 @@
   --brand-skyblue: #5BB8F5;
   --brand-pink: #FFB0C8;
   --brand-gold: #FFD700;
+
+  /* === Semantic Design Tokens (FAMILY_PLATFORM_DESIGN_IMPLEMENTATION_SOURCE_V1.md §5) === */
+  /* PM contract normative values. Do not use direct hex/rgb in new components — reference these only. */
+  --color-brand-700: #4726C7; --color-brand-600: #5835DF;
+  --color-brand-500: #6B46F2; --color-brand-400: #8B6DF5;
+  --color-brand-200: #D9CCFF; --color-brand-100: #EEE8FF;
+  --color-brand-50: #F8F5FF;
+  --color-ink-950: #12172F; --color-ink-900: #171D3A;
+  --color-ink-700: #434A68; --color-ink-500: #757C98;
+  --color-line: #E8E6F2; --color-canvas: #F7F6FC;
+  --color-surface: #FFFFFF; --color-surface-soft: #FBFAFF;
+  --color-success: #2FBE78; --color-warning: #F3A72B;
+  --color-danger: #EF4665; --color-reward: #F1B83A;
+  --color-chat-own: #6944EF; --color-chat-other: #F3F0FF;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px;
+  --space-10: 40px; --space-12: 48px;
+  --radius-control: 16px; --radius-card: 24px;
+  --radius-hero: 28px; --radius-dialog: 28px; --radius-pill: 999px;
+  --shadow-sm: 0 4px 14px rgb(70 47 158 / 6%);
+  --shadow-md: 0 14px 38px rgb(70 47 158 / 10%), 0 2px 8px rgb(70 47 158 / 6%);
+  --size-touch-min: 44px;
+  --duration-quick: 160ms; --duration-standard: 240ms;
+  --layer-base: 0; --layer-sticky: 20; --layer-overlay: 100;
+  --layer-dialog: 120; --layer-toast: 160;
+
+  /*
+   * Typography scale (§5 prose, no PM token names given — not encoded as custom
+   * properties to avoid inventing token names not present in the design source):
+   * Display 40/48 700, Page 30/38 700, Section 22/30 700, Card 17/24 700,
+   * Body 16/26 400, Body Strong 16/24 600, Meta 13/19, Label 13/18 700.
+   * Numeric values use tabular alignment (font-variant-numeric: tabular-nums).
+   */
 }
 
 /* Admin 사이드바 전용 CSS 변수 */

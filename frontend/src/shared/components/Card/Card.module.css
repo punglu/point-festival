@@ -1,0 +1,46 @@
+.card {
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.section {
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+}
+
+.interactive {
+  border: 1px solid var(--color-line);
+  padding: var(--space-5);
+  cursor: pointer;
+  text-align: left;
+  transition: box-shadow var(--duration-quick) ease, transform var(--duration-quick) ease;
+}
+
+.interactive:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.interactive:active {
+  transform: scale(0.99);
+}
+
+.interactive:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+.metric {
+  border: 1px solid var(--color-line);
+  padding: var(--space-4) var(--space-5);
+  min-width: 96px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero {
+  border-radius: var(--radius-hero);
+  padding: var(--space-8);
+  background: linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700));
+  color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
