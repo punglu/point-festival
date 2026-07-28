@@ -19,6 +19,9 @@ export interface DoranPreviewMessage {
   text: string;
   timestamp: string;
   readState: DoranPreviewMessageReadState;
+  // GROUP room에서만 의미가 있다 — 발신자가 항상 하나뿐인 DIRECT에서는 헤더의
+  // 상대 Avatar로 이미 충분해 사용하지 않는다(Wave 6.0B CP-2/CP-6 판단 근거 참조).
+  sender?: { name: string };
 }
 
 export interface DoranPreviewServiceEvent {

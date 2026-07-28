@@ -88,6 +88,7 @@ function Conversation({ room, onBack }: ConversationProps) {
                   direction={message.direction}
                   timestamp={message.timestamp}
                   readState={message.direction === 'outgoing' ? message.readState : undefined}
+                  sender={room.kind === 'GROUP' ? message.sender : undefined}
                 >
                   {message.text}
                 </MessageBubble>

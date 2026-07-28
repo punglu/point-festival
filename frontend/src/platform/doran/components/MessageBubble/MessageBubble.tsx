@@ -48,7 +48,7 @@ export default function MessageBubble({
       {direction === 'incoming' && (
         <span className={styles.avatarSlot}>
           {showSenderIdentity && sender && (
-            <Avatar src={sender.avatar} alt={sender.name} fallback={sender.name.charAt(0)} size={28} />
+            <Avatar src={sender.avatar} alt={sender.name} fallback={sender.name.charAt(0)} size={44} />
           )}
         </span>
       )}

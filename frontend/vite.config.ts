@@ -8,7 +8,7 @@ export default defineConfig({
     // 개발 환경: Vite dev server → FastAPI 프록시
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: process.env.VITE_DEV_PROXY_TARGET || 'http://localhost:8000',
         changeOrigin: true,
       },
     },

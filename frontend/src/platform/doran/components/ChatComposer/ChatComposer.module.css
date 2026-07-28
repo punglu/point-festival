@@ -1,19 +1,44 @@
+/*
+ * 목업(Z9)의 Composer는 Bottom Dock 위에 뜬 독립 surface다 — 기존에는 화면
+ * 하단에 붙은 flat bar(border-top만)였다. 흰 pill + shadow로 띄우고, attach/
+ * camera/input/send를 하나의 카드 안에 통합한다(Wave 6.0B §7).
+ */
 .composer {
   display: flex;
-  align-items: flex-end;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4) max(var(--space-3), env(safe-area-inset-bottom));
+  align-items: center;
+  gap: var(--space-1);
+  /* .composer는 DoranLanding의 .conversation grid의 행(row) 아이템이다 — grid
+     아이템의 기본 min-width:auto가 내부 flex 자식들의 min-content 합을 바닥값으로
+     삼아 grid 트랙 자체를 부풀렸다(320px에서 send 버튼이 뷰포트 밖으로 밀려나던
+     실제 원인). 자식 textarea의 min-width:0만으로는 부족했다 — 이 grid item
+     자체에도 min-width:0이 필요하다(Wave 6.0B 회귀 수정). */
+  min-width: 0;
+  margin: 0 var(--space-3) max(var(--space-3), env(safe-area-inset-bottom));
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
   background: var(--color-surface);
-  border-top: 1px solid var(--color-line);
+  box-shadow: var(--shadow-md);
+}
+
+.composer:focus-within {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+.accessoryButton {
+  flex-shrink: 0;
 }
 
 .input {
   flex: 1;
+  /* textarea의 기본 intrinsic 폭(cols 미지정 시 브라우저 기본값)이 flex shrink를
+     막아 320px에서 send 버튼이 밀려나던 문제 — min-width:0으로 수정(Wave 6.0B). */
+  min-width: 0;
   min-height: var(--size-touch-min);
   max-height: 120px;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-control);
+  padding: var(--space-2) var(--space-1);
+  border: 0;
+  background: transparent;
   resize: none;
   color: var(--color-ink-900);
   font: inherit;
@@ -22,12 +47,26 @@
 }
 
 .input:focus-visible {
-  outline: 2px solid var(--color-brand-500);
-  outline-offset: 1px;
+  outline: none;
 }
 
 .input:disabled {
-  background: var(--color-canvas);
+  color: var(--color-ink-500);
+}
+
+.composer .sendButton {
+  flex-shrink: 0;
+  background: var(--color-brand-500);
+  color: var(--color-surface);
+  border-radius: var(--radius-pill);
+}
+
+.composer .sendButton:hover:not(:disabled) {
+  background: var(--color-brand-600);
+}
+
+.composer .sendButton:disabled {
+  background: var(--color-line);
   color: var(--color-ink-500);
 }
 

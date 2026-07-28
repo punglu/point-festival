@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { useFamilyContextStore } from '../../shared/stores/useFamilyContextStore';
 import styles from './NaranAppShell.module.css';
@@ -66,6 +66,7 @@ function PlatformStateNotice() {
 export function NaranAppShell({ children }: NaranAppShellProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { isAdmin, logout } = useAuthStore();
   const context = useFamilyContextStore((state) => state.context);
   const activeFamilyId = useFamilyContextStore((state) => state.activeFamilyId);
@@ -73,6 +74,11 @@ export function NaranAppShell({ children }: NaranAppShellProps) {
   const reset = useFamilyContextStore((state) => state.reset);
   const isLegacyDashboard = location.pathname === '/dashboard';
   const isAdminSurface = location.pathname.startsWith('/admin');
+  // Doran mobile conversation: ChatHeader가 화면의 주 헤더여야 하므로(Wave 6.0B §6.1),
+  // 이 route+상태에서만, 그리고 모바일 폭에서만(CSS media query) 전역 상단 바를 숨긴다.
+  // route/인증/FamilyContext 로직은 전혀 바꾸지 않는다 — 시각적 숨김뿐이다.
+  // Room List(room 미선택)나 legacy/admin/다른 route에는 영향이 없다.
+  const isDoranConversationMobile = location.pathname === '/naran/doran' && Boolean(searchParams.get('room'));
   const hasFamily = activeFamilyId !== null;
   const activeFamily = context?.families.find((family) => family.id === activeFamilyId);
   const hasPermission = (permission: string) => activeFamily?.permissions.includes(permission) ?? false;
@@ -92,7 +98,10 @@ export function NaranAppShell({ children }: NaranAppShellProps) {
   };
 
   return (
-    <div className={styles.shell} data-testid="naran-shell">
+    <div
+      className={`${styles.shell} ${isDoranConversationMobile ? styles.doranConversationMode : ''}`}
+      data-testid="naran-shell"
+    >
       <header className={styles.header}>
         <Link className={styles.brand} to="/dashboard" aria-label="몽글 홈">몽글</Link>
         <FamilySwitcher />
@@ -120,9 +129,26 @@ export function NaranAppShell({ children }: NaranAppShellProps) {
 
       {!isLegacyDashboard && (
         <nav className={styles.mobileNav} aria-label="몽글 모바일 탐색">
-          <NavLink to="/dashboard">마크포인트</NavLink>
-          <NavLink to="/naran/doran">와글와글</NavLink>
-          <NavLink to="/naran/family">가족</NavLink>
+          {/*
+           * Wave 6.0B §8: 목업의 4-icon Bottom Dock 문법(elevated surface, 넉넉한
+           * touch target, active=filled pill) 중 "icon+label"은 적용하지 못했다 —
+           * 승인된 9종 outline icon(Home/Back/Bell/Settings/Edit/Delete/Attach/
+           * Camera/Send) 중 마크포인트/와글와글/가족에 의미가 맞는 아이콘이 없고,
+           * 새 아이콘을 만들지 않기로 했다(ASSET_GAP_BOTTOM_DOCK_ICONS, progress
+           * log 참조). route 구성도 현재 실제 3개 목적지·기존 노출 동작(visible
+           * 필터 없이 항상 3개)을 그대로 유지한다 — 목업의 "홈"/"나"는 대응 route가
+           * 없어 새로 만들지 않는다(PM_DECISION_REQUIRED_BOTTOM_DOCK_ROUTE). 이번
+           * 변경은 시각적 재스킨(icon+label 대신 label만, elevated pill)에 한정한다.
+           */}
+          <NavLink to="/dashboard" className={({ isActive }) => `${styles.dockItem} ${isActive ? styles.dockItemActive : ''}`}>
+            <span className={styles.dockLabel}>마크포인트</span>
+          </NavLink>
+          <NavLink to="/naran/doran" className={({ isActive }) => `${styles.dockItem} ${isActive ? styles.dockItemActive : ''}`}>
+            <span className={styles.dockLabel}>와글와글</span>
+          </NavLink>
+          <NavLink to="/naran/family" className={({ isActive }) => `${styles.dockItem} ${isActive ? styles.dockItemActive : ''}`}>
+            <span className={styles.dockLabel}>가족</span>
+          </NavLink>
         </nav>
       )}
       {doranState !== 'active' && location.pathname === '/naran/doran' && (

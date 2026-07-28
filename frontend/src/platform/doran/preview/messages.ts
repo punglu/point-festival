@@ -1,7 +1,9 @@
 import type { DoranPreviewMessage } from './types';
 
+// sender는 GROUP room 렌더링에서만 사용된다(DoranLanding.tsx Conversation) — DIRECT는
+// 데이터에 값이 있어도 화면에 표시하지 않는다(상대가 하나뿐이라 헤더 Avatar로 충분).
 const standardConversation: DoranPreviewMessage[] = [
-  { id: 'standard-1', direction: 'incoming', text: '안녕하세요! 오늘은 어땠어요?', timestamp: '오후 7:38', readState: 'read' },
+  { id: 'standard-1', direction: 'incoming', text: '안녕하세요! 오늘은 어땠어요?', timestamp: '오후 7:38', readState: 'read', sender: { name: '엄마' } },
   { id: 'standard-2', direction: 'outgoing', text: '좋았어요. 조금 뒤에 이야기해요.', timestamp: '오후 7:40', readState: 'read' },
 ];
 

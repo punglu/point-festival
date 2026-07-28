@@ -1,3 +1,8 @@
+/*
+ * 목업(Z7)은 실선+굵은 텍스트가 아니라 점선 + 낮은 채도 pill이다 — 지금까지는
+ * brand-400 실선 + brand-600 굵은 텍스트로 메시지보다 시각적으로 더 강했다.
+ * 의미(role=separator, "여기부터 안 읽음")는 그대로 두고 강도만 낮춘다(Wave 6.0B §6.5).
+ */
 .divider {
   display: flex;
   align-items: center;
@@ -7,13 +12,16 @@
 
 .line {
   flex: 1;
-  height: 1px;
-  background: var(--color-brand-400);
+  height: 0;
+  border-top: 1px dashed var(--color-line);
 }
 
 .text {
   flex-shrink: 0;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-brand-50);
   color: var(--color-brand-600);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
 }

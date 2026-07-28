@@ -21,7 +21,8 @@
 
 .avatarSlot {
   display: inline-flex;
-  width: 28px;
+  align-items: flex-end;
+  width: 44px;
   flex-shrink: 0;
 }
 
@@ -42,24 +43,26 @@
   font-size: 12px;
 }
 
+/* 목업(Z5/Z6)은 여백이 넉넉하고 corner가 더 둥글다 — radius-control(16px) 대신
+   radius-card(24px)로, padding도 한 단계 키운다. tail corner(발신 방향 표시)는 유지한다. */
 .bubble {
   overflow-wrap: break-word;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-control);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-card);
   font-size: 16px;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .incoming .bubble {
   background: var(--color-chat-other);
   color: var(--color-ink-900);
-  border-bottom-left-radius: var(--space-1);
+  border-bottom-left-radius: var(--space-2);
 }
 
 .outgoing .bubble {
   background: var(--color-chat-own);
   color: var(--color-surface);
-  border-bottom-right-radius: var(--space-1);
+  border-bottom-right-radius: var(--space-2);
 }
 
 .footer {
