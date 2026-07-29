@@ -1,0 +1,85 @@
+category,screen_id,item,value,source_class,note
+A_Layout,"ALL(A1-A4,EXTRA)",mobile mockup viewport width,480px,CSS_LITERAL,"고정 카드 프레임 폭. 실제 디바이스 CSS px 아님 — PRESENTATION_ARTIFACT(디자인 캔버스 스케일). 승인 PNG는 853/941/1448 등 실제 디바이스 해상도라 1:1 대응 아님(SOURCE_CONFLICT, TIER1 참조)"
+A_Layout,A5,desktop admin canvas,1440x1030px,CSS_LITERAL,유일한 데스크톱 목업. border-radius:20px
+A_Layout,A1/A1-S1/A2/A3/A4/EXTRA,phone frame border-radius,44px,CSS_LITERAL,10개 화면 공통
+A_Layout,A5,AdminSidebar width,300px,CSS_LITERAL,flex:none 고정폭
+A_Layout,A5,MainContent border-radius,20px 0 0 20px,CSS_LITERAL,사이드바와 접합부만 각짐
+A_Layout,A2/A3/A4/EXTRA,BottomDock grid columns,"repeat(4,1fr)",CSS_LITERAL,고정 4열
+A_Layout,A2,ServiceGrid columns,"repeat(4,1fr)",CSS_LITERAL,2x2로 보이나 실제로는 1행 4열 grid
+A_Layout,A3,WeekDateStrip columns,"repeat(7,1fr)",CSS_LITERAL,요일 7열
+A_Layout,A3,ProfileSummaryCard mini-stats columns,"repeat(3,1fr)",CSS_LITERAL,
+A_Layout,A5,StatCardRow columns,"repeat(3,1fr)",CSS_LITERAL,gap:16px
+A_Layout,A5,DeductionDataTable row grid-template-columns,1.1fr 2fr 1fr 1fr 1fr .9fr,CSS_LITERAL,6열: 사용자/사유/금액/일시/등록자/관리
+A_Layout,ALL,HomeIndicatorBar size,"132px x 5px, radius 3px",CSS_LITERAL,iOS home indicator 모방(PRESENTATION_ARTIFACT)
+A_Layout,COMPUTED,rendered A1 bounding box (Playwright),480 x 920 px @1x,COMPUTED_STYLE,/tmp/mongle-wave6-0ab/evidence/approved-html-render/zone_bounding_boxes.json 참조
+A_Layout,COMPUTED,rendered A5 bounding box (Playwright),1440 x 1030 px @1x,COMPUTED_STYLE,동일 파일 참조
+A_Layout,PNG,screen_login_approved.png intrinsic size,853 x 1844 px,PNG_MEASURED,"PIL 실측, aspect 0.4626"
+A_Layout,PNG,screen_family_home_approved.png / chat / point_festival intrinsic size,941 x 1672 px (공통),PNG_MEASURED,"PIL 실측, aspect 0.5628"
+A_Layout,PNG,screen_admin_point_approved.png intrinsic size,1448 x 1086 px,PNG_MEASURED,"PIL 실측, aspect 1.333 — 1440x1030 목업(aspect 1.398)과 근접하나 완전 동일 아님"
+A_Layout,DELTA,A1 aspect ratio: rendered vs PNG,0.522 vs 0.463 → 12.79% delta,COMPUTED_STYLE+PNG_MEASURED,SOURCE_CONFLICT: 목업 프레임(480x920 근사)과 실제 승인 PNG(853x1844)의 세로 비율이 다름 — PNG가 더 세로로 길다
+B_Spacing,A1,ProfileSelectorCard padding,16px 18px 12px,CSS_LITERAL,
+B_Spacing,A1,ProfileSelectorCard inner gap,10px,CSS_LITERAL,카드 간)
+B_Spacing,A1,PlayerCard padding,12px,CSS_LITERAL,
+B_Spacing,A1-S1,LoginFormPanel padding,22px 20px 16px,CSS_LITERAL,gap:14px
+B_Spacing,A1-S1,TextField padding,"14px 16px (아이디), 13px 16px (비밀번호,포커스링 4px)",CSS_LITERAL,
+B_Spacing,A2,ContentColumn padding,10px 18px 12px,CSS_LITERAL,
+B_Spacing,A2,ChatPromoHeroCard padding,15px 20px,CSS_LITERAL,
+B_Spacing,A2,RecentActivityCard padding,12px,CSS_LITERAL,"gap:8px, row padding-bottom:8px"
+B_Spacing,A3,ContentColumn padding,4px 16px 11px,CSS_LITERAL,gap:9px
+B_Spacing,A3,MissionRow padding,8px,CSS_LITERAL,"gap:5px(행 내부), gap:8px(아이콘-텍스트)"
+B_Spacing,A4,MessageTimeline padding,4px 16px 0,CSS_LITERAL,gap:8px(메시지 간)
+B_Spacing,A4,MessageBubble padding,8px 14px,CSS_LITERAL,
+B_Spacing,A4,Composer padding,5px 10px 5px 8px,CSS_LITERAL,
+B_Spacing,A5,MainHeaderRow(main) padding,34px 40px,CSS_LITERAL,
+B_Spacing,A5,DeductionDataTable header row padding,18px 24px,CSS_LITERAL,
+B_Spacing,A5,DeductionDataTable data row padding,16px 24px,CSS_LITERAL,
+B_Spacing,A5,StatCard padding,20px,CSS_LITERAL,gap:18px(내부)
+B_Spacing,GLOBAL(repeat count top-15),padding raw-value frequency,see approved_token_candidates.csv (SPACING category),CSS_LITERAL,"가장 빈번: 13px 14px(17회), 10px 30px 0(9회, 상태바), 8px 14px(8회), 0 2px(8회), 8px 18px(8회)"
+B_Spacing,GLOBAL,gap raw-value frequency top,3px(97회) 7px(33회) 2px(32회) 4px(30회) 10px(30회) 12px(26회) 6px(24회),CSS_LITERAL,3px가 압도적 최빈값 — 대부분 아이콘+라벨 등 초근접 배치(BottomDock 아이콘-라벨 gap)
+C_Typography,GLOBAL,font-family,"'Noto Sans KR', system-ui, sans-serif (Google Fonts CDN)",CSS_LITERAL,외부 의존성: fonts.googleapis.com/fonts.gstatic.com. 현재 구현 global.css는 'Pretendard'+'Black Han Sans'+'Inter' 사용 — TOKEN_CONFLICT(폰트 패밀리 자체가 다름)
+C_Typography,GLOBAL,font-size distribution(occurrences),11px(73) 13px(69) 12px(60) 10px(58) 14px(54) 15px(33) 16px(24) 9px(20) 12.5px(19) 13.5px(17) 20px(16) 19px(12) 17px(11),CSS_LITERAL,"매우 세분화된 scale(9~37px, 26종 distinct) — 승인자료는 정수 px 단위 명명된 typography scale이 아니라 element별 자유값. 현재 구현 주석(global.css:51-57)은 임의 명명 typography scale(Display/Page/Section/Card/Body 등)을 이미 도입했으나 원본 HTML과 1:1 대응 확인 NOT_VERIFIED"
+C_Typography,A1,브랜드 타이틀 '가족 플랫폼',37px / 900 / -.01em letter-spacing / #17103A,CSS_LITERAL,
+C_Typography,A1-S1,브랜드 타이틀(compact),31px / 900,CSS_LITERAL,A1 대비 축소
+C_Typography,A5,페이지 타이틀 '포인트 관리',36px / 900 / #17103A,CSS_LITERAL,유일하게 30px 초과 사용처
+C_Typography,GLOBAL,본문 컬러 최빈값,"#17103A(188회, 최고 강조 텍스트) #5A35DF(117회, 브랜드/링크) #8A83A8(82회, muted) #4A3F72(70회, 보조본문)",CSS_LITERAL,
+C_Typography,A3/A5,금액 강조 컬러(음수/차감),#EF4665,CSS_LITERAL,"19회 등장, danger 계열"
+C_Typography,A4,발신(own) 말풍선 텍스트 컬러,#fff on #6944EF 배경,CSS_LITERAL,
+C_Typography,ALL,text-transform 사용,"없음(전 구간 원문 그대로, 대문자 변환 없음)",CSS_LITERAL,'TURN 1' 라벨만 대문자이나 이는 캔버스 메타 라벨(비-제품 텍스트)
+C_Typography,ALL,truncation/wrapping 규칙,"white-space:nowrap 다수 사용(고정폭 목업 특성), 실제 반응형 truncation(text-overflow:ellipsis) 규칙 관측 안됨",CSS_LITERAL,NOT_VERIFIED: 실제 구현에서 좁은 화면 대응 시 이 nowrap이 그대로 유지 가능한지는 반응형 렌더 없이는 확정 불가
+D_Surface,GLOBAL,border-radius distribution(occurrences),"50%(108) 999px(50, pill) 1px(45, 보더두께 오인식 가능) 12px(22) 18px(19) 14px(18) 20px(14)",CSS_LITERAL,999px pill이 badge/button/tab에 광범위 사용. 44px는 폰목업 프레임 전용(9회)
+D_Surface,A1,PhoneMockup background,"linear-gradient(180deg,#C6A9F5 0%,#B58EF0 30%,#A579EC 52%,#F7F6FC 78%,#F7F6FC 100%)",CSS_LITERAL,5-stop 그라디언트
+D_Surface,A2/A3/EXTRA,PhoneMockup background(콘텐츠 화면),"#F7F6FC (solid, 그라디언트 없음)",CSS_LITERAL,A1/A1-S1만 그라디언트 배경 사용
+D_Surface,A4,PhoneMockup background,#F8F7FD,CSS_LITERAL,A2/A3(#F7F6FC)와 미세하게 다른 근접 색 — ONE_OFF_LITERAL 가능성
+D_Surface,GLOBAL,box-shadow distribution,"0 5px 16px rgba(60,30,120,.05)(15회) 0 30px 70px rgba(40,20,90,.22)(9회, 폰프레임 자체) 0 6px 18px rgba(60,30,120,.07)(3회)",CSS_LITERAL,
+D_Surface,GLOBAL,surface white variants,"#fff/#FFF(107회) #FBFAFE(12회) #FDFDFF(14회, Dock 배경)",CSS_LITERAL,미세하게 다른 3종의 '흰색' surface 존재 — SEMANTIC_CANDIDATE 검토 필요
+D_Surface,A4,outgoing bubble color,#6944EF,CSS_LITERAL,브랜드 accent(#5A35DF/#6B46F2)와 또다른 근접 보라 — chat-own 전용 색으로 추정. 현재 global.css --color-chat-own:#6944EF와 정확히 일치(EXACT MATCH 확인됨)
+D_Surface,A4,incoming bubble color,#F3F0FF (2번째 이후 발신자) / #fff(첫 메시지만),CSS_LITERAL,현재 global.css --color-chat-other:#F3F0FF와 정확히 일치(EXACT MATCH)
+D_Surface,ALL,blur/backdrop-filter 사용,없음(관측 안됨),CSS_LITERAL,
+D_Surface,A2,ChatPromoHeroCard overflow,hidden (워터마크 로고 크롭용),CSS_LITERAL,
+E_Controls,A1,PlayerCard avatar size,"78px x 78px, border 3px",CSS_LITERAL,
+E_Controls,A2/A3/EXTRA,GreetingHeader/ProfileSummary avatar size,52px(A2) / 70px(A3) / 66px(EXTRA-01),CSS_LITERAL,"화면별 아바타 크기 불일치 — SEMANTIC 미확정, 문맥별 자유값으로 보임"
+E_Controls,A4,chat participant avatar size,38px(메시지행) / 30px(헤더 스택) / 42px(로고 아이콘),CSS_LITERAL,
+E_Controls,A1,chevron button(원형),"38px x 38px, radius 50%",CSS_LITERAL,hit target 38px — Apple HIG 44px 권장에 미달(NOT_VERIFIED as intentional)
+E_Controls,A4,Composer send button,"44px x 44px, radius 50%, #5A35DF bg",CSS_LITERAL,hit target 44px = --size-touch-min(현재 구현 토큰)과 정확히 일치
+E_Controls,A1-S1,PrimaryLoginButton height(implicit),padding 16px only(no explicit height) → 약 52-54px 추정(INFERRED),INFERRED,
+E_Controls,A5,차감추가 버튼,"padding:15px 24px, radius:14px, bg:#5A35DF",CSS_LITERAL,
+E_Controls,A5,테이블 행 액션 아이콘 버튼,"36px x 36px, radius 10px(편집) / 50%(아바타 이니셜)",CSS_LITERAL,
+E_Controls,EXTRA-01,알림 설정 토글 스위치,"42px x 24px pill, thumb 18px",CSS_LITERAL,
+E_Controls,ALL,disabled state 시각 규칙,명시적 disabled 스타일 관측 안됨(SOURCE_MISSING) — 잠긴 플레이어 카드(A1)는 별도 색상 규칙(회색조)으로 대체 표현,CSS_LITERAL,
+E_Controls,ALL,focus state,"A1-S1 비밀번호 필드만 focus ring 명시(box-shadow:0 0 0 4px rgba(90,53,223,.10)) — 나머지 컨트롤 focus 상태 이미지 없음",CSS_LITERAL,
+F_Messaging,A4,bubble max-width,"명시적 max-width 없음(콘텐츠 기반 자동 폭, NOT_VERIFIED 최대폭 규칙)",CSS_LITERAL,
+F_Messaging,A4,bubble radius(incoming),6px 18px 18px 18px,CSS_LITERAL,6회 등장 — 발신자 쪽 모서리만 축소(꼬리 없는 tail 표현)
+F_Messaging,A4,bubble radius(outgoing),18px 6px 18px 18px,CSS_LITERAL,incoming과 좌우 대칭 반전
+F_Messaging,A4,group spacing(avatar-bubble gap),7px,CSS_LITERAL,
+F_Messaging,A4,timestamp 배치,"bubble과 나란히(align-items:flex-end), 별도 유형 사용 안함",CSS_LITERAL,
+F_Messaging,A4,divider(date/unread),"date: pill(#EFECF8 bg), unread: dashed border-top + pill 조합",CSS_LITERAL,
+F_Messaging,A4,composer height(implicit),"padding 5px 10px 5px 8px, 내부 44px 원형버튼 기준 약 54-56px 추정(INFERRED)",INFERRED,
+F_Messaging,A4,attachment thumbnail size,"74px x 74px, radius 8px",CSS_LITERAL,실제 사진 없음 — repeating-linear-gradient 텍스처 placeholder
+F_Messaging,A4,keyboard-safe area 처리,"관측 불가(정적 목업이라 키보드 상태 이미지 없음, NOT_VERIFIED)",NOT_VERIFIED,
+F_Messaging,CURRENT,구현측 참고,MessageBubble.tsx/ChatComposer.tsx/UnreadDivider.module.css 등 현재 코드에 이미 'Wave 6.0' 주석 존재 — 일부 F항목은 이미 1회 반영 시도된 것으로 추정(Phase B에서 재확인),CURRENT_ORIGIN_DEV,
+G_Admin,A5,sidebar width,300px 고정,CSS_LITERAL,
+G_Admin,A5,"table row height(implicit, padding-based)","padding 16px 24px, explicit height 없음 → 약 68-72px 추정(INFERRED, 아바타 36px+상하 padding 기준)",INFERRED,
+G_Admin,A5,filter pill(전체/이름) padding,11px 26px(활성) / 미세 다른 값 관측 안됨,CSS_LITERAL,
+G_Admin,A5,dialog/모달 이미지,"존재하지 않음(SOURCE_MISSING) — 편집/삭제 아이콘만 존재, 실제 다이얼로그 UI 승인 이미지 없음",SOURCE_MISSING,
+G_Admin,A5,metric card(StatCard),"padding:20px, radius:18px, border:1px solid #F0EEF7, avatar-style icon 64px",CSS_LITERAL,
+G_Admin,A5,pagination item size,"32px x 32px, radius 8px",CSS_LITERAL,

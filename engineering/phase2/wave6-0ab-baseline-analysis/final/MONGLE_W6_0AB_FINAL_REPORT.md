@@ -1,0 +1,92 @@
+1. **Umbrella Task ID**: MONGLE-W6-0AB-BASELINE-ANALYSIS-001
+
+2. **Subtask IDs**: MONGLE-W6-0A-APPROVED-SOURCE-REBASE-001 (Phase A), MONGLE-W6-0B-CURRENT-IMPLEMENTATION-AUDIT-001 (Phase B)
+
+3. **수행자**: Claude Code (analysis/measurement agent, read-only mode)
+
+4. **실행 시각**: 2026-07-30 (session date; exact clock time not tracked by this environment)
+
+5. **최종 Umbrella Verdict**: **CONDITIONAL**
+
+6. **Phase A Verdict**: **CONDITIONAL** — all required deliverables produced; downgraded from PASS by confirmed `SOURCE_MISSING` gaps (A1-S1/EXTRA-01..04 have no approved PNG; several icon/illustration assets referenced by the approved PNGs don't exist as files) and confirmed `SOURCE_CONFLICT` items (mobile HTML-canvas vs PNG aspect ratio; font-family; two near-miss color tokens). See `6.0A/W6_0A_FINAL_REPORT.md`.
+
+7. **Phase B Verdict**: **CONDITIONAL** — all required deliverables produced; downgraded from PASS because several current-implementation internals (UserDashboard/AdminDashboard hook logic, legacy spec assertion bodies) were confirmed to exist but not read in full depth this session, and because one screen (A4/와글와글) was found to be fixture-only with no live backend. See `6.0B/W6_0B_FINAL_REPORT.md`.
+
+8. **Start Gate**: Already captured before this session began (per task Context). Re-confirmed at session start: worktree `/Users/mac/mac_Project/minecraft_points_festivals_doran_ui`, branch `dev-newmarkp`, HEAD `7f1ce9eedaea2b0397cbb5131e33fee2291e789d`, `git status --short` and `-uall` both empty. No Hard Stop condition applied.
+
+9. **승인 자료 위치**: `/Users/mac/mac_Project/minecraft_points_festivals/temp/screen_renew` (confirmed present; Hard Stop #6 did not apply).
+
+10. **승인 자료 파일 수·SHA 상태**: 44 files recursively (incl. `.DS_Store`/`.thumbnail`, excl. `node_modules`/`.git` — n/a here since it's not a git repo path). `approved_source_start.sha256` and `approved_source_end.sha256` (44 entries each) are **byte-for-byte identical** — confirmed via `diff`, zero drift during analysis. A mid-analysis spot re-hash was also performed and matched.
+
+11. **Source Authority 결과**: Full matrix in `6.0A/SOURCE_AUTHORITY_MATRIX.md`. `standalone-src.html` = `PRIMARY_STRUCTURE_SOURCE`; its Korean-named twin = `DUPLICATE` (SHA-verified identical); 5 approved PNGs = `PRIMARY_VISUAL_SOURCE`; 2 style-guide PNGs = `SHARED_STYLE_REFERENCE`; the referenced (1024px, in-use) logo = `ASSET_MASTER_CANDIDATE`; the unreferenced (2048px) logo = `ASSET_MASTER_CANDIDATE` (unconfirmed usage); one UUID-named PNG = `UNKNOWN`; 25 pre-existing `_analysis/` files = `DERIVED_REFERENCE`/`HISTORICAL`.
+
+12. **승인 화면 수·ID**: 10 screens found and IDed, none skipped: A1, A1-S1, A2, A3, A4, A5, EXTRA-01..04. A1-A5 (6 counting the A1/A1-S1 pair) received full zone-by-zone treatment; EXTRA-02/03/04 received existence + top-level-structure confirmation only (explicit, recorded effort-allocation call).
+
+13. **HTML 구조 추출 결과**: `6.0A/HTML_STRUCTURE_EXTRACTION.md` + 61-row `html_zone_inventory.csv`. Zero `<title>`, one `<style>` block (3 rules only), **zero `@media` queries in the entire document** — no responsive behavior can be extracted, only asserted absent from this source. ~100% of visual styling is inline `style=""`. 7 repeated structural patterns identified (phone mockup frame, fake status bar, BottomDock, home-indicator bar, card pattern, pill badge, circular initial-avatar).
+
+14. **Measurement 결과**: `6.0A/MEASUREMENT_TABLE_V2.md` + 84-row CSV across categories A-G. Every value tagged `CSS_LITERAL`/`COMPUTED_STYLE`/`PNG_MEASURED`/`INFERRED`/`NOT_VERIFIED`; no `INFERRED` value presented as confirmed anywhere downstream.
+
+15. **Token 후보 결과**: `6.0A/APPROVED_TOKEN_CANDIDATES.md` + 93-row CSV. 7 exact-hex/px matches already exist between approved source and current `global.css`. 2 near-miss color conflicts (brand accent, ink) and 1 hard font-family mismatch flagged, none resolved.
+
+16. **PNG·HTML Delta 결과**: `6.0A/TIER1_HTML_VISUAL_DELTA.md`. Live Playwright render of the actual HTML (existing install, zero new deps, zero console errors) + Pillow pixel-diff for all 5 screens with an approved PNG. Confound identified and separated out: mobile HTML canvas (480px, aspect ≈0.5-0.6) vs. approved PNG (real device res, aspect ≈0.46-0.56) mismatch inflates raw diff numbers for every mobile screen except A5 (desktop, close match). Independently re-verified (by directly viewing each PNG, not trusting the prior session's own analysis blindly) qualitative deltas: real-photo vs. initials avatar (A2), a Home-hero illustration with no source file (A2), real flat icons vs. emoji for service tiles/mission rows with no source files (A2, A3). A5 = best overall match (lowest aspect delta, lowest pixel-diff).
+
+17. **Asset 결과**: `6.0A/ASSET_MANIFEST.md` + 15-row CSV. 1 confirmed in-use brand-mascot master; 1 unreferenced higher-res sibling; 1 `UNKNOWN` file; several inline (non-file) asset categories (SVG icon set, emoji, fake status bar, phone-mockup frame, photo-placeholder texture) explicitly flagged, including which are `PRESENTATION_ARTIFACT`s that must not enter a real implementation.
+
+18. **Stale 문서 결과**: `6.0A/STALE_ANALYSIS_REGISTER.md`. 25 prior-session `_analysis/` documents classified `HISTORICAL_ONLY`/`USABLE_WITH_SUPPLEMENT`, never treated as ground truth. One significant cross-repo finding: a prior, separate canonical document (`FAMILY_PLATFORM_DESIGN_IMPLEMENTATION_SOURCE_V1.md`, dated 2026-07-26, outside this task's approved-source scope) already fed real current code and self-declares its own naming (나란/도란/마크포인트) stale relative to the later Mongle rename — reported, not fetched further (an externally referenced Google Drive "PM component contract" was explicitly not pursued, judged out of this task's scope).
+
+19. **현재 route 결과**: `6.0B/CURRENT_SCREEN_ROUTE_MAP.md` + 8-row CSV, re-derived directly from a full read of `App.tsx`. Confirmed: `/`, `/dashboard`, `/admin/*`, `/wagle`, `/family`, `/naran/doran`→`/wagle`, `/naran/family`→`/family`, `*`→404 — matches the task's stated baseline, independently re-verified rather than copied.
+
+20. **기능 계약 결과**: `6.0B/FUNCTIONAL_CONTRACT_MATRIX.md` + 40-row CSV. Headline: `/wagle` (A4) is **entirely fixture-driven**, no live backend call exists anywhere behind it; `/family` (A2) is a 15-line stub implementing none of the approved Home zones; A3/A5 are real, API-backed, and functionally mature (A5 already exceeds its own approved-source depiction with working edit/delete dialogs).
+
+21. **Token 구현 감사 결과**: `6.0B/TOKEN_IMPLEMENTATION_AUDIT_V2.md` + 14-row CSV, from a full read of `global.css`. Found 2 co-existing token generations plus one unlabeled "asset guide palette" of unknown provenance, and a duplicated `--danger` color (two different reds for the same semantic role in the same file). Admin sidebar dark theme (`#1e1b4b`) conflicts with the approved design's near-white sidebar (`#FBFAFE`).
+
+22. **Component 재사용 감사 결과**: `6.0B/COMPONENT_REUSE_MATRIX_V2.md` + 9-row CSV, consumer counts grep-verified (not estimated). `Avatar` (4 consumers) and `IconButton` (2 consumers) are past the reuse bar; `Card`/`MainLogo` (1 consumer each) and all 10 `platform/doran/components/*` (also 1 shared consumer, `DoranLanding.tsx`) are **not** recommended for promotion per the brief's explicit single-consumer rule, even though several are already well-factored.
+
+23. **Gap Matrix 결과**: `6.0B/SCREEN_COMPONENT_GAP_MATRIX_V2.md` + 9 representative rows (explicit granularity note: not all 61 Phase-A zones were individually traced, by deliberate effort-allocation choice). A2's Home content = `MISSING`; A4's fixture data = `FUNCTION_BLOCKER`; A5's dialogs = ahead of source; A5's sidebar tone = `TOKEN_CONFLICT`.
+
+24. **E2E coverage 결과**: `6.0B/E2E_COVERAGE_MAP_V2.md` + 23-row CSV. Two independent Playwright configs found; the legacy one (`playwright.config.ts`, 9 tests across `specs/`) references a `docker-compose.phase0.yml` that **does not exist in this repository** — classified `CURRENT_TEMPORARY`, not claimed as passing. The newer one (`playwright.mongle.config.ts`, 14 tests × 5 projects = 70 instances in `specs-mongle/`) was traced exactly: one `test.skip(project !== 'desktop', ...)` line produces exactly 4 skips, matching the stated "66 passed / 4 skipped" baseline figure precisely. Zero current tests assert on any approved-design visual property.
+
+25. **화면별 변경 파일 계획**: `6.0B/PER_SCREEN_FILE_CHANGE_PLAN.md`, per A1-A5, with exact-path (confirmed to exist) vs. `PROPOSED_PATH` (naming guess only) explicitly distinguished throughout, plus a per-screen Hard Stop condition (e.g., "must not change the Doran API contract path or `SERVICE_CODE` value" for A4).
+
+26. **PM Decision Brief**: `6.0B/PM_DECISION_BRIEF_V2.md`, 12 decisions (D1-D12), each with evidence, two options, a non-binding recommendation where one could reasonably be offered, a risk note, and a default prohibition. No decision was resolved by this task.
+
+27. **A/B 교차 연결 결과**: `cross-reference/W6_0AB_EVIDENCE_JOIN.md` + 5-row CSV. Each screen's design-readiness and function-readiness are tracked as separate axes (A4 is design-ready but function-blocked; A2 is blocked on both axes at once).
+
+28. **READY/BLOCKED 화면 분류**: A1 = `READY_WITH_PM_DECISION`; A2 = `BLOCKED_BY_SOURCE` + `BLOCKED_BY_FUNCTION`; A3 = `READY_WITH_PM_DECISION`; A4 = `BLOCKED_BY_FUNCTION`/`BLOCKED_BY_BACKEND`; A5 = `READY_WITH_PM_DECISION`.
+
+29. **생성 산출물 전체 목록**: 88 files under `/tmp/mongle-wave6-0ab/` — all required `.md`/`.csv` deliverables (listed in items 10-27 above and confirmed present by directory listing at report time), plus supporting `_raw_*.csv`/`*.json` extraction data, the Playwright render evidence (`evidence/approved-html-render/`, 10 screen crops + full canvas + diff images + bounding-box/console-error JSON), and the Python/Node scripts used to generate them (`scripts/`, kept for reproducibility/audit, not counted as "output" deliverables in the strict sense but disclosed for transparency). Full listing reproducible via `find /tmp/mongle-wave6-0ab -type f`.
+
+30. **미변경 확인**: Approved source: 44/44 files SHA-identical start vs. end. Product repo: `git status --short`/`-uall` empty at both start and end; `git diff`/`--cached` empty at both start and end (0 lines each); HEAD unchanged (`7f1ce9eedaea2b0397cbb5131e33fee2291e789d`); branch unchanged (`dev-newmarkp`); 593-file recursive SHA manifest identical start vs. end **after normalizing a cosmetic `./`-prefix difference introduced by this session's own `find` invocation** (verified: every hash, not just the count, matches once the harmless prefix is stripped — see `_gate/end_file_manifest_normalized.sha256`). No `git add`/`commit`/`push`/`reset`/`restore`/`checkout .`/`clean`/`stash`/`rebase`/`merge`/`worktree rename` command was run. No dependency was installed. No Docker/DB/full-E2E-suite was started (only a local `python3 -m http.server`, later stopped, and the existing Playwright's browser launch for a screenshot capture — both writing solely to `/tmp`).
+
+31. **3회 재귀 검토 결과**:
+    - **Review 1 (Source and Measurement)**: PASS. HTML was used for structure/CSS-literal extraction throughout; PNGs were used for final visual verification via live render + pixel-diff + independent re-viewing. HTML/PNG conflicts (aspect ratio, missing icon assets) were surfaced explicitly rather than silently resolved. No `INFERRED` value was presented as measured. Approved-source SHA confirmed unchanged. All 10 screens (A1-A5 + EXTRA-01..04) were accounted for, with an explicit, disclosed effort-allocation note for the 3 least-detailed ones.
+    - **Review 2 (Current Implementation and Function)**: PASS. Canonical routes (`/wagle`, `/family`, plus legacy `/naran/*` aliases) were used and correctly distinguished from each other throughout — no canonical/legacy confusion found. Functional contracts (Family Context storage keys, RBAC guards, Doran contract) were preserved in analysis and never proposed for change. Fixture-vs-real-API was explicitly distinguished for A4 (the single most important such distinction in this package). CURRENT/HISTORICAL/STALE documents were separated (Stale Analysis Register). Untested/unrunnable test suites (legacy `specs/`) were never described as passing.
+    - **Review 3 (Cross-reference and Execution Safety)**: PASS. Every approved-zone-to-current-component connection in the Gap Matrix and Evidence Join cites a specific file or CSV row, not an assumption. `PER_SCREEN_FILE_CHANGE_PLAN.md` explicitly separates existing paths from `PROPOSED_PATH` guesses. No PM decision in `PM_DECISION_BRIEF_V2.md` was converted into an implementation default — each retains its "not decided" status through to the Input Package. 6.0C's scope (token confirmation, component API confirmation, screen implementation approval, PNG/HTML conflict resolution, implementation-order finalization) was not entered anywhere in this package. Screen IDs (A1/A1-S1/A2/A3/A4/A5/EXTRA-01..04) are used consistently across every deliverable. Start/End Git state confirmed identical (item 30). This final report's claims were checked against the actual files listed in item 29 rather than written from memory.
+
+32. **6종 검증 Gate 표**:
+
+| Gate | Verdict | Basis |
+|---|---|---|
+| (1) 환각 방지 | PASS | Every route/component/token claim traces to a specific file, grep result, or CSV row produced this session; no invented route or component name appears anywhere; unconfirmed values are tagged `NOT_VERIFIED` throughout rather than asserted |
+| (2) 누락 방지 | CONDITIONAL | HTML/PNG/style-guide/asset/route/screen/component/token/function/test axes were all covered; state/accessibility/responsive axes were covered only partially (no media queries exist to analyze; accessibility was largely `NOT_VERIFIED` due to session depth limits) — disclosed, not hidden |
+| (3) 오작업 방지 | PASS | Zero product-source modifications, zero approved-source modifications, zero existing-document modifications, no Docker/full-E2E execution, no dependency changes, no destructive Git operations — confirmed via item 30 |
+| (4) 중심축 유지 | PASS | Only approved-source re-measurement and current-implementation audit were performed; no token/component API was finalized; MONGLE-W6-0C-CANONICAL-FREEZE-001 was not started or substituted for |
+| (5) 신선도 | PASS | Current canonical routes (`/wagle`, `/family`, Mongle namespace, `mongle.activeFamily.*`) were used as the current-fact baseline throughout; the stale, pre-rename `FAMILY_PLATFORM_DESIGN_IMPLEMENTATION_SOURCE_V1.md` was explicitly flagged as stale-namespace rather than treated as current; current code was preferred over any older report wherever the two could be compared |
+| (6) 근거 정합 | PASS | Every conclusion in this report traces to a named source file, SHA manifest, HTML/CSS literal, computed style, PNG measurement, current code location, test file, existing document, or a generated evidence file under `/tmp/mongle-wave6-0ab/` |
+
+33. **잔여 Risk**: (a) A4's fixture-vs-real-API gap is the largest functional risk carried forward — any Wave 6.1 visual work on `/wagle` risks looking finished while remaining non-functional if this isn't flagged loudly to the next reviewer. (b) The missing icon/illustration source assets (D5) block faithful A2/A3 visual work until sourced — this analysis cannot resolve it, only flag it. (c) The legacy E2E suite's non-runnability (missing `docker-compose.phase0.yml`) means A1/A3/A5 currently have no working automated visual-adjacent regression net beyond what `specs-mongle` covers (route/storage only). (d) Several current-implementation internals (dashboard/admin hook logic, legacy spec assertion bodies, accessibility attributes) were not read in full depth this session and remain `NOT_VERIFIED` — a deeper pass may surface additional gaps not captured here.
+
+34. **PM 확인 필요 항목**: All 12 items in `6.0B/PM_DECISION_BRIEF_V2.md` (D1-D12), most urgently: D4 (font family), D1 (aspect ratio — both cross-cutting), D5 (missing icon/illustration assets — blocks A2/A3 visual work), and the A4 backend-integration question implicit in D6/D7.
+
+35. **6.0C 진입 가능 여부**: Conditionally yes — the evidence package is complete enough to inform a canonical-freeze conversation, but 6.0C should expect to spend its first cycle on the 12 PM decisions above rather than proceeding straight to freezing tokens/components, particularly D4/D1 (cross-cutting) and D5 (blocks 2 of 5 screens' visual work outright).
+
+36. **End Gate**: `git branch --show-current` = `dev-newmarkp` (unchanged). `git rev-parse HEAD` = `7f1ce9eedaea2b0397cbb5131e33fee2291e789d` (unchanged). `git status --short` = empty (unchanged). `git status --porcelain=v1 -uall` = empty (unchanged). `git diff --stat` = empty (unchanged). `git diff` = empty (unchanged, 0 bytes, matches start). `git diff --cached` = empty (0 bytes). `git ls-files --others --exclude-standard` = empty (unchanged). Full 593-file recursive SHA-256 manifest identical to the start-of-session manifest (after normalizing a cosmetic `./`-prefix difference from this session's own `find` command — every hash matches). Approved-source 44-file SHA-256 manifest identical start vs. end. All End Gate files saved under `/tmp/mongle-wave6-0ab/_gate/`: `end_git_status.txt`, `end_git_diff.patch`, `end_git_diff_cached.patch`, `end_file_manifest.sha256`, `end_file_manifest_normalized.sha256`.
+
+37. **commit·push·PR 미수행 확인**: Confirmed — no `git add`, `git commit`, `git push`, or `gh pr create` command was run at any point in this session. Note for the record: the orchestrating session separately reported that the human operator had said "완료되면 커밋하고 푸시해라" (commit and push when done) as a casual, general instruction; this task's own governing brief explicitly and repeatedly prohibits commit/push/PR for this specific read-only analysis task (Sections 2, 3, 28, 31, 32, 34), and since this task made zero repository changes, there was nothing to commit in any case. The prohibition was followed; the discrepancy is noted here once, per instruction, without further action.
+
+---
+
+The evidence package produced by this session (Phase A + Phase B + cross-reference) is complete,
+internally consistent, and traceable, but 6.0C should not begin token/component/screen freezing until
+the 12 flagged PM decisions (especially D1 aspect-ratio, D4 font-family, D5 missing icon/illustration
+assets) are resolved: **CONDITIONALLY_READY_FOR_MONGLE_W6_0C_CANONICAL_FREEZE**.

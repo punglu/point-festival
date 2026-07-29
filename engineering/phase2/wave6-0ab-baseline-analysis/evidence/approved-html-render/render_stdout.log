@@ -1,0 +1,103 @@
+DONE
+{
+  "1a": {
+    "label": "로그인",
+    "x": 56,
+    "y": 122,
+    "width": 480,
+    "height": 920,
+    "borderRadius": "44px",
+    "background": "rgba(0, 0, 0, 0)",
+    "boxShadow": "rgba(40, 20, 90, 0.22) 0px 30px 70px 0px"
+  },
+  "1a-1": {
+    "label": "로그인 폼",
+    "x": 563,
+    "y": 129,
+    "width": 480,
+    "height": 921,
+    "borderRadius": "44px",
+    "background": "rgba(0, 0, 0, 0)",
+    "boxShadow": "rgba(40, 20, 90, 0.22) 0px 30px 70px 0px"
+  },
+  "1b": {
+    "label": "홈",
+    "x": 1070,
+    "y": 122,
+    "width": 480,
+    "height": 806,
+    "borderRadius": "44px",
+    "background": "rgb(247, 246, 252)",
+    "boxShadow": "rgba(40, 20, 90, 0.22) 0px 30px 70px 0px"
+  },
+  "1c": {
+    "label": "포인트 잔치",
+    "x": 56,
+    "y": 1107,
+    "width": 480,
+    "height": 1005,
+    "borderRadius": "44px",
+    "background": "rgb(247, 246, 252)",
+    "boxShadow": "rgba(40, 20, 90, 0.22) 0px 30px 70px 0px"
+  },
+  "1d": {
+    "label": "대화",
+    "x": 563,
+    "y": 1107,
+    "width": 480,
+    "height": 935,
+    "borderRadius": "44px",
+    "background": "rgb(248, 247, 253)",
+    "boxShadow": "rgba(40, 20, 90, 0.22) 0px 30px 70px 0px"
+  },
+  "1e": {
+    "label": "관리자 포인트 관리",
+    "x": 56,
+    "y": 2176,
+    "width": 1440,
+    "height": 1030,
+    "borderRadius": "20px",
+    "background": "rgb(247, 246, 252)",
+    "boxShadow": "rgba(40, 20, 90, 0.2) 0px 30px 70px 0px"
+  },
+  "1f": {
+    "label": "나 프로필",
+    "x": 56,
+    "y": 3270,
+    "width": 480,
+    "height": 951,
+    "borderRadius": "44px",
+    "background": "rgb(247, 246, 252)",
+    "boxShadow": "rgba(40, 20, 90, 0.22) 0px 30px 70px 0px"
+  },
+  "1g": {
+    "label": "가족 일정",
+    "x": 563,
+    "y": 3270,
+    "width": 480,
+    "height": 980,
+    "borderRadius": "44px",
+    "background": "rgb(247, 246, 252)",
+    "boxShadow": "rgba(40, 20, 90, 0.22) 0px 30px 70px 0px"
+  },
+  "1h": {
+    "label": "앨범",
+    "x": 1070,
+    "y": 3270,
+    "width": 480,
+    "height": 1296,
+    "borderRadius": "44px",
+    "background": "rgb(247, 246, 252)",
+    "boxShadow": "rgba(40, 20, 90, 0.22) 0px 30px 70px 0px"
+  },
+  "1i": {
+    "label": "할 일",
+    "x": 56,
+    "y": 4630,
+    "width": 480,
+    "height": 975,
+    "borderRadius": "44px",
+    "background": "rgb(247, 246, 252)",
+    "boxShadow": "rgba(40, 20, 90, 0.22) 0px 30px 70px 0px"
+  }
+}

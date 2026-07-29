@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+import csv
+OUT = "/tmp/mongle-wave6-0ab/6.0B/token_implementation_audit_v2.csv"
+
+rows = [
+ dict(token="--color-brand-600: #5835DF", source_file="frontend/src/styles/global.css:28", usage_count="NOT_VERIFIED(전수 grep 미수행, 존재만 확인)",
+   consuming_components="NOT_VERIFIED", classification="ACTIVE_TOKEN",
+   phase_a_candidate="#5A35DF(117occ)", match_delta="SOURCE_CONFLICT(근접이나 비동일, R채널 88 vs 90)",
+   migration_impact="LOW(육안상 거의 동일)", removal_risk="N/A", pm_decision="근접값을 동일 취급할지 PM 확인 필요"),
+ dict(token="--color-ink-900: #171D3A", source_file="global.css:32", usage_count="NOT_VERIFIED",
+   consuming_components="NOT_VERIFIED", classification="ACTIVE_TOKEN", phase_a_candidate="#17103A(188occ, 최다빈도)",
+   match_delta="SOURCE_CONFLICT(근접, G채널 0x10=16 vs 0x1D=29)", migration_impact="LOW-MEDIUM", removal_risk="N/A",
+   pm_decision="가장 많이 쓰이는 승인 색상이 현재 최상위 ink 토큰과 정확히 일치하지 않음 — 확인 필요"),
+ dict(token="--color-brand-100: #EEE8FF", source_file="global.css:30", usage_count="NOT_VERIFIED",
+   consuming_components="NOT_VERIFIED", classification="ACTIVE_TOKEN", phase_a_candidate="#EEE8FF(19occ)",
+   match_delta="EXACT_MATCH", migration_impact="NONE(이미 동일)", removal_risk="N/A", pm_decision="불필요(이미 일치)"),
+ dict(token="--color-danger: #EF4665", source_file="global.css:37", usage_count="NOT_VERIFIED",
+   consuming_components="NOT_VERIFIED", classification="ACTIVE_TOKEN", phase_a_candidate="#EF4665(19occ)",
+   match_delta="EXACT_MATCH", migration_impact="NONE", removal_risk="N/A", pm_decision="불필요"),
+ dict(token="--color-canvas: #F7F6FC", source_file="global.css:34", usage_count="NOT_VERIFIED",
+   consuming_components="NOT_VERIFIED", classification="ACTIVE_TOKEN", phase_a_candidate="#F7F6FC(12occ)",
+   match_delta="EXACT_MATCH", migration_impact="NONE", removal_risk="N/A", pm_decision="불필요"),
+ dict(token="--color-chat-own: #6944EF / --color-chat-other: #F3F0FF", source_file="global.css:38",
+   usage_count="확인됨(A4 관련 컴포넌트 다수 — MessageBubble.tsx/ChatHeader 등)", consuming_components="platform/doran/components/MessageBubble, ChatComposer 등(Wave 6.0B 주석 존재)",
+   classification="ACTIVE_TOKEN", phase_a_candidate="#6944EF / #F3F0FF(A4 정확 일치)", match_delta="EXACT_MATCH",
+   migration_impact="NONE(이미 Wave 6.0B에서 반영된 것으로 추정)", removal_risk="N/A", pm_decision="불필요"),
+ dict(token="--radius-pill: 999px", source_file="global.css:43", usage_count="NOT_VERIFIED",
+   consuming_components="NOT_VERIFIED", classification="ACTIVE_TOKEN", phase_a_candidate="999px(50occ)",
+   match_delta="EXACT_MATCH", migration_impact="NONE", removal_risk="N/A", pm_decision="불필요"),
+ dict(token="--radius-control: 16px", source_file="global.css:42", usage_count="NOT_VERIFIED",
+   consuming_components="NOT_VERIFIED", classification="ACTIVE_TOKEN", phase_a_candidate="16px(10occ)",
+   match_delta="EXACT_MATCH", migration_impact="NONE", removal_risk="N/A", pm_decision="불필요"),
+ dict(token="--size-touch-min: 44px", source_file="global.css:46", usage_count="NOT_VERIFIED",
+   consuming_components="NOT_VERIFIED", classification="ACTIVE_TOKEN", phase_a_candidate="44px(A4 전송버튼, 유일한 명시적 44px)",
+   match_delta="EXACT_MATCH", migration_impact="NONE", removal_risk="N/A", pm_decision="불필요"),
+ dict(token="--space-1..12 (4/8/12/16/20/24/32/40/48px)", source_file="global.css:39-41", usage_count="NOT_VERIFIED",
+   consuming_components="NOT_VERIFIED", classification="ACTIVE_TOKEN", phase_a_candidate="3/5/7/9/11px 등 홀수값 다수(최빈 gap=3px, 97occ)",
+   match_delta="SOURCE_CONFLICT(스케일 축 자체가 다름: 현재=4배수, 승인=홀수 다수)", migration_impact="MEDIUM(스케일 재설계 필요할 수 있음)",
+   removal_risk="N/A", pm_decision="4px 배수 스케일을 유지할지, 승인자료의 세분화된 홀수 gap을 반영할 새 스케일을 추가할지"),
+ dict(token="font-family: 'Pretendard', sans-serif (body, global.css:76)", source_file="global.css:3,76",
+   usage_count="전역(body 전체)", consuming_components="전체 애플리케이션", classification="CURRENT_SSOT",
+   phase_a_candidate="'Noto Sans KR'(승인자료 전체)", match_delta="SOURCE_CONFLICT(완전 다른 폰트 패밀리)",
+   migration_impact="HIGH(전역 타이포그래피 영향)", removal_risk="HIGH(전체 화면 룩앤필 변경)",
+   pm_decision="REQUIRES_PM_DECISION — Noto Sans KR로 전환할지, 현재 Pretendard 유지가 제품 결정인지"),
+ dict(token="--admin-sidebar-bg: #1e1b4b 등 ([data-domain=admin] 전용, global.css:61-66)", source_file="global.css:60-66",
+   usage_count="NOT_VERIFIED", consuming_components="AdminDashboard 계열(레거시)", classification="LEGACY_TOKEN",
+   phase_a_candidate="A5 승인자료의 sidebar bg는 #FBFAFE(거의 흰색) — 완전히 다른 톤(진남색 vs 연보라 화이트)", match_delta="SOURCE_CONFLICT",
+   migration_impact="MEDIUM(레거시 AdminDashboard 전체가 다크 사이드바인 반면 승인자료는 라이트 사이드바)",
+   removal_risk="MEDIUM(레거시 admin 전체 룩 변경 필요)", pm_decision="레거시 다크 admin sidebar를 승인자료의 라이트 sidebar로 재구성할지"),
+ dict(token="--bg/--card/--accent/--blue/--text/--muted/--gold/--danger/--shadow/--input-bg (global.css:6-15, 레거시 최초 토큰)",
+   source_file="global.css:6-15", usage_count="NOT_VERIFIED(레거시 UserDashboard/AdminDashboard 전반 추정)",
+   consuming_components="UserDashboard, AdminDashboard(레거시)", classification="LEGACY_TOKEN",
+   phase_a_candidate="일부 중복(--danger:#ef4444 vs 승인 --color-danger:#EF4665 — 서로 다른 두 개의 danger 토큰이 현재 파일에 공존)",
+   match_delta="TOKEN_CONFLICT(같은 global.css 안에 danger 색이 2벌 존재: #ef4444와 #EF4665)",
+   migration_impact="MEDIUM(중복 토큰 정리 필요)", removal_risk="MEDIUM(어느 컴포넌트가 어느 --danger를 쓰는지 미확인 상태로 제거 시 회귀 위험)",
+   pm_decision="레거시 토큰 세트(§1-15줄)와 신규 Semantic 토큰 세트(§17-49줄)의 공존을 언제까지 유지할지"),
+ dict(token="--brand-purple/--brand-coral/--brand-orange/--brand-mint/--brand-skyblue/--brand-pink/--brand-gold(에셋 가이드 팔레트, global.css:18-24)",
+   source_file="global.css:17-24", usage_count="NOT_VERIFIED", consuming_components="NOT_VERIFIED",
+   classification="UNUSED_CANDIDATE(주석상 '에셋 가이드 팔레트'로 명명, 실 소비처 미확인)",
+   phase_a_candidate="승인 HTML(screen_renew)의 93개 색상 중 정확히 일치하는 항목 없음(다른 톤의 팔레트로 보임 — 이 팔레트는 아마도 FAMILY_PLATFORM 이전의 또 다른 자산 가이드에서 유래한 것으로 추정, NOT_VERIFIED 출처)",
+   match_delta="NOT_VERIFIED", migration_impact="LOW(미사용 추정)", removal_risk="LOW",
+   pm_decision="이 팔레트의 실제 출처와 사용 여부 확인 필요 — 이번 Task의 승인자료(screen_renew)와는 직접 연결되지 않음"),
+]
+
+fieldnames = ["token","source_file","usage_count","consuming_components","classification","phase_a_candidate",
+  "match_delta","migration_impact","removal_risk","pm_decision"]
+with open(OUT, "w", newline="", encoding="utf-8") as f:
+    w = csv.DictWriter(f, fieldnames=fieldnames)
+    w.writeheader()
+    for r in rows: w.writerow(r)
+print(f"wrote {len(rows)} rows")

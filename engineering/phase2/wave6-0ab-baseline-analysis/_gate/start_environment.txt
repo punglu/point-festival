@@ -1,0 +1,9 @@
+date_utc: 2026-07-29T15:38:19Z
+expected_worktree: /Users/mac/mac_Project/minecraft_points_festivals_doran_ui
+actual_worktree: /Users/mac/mac_Project/minecraft_points_festivals_doran_ui
+expected_branch: dev-newmarkp
+actual_branch: dev-newmarkp
+reported_candidate_HEAD: b0aea1d
+actual_HEAD: 7f1ce9eedaea2b0397cbb5131e33fee2291e789d
+HEAD_delta_explanation: HEAD advanced from b0aea1d to 7f1ce9eedaea2b0397cbb5131e33fee2291e789d via prior in-session tasks in this same session (commit 7f1ce9e = route/storage namespace migration, pushed to origin/dev-newmarkp earlier in this session). This is a KNOWN, session-internal cause, not an out-of-band/unexplained change. Not a Hard Stop trigger (condition 3 requires an UNEXPLAINED HEAD delta).
+dirty_state: none (git status --short and -uall both empty)

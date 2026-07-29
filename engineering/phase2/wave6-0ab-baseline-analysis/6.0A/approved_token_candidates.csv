@@ -1,0 +1,94 @@
+category,raw_value,occurrence_count,source_files,screen_ids,intended_semantic_role,classification,proposed_candidate_name,confidence,pm_gate_required,note
+color,#17103A,188,standalone-src.html,"A1,A1-S1,A2,A3,A4,A5,EXTRA",최고강조 잉크(제목/핵심수치),SEMANTIC_CANDIDATE,color.approved.NEW_17103A,MEDIUM,YES,
+color,#5A35DF,117,standalone-src.html,"A1,A1-S1,A2,A3,A4,A5,EXTRA",브랜드 accent(버튼/링크/활성상태),SOURCE_CONFLICT,near-miss of --color-brand-600,"MEDIUM(채널당 delta<=4, 반올림 오차 가능성 vs 의도적 변경 가능성 모두 존재 — PM 확인 필요)",YES,
+color,#FFF,107,standalone-src.html,ALL,표면 흰색,MIGRATION_ALIAS_CANDIDATE,--color-surface,HIGH(EXACT_HEX_MATCH),YES,
+color,#8A83A8,82,standalone-src.html,ALL,muted 보조텍스트(3차 정보),SEMANTIC_CANDIDATE,color.approved.NEW_8A83A8,MEDIUM,YES,
+color,#4A3F72,70,standalone-src.html,"A1,A1-S1,A3,A5","보조 본문(2차 정보, 인디고 톤)",SEMANTIC_CANDIDATE,color.approved.NEW_4A3F72,MEDIUM,YES,
+color,#A8A5B6,50,standalone-src.html,ALL,placeholder/시간/비활성 아이콘,SEMANTIC_CANDIDATE,color.approved.NEW_A8A5B6,MEDIUM,YES,
+color,#6B6880,21,standalone-src.html,"A4,A5,EXTRA-01",라벨/등록자 텍스트,SEMANTIC_CANDIDATE,color.approved.NEW_6B6880,MEDIUM,YES,
+color,#EEE8FF,19,standalone-src.html,"A1,A2,A3,EXTRA-01",브랜드 100 배경(배지/pill 배경),MIGRATION_ALIAS_CANDIDATE,--color-brand-100,HIGH(EXACT_HEX_MATCH),YES,
+color,#EF4665,19,standalone-src.html,"A1-S1,A3,A5",danger/차감/에러 강조,MIGRATION_ALIAS_CANDIDATE,--color-danger,HIGH(EXACT_HEX_MATCH),YES,
+color,#EAE7F5,15,standalone-src.html,A5,admin 보더 라인(연한 회보라),SOURCE_CONFLICT,near-miss of --color-line,"MEDIUM(채널당 delta<=4, 반올림 오차 가능성 vs 의도적 변경 가능성 모두 존재 — PM 확인 필요)",YES,
+color,#FDFDFF,14,standalone-src.html,"A2,A3,A4,EXTRA",BottomDock 배경(거의 흰색),SOURCE_CONFLICT,near-miss of --color-surface,"MEDIUM(채널당 delta<=4, 반올림 오차 가능성 vs 의도적 변경 가능성 모두 존재 — PM 확인 필요)",YES,
+color,#C7C3D6,13,standalone-src.html,EXTRA-01,chevron 비활성 컬러,SEMANTIC_CANDIDATE,color.approved.NEW_C7C3D6,MEDIUM,YES,
+color,#F7F6FC,12,standalone-src.html,ALL,캔버스 배경(카드 바깥 배경),MIGRATION_ALIAS_CANDIDATE,--color-canvas,HIGH(EXACT_HEX_MATCH),YES,
+color,#FBFAFE,12,standalone-src.html,"A1,A1-S1,A3,A4",카드 서브표면(살짝 톤 다운된 흰색),SOURCE_CONFLICT,near-miss of --color-canvas,"MEDIUM(채널당 delta<=4, 반올림 오차 가능성 vs 의도적 변경 가능성 모두 존재 — PM 확인 필요)",YES,
+color,#F0EEF7,11,standalone-src.html,"A2,A3,A4,A5",구분선/보더 라인,SEMANTIC_CANDIDATE,color.approved.NEW_F0EEF7,MEDIUM,YES,
+color,#2F8C5C,8,standalone-src.html,"A4,A5",'민준' 아바타 텍스트 그린톤,SEMANTIC_CANDIDATE,color.approved.NEW_2F8C5C,MEDIUM,YES,
+color,#22C55E,6,standalone-src.html,"A1,A2,A4",온라인 상태 dot,SEMANTIC_CANDIDATE,color.approved.NEW_22C55E,MEDIUM,YES,
+color,#DCF4E8,7,standalone-src.html,"A3,A5",완료/성공 배지 배경(연초록),SEMANTIC_CANDIDATE,color.approved.NEW_DCF4E8,MEDIUM,YES,
+color,#DCEBFB,7,standalone-src.html,"A4,A5",'아빠' 아바타 배경(연파랑),SEMANTIC_CANDIDATE,color.approved.NEW_DCEBFB,MEDIUM,YES,
+color,#3C7BC4,7,standalone-src.html,"A4,A5",'아빠' 아바타 텍스트(파랑),SEMANTIC_CANDIDATE,color.approved.NEW_3C7BC4,MEDIUM,YES,
+color,#D9D2F3,7,standalone-src.html,"A1-S1,A3,A5",outline 보더(연보라),SEMANTIC_CANDIDATE,color.approved.NEW_D9D2F3,MEDIUM,YES,
+color,#EFECF8,7,standalone-src.html,"A2,A3,A4",구분선/배경(연보라 회색),SEMANTIC_CANDIDATE,color.approved.NEW_EFECF8,MEDIUM,YES,
+color,#6944EF,5,standalone-src.html,A4,발신(own) 말풍선 배경 — 현재 --color-chat-own과 EXACT MATCH,MIGRATION_ALIAS_CANDIDATE,--color-chat-own,HIGH(EXACT_HEX_MATCH),YES,
+color,#F3F0FF,4,standalone-src.html,A4,"수신(other) 말풍선 배경 — 현재 --color-chat-other와 EXACT MATCH(참고: raw 카운트는 background 단축 표기 누락으로 실측치보다 낮게 집계되었을 수 있음, NOT_VERIFIED 전수 카운트)",MIGRATION_ALIAS_CANDIDATE,--color-chat-other,HIGH(EXACT_HEX_MATCH),YES,
+font-size,11px,73,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.11,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,13px,69,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.13,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,12px,60,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.12,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,10px,58,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.10,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,14px,54,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.14,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,15px,33,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.15,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,16px,24,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.16,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,9px,20,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.9,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,12.5px,19,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.12_5,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,13.5px,17,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.13_5,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,20px,16,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.20,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,19px,12,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.19,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,17px,11,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,REPEATED_LITERAL,typography.approved.17,MEDIUM,YES,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,26px,5,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,ONE_OFF_LITERAL,typography.approved.26,MEDIUM,NO,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,18px,5,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,ONE_OFF_LITERAL,typography.approved.18,MEDIUM,NO,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,11.5px,5,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,ONE_OFF_LITERAL,typography.approved.11_5,MEDIUM,NO,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,30px,3,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,ONE_OFF_LITERAL,typography.approved.30,MEDIUM,NO,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,24px,2,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,ONE_OFF_LITERAL,typography.approved.24,MEDIUM,NO,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,37px,1,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,ONE_OFF_LITERAL,typography.approved.37,MEDIUM,NO,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+font-size,31px,1,standalone-src.html,ALL(분산),본문/라벨/제목 scale 원소,ONE_OFF_LITERAL,typography.approved.31,MEDIUM,NO,현재 global.css는 Display/Page/Section/Card/Body 명명 scale(주석)만 있고 실제 px 목록과의 1:1 매핑은 NOT_VERIFIED
+spacing-padding,13px 14px,17,standalone-src.html,ALL(분산),padding 원소값,REPEATED_LITERAL,space.approved.padding.13_14,MEDIUM,YES,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-padding,10px 30px 0,9,standalone-src.html,ALL(분산),padding 원소값,ONE_OFF_LITERAL,space.approved.padding.10_30_0,MEDIUM,NO,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-padding,8px 14px,8,standalone-src.html,ALL(분산),padding 원소값,ONE_OFF_LITERAL,space.approved.padding.8_14,MEDIUM,NO,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-padding,0 2px,8,standalone-src.html,ALL(분산),padding 원소값,ONE_OFF_LITERAL,space.approved.padding.0_2,MEDIUM,NO,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-padding,8px 18px,8,standalone-src.html,ALL(분산),padding 원소값,ONE_OFF_LITERAL,space.approved.padding.8_18,MEDIUM,NO,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-padding,4px 10px,7,standalone-src.html,ALL(분산),padding 원소값,ONE_OFF_LITERAL,space.approved.padding.4_10,MEDIUM,NO,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-padding,7px 20px 5px,7,standalone-src.html,ALL(분산),padding 원소값,ONE_OFF_LITERAL,space.approved.padding.7_20_5,MEDIUM,NO,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-padding,16px 24px,6,standalone-src.html,ALL(분산),padding 원소값,ONE_OFF_LITERAL,space.approved.padding.16_24,MEDIUM,NO,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-padding,15px 16px,6,standalone-src.html,ALL(분산),padding 원소값,ONE_OFF_LITERAL,space.approved.padding.15_16,MEDIUM,NO,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-gap,3px,97,standalone-src.html,ALL(분산),gap 원소값,REPEATED_LITERAL,space.approved.gap.3,MEDIUM,YES,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-gap,7px,33,standalone-src.html,ALL(분산),gap 원소값,REPEATED_LITERAL,space.approved.gap.7,MEDIUM,YES,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-gap,2px,32,standalone-src.html,ALL(분산),gap 원소값,REPEATED_LITERAL,space.approved.gap.2,MEDIUM,YES,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-gap,4px,30,standalone-src.html,ALL(분산),gap 원소값,REPEATED_LITERAL,space.approved.gap.4,MEDIUM,YES,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-gap,10px,30,standalone-src.html,ALL(분산),gap 원소값,REPEATED_LITERAL,space.approved.gap.10,MEDIUM,YES,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-gap,12px,26,standalone-src.html,ALL(분산),gap 원소값,REPEATED_LITERAL,space.approved.gap.12,MEDIUM,YES,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-gap,6px,24,standalone-src.html,ALL(분산),gap 원소값,REPEATED_LITERAL,space.approved.gap.6,MEDIUM,YES,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-gap,8px,19,standalone-src.html,ALL(분산),gap 원소값,REPEATED_LITERAL,space.approved.gap.8,MEDIUM,YES,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+spacing-gap,5px,19,standalone-src.html,ALL(분산),gap 원소값,REPEATED_LITERAL,space.approved.gap.5,MEDIUM,YES,현재 --space-1..12(4/8/12/16/20/24/32/40/48px) 스케일과 비교 시 3px/7px/5px 등 홀수값이 다수 존재 — TOKEN_CONFLICT(현재 스케일이 4의 배수 기반인 반면 원본은 3/5/7/9/11px 등 홀수 다수 사용)
+border-radius,50%,108,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,REPEATED_LITERAL,"radius.circle(원형 아바타/아이콘 전용, 이미 관용적)",HIGH,NO,
+border-radius,999px,50,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,MIGRATION_ALIAS_CANDIDATE,--radius-pill(EXACT MATCH),HIGH,YES,
+border-radius,1px,45,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,SEMANTIC_CANDIDATE,radius.approved.1,MEDIUM,YES,
+border-radius,12px,22,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,SEMANTIC_CANDIDATE,radius.approved.12,MEDIUM,YES,
+border-radius,18px,19,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,SEMANTIC_CANDIDATE,radius.approved.18,MEDIUM,YES,
+border-radius,14px,18,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,SEMANTIC_CANDIDATE,radius.approved.14,MEDIUM,YES,
+border-radius,20px,14,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,SEMANTIC_CANDIDATE,radius.approved.20,MEDIUM,YES,
+border-radius,3px,11,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,SEMANTIC_CANDIDATE,radius.approved.3,MEDIUM,YES,
+border-radius,16px,10,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,MIGRATION_ALIAS_CANDIDATE,--radius-control(EXACT MATCH),HIGH,YES,
+border-radius,10px,10,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,SEMANTIC_CANDIDATE,radius.approved.10,MEDIUM,YES,
+border-radius,44px,9,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,SOURCE_CONFLICT,"phone-mockup-frame-only, not a component radius(PRESENTATION_ARTIFACT)",HIGH(제외 권장),YES,
+border-radius,2px,9,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,ONE_OFF_LITERAL,radius.approved.2,LOW,NO,
+border-radius,4px,9,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,ONE_OFF_LITERAL,radius.approved.4,LOW,NO,
+border-radius,6px,7,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,ONE_OFF_LITERAL,radius.approved.6,LOW,NO,
+border-radius,8px,7,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,ONE_OFF_LITERAL,radius.approved.8,LOW,NO,
+border-radius,24px,6,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,ONE_OFF_LITERAL,radius.approved.24,LOW,NO,
+border-radius,6px 18px 18px 18px,6,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,ONE_OFF_LITERAL,radius.approved.6_18_18_18,LOW,NO,
+border-radius,5px,5,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,ONE_OFF_LITERAL,radius.approved.5,LOW,NO,
+border-radius,7px,5,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,ONE_OFF_LITERAL,radius.approved.7,LOW,NO,
+border-radius,22px,4,standalone-src.html,ALL(분산),카드/버튼/뱃지 모서리,ONE_OFF_LITERAL,radius.approved.22,LOW,NO,
+box-shadow,"0 5px 16px rgba(60,30,120,.05)",15,standalone-src.html,A3 카드,카드/프레임 elevation,SEMANTIC_CANDIDATE,shadow.approved.15,MEDIUM,YES,"현재 --shadow-sm/--shadow-md 값(rgb(70 47 158/6%),(10%)) 과 색상축(70,47,158 vs 60,30,120 / 70,35,180)이 달라 direct alias 불가 — 새 shadow 스케일 후보"
+box-shadow,"0 30px 70px rgba(40,20,90,.22)",9,standalone-src.html,폰 프레임 자체(PRESENTATION_ARTIFACT),카드/프레임 elevation,SOURCE_CONFLICT,shadow.approved.9,MEDIUM,YES,"현재 --shadow-sm/--shadow-md 값(rgb(70 47 158/6%),(10%)) 과 색상축(70,47,158 vs 60,30,120 / 70,35,180)이 달라 direct alias 불가 — 새 shadow 스케일 후보"
+box-shadow,"0 6px 18px rgba(60,30,120,.07)",3,standalone-src.html,A1 카드,카드/프레임 elevation,ONE_OFF_LITERAL,shadow.approved.3,MEDIUM,NO,"현재 --shadow-sm/--shadow-md 값(rgb(70 47 158/6%),(10%)) 과 색상축(70,47,158 vs 60,30,120 / 70,35,180)이 달라 direct alias 불가 — 새 shadow 스케일 후보"
+box-shadow,"0 7px 16px rgba(70,35,180,.26)",3,standalone-src.html,버튼류 강조 그림자,카드/프레임 elevation,ONE_OFF_LITERAL,shadow.approved.3,MEDIUM,NO,"현재 --shadow-sm/--shadow-md 값(rgb(70 47 158/6%),(10%)) 과 색상축(70,47,158 vs 60,30,120 / 70,35,180)이 달라 direct alias 불가 — 새 shadow 스케일 후보"
+layout-width,480px,9,standalone-src.html,ALL(분산),고정 폭 요소,SOURCE_CONFLICT,size.approved.480,MEDIUM,YES,"phone mockup frame(PRESENTATION_ARTIFACT, not a content token)"
+layout-width,132px,9,standalone-src.html,ALL(분산),고정 폭 요소,SOURCE_CONFLICT,size.approved.132,MEDIUM,YES,home indicator bar(PRESENTATION_ARTIFACT)
+layout-width,78px,6,standalone-src.html,ALL(분산),고정 폭 요소,ONE_OFF_LITERAL,size.approved.78,MEDIUM,NO,A1 avatar(large)
+layout-width,42px,12,standalone-src.html,ALL(분산),고정 폭 요소,SEMANTIC_CANDIDATE,size.approved.42,MEDIUM,YES,소형 아이콘/아바타
+layout-width,38px,13,standalone-src.html,ALL(분산),고정 폭 요소,SEMANTIC_CANDIDATE,size.approved.38,MEDIUM,YES,chat avatar / 원형버튼
+control-height,44px,1,standalone-src.html,A4(전송버튼),primary touch target,MIGRATION_ALIAS_CANDIDATE,--size-touch-min(EXACT MATCH),HIGH,YES,유일하게 명시적으로 44px인 컨트롤 — 나머지(38px chevron 등)는 44px 미달
+font-family,'Noto Sans KR' (Google Fonts CDN),1,standalone-src.html,ALL,본문/제목 서체 전체,REQUIRES_PM_DECISION,"N/A — 현재 구현은 'Pretendard'+'Black Han Sans'+'Inter' 사용 중, 직접 대체 불가",HIGH(불일치 확실),YES,폰트 패밀리 자체가 승인자료(Noto Sans KR)와 현재 구현(Pretendard 등)에서 다름 — token alias가 아니라 PM 정책 결정 필요 항목

@@ -1,0 +1,162 @@
+{
+  "1a": {
+    "rendered_file": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/screen_1a.png",
+    "approved_file": "/Users/mac/mac_Project/minecraft_points_festivals/temp/screen_renew/uploads/screen_login_approved.png",
+    "rendered_size": [
+      480,
+      920
+    ],
+    "approved_size": [
+      853,
+      1844
+    ],
+    "aspect_ratio_rendered": 0.5217,
+    "aspect_ratio_approved": 0.4626,
+    "aspect_ratio_delta_pct": 12.79,
+    "mean_pixel_diff_pct": 10.613,
+    "diff_bbox": [
+      0,
+      0,
+      853,
+      1844
+    ],
+    "diff_image": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/diff_1a.png",
+    "classification": "MATERIAL_VISUAL_DELTA",
+    "comparable": true
+  },
+  "1a-1": {
+    "rendered_file": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/screen_1a_1.png",
+    "approved_file": null,
+    "comparable": false,
+    "classification": "NOT_COMPARABLE",
+    "reason": "SOURCE_MISSING: no dedicated approved PNG for this screen id"
+  },
+  "1b": {
+    "rendered_file": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/screen_1b.png",
+    "approved_file": "/Users/mac/mac_Project/minecraft_points_festivals/temp/screen_renew/uploads/screen_family_home_approved.png",
+    "rendered_size": [
+      480,
+      806
+    ],
+    "approved_size": [
+      941,
+      1672
+    ],
+    "aspect_ratio_rendered": 0.5955,
+    "aspect_ratio_approved": 0.5628,
+    "aspect_ratio_delta_pct": 5.82,
+    "mean_pixel_diff_pct": 8.259,
+    "diff_bbox": [
+      0,
+      0,
+      941,
+      1672
+    ],
+    "diff_image": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/diff_1b.png",
+    "classification": "MATERIAL_VISUAL_DELTA",
+    "comparable": true
+  },
+  "1c": {
+    "rendered_file": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/screen_1c.png",
+    "approved_file": "/Users/mac/mac_Project/minecraft_points_festivals/temp/screen_renew/uploads/screen_point_festival_approved.png",
+    "rendered_size": [
+      480,
+      1005
+    ],
+    "approved_size": [
+      941,
+      1672
+    ],
+    "aspect_ratio_rendered": 0.4776,
+    "aspect_ratio_approved": 0.5628,
+    "aspect_ratio_delta_pct": 15.14,
+    "mean_pixel_diff_pct": 7.012,
+    "diff_bbox": [
+      0,
+      0,
+      941,
+      1672
+    ],
+    "diff_image": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/diff_1c.png",
+    "classification": "MATERIAL_VISUAL_DELTA",
+    "comparable": true
+  },
+  "1d": {
+    "rendered_file": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/screen_1d.png",
+    "approved_file": "/Users/mac/mac_Project/minecraft_points_festivals/temp/screen_renew/uploads/screen_family_chat_approved.png",
+    "rendered_size": [
+      480,
+      935
+    ],
+    "approved_size": [
+      941,
+      1672
+    ],
+    "aspect_ratio_rendered": 0.5134,
+    "aspect_ratio_approved": 0.5628,
+    "aspect_ratio_delta_pct": 8.78,
+    "mean_pixel_diff_pct": 6.395,
+    "diff_bbox": [
+      0,
+      0,
+      941,
+      1672
+    ],
+    "diff_image": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/diff_1d.png",
+    "classification": "MATERIAL_VISUAL_DELTA",
+    "comparable": true
+  },
+  "1e": {
+    "rendered_file": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/screen_1e.png",
+    "approved_file": "/Users/mac/mac_Project/minecraft_points_festivals/temp/screen_renew/uploads/screen_admin_point_approved.png",
+    "rendered_size": [
+      1440,
+      1030
+    ],
+    "approved_size": [
+      1448,
+      1086
+    ],
+    "aspect_ratio_rendered": 1.3981,
+    "aspect_ratio_approved": 1.3333,
+    "aspect_ratio_delta_pct": 4.85,
+    "mean_pixel_diff_pct": 3.172,
+    "diff_bbox": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "diff_image": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/diff_1e.png",
+    "classification": "MINOR_RENDERING_NOISE",
+    "comparable": true
+  },
+  "1f": {
+    "rendered_file": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/screen_1f.png",
+    "approved_file": null,
+    "comparable": false,
+    "classification": "NOT_COMPARABLE",
+    "reason": "SOURCE_MISSING: no dedicated approved PNG for this screen id"
+  },
+  "1g": {
+    "rendered_file": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/screen_1g.png",
+    "approved_file": null,
+    "comparable": false,
+    "classification": "NOT_COMPARABLE",
+    "reason": "SOURCE_MISSING: no dedicated approved PNG for this screen id"
+  },
+  "1h": {
+    "rendered_file": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/screen_1h.png",
+    "approved_file": null,
+    "comparable": false,
+    "classification": "NOT_COMPARABLE",
+    "reason": "SOURCE_MISSING: no dedicated approved PNG for this screen id"
+  },
+  "1i": {
+    "rendered_file": "/tmp/mongle-wave6-0ab/evidence/approved-html-render/screen_1i.png",
+    "approved_file": null,
+    "comparable": false,
+    "classification": "NOT_COMPARABLE",
+    "reason": "SOURCE_MISSING: no dedicated approved PNG for this screen id"
+  }
+}

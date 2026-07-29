@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+import csv
+
+OUT = "/tmp/mongle-wave6-0ab/6.0A/html_zone_inventory.csv"
+
+# Each row: screen_id, zone_name, dom_selector_basis, parent, display, position,
+# width, height, padding, margin_gap, alignment, overflow, responsive_behavior,
+# repeated_use, component_candidate, source_class
+rows = []
+
+def add(screen, zone, basis, parent, display, position, width, height, pad, gap, align, overflow, resp, repeated, candidate):
+    rows.append(dict(screen_id=screen, zone_name=zone, dom_selector_basis=basis, parent=parent,
+        display=display, position=position, width=width, height=height, padding=pad, gap_margin=gap,
+        alignment=align, overflow=overflow, responsive_behavior=resp, repeated_use=repeated,
+        component_candidate=candidate, source_class="CSS_LITERAL"))
+
+# A1 (1a)
+add("A1", "PhoneMockupFrame", 'div[data-screen-label="로그인"]', "screen wrapper", "flex column", "static",
+    "480px", "auto", "n/a", "n/a", "n/a", "hidden(border-radius:44px)", "고정폭, 반응형 규칙 없음", "10/10 screens(같은 프레임)", "PRESENTATION_ARTIFACT(phone mockup, not a real component)")
+add("A1", "StatusBarMock", "first child div", "PhoneMockupFrame", "flex row space-between", "static",
+    "100%", "auto", "10px 30px 0", "n/a", "align-items:center", "visible", "고정", "10/10 screens", "PRESENTATION_ARTIFACT(iOS status bar fake, OS chrome — 실제 구현에 넣지 않을 항목)")
+add("A1", "BrandHero", "logo+h2+p wrapper", "PhoneMockupFrame", "flex column", "static",
+    "auto", "auto", "12px 0 0", "n/a", "align-items:center", "visible", "고정", "A1,A1-S1,A2,A3,A4,A5(로고 반복 사용)", "LogoBrandBlock 후보")
+add("A1", "ProfileSelectorCard", "3rd child (white rounded panel)", "PhoneMockupFrame", "flex column", "static",
+    "auto(margin:18px 12px 0)", "flex:1 0 auto", "16px 18px 12px", "10px", "n/a", "visible",
+    "고정, 카드 내부 스크롤 규칙 없음(overflow 없음 → 3+락 카드 시 넘침 가능성 NOT_VERIFIED)", "1/10(A1 전용)", "SelectorPanel 후보")
+add("A1", "PlayerCard(available)", '흰 배경 rounded row (x2: 서연/민준)', "ProfileSelectorCard", "flex row", "static",
+    "auto", "auto", "12px", "11px", "align-items:center", "visible", "고정폭 카드, 반응형 없음", "2회 반복(동일 패턴)", "PlayerCard 후보(avatar+name+level pill+point+chevron)")
+add("A1", "PlayerCard(locked)", "회색 배경 row (지호)", "ProfileSelectorCard", "flex row", "static",
+    "auto", "auto", "12px", "11px", "align-items:center", "visible", "고정", "1회(잠김 변형)", "PlayerCard locked variant")
+add("A1", "LockNoticeBanner", "연보라 배경 안내 행", "ProfileSelectorCard", "flex row", "static",
+    "auto", "auto", "11px", "10px", "align-items:center", "visible", "고정", "1회", "InfoBanner 후보")
+add("A1", "AdminEntryRow", "하단 gear+관리자로그인 행", "ProfileSelectorCard", "flex row space-between", "static",
+    "auto", "auto", "4px 4px 0", "n/a", "align-items:center", "visible", "margin-top:auto(하단 고정)", "A1,A1-S1(유사 패턴)", "FooterActionRow 후보")
+add("A1", "HomeIndicatorBar", "132x5 pill", "PhoneMockupFrame", "block", "static",
+    "132px", "5px", "n/a", "n/a", "align-self:center", "visible", "고정", "10/10 screens", "PRESENTATION_ARTIFACT(iOS home indicator, OS chrome)")
+
+# A1-S1 (1a-1)
+add("A1-S1", "PhoneMockupFrame", 'div[data-screen-label="로그인 폼"]', "screen wrapper", "flex column", "static",
+    "480px", "auto", "n/a", "n/a", "n/a", "hidden", "고정폭", "10/10", "PRESENTATION_ARTIFACT")
+add("A1-S1", "BrandHero(compact)", "logo(150px)+h2(31px)+p", "PhoneMockupFrame", "flex column", "static",
+    "auto", "auto", "10px 0 0", "n/a", "align-items:center", "visible", "고정, A1 대비 로고 축소(210→150px)", "반복이나 크기 변형", "LogoBrandBlock(compact variant)")
+add("A1-S1", "LoginFormPanel", "흰 배경 rounded panel", "PhoneMockupFrame", "flex column", "static",
+    "auto(margin:20px 12px 0)", "flex:1 0 auto", "22px 20px 16px", "14px", "n/a", "visible", "고정", "1/10", "FormPanel 후보")
+add("A1-S1", "TextField(아이디)", "1px border input row", "LoginFormPanel", "flex row", "static",
+    "auto", "auto", "14px 16px", "10px", "align-items:center", "visible", "고정", "2회(아이디/비번 패턴 유사)", "TextField 후보")
+add("A1-S1", "TextField(비밀번호,focused+error)", "1.5px accent border + focus ring + error row", "LoginFormPanel",
+    "flex column", "static", "auto", "auto", "13px 16px", "7px", "align-items:center", "visible", "고정",
+    "1회(에러 variant)", "TextField error/focus variant 후보")
+add("A1-S1", "RememberMeRow", "체크+텍스트 / 비밀번호찾기 행", "LoginFormPanel", "flex row space-between", "static",
+    "auto", "auto", "n/a", "n/a", "align-items:center", "visible", "고정", "1회", "CheckboxRow 후보")
+add("A1-S1", "PrimaryLoginButton", "단색 pill 버튼", "LoginFormPanel", "block", "static",
+    "auto", "auto", "16px", "n/a", "text-align:center", "visible", "고정", "A1e(관리자 차감추가 버튼 유사 색)", "PrimaryButton 후보")
+add("A1-S1", "DividerRow('또는')", "구분선+텍스트+구분선", "LoginFormPanel", "flex row", "static",
+    "auto", "auto", "n/a", "10px", "align-items:center", "visible", "고정", "1회", "Divider 후보")
+add("A1-S1", "SecondaryButton(프로필선택으로)", "outline pill 버튼", "LoginFormPanel", "flex row", "static",
+    "auto", "auto", "14px", "8px", "justify-content:center", "visible", "고정", "1회", "SecondaryButton 후보")
+add("A1-S1", "InfoBanner(관리자승인안내)", "연보라 배경 안내행", "LoginFormPanel", "flex row", "static",
+    "auto", "auto", "13px 14px", "12px", "align-items:center", "visible", "고정", "A1과 유사 패턴", "InfoBanner 후보(A1과 공유 가능)")
+add("A1-S1", "FooterRow(버전+관리자로그인)", "하단 행", "LoginFormPanel", "flex row space-between", "static",
+    "auto", "auto", "4px 2px 0", "n/a", "align-items:center", "visible", "margin-top:auto", "A1과 유사", "FooterActionRow 후보")
+
+# A2 (1b)
+add("A2", "PhoneMockupFrame", 'div[data-screen-label="홈"]', "screen wrapper", "flex column", "static",
+    "480px", "auto", "n/a", "n/a", "n/a", "hidden", "고정폭", "10/10", "PRESENTATION_ARTIFACT")
+add("A2", "GreetingHeader", "avatar+인사말+알림벨 행", "PhoneMockupFrame", "flex row", "static",
+    "auto", "auto", "10px 18px 12px(상위 컨테이너)", "10px", "align-items:center", "visible", "고정", "1/10", "GreetingHeader 후보")
+add("A2", "ChatPromoHeroCard", "그라디언트 카드(로고워터마크+CTA)", "ContentColumn", "flex", "relative",
+    "auto", "min-height:196px", "15px 20px", "8px", "n/a", "hidden(overflow:hidden)", "고정", "1/10", "PromoHeroCard 후보(그라디언트+워터마크 패턴)")
+add("A2", "RecentActivityCard", "흰 카드, 3행 타임라인", "ContentColumn", "flex column", "static",
+    "auto", "auto", "12px", "8px", "n/a", "visible", "고정, 내부 3행 border-bottom 구분", "1/10", "ActivityTimelineCard 후보")
+add("A2", "ActivityRow", "아이콘+텍스트+시간 행(x3)", "RecentActivityCard", "flex row", "static",
+    "auto", "auto", "n/a(padding-bottom:8px)", "10px", "align-items:center", "visible", "border-bottom 구분(마지막 행 제외)",
+    "3회 반복 동일 패턴", "ActivityRow 후보")
+add("A2", "ServiceGrid", "2x2 grid(4개 서비스 카드)", "ContentColumn", "grid(repeat(4,1fr) — 실제로는 4열 1행)", "static",
+    "auto", "auto", "n/a", "7px", "align-items:center(각 셀 column)", "visible", "고정 4열, 반응형 랩 규칙 없음",
+    "4셀 반복(1개 active + 3개 준비중)", "ServiceGridCard 후보(active/준비중 variant)")
+add("A2", "BottomDock", "4탭 grid nav", "PhoneMockupFrame", "grid(repeat(4,1fr))", "static",
+    "100%", "auto", "7px 20px 5px", "n/a", "align-items:center(각 아이템 column)", "visible",
+    "고정, sticky/fixed 여부는 static 목업이라 NOT_VERIFIED(실제 구현은 sticky 예상)", "10/10(4스크린 공유: A2,A3,A4,EXTRA)",
+    "BottomDock 후보(4아이템, active=보라 필채움 아이콘+bold label)")
+add("A2", "HomeIndicatorBar", "132x5 pill", "PhoneMockupFrame", "block", "static", "132px", "5px", "n/a", "n/a",
+    "align-self:center", "visible", "고정", "10/10", "PRESENTATION_ARTIFACT")
+
+# A3 (1c)
+add("A3", "PhoneMockupFrame", 'div[data-screen-label="포인트 잔치"]', "screen wrapper", "flex column", "static",
+    "480px", "auto", "n/a", "n/a", "n/a", "hidden", "고정폭", "10/10", "PRESENTATION_ARTIFACT")
+add("A3", "PageHeaderRow", "로고96px+타이틀+로그아웃pill", "PhoneMockupFrame", "flex row", "static",
+    "auto", "auto", "n/a", "4px", "align-items:center", "visible", "고정", "1/10", "PageHeaderRow 후보")
+add("A3", "ProfileSummaryCard", "그라디언트 카드(아바타+레벨+진행바+3분할통계)", "ContentColumn", "flex column", "static",
+    "auto", "auto", "11px", "n/a", "n/a", "visible", "고정, 내부 grid(3,1fr) 통계", "1/10", "ProfileSummaryCard 후보")
+add("A3", "LevelProgressBar", "11px 높이 그라디언트 바", "ProfileSummaryCard", "block(overflow hidden)", "static",
+    "64%(현재값, 리터럴)", "11px", "n/a", "n/a", "n/a", "hidden", "고정폭 64%는 데이터 종속(하드코드 예시값)",
+    "A3(요약)+EXTRA-01(프로필)에도 유사 바 존재", "ProgressBar 후보(그라디언트 채움)")
+add("A3", "WeekDateStrip", "7일 grid(월~일)", "ContentColumn", "flex column>grid(7,1fr)", "static",
+    "auto", "auto", "10px 12px", "n/a", "text-align:center", "visible", "고정 7열", "1/10", "WeekCalendarStrip 후보")
+add("A3", "FamilyCheerCard", "2열 grid(엄마/아빠 메시지)", "ContentColumn", "flex column>grid(2,1fr)", "static",
+    "auto", "auto", "10px", "7px", "n/a", "visible", "고정 2열", "1/10", "CheerMessageCard 후보")
+add("A3", "TodayMissionListCard", "미션 리스트 컨테이너(4행: 완료/진행중/승인대기/차감내역)", "ContentColumn",
+    "flex column", "static", "auto", "auto", "10px", "7px", "n/a", "visible",
+    "고정, 리스트 내부 스크롤 규칙 없음(4행 고정 예시)", "1/10", "MissionListCard 후보")
+add("A3", "MissionRow(완료/진행중/승인대기)", "아이콘+텍스트+포인트+상태pill(+진행바)", "TodayMissionListCard",
+    "flex column(각 행: header row + progress row)", "static", "auto", "auto", "8px", "5px",
+    "align-items:center(header행)", "visible", "고정, 상태별 색상만 변형(완료=초록,진행중=보라,대기=주황)",
+    "3회 반복(status variant)", "MissionRow 후보(status: done/active/pending_approval)")
+add("A3", "PointHistoryRow", "포인트 사용내역 단일 행(모달 아님, 리스트 항목)", "TodayMissionListCard", "flex row",
+    "static", "auto", "auto", "8px", "8px", "align-items:center", "visible", "고정", "1회", "TransactionRow 후보")
+add("A3", "BottomDock", "동일 패턴(A2 참조)", "PhoneMockupFrame", "grid(4,1fr)", "static", "100%", "auto",
+    "7px 20px 5px", "n/a", "n/a", "visible", "고정", "공유(A2/A3/A4/EXTRA)", "BottomDock(활성=포인트잔치)")
+
+# A4 (1d)
+add("A4", "PhoneMockupFrame", 'div[data-screen-label="대화"]', "screen wrapper", "flex column", "static",
+    "480px", "auto", "n/a", "n/a", "n/a", "hidden", "고정폭", "10/10", "PRESENTATION_ARTIFACT")
+add("A4", "ChatHeader", "뒤로가기+룸명+참여자수+아바타스택+로고", "PhoneMockupFrame", "flex row", "static",
+    "auto", "auto", "8px 18px 7px", "8px", "align-items:center", "visible", "고정", "1/10", "ChatHeader 후보(이미 현재구현 존재)")
+add("A4", "AvatarStack", "겹친 원형 아바타 4개(margin-left:-8px)", "ChatHeader", "flex row", "static",
+    "auto", "auto", "n/a", "n/a", "n/a", "visible", "고정, 4명 초과 시 규칙 NOT_VERIFIED", "1회", "AvatarStack 후보(≤4명 규칙, 현재구현 주석과 일치)")
+add("A4", "MessageTimeline", "날짜구분선+말풍선 목록", "PhoneMockupFrame", "flex column", "static",
+    "auto(flex:1 0 auto)", "auto", "4px 16px 0", "8px", "n/a", "visible(스크롤 규칙 static목업이라 NOT_VERIFIED)",
+    "고정 예시 메시지 7개", "1/10", "MessageTimeline 후보")
+add("A4", "DateDivider", "'7월 22일 (수)' pill", "MessageTimeline", "block(align-self:center)", "static",
+    "auto", "auto", "4px 14px", "n/a", "n/a", "visible", "고정", "1회(현재구현 DateDivider와 대응)", "DateDivider 후보")
+add("A4", "MessageBubble(incoming/outgoing)", "말풍선(아바타+이름+bubble+시간)", "MessageTimeline", "flex row", "static",
+    "auto", "auto", "8px 14px", "5-7px", "align-items:flex-end", "visible",
+    "고정, incoming=흰/연보라 배경+좌측둥근모서리축소, outgoing=진보라 배경(#6944EF)+우측정렬+읽음표시",
+    "7회 반복(incoming 6 + outgoing 1)", "MessageBubble 후보(direction variant, 현재구현과 대응)")
+add("A4", "UnreadDivider", "'여기부터 안 읽음' 점선+pill", "MessageTimeline", "flex row", "static",
+    "auto", "auto", "3px 12px(pill)", "7px", "align-items:center", "visible", "고정", "1회", "UnreadDivider 후보(현재구현과 대응)")
+add("A4", "AlbumShareSystemCard", "연보라 배경 시스템 알림 행(앨범 공유)", "MessageTimeline", "flex row", "static",
+    "auto", "auto", "7px 12px", "5px", "align-items:center", "visible", "고정", "1회", "SystemNoticeCard 후보(승인자료 고유, 현재구현 ServiceActionCard와 유사하나 대화 내 삽입형)")
+add("A4", "PhotoAttachmentRow", "74x74 썸네일 3장(placeholder texture)", "MessageBubble(아빠)", "flex row", "static",
+    "74px(each)", "74px(each)", "n/a", "3px", "align-items:flex-end", "visible", "고정", "1회(플레이스홀더 텍스처, 실제 사진 아님)",
+    "PhotoAttachment 후보 — PLACEHOLDER_ASSET(repeating-linear-gradient 텍스처, 실사진 없음)")
+add("A4", "Composer", "첨부+카메라+입력+전송버튼 pill", "PhoneMockupFrame", "flex row", "static",
+    "auto(margin:7px 14px 4px)", "auto", "5px 10px 5px 8px", "7px", "align-items:center", "visible", "고정",
+    "1/10(현재구현 ChatComposer와 대응)", "ChatComposer 후보")
+add("A4", "BottomDock", "동일 패턴", "PhoneMockupFrame", "grid(4,1fr)", "static", "100%", "auto",
+    "7px 20px 5px", "n/a", "n/a", "visible", "고정", "공유", "BottomDock(활성=대화)")
+
+# A5 (1e) - desktop admin
+add("A5", "DesktopCanvasFrame", 'div[data-screen-label="관리자 포인트 관리"]', "screen wrapper", "flex row", "static",
+    "1440px", "1030px", "n/a", "n/a", "n/a", "hidden", "고정 데스크톱폭, 반응형 규칙 없음(모바일 admin 변형 SOURCE_MISSING)",
+    "1/10(유일한 데스크톱 목업)", "PRESENTATION_ARTIFACT(데스크톱 브라우저 프레임 없음 — 순수 콘텐츠 캔버스)")
+add("A5", "AdminSidebar", "좌측 고정폭 aside", "DesktopCanvasFrame", "flex column", "static",
+    "300px", "100%", "26px 20px", "26px", "n/a", "visible", "고정폭(300px), 반응형 접힘 규칙 없음", "1/10", "AdminSidebar 후보")
+add("A5", "SidebarBrandBlock", "로고130px+가족명+관리자모드", "AdminSidebar", "flex column", "static",
+    "auto", "auto", "n/a(padding-top:6px)", "6px", "align-items:center", "visible", "고정", "1회", "SidebarBrand 후보")
+add("A5", "SidebarNav", "6항목 nav(대시보드/미션관리/포인트관리(활성)/사용자관리/알림관리/설정)", "AdminSidebar",
+    "flex column", "static", "auto", "auto", "15px 16px(각 항목)", "4px", "align-items:center(각 항목 row)", "visible",
+    "고정, 활성 항목만 배경+테두리+bold", "6항목 반복(1개 active variant)", "SidebarNavItem 후보")
+add("A5", "SidebarAccountFooter", "아바타+이름+이메일+chevron", "AdminSidebar", "flex row", "static",
+    "auto(margin-top:auto)", "auto", "14px", "12px", "align-items:center", "visible", "하단 고정(margin-top:auto)",
+    "1회", "AccountFooterRow 후보")
+add("A5", "MainHeaderRow", "타이틀36px+설명 / 날짜필터+차감추가버튼", "DesktopCanvasFrame>main", "flex row space-between",
+    "static", "auto", "auto", "n/a", "8px(좌측 블록 내부)", "align-items:flex-start", "visible", "고정", "1회", "PageHeaderRow(admin variant) 후보")
+add("A5", "PlayerFilterTabs", "전체(활성,outline accent)/서연/민준 pill 그룹 + 필터 드롭다운", "main", "flex row space-between",
+    "static", "auto", "auto", "16px 18px", "12px", "align-items:center", "visible", "고정, 3개 pill 반복+드롭다운 1개", "1회", "FilterTabRow 후보")
+add("A5", "StatCardRow", "3열 grid(서연보유/민준보유/오늘총차감)", "main", "grid(3,1fr)", "static",
+    "auto", "auto", "20px(각 카드)", "16px(grid gap)", "align-items:center(카드 내부)", "visible", "고정 3열",
+    "3카드 반복(2 balance + 1 총차감, 아이콘/색 variant)", "StatCard 후보")
+add("A5", "DeductionDataTable", "6열 grid 헤더+5행+페이지네이션 푸터", "main", "flex column(overflow hidden, border-radius)",
+    "static", "auto", "auto", "n/a", "n/a", "n/a", "hidden(rounded container)",
+    "고정 5행 예시(실제 총 25건, 페이지네이션 존재)", "1/10", "DataTable 후보(사용자/사유/금액/일시/등록자/관리 6열)")
+add("A5", "TableRow(deduction)", "grid(1.1fr 2fr 1fr 1fr 1fr .9fr) 데이터 행", "DeductionDataTable", "grid", "static",
+    "auto", "auto", "16px 24px", "n/a", "align-items:center", "visible", "고정, border-bottom 구분(마지막 행 제외)",
+    "5회 반복(동일 컬럼 구조)", "TableRow 후보(사용자 아바타 이니셜+사유+금액(음수 강조)+일시+등록자+편집/삭제 아이콘)")
+add("A5", "PaginationFooter", "총 N건 + ‹ 1 2 3 › + N개씩 드롭다운", "DeductionDataTable", "flex row space-between",
+    "static", "auto", "auto", "16px 24px", "10px", "align-items:center", "visible", "고정", "1회", "PaginationFooter 후보")
+add("A5", "InfoBanner(투명성안내)", "연보라 배경 안내 카드", "main", "flex row", "static", "auto", "auto",
+    "20px 24px", "16px", "align-items:flex-start", "visible", "고정", "A1/A1-S1과 유사 패턴(색+아이콘원형+2단텍스트)", "InfoBanner 후보(재사용 가능성 높음, 3개 화면에서 유사 패턴 관측)")
+
+with open(OUT, "w", newline="", encoding="utf-8") as f:
+    fieldnames = ["screen_id","zone_name","dom_selector_basis","parent","display","position","width","height",
+        "padding","gap_margin","alignment","overflow","responsive_behavior","repeated_use","component_candidate","source_class"]
+    w = csv.DictWriter(f, fieldnames=fieldnames)
+    w.writeheader()
+    for r in rows:
+        w.writerow(r)
+print(f"wrote {len(rows)} rows")

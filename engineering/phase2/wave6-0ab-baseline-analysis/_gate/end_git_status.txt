@@ -1,0 +1,8 @@
+--- branch ---
+dev-newmarkp
+--- head ---
+7f1ce9eedaea2b0397cbb5131e33fee2291e789d
+--- status --short ---
+--- status --porcelain -uall ---
+--- diff --stat ---
+--- ls-files --others ---

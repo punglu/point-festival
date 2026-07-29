@@ -1,0 +1,11 @@
+=== pwd ===
+/Users/mac/mac_Project/minecraft_points_festivals_doran_ui
+=== git rev-parse --show-toplevel ===
+/Users/mac/mac_Project/minecraft_points_festivals_doran_ui
+=== git branch --show-current ===
+dev-newmarkp
+=== git rev-parse HEAD ===
+7f1ce9eedaea2b0397cbb5131e33fee2291e789d
+=== git status --short ===
+=== git status --porcelain=v1 -uall ===
+=== git diff --stat ===

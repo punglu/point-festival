@@ -1,0 +1,31 @@
+ReferenceError: CSS is not defined
+    at /private/tmp/mongle-wave6-0ab/scripts/render.js:32:33crop 1e failed: Error: page.screenshot: Clipped area is either empty or outside the resulting image
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+[2m  - fonts loaded[22m
+
+crop 1f failed: Error: page.screenshot: Clipped area is either empty or outside the resulting image
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+[2m  - fonts loaded[22m
+
+crop 1g failed: Error: page.screenshot: Clipped area is either empty or outside the resulting image
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+[2m  - fonts loaded[22m
+
+crop 1h failed: Error: page.screenshot: Clipped area is either empty or outside the resulting image
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+[2m  - fonts loaded[22m
+
+crop 1i failed: Error: page.screenshot: Clipped area is either empty or outside the resulting image
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+[2m  - fonts loaded[22m
+
