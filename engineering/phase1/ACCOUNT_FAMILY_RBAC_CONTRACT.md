@@ -7,7 +7,7 @@ this contract. Git remains the implementation SSOT.
 
 ## Purpose and boundary
 
-This is the target authorization contract for the Naran platform. It is not an
+This is the target authorization contract for the Mongle platform. It is not an
 implemented schema, migration, JWT payload, API change, or retrofit of the
 contained MarkPoint application. The current MarkPoint implementation remains
 **LEGACY REFERENCE / NOT FULLY VALIDATED**.

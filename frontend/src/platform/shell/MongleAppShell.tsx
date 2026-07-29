@@ -2,9 +2,9 @@ import { type ReactNode } from 'react';
 import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { useFamilyContextStore } from '../../shared/stores/useFamilyContextStore';
-import styles from './NaranAppShell.module.css';
+import styles from './MongleAppShell.module.css';
 
-interface NaranAppShellProps {
+interface MongleAppShellProps {
   children: ReactNode;
 }
 
@@ -63,7 +63,7 @@ function PlatformStateNotice() {
   );
 }
 
-export function NaranAppShell({ children }: NaranAppShellProps) {
+export function MongleAppShell({ children }: MongleAppShellProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -78,15 +78,16 @@ export function NaranAppShell({ children }: NaranAppShellProps) {
   // 이 route+상태에서만, 그리고 모바일 폭에서만(CSS media query) 전역 상단 바를 숨긴다.
   // route/인증/FamilyContext 로직은 전혀 바꾸지 않는다 — 시각적 숨김뿐이다.
   // Room List(room 미선택)나 legacy/admin/다른 route에는 영향이 없다.
-  const isDoranConversationMobile = location.pathname === '/naran/doran' && Boolean(searchParams.get('room'));
+  // MONGLE-FE-ROUTE-NAMESPACE-MIGRATION-001: canonical path는 /wagle (구 /naran/doran).
+  const isDoranConversationMobile = location.pathname === '/wagle' && Boolean(searchParams.get('room'));
   const hasFamily = activeFamilyId !== null;
   const activeFamily = context?.families.find((family) => family.id === activeFamilyId);
   const hasPermission = (permission: string) => activeFamily?.permissions.includes(permission) ?? false;
   const doranState = serviceStatus('doran');
   const navItems = [
     { to: '/dashboard', label: '마크포인트', visible: true },
-    { to: '/naran/doran', label: '와글와글', visible: hasFamily },
-    { to: '/naran/family', label: '가족', visible: hasFamily && hasPermission('family.read') },
+    { to: '/wagle', label: '와글와글', visible: hasFamily },
+    { to: '/family', label: '가족', visible: hasFamily && hasPermission('family.read') },
     { to: '/admin/missions', label: '미션 관리', visible: hasFamily && hasPermission('markpoint.missions.manage') },
     { to: '/admin/points', label: '포인트 관리', visible: hasFamily && hasPermission('markpoint.points.adjust') },
   ];
@@ -100,7 +101,7 @@ export function NaranAppShell({ children }: NaranAppShellProps) {
   return (
     <div
       className={`${styles.shell} ${isDoranConversationMobile ? styles.doranConversationMode : ''}`}
-      data-testid="naran-shell"
+      data-testid="mongle-shell"
     >
       <header className={styles.header}>
         <Link className={styles.brand} to="/dashboard" aria-label="몽글 홈">몽글</Link>
@@ -143,15 +144,15 @@ export function NaranAppShell({ children }: NaranAppShellProps) {
           <NavLink to="/dashboard" className={({ isActive }) => `${styles.dockItem} ${isActive ? styles.dockItemActive : ''}`}>
             <span className={styles.dockLabel}>마크포인트</span>
           </NavLink>
-          <NavLink to="/naran/doran" className={({ isActive }) => `${styles.dockItem} ${isActive ? styles.dockItemActive : ''}`}>
+          <NavLink to="/wagle" className={({ isActive }) => `${styles.dockItem} ${isActive ? styles.dockItemActive : ''}`}>
             <span className={styles.dockLabel}>와글와글</span>
           </NavLink>
-          <NavLink to="/naran/family" className={({ isActive }) => `${styles.dockItem} ${isActive ? styles.dockItemActive : ''}`}>
+          <NavLink to="/family" className={({ isActive }) => `${styles.dockItem} ${isActive ? styles.dockItemActive : ''}`}>
             <span className={styles.dockLabel}>가족</span>
           </NavLink>
         </nav>
       )}
-      {doranState !== 'active' && location.pathname === '/naran/doran' && (
+      {doranState !== 'active' && location.pathname === '/wagle' && (
         <span className={styles.srOnly}>와글와글은 아직 사용할 수 없는 서비스입니다.</span>
       )}
     </div>

@@ -159,7 +159,7 @@
  * "모바일 카드를 확대한 프로토타입"처럼 보였다. Desktop에서는 카드 프레임을
  * 제거하고 Shell의 .main 콘텐츠 영역에 그대로 이어붙인다. list/conversation 각
  * pane은 스스로의 surface 배경을 유지해 시각 구분은 유지한다.
- * min-height 산식은 NaranAppShell.module.css의 실제 .header(64px)+.main
+ * min-height 산식은 MongleAppShell.module.css의 실제 .header(64px)+.main
  * padding(20px×2) 값을 참조한다 — Shell 치수가 바뀌면 함께 재확인이 필요하다.
  */
 @media (min-width: 1024px) {

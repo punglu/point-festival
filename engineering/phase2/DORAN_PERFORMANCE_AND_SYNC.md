@@ -75,7 +75,7 @@ height content, and image load changes. Record DOM-node upper bounds, heap
 growth and recovery, scroll-anchor displacement, event batch/backpressure
 behavior, and console errors under environment-approved thresholds.
 
-The completed Naran Shell DOM audit is not evidence of Doran conversation
+The completed Mongle Shell DOM audit is not evidence of Doran conversation
 performance: it measured the current Shell, not a Doran message timeline.
 
 ## Current delivery state

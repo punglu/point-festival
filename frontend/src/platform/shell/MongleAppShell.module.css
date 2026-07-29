@@ -1,23 +1,23 @@
 .shell {
-  --naran-ink: #22243d;
-  --naran-surface: #ffffff;
-  --naran-wash: #f3f4ff;
-  --naran-primary: #5d45a2;
-  --naran-border: #e4e5f0;
+  --mongle-ink: #22243d;
+  --mongle-surface: #ffffff;
+  --mongle-wash: #f3f4ff;
+  --mongle-primary: #5d45a2;
+  --mongle-border: #e4e5f0;
   min-height: 100dvh;
-  background: var(--naran-wash);
-  color: var(--naran-ink);
+  background: var(--mongle-wash);
+  color: var(--mongle-ink);
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
-.header { display: flex; align-items: center; gap: 18px; min-height: 64px; padding: 0 24px; background: var(--naran-surface); border-bottom: 1px solid var(--naran-border); }
-.brand { color: var(--naran-primary); font-size: 22px; font-weight: 800; letter-spacing: -0.05em; text-decoration: none; }
+.header { display: flex; align-items: center; gap: 18px; min-height: 64px; padding: 0 24px; background: var(--mongle-surface); border-bottom: 1px solid var(--mongle-border); }
+.brand { color: var(--mongle-primary); font-size: 22px; font-weight: 800; letter-spacing: -0.05em; text-decoration: none; }
 .familySwitcher { display: flex; align-items: center; gap: 8px; color: #5c6077; font-size: 13px; font-weight: 700; }
-.familySwitcher select { min-width: 150px; border: 1px solid var(--naran-border); border-radius: 8px; padding: 7px 30px 7px 10px; background: white; color: var(--naran-ink); }
+.familySwitcher select { min-width: 150px; border: 1px solid var(--mongle-border); border-radius: 8px; padding: 7px 30px 7px 10px; background: white; color: var(--mongle-ink); }
 .accountArea { display: flex; align-items: center; gap: 12px; margin-left: auto; color: #5c6077; font-size: 14px; }
 .accountArea button, .stateNotice button { border: 0; border-radius: 8px; padding: 7px 10px; background: #eceaf8; color: #463586; font: inherit; cursor: pointer; }
 .body { display: grid; grid-template-columns: 200px minmax(0, 1fr); min-height: calc(100dvh - 64px); }
-.desktopNav { display: flex; flex-direction: column; gap: 4px; padding: 20px 12px; background: #f8f8ff; border-right: 1px solid var(--naran-border); }
+.desktopNav { display: flex; flex-direction: column; gap: 4px; padding: 20px 12px; background: #f8f8ff; border-right: 1px solid var(--mongle-border); }
 .navLink, .navActive { border-radius: 9px; padding: 10px 12px; color: #5c6077; font-size: 14px; font-weight: 700; text-decoration: none; }
 .navActive { background: #e8e4ff; color: #49368c; }
 .contextLabel { margin: 12px; color: #8e90a3; font-size: 12px; }

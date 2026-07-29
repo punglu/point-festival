@@ -71,6 +71,11 @@ async def main() -> None:
         db.add_all((
             ServiceSubscription(family_group_id=alpha.id, service_code="markpoint", status="active", started_at=now),
             ServiceSubscription(family_group_id=beta.id, service_code="markpoint", status="cancelled", ended_at=now),
+            # doran.SERVICE_CODE (backend/app/domains/doran/service.py) — without this row,
+            # serviceStatus('doran') on the frontend falls back to 'unavailable' and
+            # /naran/doran always renders its disabled empty-state instead of the Room
+            # List, regardless of Family/Membership/permission state.
+            ServiceSubscription(family_group_id=alpha.id, service_code="doran", status="active", started_at=now),
         ))
         db.add_all((
             LegacyIdentityMapping(account_id=accounts["owner_a"].id, legacy_system="markpoint", legacy_identity_type="player_auth", legacy_identity_id="1", mapping_status="linked"),

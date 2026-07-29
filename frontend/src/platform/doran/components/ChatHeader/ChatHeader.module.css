@@ -1,7 +1,7 @@
 /*
  * 목업(screen_family_chat_approved.png Z2)은 얇은 48px 툴바가 아니라 화면의
  * 실질적인 주 헤더로 읽힌다 — 이제 Doran mobile conversation에서 ChatHeader가
- * 실제 최상단이므로(NaranAppShell.module.css doranConversationMode), 높이와
+ * 실제 최상단이므로(MongleAppShell.module.css doranConversationMode), 높이와
  * 여백을 그에 맞게 키운다(Wave 6.0B §6.2).
  */
 .header {

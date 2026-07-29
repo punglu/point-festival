@@ -12,7 +12,7 @@ to satisfy the contract. The isolated Foundation is
 `PARTIALLY_IMPLEMENTED / QA_FAILED / UNCOMMITTED / UNPUSHED`; it is not this
 contract's authority.
 
-Naran is the Platform, Doran is its Family-scoped messaging service. Canonical
+Mongle is the Platform, Doran is its Family-scoped messaging service. Canonical
 names are `doran.*` permissions, `doran_*` tables, and Room role `room_admin`.
 Historical `messaging.*`, `conversation_*`, and Room `owner` names are migration
 notes only and must not be used by new code or registry entries.
