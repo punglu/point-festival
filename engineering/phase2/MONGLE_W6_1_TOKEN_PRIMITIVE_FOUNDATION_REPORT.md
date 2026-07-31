@@ -381,3 +381,76 @@ MONGLE-W6-1-FOUNDATION-E2E-CLOSEOUT-001 PASSes.
 ## Final sentinel
 
 CONDITIONALLY_IMPLEMENTED_AWAITING_DOCKER_E2E_CLOSEOUT
+
+## Closeout Addendum (2026-07-31, appended — original verdict/sentinel above is preserved verbatim, not edited)
+
+Item 45's named follow-up task, `MONGLE-W6-1-FOUNDATION-E2E-CLOSEOUT-001`, has
+since executed and self-reported PASS (see
+`engineering/phase2/MONGLE_W6_1_FOUNDATION_E2E_CLOSEOUT_REPORT.md`: two cold-start
+Playwright rounds, both 66 passed / 0 failed / 4 intentional skipped with an
+identical test-identity set; before/after visual diff 0.000%-0.022%, fully
+attributable to a dynamic seed timestamp, 0 dimension changes; Docker cleanup
+confirmed). The PM has reviewed that evidence and accepted it.
+
+```
+ORIGINAL_SELF_VERDICT:
+CONDITIONAL
+
+DOCKER_E2E_CLOSEOUT:
+PASS
+
+PM_EVIDENCE_ACCEPTANCE:
+APPROVED
+
+FINAL_VERIFICATION:
+PASS
+```
+
+This addendum does not upgrade the original item-4/item-374 CONDITIONAL
+verdict or the Final sentinel above — both remain the historical record of
+what this task itself was able to self-verify. `PM_EVIDENCE_ACCEPTANCE:
+APPROVED` records that the PM accepted the separate Closeout task's
+self-check evidence as sufficient grounds to permit dependent work (A1) to
+proceed under its own gates.
+
+### Independent QA result (2026-07-31)
+
+A read-only independent QA pass — a separate agent session, not the one that
+implemented the Foundation or ran the Closeout — reviewed
+`MONGLE-W6-1-TOKEN-PRIMITIVE-FOUNDATION-001`,
+`MONGLE-W6-1-E2E-HARNESS-RECOVERY-001`, and
+`MONGLE-W6-1-FOUNDATION-E2E-CLOSEOUT-001` together, per
+`agent-system/rules.md` ("the implementer does not issue their own final QA
+PASS"). Verdict: `INDEPENDENT_QA_VERDICT: PASS`. It independently re-verified
+HEAD/branch/dirty-state, commit ancestry across `08619298`/`0c2a040`/
+`4963649`/`9bcd1a5`, the harness script's SHA-256 and `shellcheck`/`bash -n`
+results, the Foundation commit's exact file diff and token values, lint,
+build, and ran its own two fresh cold-start Playwright rounds (66 passed / 0
+failed / 4 skipped both times, identical test-identity set to each other and
+consistent with this report's claim), with clean Docker teardown confirmed
+both times. `agent-system/tools/check_all.py` raised no warning against any
+of the three tasks under review.
+
+Two minor, non-blocking findings, both since addressed:
+- A stray blank line in `agent-system/qa/COVERAGE_MAP.md` broke Markdown
+  table continuity around the `E2E-MONGLE-WAVE6-1-001` row — fixed.
+- This report's Closeout-evidence section (see the Closeout report itself)
+  attributes the dynamic mission-card seed timestamp specifically to
+  `phase1_seed_synthetic.py`; independent QA found that script contains no
+  Mission-table code, so the precise mechanism is actually the `Mission`
+  model's `server_default=func.now()`. The broader conclusion (dynamic-content
+  routes differ, static routes are byte-identical) is unaffected. Per this
+  repository's append-only convention for evidence documents, the original
+  Closeout report's prose is left as written; the correction is recorded here
+  and in `COVERAGE_MAP.md` rather than silently rewriting that report.
+
+Full independent QA detail is in
+`agent-system/qa/MONGLE-W6-1-TOKEN-PRIMITIVE-FOUNDATION-001.md`,
+`agent-system/qa/MONGLE-W6-1-E2E-HARNESS-RECOVERY-001.md`, and
+`agent-system/qa/MONGLE-W6-1-FOUNDATION-E2E-CLOSEOUT-001.md`.
+
+`FINAL_VERIFICATION: PASS` above reflects this independent QA result. This is
+the Closeout Contract's documentation-sync gate, not a PM graduation
+decision — `Lifecycle` for the three tasks stays `IN_PROGRESS` in
+`agent-system/active.md` pending the PM's own decision on whether to graduate
+them.
