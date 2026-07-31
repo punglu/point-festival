@@ -30,6 +30,9 @@
 ## Completed / remaining
 
 - Known Gaps:
+- Not Measured / Estimated: values or claims not independently verified this
+  task; mark `UNVERIFIED`/`ENVIRONMENT_REQUIRED` per rules.md rather than
+  stating them as measured.
 - QA Status:
 - Drive Evidence:
 - Coverage Map Review:

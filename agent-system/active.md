@@ -16,6 +16,23 @@ are separate axes.
 - Independent QA: not_applicable — contract design; implementation QA required
 - Next Action: PM review of five bounded Doran messaging gates before Foundation implementation
 
+## PHASE0-DOC-STALENESS-PREVENTION-001
+
+- Task ID: PHASE0-DOC-STALENESS-PREVENTION-001
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED
+- Verification: NOT_TESTED
+- Execution: SUCCEEDED
+- Phase Note: IMPLEMENTED / PM_REVIEW_PENDING
+- Handoff: agent-system/handoffs/active/PHASE0-DOC-STALENESS-PREVENTION-001.md
+- QA Evidence: agent-system/qa/PHASE0-DOC-STALENESS-PREVENTION-001.md
+- Independent QA: not_applicable — documentation/process rule change; no
+  product code, DB, or auth touched
+- Next Action: PM review of the new Documentation change routing tiers,
+  Invariants 9-11, and Prohibited actions list in rules.md; decide whether to
+  port the source template's structural-validation script into
+  agent-system/tools/
+
 ## PHASE2-DORAN-MESSAGING-FOUNDATION-001-R2
 
 - Task ID: PHASE2-DORAN-MESSAGING-FOUNDATION-001-R2
