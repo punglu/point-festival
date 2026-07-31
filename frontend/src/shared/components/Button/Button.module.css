@@ -1,59 +1,84 @@
-/* Gemini E-4: 공통 버튼 — styles.css 섹션 6에서 추출 */
+/*
+ * Gemini E-4: 공통 버튼 — styles.css 섹션 6에서 추출.
+ * MONGLE_W6_1_FOUNDATION_IMPLEMENTATION_PLAN.md row 16: this primitive has 0
+ * current consumers (grep-confirmed). Rewired to the canonical Brand/Ink token
+ * system + shared font token + touch-target/focus-visible foundation. Variant
+ * keys (primary/ghost/dangerSm) are kept unchanged — no consumer migration, no
+ * new variants added, no `loading` state added (no existing API supported it).
+ */
 
 .btn {
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   font-weight: 700;
+  font-family: var(--font-family-base);
   cursor: pointer;
-  transition: 0.2s;
+  transition: background-color var(--duration-quick) ease, transform var(--duration-quick) ease, box-shadow var(--duration-quick) ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Pretendard', sans-serif;
+  min-height: var(--size-touch-min);
 }
 
 .btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn:active {
   transform: scale(0.98);
 }
 
-.primary {
-  composes: btn;
-  background: var(--accent);
-  color: white;
-  padding: 12px 20px;
+.btn:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
 }
 
-.primary:hover {
-  background: #059669;
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.primary {
+  composes: btn;
+  background: var(--color-brand-600);
+  color: var(--color-surface);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-pill);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--color-brand-700);
 }
 
 .ghost {
   composes: btn;
-  background: var(--input-bg);
-  color: var(--muted);
-  padding: 8px 12px;
+  background: var(--color-surface-soft);
+  color: var(--color-ink-700);
+  padding: var(--space-2) var(--space-3);
   font-size: 0.8rem;
+  min-height: auto;
 }
 
-.ghost:hover {
-  background: #e2e8f0;
-  color: var(--text);
+.ghost:hover:not(:disabled) {
+  background: var(--color-brand-50);
+  color: var(--color-ink-900);
 }
 
 .dangerSm {
   composes: btn;
+  /* No canonical danger-tint token exists yet (only --color-danger itself is
+     frozen) — kept as the original literal rather than inventing a new token. */
   background: #fee2e2;
-  color: #ef4444;
+  color: var(--color-danger);
   font-size: 0.7rem;
-  padding: 4px 8px;
+  padding: var(--space-1) var(--space-2);
   border-radius: 6px;
+  min-height: auto;
 }
 
-.dangerSm:hover {
+.dangerSm:hover:not(:disabled) {
   background: #fecaca;
 }

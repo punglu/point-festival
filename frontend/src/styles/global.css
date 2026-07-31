@@ -1,6 +1,14 @@
 /* global.css — 전역 CSS 변수 및 리셋 */
 /* data-domain 속성은 App.tsx에서 "user"/"admin" 값으로 사용됨 (테마 격리 기반) */
-@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&display=swap');
+/*
+ * MONGLE_W6_1_FONT_DELIVERY_CONTRACT.md: Noto Sans KR is delivered via the same
+ * already-shipping Google Fonts CDN mechanism this @import already uses for
+ * Pretendard/Black Han Sans/Inter, matching the exact origin/family/API embedded
+ * in the approved tablet-canonical design evidence. Weights limited to 400/600/700
+ * — the actual weights the canonical typography scale consumes (not the source's
+ * full 400/500/700/900 bundle).
+ */
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&family=Noto+Sans+KR:wght@400;600;700&display=swap');
 
 :root {
   --bg: #f8fafc;
@@ -10,6 +18,9 @@
   --text: #1e293b;
   --muted: #64748b;
   --gold: #f59e0b;
+  /* DEPRECATED_CANDIDATE (MONGLE_W6_1_CURRENT_TOKEN_PRIMITIVE_INVENTORY.md §2): 0
+     confirmed CSS consumers as of Wave 6.1. Not deleted per §15 policy. Canonical
+     danger token is --color-danger (#EF4665) below — do not use this in new work. */
   --danger: #ef4444;
   --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
   --input-bg: #f1f5f9;
@@ -25,11 +36,13 @@
 
   /* === Semantic Design Tokens (FAMILY_PLATFORM_DESIGN_IMPLEMENTATION_SOURCE_V1.md §5) === */
   /* PM contract normative values. Do not use direct hex/rgb in new components — reference these only. */
-  --color-brand-700: #4726C7; --color-brand-600: #5835DF;
+  /* Brand accent: MONGLE_W6_DESIGN_TOKEN_FREEZE.md D2 PM_RESOLVED (Wave 6.1) — #5835DF -> #5A35DF */
+  --color-brand-700: #4726C7; --color-brand-600: #5A35DF;
   --color-brand-500: #6B46F2; --color-brand-400: #8B6DF5;
   --color-brand-200: #D9CCFF; --color-brand-100: #EEE8FF;
   --color-brand-50: #F8F5FF;
-  --color-ink-950: #12172F; --color-ink-900: #171D3A;
+  /* Ink/text-primary: MONGLE_W6_DESIGN_TOKEN_FREEZE.md D3 PM_RESOLVED (Wave 6.1) — #171D3A -> #17103A */
+  --color-ink-950: #12172F; --color-ink-900: #17103A;
   --color-ink-700: #434A68; --color-ink-500: #757C98;
   --color-line: #E8E6F2; --color-canvas: #F7F6FC;
   --color-surface: #FFFFFF; --color-surface-soft: #FBFAFF;
@@ -39,11 +52,48 @@
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
   --space-5: 20px; --space-6: 24px; --space-8: 32px;
   --space-10: 40px; --space-12: 48px;
+  /* D14 PM_RESOLVED global semantic base extends to 64px (Wave 6.1) */
+  --space-16: 64px;
   --radius-control: 16px; --radius-card: 24px;
   --radius-hero: 28px; --radius-dialog: 28px; --radius-pill: 999px;
+  /*
+   * Card 2-radius family, MONGLE_W6_DESIGN_TOKEN_FREEZE.md "Card families"
+   * (FROZEN_COMPONENT_TOKEN). Additive only — not yet wired into Card.module.css
+   * (Card stays SCREEN_LOCAL_KEEP / RECOMPOSE per Component Boundary Freeze;
+   * rewiring it is out of this task's scope).
+   */
+  --radius-card-list: 18px; --radius-card-stat: 20px;
   --shadow-sm: 0 4px 14px rgb(70 47 158 / 6%);
   --shadow-md: 0 14px 38px rgb(70 47 158 / 10%), 0 2px 8px rgb(70 47 158 / 6%);
   --size-touch-min: 44px;
+  /*
+   * Avatar size scale, MONGLE_W6_DESIGN_TOKEN_FREEZE.md "Avatar scale" (tablet-
+   * sourced, promoted per Component Boundary Freeze's explicit Wave 6.1
+   * recommendation). Additive — Avatar's existing numeric size prop is extended,
+   * not replaced (see Avatar.tsx).
+   */
+  --size-avatar-xs: 34px; --size-avatar-sm: 44px;
+  --size-avatar-md: 60px; --size-avatar-lg: 78px;
+  /* Border: 1px hairline is already the de facto convention paired with --color-line */
+  --border-width-hairline: 1px;
+  /*
+   * Layout width/gutter foundation, MONGLE_W6_RESPONSIVE_CANONICAL_FREEZE.md items
+   * 3/6. Gutter values alias the existing spacing scale rather than inventing new
+   * numbers; max-width reflects the frozen desktop reference viewport as a fluid
+   * container ceiling, not a forced breakpoint (see Responsive Breakpoint Audit).
+   */
+  --layout-gutter-mobile: var(--space-4);
+  --layout-gutter-tablet: var(--space-6);
+  --layout-content-max-width: 1440px;
+  /*
+   * Safe-area tokens, MONGLE_W6_RESPONSIVE_CANONICAL_FREEZE.md item 15. Additive
+   * named aliases only — existing direct env(safe-area-inset-*) call sites
+   * (MongleAppShell/ChatComposer/DoranLanding) are left untouched.
+   */
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
   --duration-quick: 160ms; --duration-standard: 240ms;
   --layer-base: 0; --layer-sticky: 20; --layer-overlay: 100;
   --layer-dialog: 120; --layer-toast: 160;
@@ -54,12 +104,25 @@
    * Display 40/48 700, Page 30/38 700, Section 22/30 700, Card 17/24 700,
    * Body 16/26 400, Body Strong 16/24 600, Meta 13/19, Label 13/18 700.
    * Numeric values use tabular alignment (font-variant-numeric: tabular-nums).
+   *
+   * Font family: MONGLE_W6_DESIGN_TOKEN_FREEZE.md D4 PM_RESOLVED (Wave 6.1),
+   * delivery per MONGLE_W6_1_FONT_DELIVERY_CONTRACT.md.
    */
+  --font-family-base: 'Noto Sans KR', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* Admin 사이드바 전용 CSS 변수 */
+/*
+ * MONGLE_W6_DESIGN_TOKEN_FREEZE.md D8 PM_RESOLVED (Wave 6.1): admin sidebar tone
+ * migration target is #FBFAFE. This variable currently has 0 consumers (Sidebar.
+ * module.css hardcodes #312E81 directly, independent of this token) — updating
+ * the value here is a zero-visual-impact token correction, NOT a Sidebar
+ * recompose. Wiring Sidebar.module.css to actually consume this token, and
+ * migrating the sidebar's live literal color, is Stage 4 (A5 admin) scope —
+ * explicitly out of bounds for this Foundation task.
+ */
 [data-domain="admin"] {
-  --admin-sidebar-bg: #1e1b4b;
+  --admin-sidebar-bg: #FBFAFE;
   --admin-sidebar-text: #c7d2fe;
   --admin-sidebar-active: #6366f1;
   --admin-sidebar-width: 240px;
@@ -73,7 +136,7 @@ html, body, #root {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Pretendard', sans-serif;
+  font-family: var(--font-family-base);
   margin: 0;
   padding: 0;
   line-height: 1.6;
@@ -85,7 +148,7 @@ body {
 h1, h2, h3 { margin: 0; }
 
 input, select, textarea {
-  font-family: 'Pretendard', sans-serif;
+  font-family: var(--font-family-base);
 }
 
 :focus-visible {

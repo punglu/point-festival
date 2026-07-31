@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>APPROVED VISUAL STYLE GUIDE — 가족 플랫폼</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="canonical-tokens.css">
+<style>
+  * { box-sizing:border-box; }
+  body { margin:0; background:#F1EFF8; font-family:'Noto Sans KR', system-ui, sans-serif; color:var(--color-text-primary); }
+  header { padding:40px 48px 20px; }
+  header h1 { margin:0 0 8px; font-size:28px; font-weight:900; }
+  header p { margin:0; color:var(--color-text-tertiary); font-size:14px; }
+  main { padding:0 48px 80px; display:flex; flex-direction:column; gap:36px; }
+  section { background:#fff; border-radius:20px; padding:28px 32px; box-shadow:var(--shadow-card-sm); }
+  section h2 { margin:0 0 6px; font-size:19px; font-weight:900; }
+  section .sub { margin:0 0 20px; font-size:13px; color:var(--color-text-tertiary); }
+  .swatch-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:14px; }
+  .swatch { border-radius:14px; overflow:hidden; border:1px solid var(--color-border-subtle); }
+  .swatch .fill { height:56px; }
+  .swatch .label { padding:8px 10px; font-size:11.5px; }
+  .swatch .label b { display:block; font-size:12.5px; }
+  .type-row { display:flex; align-items:baseline; gap:16px; padding:10px 0; border-bottom:1px solid var(--color-border-subtle); }
+  .type-row:last-child { border-bottom:none; }
+  .type-row .meta { width:180px; flex:none; font-size:12px; color:var(--color-text-tertiary); }
+  .radius-row, .shadow-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:18px; }
+  .radius-box { width:100%; height:70px; background:var(--color-tint-purple-200); display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--color-brand-600); font-weight:700; }
+  .shadow-box { width:100%; height:70px; background:#fff; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--color-text-tertiary); }
+  .component-grid { display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start; }
+  .flag { display:inline-block; background:var(--color-warning-surface); color:var(--color-warning); font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; margin-left:8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>승인 시각 디자인 시스템 스타일 가이드</h1>
+  <p>Source of authority: 가족 플랫폼 화면 재현.dc.html (PM 승인 스크린 43개) · 이 문서는 별도 산출물이며 원본 승인 파일은 수정되지 않았습니다.</p>
+</header>
+<main>
+
+  <section>
+    <h2>Color — Global Semantic</h2>
+    <p class="sub">의미 기준으로 분류된 전역 색상. 캐릭터/브랜드 이미지 색상은 제외.</p>
+    <div class="swatch-row">
+      <div class="swatch"><div class="fill" style="background:#5A35DF"></div><div class="label"><b>Brand 600</b>#5A35DF</div></div>
+      <div class="swatch"><div class="fill" style="background:#6B46F2"></div><div class="label"><b>Brand 500</b>#6B46F2</div></div>
+      <div class="swatch"><div class="fill" style="background:#F7F6FC; border-bottom:1px solid #eee"></div><div class="label"><b>Canvas</b>#F7F6FC <span class="flag" style="background:#DCF4E8;color:#1F9D62;">RESOLVED</span></div></div>
+      <div class="swatch"><div class="fill" style="background:#17103A"></div><div class="label"><b>Text primary</b>#17103A</div></div>
+      <div class="swatch"><div class="fill" style="background:#4A3F72"></div><div class="label"><b>Text secondary</b>#4A3F72</div></div>
+      <div class="swatch"><div class="fill" style="background:#8A83A8"></div><div class="label"><b>Text tertiary</b>#8A83A8</div></div>
+      <div class="swatch"><div class="fill" style="background:#A8A5B6"></div><div class="label"><b>Text disabled</b>#A8A5B6</div></div>
+      <div class="swatch"><div class="fill" style="background:#F0EEF7; border-bottom:1px solid #eee"></div><div class="label"><b>Border subtle</b>#F0EEF7</div></div>
+      <div class="swatch"><div class="fill" style="background:#1F9D62"></div><div class="label"><b>Success</b>#1F9D62</div></div>
+      <div class="swatch"><div class="fill" style="background:#DCF4E8; border-bottom:1px solid #eee"></div><div class="label"><b>Success surface</b>#DCF4E8</div></div>
+      <div class="swatch"><div class="fill" style="background:#B4791A"></div><div class="label"><b>Warning</b>#B4791A</div></div>
+      <div class="swatch"><div class="fill" style="background:#FDEFCF; border-bottom:1px solid #eee"></div><div class="label"><b>Warning surface</b>#FDEFCF</div></div>
+      <div class="swatch"><div class="fill" style="background:#EF4665"></div><div class="label"><b>Danger</b>#EF4665</div></div>
+      <div class="swatch"><div class="fill" style="background:#FBE0E6; border-bottom:1px solid #eee"></div><div class="label"><b>Danger surface</b>#FBE0E6</div></div>
+      <div class="swatch"><div class="fill" style="background:linear-gradient(160deg,#FFC93C,#F1983A)"></div><div class="label"><b>Reward</b>#FFC93C→#F1983A</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Typography</h2>
+    <p class="sub">Noto Sans KR · weights 400 / 500 / 700 / 900</p>
+    <div class="type-row"><span class="meta">display · 36 / 900</span><span style="font-size:36px; font-weight:900;">미션 관리</span></div>
+    <div class="type-row"><span class="meta">title-lg · 21 / 900</span><span style="font-size:21px; font-weight:900;">서연 · Lv.3</span></div>
+    <div class="type-row"><span class="meta">title · 19 / 900</span><span style="font-size:19px; font-weight:900;">가족 일정</span></div>
+    <div class="type-row"><span class="meta">title-sm · 17 / 700</span><span style="font-size:17px; font-weight:700;">오늘의 미션</span></div>
+    <div class="type-row"><span class="meta">body-lg · 15 / 700</span><span style="font-size:15px; font-weight:700;">로그인</span></div>
+    <div class="type-row"><span class="meta">body · 14 / 400–500</span><span style="font-size:14px;">가입한 이메일 주소를 입력하면</span></div>
+    <div class="type-row"><span class="meta">body-sm · 13 / 400</span><span style="font-size:13px; color:#4A3F72;">우리 가족의 공간, 함께 연결되는 하루</span></div>
+    <div class="type-row"><span class="meta">small · 12 / 400–700</span><span style="font-size:12px; color:#8A83A8;">4명 참여 중</span></div>
+    <div class="type-row"><span class="meta">caption · 11 / 400</span><span style="font-size:11px; color:#A8A5B6;">10분 전</span></div>
+  </section>
+
+  <section>
+    <h2>Spacing Scale</h2>
+    <p class="sub">유기적 스케일(고정 8pt 그리드 아님) — gap/padding에서 관찰된 값</p>
+    <div style="display:flex; align-items:flex-end; gap:10px;">
+      <div style="width:4px; height:4px; background:#5A35DF;"></div>
+      <div style="width:6px; height:6px; background:#5A35DF;"></div>
+      <div style="width:8px; height:8px; background:#5A35DF;"></div>
+      <div style="width:10px; height:10px; background:#5A35DF;"></div>
+      <div style="width:12px; height:12px; background:#5A35DF;"></div>
+      <div style="width:14px; height:14px; background:#5A35DF;"></div>
+      <div style="width:16px; height:16px; background:#5A35DF;"></div>
+      <div style="width:18px; height:18px; background:#5A35DF;"></div>
+      <div style="width:22px; height:22px; background:#5A35DF;"></div>
+      <div style="width:24px; height:24px; background:#5A35DF;"></div>
+    </div>
+    <p class="sub" style="margin-top:10px;">4 · 6 · 8 · 10 · 12 · 14 · 16 · 18 · 22 · 24 px</p>
+  </section>
+
+  <section>
+    <h2>Avatar Scale <span class="flag" style="background:#DCF4E8;color:#1F9D62;">RESOLVED</span></h2>
+    <p class="sub">실측된 반복 크기만 xs/sm/md/lg로 명명. 중간값은 임의 생성하지 않음.</p>
+    <div style="display:flex; align-items:flex-end; gap:20px;">
+      <div style="text-align:center;"><div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(160deg,#9B7BF5,#7C5AEF); margin:0 auto 6px;"></div><span style="font-size:11px; color:#8A83A8;">xs 34</span></div>
+      <div style="text-align:center;"><div style="width:44px; height:44px; border-radius:50%; background:linear-gradient(160deg,#9B7BF5,#7C5AEF); margin:0 auto 6px;"></div><span style="font-size:11px; color:#8A83A8;">sm 44</span></div>
+      <div style="text-align:center;"><div style="width:60px; height:60px; border-radius:50%; background:linear-gradient(160deg,#9B7BF5,#7C5AEF); margin:0 auto 6px;"></div><span style="font-size:11px; color:#8A83A8;">md 60</span></div>
+      <div style="text-align:center;"><div style="width:78px; height:78px; border-radius:50%; background:linear-gradient(160deg,#9B7BF5,#7C5AEF); margin:0 auto 6px;"></div><span style="font-size:11px; color:#8A83A8;">lg 78</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Radius Scale</h2>
+    <div class="radius-row">
+      <div class="radius-box" style="border-radius:999px;">pill 999</div>
+      <div class="radius-box" style="border-radius:44px;">frame 44</div>
+      <div class="radius-box" style="border-radius:24px;">card-lg 24</div>
+      <div class="radius-box" style="border-radius:18px;">card-list 18 <span class="flag" style="background:#DCF4E8;color:#1F9D62;">RESOLVED</span></div>
+      <div class="radius-box" style="border-radius:20px;">card-stat 20 <span class="flag" style="background:#DCF4E8;color:#1F9D62;">RESOLVED</span></div>
+      <div class="radius-box" style="border-radius:14px;">input 14</div>
+      <div class="radius-box" style="border-radius:10px;">chip 10</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Shadow / Elevation</h2>
+    <div class="shadow-row">
+      <div class="shadow-box" style="box-shadow:0 5px 16px rgba(60,30,120,.05);">card-sm</div>
+      <div class="shadow-box" style="box-shadow:0 6px 18px rgba(60,30,120,.07);">card</div>
+      <div class="shadow-box" style="box-shadow:0 10px 22px rgba(70,35,180,.28);">cta</div>
+      <div class="shadow-box" style="box-shadow:0 30px 60px rgba(23,16,58,.30);">modal</div>
+      <div class="shadow-box" style="box-shadow:0 -12px 30px rgba(40,20,90,.18);">sheet</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Motion <span class="flag" style="background:#FBE0E6;color:#EF4665;">EXCLUDED_FROM_CANONICAL_VISUAL_TOKENS</span></h2>
+    <p class="sub">RESOLVED: 승인 화면은 정적 목업이라 근거가 없어 캐노니컬 토큰에서 제외. Motion은 별도 UX Engineering baseline으로 정의됩니다.</p>
+  </section>
+
+  <section>
+    <h2>Components</h2>
+    <div class="component-grid">
+      <div>
+        <p class="sub" style="margin-bottom:8px;">Button — primary</p>
+        <div style="background:#5A35DF; color:#fff; border-radius:14px; padding:14px 26px; font-size:15px; font-weight:700; box-shadow:0 10px 22px rgba(70,35,180,.28); width:200px; text-align:center;">로그인</div>
+      </div>
+      <div>
+        <p class="sub" style="margin-bottom:8px;">Toggle — on / off</p>
+        <div style="display:flex; gap:10px;">
+          <span style="width:42px; height:24px; border-radius:999px; background:#5A35DF; padding:3px; display:flex; align-items:center; justify-content:flex-end;"><i style="width:18px; height:18px; border-radius:50%; background:#fff; display:block;"></i></span>
+          <span style="width:42px; height:24px; border-radius:999px; background:#E3E1EA; padding:3px; display:flex; align-items:center; justify-content:flex-start;"><i style="width:18px; height:18px; border-radius:50%; background:#fff; display:block;"></i></span>
+        </div>
+      </div>
+      <div>
+        <p class="sub" style="margin-bottom:8px;">Badge — status tones</p>
+        <div style="display:flex; gap:8px;">
+          <span style="background:#DCF4E8; color:#1F9D62; font-size:12px; font-weight:700; padding:5px 11px; border-radius:999px;">완료</span>
+          <span style="background:#FDEFCF; color:#B4791A; font-size:12px; font-weight:700; padding:5px 11px; border-radius:999px;">대기</span>
+          <span style="background:#FBE0E6; color:#EF4665; font-size:12px; font-weight:700; padding:5px 11px; border-radius:999px;">반려</span>
+        </div>
+      </div>
+      <div>
+        <p class="sub" style="margin-bottom:8px;">Chat bubble — own / other / system <span class="flag" style="background:#DCF4E8;color:#1F9D62;">RESOLVED</span></p>
+        <div style="display:flex; flex-direction:column; gap:6px; width:220px;">
+          <div style="background:#EFECF8; color:#6B6880; border-radius:999px; padding:5px 12px; font-size:11px; align-self:center;">7월 22일 (수)</div>
+          <div style="background:#F3F0FF; border-radius:6px 18px 18px 18px; padding:10px 12px; font-size:13px; align-self:flex-start;">안녕! 오늘 어때?</div>
+          <div style="background:#6944EF; color:#fff; border-radius:18px 6px 18px 18px; padding:10px 12px; font-size:13px; align-self:flex-end;">좋아요 😊</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Asset Slot Contracts <span class="flag" style="background:#DCF4E8;color:#1F9D62;">RESOLVED — 실제 자산 교체는 후속 분리</span></h2>
+    <p class="sub">임시 자리표시자 고유 색상은 UI 토큰으로 추출하지 않음.</p>
+    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+      <tr style="text-align:left; color:#8A83A8; border-bottom:1px solid #F0EEF7;"><th style="padding:6px 0;">Slot</th><th>Aspect</th><th>Object-fit</th><th>Radius</th><th>Fallback</th></tr>
+      <tr style="border-bottom:1px solid #F4F2FA;"><td style="padding:6px 0;">Avatar photo</td><td>1:1 (circle)</td><td>cover / center</td><td>50%</td><td>initials-on-gradient</td></tr>
+      <tr style="border-bottom:1px solid #F4F2FA;"><td style="padding:6px 0;">Album — grid tile</td><td>1:1</td><td>cover / center</td><td>12px</td><td>diagonal placeholder</td></tr>
+      <tr style="border-bottom:1px solid #F4F2FA;"><td style="padding:6px 0;">Album — card thumb</td><td>4:3</td><td>cover / center</td><td>12px</td><td>diagonal placeholder</td></tr>
+      <tr><td style="padding:6px 0;">Album — hero highlight</td><td>16:9</td><td>cover / center</td><td>24px</td><td>diagonal placeholder</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Deliverable Index</h2>
+    <p class="sub">이 스타일 가이드와 함께 제공되는 문서</p>
+    <ul style="font-size:13.5px; line-height:2; color:#4A3F72;">
+      <li>canonical-tokens.css / canonical-tokens.json</li>
+      <li>TOKEN_CLASSIFICATION.md · COMPONENT_STYLE_CONTRACT.md</li>
+      <li>SCREEN_LOCAL_TOKEN_REGISTER.md · ONE_OFF_LITERAL_REGISTER.md</li>
+      <li>SOURCE_SCREEN_INVENTORY.md · AMBIGUITY_AND_PM_REVIEW.md · FINAL_REPORT.md</li>
+    </ul>
+  </section>
+
+  <p style="padding:0 0 12px; font-size:12px; color:#8A83A8;">최종 판정: <b style="color:#1F9D62;">APPROVED_VISUAL_DESIGN_SYSTEM_READY</b> — 8개 PM 검토 항목 모두 해결됨 (AMBIGUITY_AND_PM_REVIEW.md 참고)</p>
+</main>
+</body>
+</html>

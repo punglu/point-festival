@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "source": "가족 플랫폼 화면 재현.dc.html",
+    "sourceAuthority": "PM-approved inline HTML screens (1a–1y, 1z, 2a–2k)",
+    "extractionMethod": "manual visual/value inspection of approved screens only; no external code, tokens, or repo compared",
+    "note": "Approved HTML was not modified for this extraction."
+  },
+  "global": {
+    "color": {
+      "brand-600":  { "value": "#5A35DF", "meaning": "primary action / active state / links", "sourceScreens": ["1a","1b","1c","1e","1f","all CTAs"], "confidence": "high" },
+      "brand-500":  { "value": "#6B46F2", "meaning": "gradient companion to brand-600, default link color", "sourceScreens": ["helmet a{} rule","1c progress fill"], "confidence": "high" },
+      "canvas":     { "value": "#F7F6FC", "meaning": "app background (canonical; #F8F7FD 1d/2g variant resolved as the same canvas token — no separate alias, see RESOLVED-1)", "sourceScreens": ["all mobile + admin frames incl. 1d, 2g"], "confidence": "high" },
+      "surface":    { "value": "#FFFFFF", "meaning": "card/modal/sheet surface — semantic alias distinct from canvas by role, not merged despite both being light neutrals", "sourceScreens": ["all cards"], "confidence": "high" },
+      "text-primary":   { "value": "#17103A", "meaning": "headline / primary text", "sourceScreens": ["all screens"], "confidence": "high" },
+      "text-secondary": { "value": "#4A3F72", "meaning": "supporting text on light surfaces", "sourceScreens": ["all screens"], "confidence": "high" },
+      "text-tertiary":  { "value": "#8A83A8", "meaning": "captions, helper text", "sourceScreens": ["all screens"], "confidence": "high" },
+      "text-disabled":  { "value": "#A8A5B6", "meaning": "timestamps, disabled/inactive nav", "sourceScreens": ["all screens"], "confidence": "high" },
+      "border-subtle":  { "value": "#F0EEF7", "meaning": "hairline divider / card border", "sourceScreens": ["all screens"], "confidence": "high" },
+      "border-default": { "value": "#EAE7F5", "meaning": "input/button outline border", "sourceScreens": ["most forms"], "confidence": "high" },
+      "success":        { "value": "#1F9D62", "meaning": "positive status text", "sourceScreens": ["1c","1i","1m"], "confidence": "high" },
+      "success-surface":{ "value": "#DCF4E8", "meaning": "positive status background", "sourceScreens": ["1c","1i","1m"], "confidence": "high" },
+      "warning":        { "value": "#B4791A", "meaning": "pending/attention status text", "sourceScreens": ["1c","1m","1v"], "confidence": "high" },
+      "warning-surface":{ "value": "#FDEFCF", "meaning": "pending/attention status background", "sourceScreens": ["1c","1m","1v"], "confidence": "high" },
+      "danger":         { "value": "#EF4665", "meaning": "destructive/error/negative amount", "sourceScreens": ["1a","1c","1l","1s"], "confidence": "high" },
+      "danger-surface": { "value": "#FBE0E6", "meaning": "destructive/error background", "sourceScreens": ["1a","1c","1l","1s"], "confidence": "high" },
+      "reward":         { "value": "#F1983A", "meaning": "point/star reward accent (gradient end)", "sourceScreens": ["1a","1c","1l","1x"], "confidence": "high" }
+    },
+    "radius": {
+      "pill": { "value": "999px", "meaning": "chip / badge / button-pill shape", "confidence": "high" },
+      "frame": { "value": "44px", "meaning": "mobile device frame corner", "confidence": "high" },
+      "card-lg": { "value": "24px", "meaning": "primary content card (hero/summary cards)", "confidence": "high" },
+      "card-list": { "value": "18px", "meaning": "list-group container card (multi-row list wrapper)", "sourceScreens": ["1f 내 활동", "1g 오늘 일정", "1i 할 일 리스트", "1t 참여 멤버", "2a 최근 활동"], "confidence": "high" },
+      "card-summary": { "value": "20px", "meaning": "single summary/stat card (non-list card)", "sourceScreens": ["1c 오늘 통계", "1h 앨범 카드", "2j 리워드 타일"], "confidence": "high" },
+      "input": { "value": "14px-16px", "meaning": "text input / small card", "confidence": "medium", "note": "14 and 16 both observed" }
+    },
+    "spacing": {
+      "scale": [4,6,8,10,12,14,16,18,22,24],
+      "meaning": "organic spacing scale used for gap/padding across approved screens",
+      "confidence": "medium",
+      "note": "not a strict 8pt grid; values co-occur by visual density rather than fixed increment"
+    },
+    "typography": {
+      "fontFamily": "Noto Sans KR, system-ui, sans-serif",
+      "weights": [400,500,700,900],
+      "roles": {
+        "caption": 11,
+        "small": 12,
+        "body-sm": 13,
+        "body": 14,
+        "body-lg": 15,
+        "title-sm": 17,
+        "title": 19,
+        "title-lg": 21,
+        "display-sm": 28,
+        "display": 36
+      },
+      "confidence": "high"
+    },
+    "motion": {
+      "status": "EXCLUDED_FROM_CANONICAL_VISUAL_TOKENS",
+      "resolution": "PM decision: no evidence in approved static source; motion to be defined separately as a UX Engineering baseline, not a design token",
+      "note": "previous proposed placeholder values (120/200/320ms) removed from canonical set"
+    }
+  },
+  "avatar": {
+    "sizeScale": {
+      "xs": { "value": 34, "sourceScreens": ["1t 참여 멤버 리스트", "2g 채팅 답장"] },
+      "sm": { "value": 44, "sourceScreens": ["1b 홈 헤더", "1d 대화 리스트 아바타"] },
+      "md": { "value": 60, "sourceScreens": ["2i 부모 대시보드 통계", "2c 레벨업 아이콘"] },
+      "lg": { "value": 78, "sourceScreens": ["1a 프로필 선택 카드"] }
+    },
+    "note": "PM 결정: 실제 반복 관찰된 값(34/44/60/78)만 xs/sm/md/lg로 명명. 34-44 사이(38/40)와 60-78 사이(52/56/66/70/72)는 개별 화면 구성에 따른 변형이며 존재하지 않는 중간 단계를 임의로 만들지 않음.",
+    "confidence": "high"
+  },
+  "component": {
+    "button-primary": { "radius": 14, "paddingY": 16, "fontSize": 15, "fontWeight": 700, "shadow": "0 10px 22px rgba(70,35,180,.28)", "sourceScreens": ["1a-1","1k","1l","1o","1r","1s"] },
+    "card": { "radius": 18, "shadow": "0 5px 16px rgba(60,30,120,.05)", "sourceScreens": ["most list/summary cards across 1b–2k"] },
+    "input": { "height": "~48px (14px vertical padding)", "border": "1px solid #E6E2F4", "focusBorder": "1.5px solid #5A35DF", "focusRing": "0 0 0 4px rgba(90,53,223,.10)", "sourceScreens": ["1a-1","1o","1u","1z"] },
+    "bottom-dock": { "iconSize": 23, "activeColor": "#5A35DF", "inactiveColor": "#A8A5B6", "sourceScreens": ["1b","1c","1d","1f","1g","1h","1i","2j"] },
+    "avatar": { "sizes": [34,38,40,44,52,56,60,66,70,72,78,80], "shape": "circle", "confidence": "medium", "note": "size varies by context (row=34-44, hero=60-80); not a strict token scale, PM_REVIEW_REQUIRED to confirm a canonical avatar-size ramp" },
+    "badge": { "radius": 999, "paddingY": 5, "paddingX": 11, "fontSize": 12, "fontWeight": 700, "sourceScreens": ["1c","1e","1g","1m"] },
+    "modal-sheet": { "sheetRadius": "28px 28px 0 0", "modalRadius": 24, "sourceScreens": ["1z","2c","2h","2j"] },
+    "list-row": { "paddingY": 13, "paddingX": 14, "dividerColor": "#F4F2FA", "sourceScreens": ["1f","1g","1i","1t","2a","2k"] },
+    "chat-bubble": {
+      "own":    { "bg": "#6944EF", "text": "#FFFFFF", "radius": "18px 6px 18px 18px", "align": "flex-end" },
+      "other":  { "bg": "#F3F0FF", "text": "#17103A", "radius": "6px 18px 18px 18px", "align": "flex-start" },
+      "system": { "bg": "#EFECF8", "text": "#6B6880", "radius": "999px", "align": "center", "sourceScreens": ["1d 날짜 구분선/사진 추가 알림"] },
+      "sourceScreens": ["1d","2g"],
+      "note": "PM 결정: own/other/system 3-state로 분리 확정. own 색상 #6944EF은 brand-600과 별개 유지(승인 화면 근거 우선)."
+    }
+  },
+  "screenLocal": {
+    "login-hero-gradient": { "value": "linear-gradient(180deg,#C6A9F5 0%,#B58EF0 30%,#A579EC 52%,#F7F6FC 78%,#F7F6FC 100%)", "screens": ["1a","1a-1","1j","1j-1","1r","1z5(hidden)"], "reason": "onboarding/auth mood gradient, not reused in non-auth flows" },
+    "home-hero-card-gradient": { "value": "linear-gradient(135deg,#D9CBF8 0%,#C3AAF3 55%,#B79AF0 100%)", "screens": ["1b"], "reason": "single hero card, no second use case observed" },
+    "points-progress-fill": { "value": "linear-gradient(90deg,#6B46F2,#5A35DF)", "screens": ["1c (Point Festival, primary)","1f","1x"], "reason": "RESOLVED: PM 결정으로 Point Festival screen-local token으로 확정 유지. 2차 독립 소비처(포인트 잔치 외 다른 feature)가 확인되기 전까지 global/shared 승격 안 함." },
+    "admin-sidebar-width": { "value": "300px", "screens": ["1e","1m","1v","2a","2e","2i"], "reason": "fixed layout constant for admin shell only" },
+    "admin-canvas-size": { "value": "1440x1030", "screens": ["all admin desktop screens"], "reason": "presentation canvas size, not a real breakpoint" }
+  },
+  "notDefinedInApprovedSource": {
+    "input-error-border": { "status": "NOT_DEFINED_IN_APPROVED_SOURCE", "reason": "approved screens signal input errors via helper text color only; border stays neutral. PM 결정: 근거 없는 새 visual state를 만들지 않음. 시스템 완료의 blocker 아님." }
+  },
+  "hiddenScreens": {
+    "policy": "RESOLVED: screen-selection/route/JS로 접근 가능한 hidden 화면은 source inventory 및 token 근거에 포함. display:none 단독 사유로는 제외하지 않음.",
+    "included": ["1z0","1z1","1z2","1z3","1z4","1z5"],
+    "nonCanonicalCandidates": []
+  },
+  "assetSlotContract": {
+    "avatarPhoto": { "shape": "circle", "sizes": "see avatar.sizeScale", "objectFit": "cover", "cropAlign": "center", "fallback": "initials-on-gradient (see component.avatar)", "loadingBehavior": "not defined in approved source", "errorBehavior": "not defined in approved source" },
+    "albumPhoto": { "aspectRatio": "1:1 (grid) / 4:3 (album card) / 16:9 (hero highlight)", "objectFit": "cover", "cropAlign": "center", "radius": "12px (grid tile) / 12px (album card thumb) / 24px (hero)", "fallback": "diagonal placeholder pattern (see 1h, 2b — not a color token, excluded from UI palette)", "loadingBehavior": "not defined in approved source", "errorBehavior": "not defined in approved source" },
+    "note": "실제 이미지 자산 교체는 후속 asset task로 분리. 임시 자리표시자의 고유 색상은 UI token으로 추출하지 않음."
+  }
+}

@@ -17,11 +17,12 @@ export default function Button({
   variant = 'primary',
   className,
   children,
+  type = 'button',
   ...props
 }: ButtonProps) {
   const cls = [variantMap[variant], className].filter(Boolean).join(' ');
   return (
-    <button className={cls} {...props}>
+    <button type={type} className={cls} {...props}>
       {children}
     </button>
   );

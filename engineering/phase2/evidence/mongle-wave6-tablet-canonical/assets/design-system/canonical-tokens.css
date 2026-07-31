@@ -1,0 +1,283 @@
+/* ============================================================
+   CANONICAL TOKENS — extracted from PM-approved screens only
+   Source: 가족 플랫폼 화면 재현.dc.html (screens 1a–1y, 1z, 2a–2k)
+   Approved HTML is NOT modified. This file is a separate artifact.
+   ============================================================ */
+
+:root {
+  /* ---- Brand / Accent (Global Semantic) ---- */
+  --color-brand-600: #5A35DF;      /* primary actions, active nav, links */
+  --color-brand-500: #6B46F2;      /* gradient partner / link default */
+  --color-brand-400: #7C5AEF;      /* avatar gradient, category dot */
+  --color-brand-300: #8B63F3;      /* chart bar mid */
+  --color-brand-200: #9B7BF5;      /* avatar gradient light end */
+
+  /* ---- Canvas / Surface (Global Semantic) ---- */
+  --color-canvas: #F7F6FC;         /* app background (mobile + admin); RESOLVED: 1d/2g's #F8F7FD folded into this single token, no alias */
+  --color-surface: #FFFFFF;        /* cards, modals, sheets — semantic alias distinct from canvas by role, not merged despite both light-neutral */
+  --color-surface-sunken: #FBFAFE; /* bottom-sheet body, nested surface */
+  --color-surface-sunken-alt: #FDFDFF; /* bottom tab bar background */
+  --color-surface-inset: #FBFAFE;  /* input/list-row inset background */
+
+  /* ---- Text (Global Semantic) ---- */
+  --color-text-primary: #17103A;
+  --color-text-secondary: #4A3F72;
+  --color-text-secondary-alt: #5A4A82; /* on tinted-purple surfaces (kept distinct: different surface context, not a duplicate) */
+  --color-text-tertiary: #8A83A8;
+  --color-text-muted: #6B6880;
+  --color-text-disabled: #A8A5B6;
+  --color-text-faint: #C7C3D6;
+  --color-text-on-brand: #FFFFFF;
+
+  /* ---- Border (Global Semantic) ---- */
+  --color-border-default: #EAE7F5;
+  --color-border-subtle: #F0EEF7;
+  --color-border-subtle-alt: #F4F2FA; /* list-row divider (structurally distinct role from card border, kept separate) */
+  --color-border-input: #E6E2F4;
+  --color-border-strong: #D9D2F3;    /* dashed upload wells, filter chip active border companion */
+
+  /* ---- Status (Global Semantic) ---- */
+  --color-success: #1F9D62;
+  --color-success-strong: #2FBE78;
+  --color-success-dot: #22C55E;      /* online-presence dot only, not a status message color */
+  --color-success-surface: #DCF4E8;
+  --color-warning: #B4791A;
+  --color-warning-surface: #FDEFCF;
+  --color-danger: #EF4665;
+  --color-danger-surface: #FBE0E6;
+  --color-reward: #F1983A;           /* point/star accent */
+  --color-reward-surface: #FFC93C;   /* gradient start for star badges */
+
+  /* ---- Tinted purple surfaces (Shared, not fully global) ---- */
+  --color-tint-purple-100: #F1EDFC;
+  --color-tint-purple-150: #F4F2FD;
+  --color-tint-purple-200: #EEE8FF;
+  --color-tint-purple-300: #E7DFFB;
+  --color-tint-purple-400: #DCD0F8;
+
+  /* ---- Radius scale (Global Semantic) ---- */
+  --radius-pill: 999px;
+  --radius-xl: 44px;   /* phone frame corner */
+  --radius-lg: 24px;      /* primary/hero/summary card family */
+  --radius-md-list: 18px; /* RESOLVED: list-group container cards (1f/1g/1i/1t/2a) */
+  --radius-md-stat: 20px; /* RESOLVED: single summary/stat cards (1c/1h/2j) — kept distinct from list radius per PM decision */
+  --radius-sm: 14px;   /* input, small card */
+  --radius-xs: 10px;   /* chip, mini control */
+  --radius-circle: 50%;
+
+  /* ---- Spacing scale (Global Semantic, px) ----
+     Not a strict 8pt grid — organic scale observed across approved screens. */
+  --space-1: 4px;
+  --space-2: 6px;
+  --space-3: 8px;
+  --space-4: 10px;
+  --space-5: 12px;
+  --space-6: 14px;
+  --space-7: 16px;
+  --space-8: 18px;
+  --space-9: 22px;
+  --space-10: 24px;
+
+  /* ---- Typography (Global Semantic) ---- */
+  --font-family-base: 'Noto Sans KR', system-ui, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  --text-caption: 11px;    /* timestamps, micro labels */
+  --text-small: 12px;      /* helper text, badges */
+  --text-body-sm: 13px;    /* secondary body */
+  --text-body: 14px;       /* default body */
+  --text-body-lg: 15px;    /* emphasized body / nav */
+  --text-title-sm: 17px;   /* card/section title */
+  --text-title: 19px;      /* mobile screen title */
+  --text-title-lg: 21px;   /* stat / hero number sm */
+  --text-display-sm: 28px; /* admin stat number */
+  --text-display: 36px;    /* admin H1 */
+
+  /* ---- Motion: EXCLUDED_FROM_CANONICAL_VISUAL_TOKENS ----
+     RESOLVED: no evidence in approved static source. Motion is defined separately
+     as a UX Engineering baseline, not as a design token. No placeholder values declared here. */
+
+  /* ---- Avatar size scale (Shared Component, RESOLVED) ----
+     Only actually-observed repeat sizes are named; no invented intermediate steps. */
+  --avatar-xs: 34px;  /* 1t 참여 멤버, 2g 채팅 답장 */
+  --avatar-sm: 44px;  /* 1b 홈 헤더, 1d 대화 리스트 */
+  --avatar-md: 60px;  /* 2i 대시보드 통계, 2c 레벨업 */
+  --avatar-lg: 78px;  /* 1a 프로필 선택 카드 */
+
+  /* ---- Shadows (Shared Component) ---- */
+  --shadow-card: 0 6px 18px rgba(60,30,120,.07);
+  --shadow-card-sm: 0 5px 16px rgba(60,30,120,.05);
+  --shadow-frame: 0 30px 70px rgba(40,20,90,.22);
+  --shadow-frame-desktop: 0 30px 70px rgba(40,20,90,.20);
+  --shadow-cta: 0 10px 22px rgba(70,35,180,.28);
+  --shadow-cta-sm: 0 8px 18px rgba(70,35,180,.24);
+  --shadow-modal: 0 30px 60px rgba(23,16,58,.30);
+  --shadow-sheet: 0 -12px 30px rgba(40,20,90,.18);
+  --shadow-toast: 0 16px 32px rgba(23,16,58,.28);
+}
+
+/* ============================================================
+   SHARED COMPONENT TOKENS
+   Only for structures repeated across 4+ screens.
+   ============================================================ */
+
+/* Button (primary CTA / pill) */
+.token-btn-primary {
+  background: var(--color-brand-600);
+  color: var(--color-text-on-brand);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  font-size: var(--text-body-lg);
+  font-weight: var(--font-weight-bold);
+  box-shadow: var(--shadow-cta);
+}
+.token-btn-pill {
+  border-radius: var(--radius-pill);
+  padding: 9px 14px;
+  font-size: 12.5px;
+  font-weight: var(--font-weight-bold);
+}
+
+/* Card */
+.token-card-list {
+  /* RESOLVED: list-group container card family (1f/1g/1i/1t/2a) */
+  background: var(--color-surface);
+  border-radius: var(--radius-md-list);
+  box-shadow: var(--shadow-card-sm);
+}
+.token-card-stat {
+  /* RESOLVED: single summary/stat card family (1c/1h/2j) */
+  background: var(--color-surface);
+  border-radius: var(--radius-md-stat);
+  box-shadow: var(--shadow-card-sm);
+}
+
+/* Input field */
+.token-input {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-size: var(--text-body);
+}
+.token-input--focus {
+  border: 1.5px solid var(--color-brand-600);
+  box-shadow: 0 0 0 4px rgba(90,53,223,.10);
+}
+
+/* Bottom dock (tab bar) */
+.token-dock {
+  background: var(--color-surface-sunken-alt);
+  border-top: 1px solid var(--color-border-subtle);
+  padding: 7px 20px 5px;
+}
+.token-dock-icon-size { width: 23px; height: 23px; }
+.token-dock-active { color: var(--color-brand-600); font-weight: var(--font-weight-bold); }
+.token-dock-inactive { color: var(--color-text-disabled); }
+
+/* Avatar (RESOLVED size scale — only observed sizes named) */
+.token-avatar-xs { width: var(--avatar-xs); height: var(--avatar-xs); border-radius: var(--radius-circle); }
+.token-avatar-sm { width: var(--avatar-sm); height: var(--avatar-sm); border-radius: var(--radius-circle); }
+.token-avatar-md { width: var(--avatar-md); height: var(--avatar-md); border-radius: var(--radius-circle); }
+.token-avatar-lg { width: var(--avatar-lg); height: var(--avatar-lg); border-radius: var(--radius-circle); }
+
+/* Badge / status pill */
+.token-badge {
+  border-radius: var(--radius-pill);
+  padding: 5px 11px;
+  font-size: var(--text-small);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Modal / bottom sheet */
+.token-sheet {
+  background: var(--color-surface);
+  border-radius: 28px 28px 0 0;
+  box-shadow: var(--shadow-sheet);
+}
+.token-modal {
+  background: var(--color-surface);
+  border-radius: 24px;
+  box-shadow: var(--shadow-modal);
+}
+
+/* List row */
+.token-list-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--color-border-subtle-alt);
+}
+
+/* Chat bubble — RESOLVED: own / other / system 3-state contract */
+.token-bubble-other {
+  background: #F3F0FF;
+  border-radius: 6px 18px 18px 18px;
+  padding: 12px 14px;
+  color: var(--color-text-primary);
+  align-self: flex-start;
+}
+.token-bubble-own {
+  background: #6944EF; /* kept distinct from brand-600 per approved source, not normalized */
+  border-radius: 18px 6px 18px 18px;
+  padding: 12px 14px;
+  color: var(--color-text-on-brand);
+  align-self: flex-end;
+}
+.token-bubble-system {
+  background: var(--color-tint-purple-100, #EFECF8);
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  color: var(--color-text-muted);
+  align-self: center;
+  font-size: var(--text-small);
+}
+
+/* ============================================================
+   SCREEN-LOCAL TOKENS
+   Scoped by data attribute; not shared outside their screen.
+   ============================================================ */
+
+[data-screen-scope="login"] {
+  --local-hero-gradient: linear-gradient(180deg,#C6A9F5 0%,#B58EF0 30%,#A579EC 52%,var(--color-canvas) 78%,var(--color-canvas) 100%);
+}
+[data-screen-scope="home"] {
+  --local-hero-card-gradient: linear-gradient(135deg,#D9CBF8 0%,#C3AAF3 55%,#B79AF0 100%);
+}
+[data-screen-scope="points"] {
+  /* RESOLVED: Point Festival-local token; not promoted — no 2nd independent consumer confirmed */
+  --local-progress-track: #EDEBF5;
+  --local-progress-fill: linear-gradient(90deg,#6B46F2,#5A35DF);
+}
+[data-screen-scope="admin-shell"] {
+  --local-sidebar-width: 300px;
+  --local-canvas-width: 1440px;
+  --local-canvas-height: 1030px;
+}
+[data-screen-scope="chat-composer"] {
+  --local-composer-shadow: 0 6px 16px rgba(60,30,120,.07);
+}
+
+/* ---- Input error state: NOT_DEFINED_IN_APPROVED_SOURCE ----
+   RESOLVED: approved screens signal errors via helper-text color only; the input
+   border itself stays neutral. No new border/error visual state is invented here. */
+
+/* ---- Asset slot contract (avatar photo / album photo) ----
+   Real image assets are a separate follow-up task; only the slot contract is fixed here. */
+.token-slot-avatar-photo {
+  border-radius: var(--radius-circle);
+  object-fit: cover;
+  object-position: center;
+}
+.token-slot-album-photo {
+  object-fit: cover;
+  object-position: center;
+  border-radius: 12px; /* grid tile / album card thumb; 24px for hero variant */
+}
+.token-slot-album-photo--hero { border-radius: 24px; aspect-ratio: 16/9; }
+.token-slot-album-photo--grid { aspect-ratio: 1/1; }
+.token-slot-album-photo--card { aspect-ratio: 4/3; }

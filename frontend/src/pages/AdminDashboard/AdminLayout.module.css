@@ -31,7 +31,9 @@
   display: flex;
   min-height: 100vh;
   background: var(--content-bg);
-  font-family: 'Pretendard', 'Inter', sans-serif;
+  /* MONGLE_W6_1: was hardcoded 'Pretendard','Inter' (overriding root font); now
+     the canonical shared font-family token so Admin renders Noto Sans KR too. */
+  font-family: var(--font-family-base);
 }
 
 .sidebarDesktop {

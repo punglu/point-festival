@@ -1,0 +1,19 @@
+screen_id,zone_id,mongle_screen,tablet_source_id,semantic_role,mobile_measurement,tablet_landscape,tablet_portrait,classification,dom_duplication_needed,pm_decision_ref
+A2,nav,Family Home,1b,Primary navigation,COMMITTED_DERIVED_EVIDENCE:BottomDock 4 items,92px left icon rail 5 items,BottomDock 4 items,NAVIGATION_RELOCATION,NO,
+A2,greeting_header,Family Home,1b,Avatar+greeting+bell,COMMITTED_DERIVED_EVIDENCE,adds family-avatar-stack sub-element,no avatar-stack,SAME_COMPONENT_NEW_DENSITY,NO,
+A2,hero_card,Family Home,1b,Chat promo hero,COMMITTED_DERIVED_EVIDENCE,1.45fr column height158,full-width height160,SAME_COMPONENT_NEW_WIDTH,NO,
+A2,activity_list,Family Home,1b,Recent activity feed,COMMITTED_DERIVED_EVIDENCE,tall pane + embedded mission mini-widget,standalone 3-row card,SAME_COMPONENT_NEW_LAYOUT,NO,TABLET_ONLY_widget_not_in_PNG
+A2,service_grid,Family Home,1b,Service tile grid,COMMITTED_DERIVED_EVIDENCE 4 tiles,5-col 10 tiles incl 6 disabled+add-tile,4 tiles matches mobile,COLUMN_RECOMPOSITION,NO,TABLET_ONLY_6_disabled_tiles
+A3,header,Markpoint,1c,Title+subtitle,COMMITTED_DERIVED_EVIDENCE no logout in header,adds logout pill,logout pill present,TABLET_ONLY_PRESENTATION,NO,new_zone_no_PNG_precedent
+A3,player_summary,Markpoint,1c,Avatar+level+progress+stats,COMMITTED_DERIVED_EVIDENCE,left column 1fr,full-width+inline point total,SAME_COMPONENT_NEW_LAYOUT;ORDER_CHANGE,NO,
+A3,cheer_messages,Markpoint,1c,Family cheer messages,COMMITTED_DERIVED_EVIDENCE present,present own card,ABSENT,VISIBILITY_CHANGE,NO,portrait_absence_unexplained
+A3,mission_list,Markpoint,1c,Mission rows w/ status pill,COMMITTED_DERIVED_EVIDENCE vertical list,vertical list 4 rows incl negative-point row,2-col tile grid 11 tiles,COLUMN_RECOMPOSITION;SAME_COMPONENT_NEW_DENSITY,NO,
+A3,nav,Markpoint,1c,Primary navigation,COMMITTED_DERIVED_EVIDENCE BottomDock,ABSENT no rail no dock,BottomDock 4 items,MOBILE_ONLY_PRESENTATION,NO,landscape_no_nav_chrome_inconsistency
+A4,room_list,Wagle GROUP,1d,Room list pane,D6:fixture-only Room/DIRECT/SERVICE no PNG,280px sidebar 1 GROUP room row,ABSENT,NAVIGATION_RELOCATION,NO,D6
+A4,message_thread,Wagle GROUP,1d,own/other/system bubble contract,COMMITTED_DERIVED_EVIDENCE contract confirmed,matches contract exactly,matches contract exactly larger padding,SAME_COMPONENT_NEW_DENSITY,NO,
+A4,composer,Wagle GROUP,1d,Pill input+send button,COMMITTED_DERIVED_EVIDENCE,38px send button,42px send button,SAME_COMPONENT_NEW_DENSITY,NO,
+A4,nav,Wagle GROUP,1d,Primary navigation,COMMITTED_DERIVED_EVIDENCE BottomDock,ABSENT no rail no dock,BottomDock 4 items,MOBILE_ONLY_PRESENTATION,NO,landscape_no_nav_chrome_inconsistency
+A5,sidebar,Admin Point,1e,Admin nav sidebar,D8:current dark #1e1b4b vs approved near-white #FBFAFE,80px near-white rail 3 icons,NOT_VERIFIED_this_session,SAME_COMPONENT_NEW_WIDTH,NO,D8_strengthened_by_this_evidence
+A5,stat_cards,Admin Point,1e,Summary stat cards,PARTIAL per 6.0B gap matrix,4-card grid 1 amber callout,NOT_VERIFIED_this_session,SAME_COMPONENT_NEW_LAYOUT,NO,
+A5,transaction_table,Admin Point,1e,Transaction/approval list,current React=list rows per 6.0B,5-col sticky-header data table w/ inline approve/reject,NOT_VERIFIED_this_session,COLUMN_RECOMPOSITION,NO,confirms_README_admin-table_rule
+A5,filter_search,Admin Point,1e,Filter chips+search,NOT_VERIFIED in 6.0A/B,pill chips+inline search,NOT_VERIFIED_this_session,NOT_VERIFIED,NO,

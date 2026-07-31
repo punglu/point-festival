@@ -1,0 +1,26 @@
+assets/design-system/AMBIGUITY_AND_PM_REVIEW.md
+assets/design-system/APPROVED_VISUAL_STYLE_GUIDE.html
+assets/design-system/COMPONENT_STYLE_CONTRACT.md
+assets/design-system/FINAL_REPORT.md
+assets/design-system/ONE_OFF_LITERAL_REGISTER.md
+assets/design-system/SCREEN_LOCAL_TOKEN_REGISTER.md
+assets/design-system/SOURCE_SCREEN_INVENTORY.md
+assets/design-system/TOKEN_CLASSIFICATION.md
+assets/design-system/canonical-tokens.css
+assets/design-system/canonical-tokens.json
+assets/uploads/19de6297-c168-45f4-be59-878a01bc0641.png
+assets/uploads/brand_pin_logo_transparent.png
+assets/uploads/family_platform_pin_logo_transparent_1024.png
+assets/uploads/family_platform_style_guide_preview.png
+assets/uploads/family_platform_style_guide_v1.png
+assets/uploads/screen_admin_point_approved.png
+assets/uploads/screen_family_chat_approved.png
+assets/uploads/screen_family_home_approved.png
+assets/uploads/screen_login_approved.png
+assets/uploads/screen_point_festival_approved.png
+source/DESIGN_HANDOFF_README.md
+source/HANDOFF_PROMPT.md
+source/support.js
+source/가족 플랫폼 화면 재현-tablet.dc.html
+source/가족 플랫폼 화면 재현-tokenized.html
+source/가족 플랫폼 화면 재현.dc.html
