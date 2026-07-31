@@ -16,6 +16,27 @@ are separate axes.
 - Independent QA: not_applicable — contract design; implementation QA required
 - Next Action: PM review of five bounded Doran messaging gates before Foundation implementation
 
+## PHASE2-DORAN-MESSAGING-FOUNDATION-001-R2
+
+- Task ID: PHASE2-DORAN-MESSAGING-FOUNDATION-001-R2
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED
+- Verification: NOT_TESTED
+- Execution: RUNNING
+- Phase Note: SELF_CHECKED / INDEPENDENT_QA_PENDING — registration gap found and
+  corrected 2026-07-31 (task existed in handoffs/qa since commit `a1575e0`,
+  2026-07-26, but was never added here). Later commits `0393971` (service
+  principal and room binding) and `91eb98e` (reliable service event delivery)
+  extended the Doran domain with no agent-system task record at all; the
+  "remaining work" list in the handoff is stale relative to current code.
+- Handoff: agent-system/handoffs/active/PHASE2-DORAN-MESSAGING-FOUNDATION-001-R2.md
+- QA Evidence: agent-system/qa/PHASE2-DORAN-MESSAGING-FOUNDATION-001-R2.md
+- Independent QA: pending — mandatory for security, DB, and service boundaries
+- Next Action: PM triage — decide whether to register/re-scope the untracked
+  follow-up Doran work (`0393971`, `91eb98e`) as its own task(s), update the R2
+  handoff's checkpoint to match current code, then run independent QA before
+  any completion or push claim
+
 ## PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001
 
 - Task ID: PHASE1-ACCOUNT-FAMILY-RBAC-CONTRACT-001
