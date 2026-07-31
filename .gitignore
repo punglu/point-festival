@@ -24,9 +24,9 @@ mc-images.tar
 # OS
 .DS_Store
 
-# docs
-/docs/
-
 # Source assets (local originals only, deployed copies are in frontend/public/)
 /favicon-assets/
 /logo-assets/
+
+# Scratch design source (already archived under engineering/phase2/evidence/)
+/docs/temp/
