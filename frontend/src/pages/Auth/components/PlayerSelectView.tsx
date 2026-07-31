@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import styles from '../Auth.module.css';
 import PlayerCard from './PlayerCard';
 import { authApi } from '../api/authApi';
-import MainLogo from '../../../shared/components/MainLogo';
+import { SettingsIcon } from '../../../shared/components/icons/outline';
+import mascotSrc from '../../../assets/logos/family-platform-mascot.png';
 
 function calcLevel(totalPoints: number, thresholds: Record<number, number>): number {
   let level = 1;
@@ -55,36 +56,60 @@ export default function PlayerSelectView({ onPlayerSelect, onAdminClick }: Props
     return () => controller.abort();
   }, []);
 
+  const lockedPlayer = players.find((p) => p.is_locked);
+
   return (
     <div className={styles.authView}>
-      {/* Indigo 헤더 */}
-      <div className={styles.authHeader}>
-        <MainLogo size="md" />
-        <p className={styles.authSubtitle}>플레이어를 선택하세요</p>
+      {/* 브랜드 헤더 */}
+      <div className={styles.brandHeader}>
+        <img src={mascotSrc} alt="" className={styles.brandMascot} aria-hidden="true" />
+        <h1 className={styles.brandTitle}>가족 플랫폼</h1>
+        <p className={styles.brandSubtitle}>우리 가족의 공간, 함께 연결되는 하루</p>
       </div>
 
-      {/* 플레이어 카드 목록 */}
-      <div className={styles.authBody}>
-        <div className={styles.playerCardList}>
-          {players.map((p, idx) => (
+      {/* 프로필 선택 패널 */}
+      <div className={styles.profilePanel}>
+        <div className={styles.profilePanelHeading}>사용할 프로필을 선택하세요</div>
+
+        <div className={styles.profileCardList}>
+          {players.map((p) => (
             <PlayerCard
               key={p.id}
               name={p.name}
               photo={p.photo}
               level={thresholds ? calcLevel(p.total_points ?? 0, thresholds) : null}
+              totalPoints={p.total_points ?? 0}
               isLocked={p.is_locked}
-              isAlt={idx % 2 === 1}
               onClick={() => onPlayerSelect({ id: p.id, name: p.name, photo: p.photo })}
             />
           ))}
         </div>
-      </div>
 
-      {/* 관리자 로그인 */}
-      <div className={styles.authFooter}>
-        <button className={styles.adminEntryBtn} onClick={onAdminClick}>
-          ⚙️ 관리자 로그인
-        </button>
+        {lockedPlayer && (
+          <div className={styles.lockNotice}>
+            {lockedPlayer.name}의 잠금은 안전을 위한 보호 조치입니다. 계속 잠겨 있다면 관리자에게
+            문의해주세요.
+          </div>
+        )}
+
+        <div className={styles.profileFooterRow}>
+          {/* No dedicated settings destination exists in the app today
+              (checked: no /settings route anywhere) — this icon activates
+              the same admin-login entry as the link beside it, per PM
+              direction to wire it to the existing entry point rather than
+              leave it non-functional. */}
+          <button
+            type="button"
+            className={styles.footerSettingsIcon}
+            onClick={onAdminClick}
+            aria-label="관리자 로그인"
+          >
+            <SettingsIcon size={20} />
+          </button>
+          <button className={styles.footerAdminLink} onClick={onAdminClick}>
+            관리자 로그인 <span aria-hidden="true">›</span>
+          </button>
+        </div>
       </div>
     </div>
   );

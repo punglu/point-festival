@@ -43,30 +43,33 @@
   flex-direction: column;
 }
 
-/* ── 공통 Auth 헤더 (Indigo) ── */
-.authHeader {
-  background:
-    radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.18) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 80%, rgba(255,255,255,0.10) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.35) 0%, transparent 70%),
-    #4338CA;
-  padding: 40px 20px 36px;
+/* ── A1 프로필 선택: 브랜드 헤더 (Wave 6.1 canonical token 기반, MONGLE_W6_SCREEN_SPEC_FREEZE A1) ── */
+.brandHeader {
+  background: linear-gradient(180deg, var(--color-brand-500) 0%, var(--color-brand-600) 100%);
+  padding: var(--space-8) var(--space-5) var(--space-6);
   text-align: center;
 }
 
-.authIcon {
-  font-size: 36px;
-  margin-bottom: 8px;
-}
-
-.brandLogo {
-  width: 90%;
-  max-width: 94px;
-  height: auto;
+.brandMascot {
+  width: 76px;
+  height: 76px;
   object-fit: contain;
   display: block;
-  margin: 0 auto 14px;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
+  margin: 0 auto var(--space-3);
+}
+
+.brandTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 var(--space-1);
+  letter-spacing: -0.5px;
+}
+
+.brandSubtitle {
+  font-size: 14px;
+  color: var(--color-brand-100);
+  margin: 0;
 }
 
 .authTitle {
@@ -82,51 +85,6 @@
   font-size: 14px;
   color: var(--user-primary-muted);
   margin: 0;
-}
-
-/* ── 본문 영역 ── */
-.authBody {
-  flex: 1;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ── 푸터 영역 ── */
-.authFooter {
-  padding: 12px 20px 28px;
-  text-align: center;
-}
-
-.authFooterLink {
-  font-size: 13px;
-  color: var(--user-text-disabled);
-  cursor: pointer;
-  background: none;
-  border: none;
-  font-family: var(--user-font);
-  text-decoration: underline;
-}
-
-/* 관리자 로그인 진입 버튼 */
-.adminEntryBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: 1.5px solid var(--user-primary-border);
-  background: var(--user-surface);
-  color: var(--user-primary);
-  font-size: 13px;
-  font-weight: 500;
-  font-family: var(--user-font);
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-}
-.adminEntryBtn:hover {
-  background: var(--user-primary-light);
-  border-color: var(--user-primary-accent);
 }
 
 /* AdminLoginView 폼 래퍼 */
@@ -147,126 +105,149 @@
   text-decoration: none;
 }
 
-/* ── 플레이어 선택 카드 목록 ── */
-.playerCardList {
+/* ── A1 프로필 선택 패널 (Wave 6.1 canonical token 기반) ── */
+.profilePanel {
+  flex: 1;
+  background: var(--color-surface);
+  border-radius: var(--radius-hero) var(--radius-hero) 0 0;
+  padding: var(--space-6) var(--space-5) var(--space-8);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  flex: 1;
-  justify-content: center;
-  padding: 8px 0;
+  gap: var(--space-4);
+}
+
+.profilePanelHeading {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink-700);
+}
+
+.profileCardList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
 .playerCard {
-  background: linear-gradient(135deg, #F5F3FF 0%, #F0FDFA 100%);
-  border-radius: var(--user-radius-card);
-  padding: 16px;
-  border: 2px solid var(--user-primary-border);
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-card-list);
+  padding: var(--space-4);
+  border: var(--border-width-hairline) solid var(--color-line);
+  box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--space-4);
   cursor: pointer;
-  transition: border-color 0.15s, transform 0.1s;
+  transition: transform 0.1s, box-shadow 0.15s;
   width: 100%;
   text-align: left;
+  font-family: var(--user-font);
 }
 
 .playerCard:active {
   transform: scale(0.98);
-  border-color: var(--user-primary);
 }
 
 .playerCard:disabled {
-  opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
 }
 
-.playerAvatar {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--user-radius-circle);
-  border: 3px solid var(--user-primary-accent);
-  background: var(--user-primary-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  overflow: hidden;
+.profileAvatarLocked {
+  opacity: 0.55;
+  filter: grayscale(1);
 }
 
-.playerAvatarAlt {
-  border-color: var(--user-purple-border);
-  background: var(--user-purple-light);
-}
-
-.playerPhoto {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.playerInitial {
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.playerCardBody {
+.profileCardBody {
   flex: 1;
   min-width: 0;
 }
 
-.playerName {
+.profileName {
   font-size: 16px;
-  font-weight: 500;
-  color: var(--user-text);
+  font-weight: 700;
+  color: var(--color-ink-900);
 }
 
-.playerLevel {
+.profileMetaRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.profileLevel {
   font-size: 12px;
-  color: var(--user-primary);
-  margin-top: 2px;
+  font-weight: 600;
+  color: var(--color-brand-600);
+  background: var(--color-brand-100);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
 }
 
-.playerPoints {
-  font-size: 12px;
-  color: var(--user-text-muted);
-}
-
-.playerPointBadge {
-  margin-left: auto;
-  padding: 4px 12px;
-  border-radius: var(--user-radius-pill);
+.profilePoints {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--color-warning);
+}
+
+.profileLockedLabel {
+  margin-top: var(--space-1);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-danger);
+}
+
+.profileChevron {
+  font-size: 22px;
+  color: var(--color-brand-400);
   flex-shrink: 0;
 }
 
-.playerPointBadgeDefault {
-  background: var(--user-primary-light);
-  color: var(--user-primary);
-  border-bottom: 2px solid var(--user-primary);
+.lockNotice {
+  display: flex;
+  align-items: center;
+  background: var(--color-brand-50);
+  color: var(--color-ink-700);
+  border-radius: var(--radius-control);
+  padding: var(--space-3) var(--space-4);
+  font-size: 12.5px;
+  line-height: 1.5;
 }
 
-.playerPointBadgeAlt {
-  background: var(--user-purple-light);
-  color: var(--user-purple);
-  border-bottom: 2px solid var(--user-purple);
+.profileFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: var(--space-2);
 }
 
-.levelBadge {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  background: var(--user-primary-light);
-  color: var(--user-primary);
+.footerSettingsIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: var(--space-2);
+  margin: calc(-1 * var(--space-2));
+  cursor: pointer;
+  color: var(--color-ink-500);
 }
 
-.lockIcon {
-  margin-top: 4px;
+.footerAdminLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-brand-600);
   font-size: 13px;
+  font-weight: 600;
+  font-family: var(--user-font);
 }
 
 /* ── PIN 입력 화면 ── */
@@ -714,8 +695,7 @@
   }
 
   .pinBody,
-  .adminForm,
-  .authBody {
+  .adminForm {
     background: var(--user-surface);
   }
 }
