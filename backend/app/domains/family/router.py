@@ -5,12 +5,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.dependencies import get_current_user
-from app.domains.family import service
-from app.domains.family.models import FamilyMembership, MembershipRoleAssignment, Role
+from app.domains.family import auth_service, service
+from app.domains.family.dependencies import (
+    get_current_account, get_current_session_id, require_family_permission,
+)
+from app.domains.family.models import Account, FamilyMembership, MembershipRoleAssignment, Role
 from app.domains.family.schema import (
-    AccountContextResponse, FamilyCreate, FamilyResponse, FamilySummary,
-    FamilyUpdate, MembershipCreate, MembershipSummary, MembershipUpdate,
-    RoleAssignmentCreate, RoleAssignmentResponse, RoleSummary,
+    AccountContextResponse, AccountLoginRequest, AccountLoginResponse,
+    AuthorizedFamilySummary, FamilyCreate, FamilyResponse, FamilySummary,
+    FamilyUpdate, MeResponse, MemberAccountProvisionRequest,
+    MemberAccountProvisionResponse, MembershipCreate, MembershipSummary,
+    MembershipUpdate, PasswordChangeRequest, RefreshRequest, RefreshResponse,
+    RoleAssignmentCreate, RoleAssignmentResponse, RoleSummary, SessionSummary,
     ServiceSubscriptionCreate, ServiceSubscriptionSummary, ServiceSubscriptionUpdate,
     SubscriptionResponse,
 )
@@ -21,6 +27,138 @@ router = APIRouter(tags=["family-foundation"])
 
 def _role_summary(role: Role) -> RoleSummary:
     return RoleSummary(code=role.code, scope_type=role.scope_type, service_code=role.service_code)
+
+
+# --- Account-native auth (Wave 1, D2/D3) ---------------------------------
+# These are Account-level, not family-scoped, so per D7 they do not sit under
+# /families/{familyId}/. They never consult LegacyIdentityMapping.
+
+
+@router.post("/api/auth/account/login", response_model=AccountLoginResponse)
+async def account_login(req: AccountLoginRequest, db: AsyncSession = Depends(get_db)):
+    """아이디 + 플랫폼 비밀번호 로그인 (D2). Issues an Account-scoped Session."""
+    result = await auth_service.login(db, req.username, req.password, req.device_id, req.device_label)
+    return AccountLoginResponse(**result)
+
+
+@router.post("/api/auth/account/refresh", response_model=RefreshResponse)
+async def account_refresh(req: RefreshRequest, db: AsyncSession = Depends(get_db)):
+    """Rotate the refresh token; the presented token is revoked in the same transaction."""
+    result = await auth_service.refresh_session(db, req.refresh_token)
+    return RefreshResponse(**result)
+
+
+@router.post("/api/auth/account/logout", status_code=status.HTTP_204_NO_CONTENT)
+async def account_logout(
+    session_id: int = Depends(get_current_session_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """Revoke only the calling Session; other devices stay signed in."""
+    await auth_service.logout(db, session_id)
+
+
+@router.get("/api/me", response_model=MeResponse)
+async def read_me(
+    account: Account = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+):
+    """Current Account plus its server-derived AuthorizedFamilySet (D1/D3)."""
+    credential = await auth_service.get_credential_for_account(db, account.id)
+    families = []
+    for family, membership in await service.authorized_family_set(db, account.id):
+        roles = await service.family_roles(db, membership.id)
+        permissions = await service.effective_permissions(db, membership)
+        families.append(
+            AuthorizedFamilySummary(
+                family_group_id=family.id,
+                name=family.name,
+                membership_id=membership.id,
+                relationship=membership.relationship,
+                roles=[_role_summary(role) for role in roles],
+                permissions=sorted(permissions),
+            )
+        )
+    return MeResponse(
+        account_id=account.id,
+        display_name=account.display_name,
+        is_password_change_required=bool(credential and credential.is_password_change_required),
+        authorized_families=families,
+    )
+
+
+@router.post("/api/me/password", status_code=status.HTTP_204_NO_CONTENT)
+async def change_my_password(
+    req: PasswordChangeRequest,
+    account: Account = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+):
+    """Change own password. Revokes every existing Session, including this one."""
+    await auth_service.change_password(db, account.id, req.current_password, req.new_password)
+
+
+@router.get("/api/me/sessions", response_model=list[SessionSummary])
+async def list_my_sessions(
+    account: Account = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+):
+    rows = await auth_service.list_sessions(db, account.id)
+    return [
+        SessionSummary(
+            id=row.id,
+            device_id=row.device_id,
+            device_label=row.device_label,
+            issued_at=row.issued_at,
+            expires_at=row.expires_at,
+            last_seen_at=row.last_seen_at,
+        )
+        for row in rows
+    ]
+
+
+@router.delete("/api/me/devices/{device_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def unlink_my_device(
+    device_id: str,
+    account: Account = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+):
+    """Device unlink (D3): revokes every live Session for that device."""
+    revoked = await auth_service.unlink_device(db, account.id, device_id)
+    if revoked == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="해당 기기의 활성 세션이 없습니다")
+
+
+@router.post(
+    "/api/families/{family_id}/member-accounts",
+    response_model=MemberAccountProvisionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def provision_member_account(
+    family_id: int,
+    req: MemberAccountProvisionRequest,
+    authorized: tuple = Depends(require_family_permission(service.FAMILY_MEMBERS_PROVISION)),
+    db: AsyncSession = Depends(get_db),
+):
+    """FamilyAdmin provisions an independent Account for a member of its own family.
+
+    The path `family_id` is authorized by the dependency before this body runs,
+    so a cross-family attempt is already rejected here.
+    """
+    actor_account, _actor_membership = authorized
+    account, membership, initial_password = await service.provision_member_account(
+        db,
+        family_id,
+        actor_account.id,
+        req.display_name,
+        req.username,
+        req.relationship,
+    )
+    return MemberAccountProvisionResponse(
+        account_id=account.id,
+        membership_id=membership.id,
+        username=auth_service.normalize_username(req.username),
+        initial_password=initial_password,
+        is_password_change_required=True,
+    )
 
 
 async def _membership_summary(db: AsyncSession, membership: FamilyMembership) -> MembershipSummary:

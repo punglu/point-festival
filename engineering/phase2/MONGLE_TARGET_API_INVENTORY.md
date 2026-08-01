@@ -9,7 +9,30 @@ This inventories what changes, what stays, and what is net-new in the API surfac
 | Route group | Classification | Notes |
 |---|---|---|
 | `/api/account-context`, `/api/families/*` (13 routes) | KEEP_AS_IS | Already Group/Membership/Role-shaped; auth today runs through the legacy `get_current_user` (app.dependencies) only to resolve *which* Account is calling — the Group-scoped permission checks (`family.service.require_permission`) are already Mongle-native, not legacy. Only the outer JWT-verification step is legacy (see next section). |
-| **Auth/Session** (login, refresh, logout, credential management) | **UNDECIDED — net-new** | Does not exist for Account today. Every current login route (`/api/auth/login`, `/api/auth/admin/login`) issues a JWT shaped around legacy identity (`sub`=player_id/admin_id, `role`=player/admin), never around Account/Membership. A Mongle-native login must exist before `/api/account-context` and friends can be reached without going through the legacy bridge first. Exact routes depend on PM_DECISION_REQUIRED #2 (Business Glossary) — not designed here. |
+| **Auth/Session** | **IMPLEMENTED (Wave 1)** | Shipped as the routes below. Account-level per D7, so they do not sit under `/families/{familyId}/...`. None of them consults `LegacyIdentityMapping`; the legacy `/api/auth/login` and `/api/auth/admin/login` routes are untouched and remain legacy-only. |
+
+### Account-native Auth/Session routes (Wave 1)
+
+Implemented in `backend/app/domains/family/router.py`; authorization
+dependencies in `backend/app/domains/family/dependencies.py`. Access tokens
+carry `role="account"`, a value the legacy player/admin dependencies do not
+accept and which the Account dependency requires — so neither token type can be
+used against the other's routes.
+
+| Route | Method | Actor | Scope | Notes |
+|---|---|---|---|---|
+| `/api/auth/account/login` | POST | anonymous | account | 아이디 + 플랫폼 비밀번호. Returns access + refresh token, `is_password_change_required`. Unknown-username and wrong-password responses are byte-identical to prevent user enumeration. Lockout after `ACCOUNT_MAX_LOGIN_ATTEMPTS` |
+| `/api/auth/account/refresh` | POST | refresh-token bearer | account | Rotates: the presented row is revoked and a new one issued in one transaction, so replay of the old token is rejected |
+| `/api/auth/account/logout` | POST | account | account | Revokes only the calling Session; other devices stay signed in |
+| `/api/me` | GET | account | account | Current Account plus the server-derived `AuthorizedFamilySet`, each entry with its roles and effective permissions |
+| `/api/me/password` | POST | account | account | Self-service change; revokes every Session including the caller's |
+| `/api/me/sessions` | GET | account | account | Live sessions for the calling Account |
+| `/api/me/devices/{device_id}` | DELETE | account | account | Device unlink — revokes every live Session for that device |
+| `/api/families/{family_id}/member-accounts` | POST | FamilyAdmin | family | Provisions an independent Account + Membership + initial credential in one transaction. Requires `family.members.provision` **in the path family**, so cross-family attempts are denied before the handler body runs. Returns the initial password exactly once |
+
+A revoked Session is rejected immediately even while its access token is still
+within its TTL, because the dependency validates the Session row on every
+request rather than trusting the JWT alone.
 
 ## Realtime messaging layer (와글와글) — KEEP_AS_IS, frontend wiring is the only real gap
 

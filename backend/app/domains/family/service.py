@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import Iterable, Optional, Set
 
 from fastapi import HTTPException, status
-from sqlalchemy import and_, select
+from sqlalchemy import and_, select, update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.family.models import (
@@ -203,6 +203,100 @@ async def active_memberships_for_account(db: AsyncSession, account_id: int) -> l
     return list((await db.execute(stmt)).scalars())
 
 
+FAMILY_MEMBERS_PROVISION = "family.members.provision"
+
+
+async def authorized_family_set(db: AsyncSession, account_id: int) -> list[tuple[FamilyGroup, FamilyMembership]]:
+    """Every FamilyGroup this Account currently holds an ACTIVE Membership in.
+
+    -- [Query] The server-derived AuthorizedFamilySet (D1/D3). This is computed
+    -- per request from Membership state; it is never read from a client-sent
+    -- "current family" value, and never cached on the Session row.
+    """
+    stmt = (
+        select(FamilyGroup, FamilyMembership)
+        .join(FamilyMembership, FamilyMembership.family_group_id == FamilyGroup.id)
+        .where(
+            FamilyMembership.account_id == account_id,
+            FamilyMembership.status == "active",
+            FamilyMembership.deleted_at.is_(None),
+            FamilyGroup.status == "active",
+            FamilyGroup.deleted_at.is_(None),
+        )
+        .order_by(FamilyGroup.id)
+    )
+    return [(family, membership) for family, membership in (await db.execute(stmt)).all()]
+
+
+async def provision_member_account(
+    db: AsyncSession,
+    family_id: int,
+    actor_account_id: int,
+    display_name: str,
+    username: str,
+    relationship: str,
+) -> tuple[Account, FamilyMembership, str]:
+    """FamilyAdmin provisions an independent Account + initial credential.
+
+    -- [Intent] D2/D4: a FamilyAdmin may create a real, independent platform
+    -- Account for someone in *its own* family and hand them a one-time initial
+    -- password. The Account is not owned by, readable by, or impersonable by
+    -- the issuing admin.
+    -- [Audit] AccountCredential.issued_by_account_id records the issuer.
+
+    One transaction covers Account + Membership + Credential: a duplicate
+    username must not leave a stranded Account behind. The caller has already
+    been authorized for `family.members.provision` in this family.
+
+    Returns the raw initial password. It is returned exactly once here and is
+    never stored in recoverable form or re-readable afterwards.
+    """
+    # Imported here rather than at module scope: family.service is imported by
+    # auth-adjacent modules, and this keeps the import graph one-directional.
+    from app.domains.family import auth_service
+
+    normalized = auth_service.normalize_username(username)
+    if await auth_service.get_active_credential_by_username(db, normalized) is not None:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="이미 사용 중인 아이디입니다")
+
+    family = await db.get(FamilyGroup, family_id)
+    if family is None or family.status != "active" or family.deleted_at is not None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="가족을 찾을 수 없습니다")
+
+    account = Account(display_name=display_name, status="active")
+    db.add(account)
+    await db.flush()
+
+    membership = FamilyMembership(
+        family_group_id=family_id,
+        account_id=account.id,
+        relationship=relationship,
+        status="active",
+        joined_at=datetime.now(timezone.utc),
+    )
+    db.add(membership)
+    await db.flush()
+
+    raw_password = auth_service.generate_initial_password()
+    await auth_service.create_credential(
+        db,
+        account.id,
+        normalized,
+        raw_password,
+        issued_by_account_id=actor_account_id,
+        is_initial_credential=True,
+    )
+
+    try:
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="계정 생성에 실패했습니다")
+    await db.refresh(account)
+    await db.refresh(membership)
+    return account, membership, raw_password
+
+
 async def add_membership(db: AsyncSession, family_id: int, account_id: int, relationship: str, membership_status: str) -> FamilyMembership:
     account = await db.get(Account, account_id)
     if account is None or account.status != "active" or account.deleted_at is not None:
@@ -250,8 +344,34 @@ async def _lock_family_for_owner_change(db: AsyncSession, family_id: int) -> Non
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="가족을 찾을 수 없습니다")
 
 
+async def revoke_membership_roles(db: AsyncSession, membership_id: int, *, reason: str) -> int:
+    """End every live role assignment of a Membership that is being terminated.
+
+    -- [Intent] Wave 1 D4: roles end when the Membership ends.
+    -- UPDATE membership_role_assignments SET revoked_at = now()
+    --  WHERE membership_id = :id AND revoked_at IS NULL;
+
+    `get_active_membership` already blocks a non-ACTIVE Membership at the gate,
+    so this is defence in depth rather than the only barrier — but it makes the
+    invariant durable in the data instead of relying on every future caller
+    going through that one gate. `reason` is accepted for audit-trail symmetry
+    with session revocation; the assignment row records the revocation time.
+    Caller owns the transaction.
+    """
+    result = await db.execute(
+        sa_update(MembershipRoleAssignment)
+        .where(
+            MembershipRoleAssignment.membership_id == membership_id,
+            MembershipRoleAssignment.revoked_at.is_(None),
+        )
+        .values(revoked_at=datetime.now(timezone.utc))
+    )
+    return result.rowcount or 0
+
+
 async def update_membership(db: AsyncSession, membership: FamilyMembership, relationship: Optional[str], membership_status: Optional[str]) -> FamilyMembership:
-    if membership_status in {"suspended", "left", "removed"}:
+    terminating = membership_status in {"suspended", "left", "removed"}
+    if terminating:
         roles = await family_roles(db, membership.id)
         if any(role.scope_type == "FAMILY" and role.code == "owner" for role in roles):
             await _lock_family_for_owner_change(db, membership.family_group_id)
@@ -261,6 +381,10 @@ async def update_membership(db: AsyncSession, membership: FamilyMembership, rela
         membership.relationship = relationship
     if membership_status is not None:
         membership.status = membership_status
+    if terminating:
+        # Same transaction as the status change: a terminated Membership must
+        # never be left holding live role assignments.
+        await revoke_membership_roles(db, membership.id, reason=membership_status)
     await db.commit()
     await db.refresh(membership)
     return membership

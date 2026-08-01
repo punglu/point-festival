@@ -42,6 +42,84 @@ class RoleSummary(BaseModel):
     service_code: Optional[str] = None
 
 
+# --- Account-native auth (Wave 1, D2/D3) ---------------------------------
+
+
+class AccountLoginRequest(BaseModel):
+    username: str = Field(..., min_length=1, max_length=150)
+    password: str = Field(..., min_length=1, max_length=200)
+    # Stable per-install identifier so sessions can be listed and unlinked per
+    # device. Supplied by the client; it is not a security boundary on its own.
+    device_id: str = Field(..., min_length=1, max_length=64)
+    device_label: Optional[str] = Field(default=None, max_length=100)
+
+
+class AccountLoginResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    account_id: int
+    display_name: str
+    is_password_change_required: bool
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str = Field(..., min_length=1)
+
+
+class RefreshResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    account_id: int
+
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str = Field(..., min_length=1, max_length=200)
+    new_password: str = Field(..., min_length=1, max_length=200)
+
+
+class SessionSummary(BaseModel):
+    id: int
+    device_id: str
+    device_label: Optional[str] = None
+    issued_at: datetime
+    expires_at: datetime
+    last_seen_at: Optional[datetime] = None
+
+
+class AuthorizedFamilySummary(BaseModel):
+    """One entry of the server-derived AuthorizedFamilySet."""
+    family_group_id: int
+    name: str
+    membership_id: int
+    relationship: str
+    roles: List[RoleSummary] = []
+    permissions: List[str] = []
+
+
+class MeResponse(BaseModel):
+    account_id: int
+    display_name: str
+    is_password_change_required: bool
+    authorized_families: List[AuthorizedFamilySummary] = []
+
+
+class MemberAccountProvisionRequest(BaseModel):
+    display_name: str = Field(..., min_length=1, max_length=100)
+    username: str = Field(..., min_length=3, max_length=150)
+    relationship: str = "unknown"
+
+
+class MemberAccountProvisionResponse(BaseModel):
+    account_id: int
+    membership_id: int
+    username: str
+    # Returned exactly once, at creation. Never retrievable again.
+    initial_password: str
+    is_password_change_required: bool
+
+
 class MembershipSummary(BaseModel):
     id: int
     account_id: int

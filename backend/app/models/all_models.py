@@ -13,8 +13,9 @@ from app.domains.mission_template.models import MissionTemplate  # noqa: F401
 from app.domains.chat.models import ChatMessage                  # noqa: F401
 from app.domains.level_tier.models import LevelTier              # noqa: F401
 from app.domains.family.models import (  # noqa: F401
-    Account, FamilyGroup, FamilyMembership, Role, Permission, RolePermission,
-    MembershipRoleAssignment, ServiceSubscription, LegacyIdentityMapping,
+    Account, AccountCredential, AccountSession, FamilyGroup, FamilyMembership,
+    Role, Permission, RolePermission, MembershipRoleAssignment,
+    ServiceSubscription, LegacyIdentityMapping,
 )
 from app.domains.doran.models import DoranRoom, DoranDirectPair, DoranParticipant, DoranMessage, DoranParticipantReadState  # noqa: F401
 from app.domains.doran.models import ServicePrincipal, DoranServiceBinding, DoranServiceAuditLog  # noqa: F401
