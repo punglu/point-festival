@@ -1,9 +1,9 @@
 """Generic Transactional Outbox: any owning-service business transaction can
 append a row here in the same DB transaction as its own commit, and a
 dedicated Worker later delivers it exactly once, logically, to whichever
-downstream consumer owns that event_type (today: Doran SERVICE_ACTION).
+downstream consumer owns that event_type (today: Wagle SERVICE_ACTION).
 
-This table has no knowledge of Doran, Family, or any other consumer - it only
+This table has no knowledge of Wagle, Family, or any other consumer - it only
 knows an event happened, who owns it, and what has been tried so far.
 """
 from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, Integer, String, UniqueConstraint, func

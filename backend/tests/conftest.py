@@ -1,4 +1,4 @@
-"""Real-PostgreSQL integration/concurrency fixtures for the Doran R2-A repair suite.
+"""Real-PostgreSQL integration/concurrency fixtures for the Wagle R2-A repair suite.
 
 Targets the dedicated, isolated Phase 2 fixture database only
 (docker-compose.phase2.yml, 127.0.0.1:15435). Never points at an operating
@@ -135,7 +135,7 @@ async def create_actor(
     membership_status: str = "active",
 ) -> Actor:
     """Create a fully-linked legacy player -> account -> family membership,
-    optionally granting a Doran SERVICE-scope role (participant/room_admin)."""
+    optionally granting a Wagle SERVICE-scope role (participant/room_admin)."""
     player_id = await _create_legacy_player(db, name)
     account = Account(display_name=name, status="active")
     db.add(account)
@@ -162,7 +162,7 @@ async def create_actor(
         role = (
             await db.execute(
                 text(
-                    "SELECT id FROM roles WHERE scope_type='SERVICE' AND service_code='doran' AND code=:code"
+                    "SELECT id FROM roles WHERE scope_type='SERVICE' AND service_code='wagle' AND code=:code"
                 ),
                 {"code": service_role},
             )
@@ -199,7 +199,7 @@ async def create_bare_membership(db, family_id: int, name: str = "filler") -> in
 async def set_subscription(db, family_id: int, status: str = "active") -> None:
     sub = ServiceSubscription(
         family_group_id=family_id,
-        service_code="doran",
+        service_code="wagle",
         status=status,
         started_at=datetime.now(timezone.utc) if status == "active" else None,
     )
@@ -222,7 +222,7 @@ async def run_concurrent(factories: list[Callable[[], Awaitable]]) -> list:
     return await asyncio.gather(*tasks, return_exceptions=True)
 
 
-from app.domains.doran import service as doran_service  # noqa: E402
+from app.domains.wagle import service as wagle_service  # noqa: E402
 
 
 def service_headers(credential_id: str, secret: str) -> dict:
@@ -253,8 +253,8 @@ async def create_service_actor(
     Room it may publish into."""
     if allowed_actions is None:
         allowed_actions = [{"action_type": "mission_approved", "schema_version": 1}]
-    principal, secret = await doran_service.create_service_principal(db, service_code, name)
-    binding, room = await doran_service.create_service_binding(db, principal.id, family_id, allowed_actions)
+    principal, secret = await wagle_service.create_service_principal(db, service_code, name)
+    binding, room = await wagle_service.create_service_binding(db, principal.id, family_id, allowed_actions)
     return ServiceActor(
         principal_id=principal.id,
         credential_id=principal.credential_id,
@@ -267,9 +267,9 @@ async def create_service_actor(
 
 @pytest_asyncio.fixture
 async def family_env(db, client):
-    """One family, two linked actors: `admin` (Doran room_admin service role,
-    can create/manage rooms) and `member` (Doran participant service role).
-    Doran subscription active. Returns a dict for tests to extend."""
+    """One family, two linked actors: `admin` (Wagle room_admin service role,
+    can create/manage rooms) and `member` (Wagle participant service role).
+    Wagle subscription active. Returns a dict for tests to extend."""
     family_id = await create_family(db)
     admin = await create_actor(db, family_id, name="admin", service_role="room_admin")
     member = await create_actor(db, family_id, name="member", service_role="participant")

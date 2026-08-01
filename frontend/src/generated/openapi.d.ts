@@ -1380,6 +1380,166 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/account/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Account Login
+         * @description 아이디 + 플랫폼 비밀번호 로그인 (D2). Issues an Account-scoped Session.
+         */
+        post: operations["account_login_api_auth_account_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/account/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Account Refresh
+         * @description Rotate the refresh token; the presented token is revoked in the same transaction.
+         */
+        post: operations["account_refresh_api_auth_account_refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/account/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Account Logout
+         * @description Revoke only the calling Session; other devices stay signed in.
+         */
+        post: operations["account_logout_api_auth_account_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Me
+         * @description Current Account plus its server-derived AuthorizedFamilySet (D1/D3).
+         */
+        get: operations["read_me_api_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change My Password
+         * @description Change own password. Revokes every existing Session, including this one.
+         */
+        post: operations["change_my_password_api_me_password_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List My Sessions */
+        get: operations["list_my_sessions_api_me_sessions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/devices/{device_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Unlink My Device
+         * @description Device unlink (D3): revokes every live Session for that device.
+         */
+        delete: operations["unlink_my_device_api_me_devices__device_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/member-accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Provision Member Account
+         * @description FamilyAdmin provisions an independent Account for a member of its own family.
+         *
+         *     The path `family_id` is authorized by the dependency before this body runs,
+         *     so a cross-family attempt is already rejected here.
+         */
+        post: operations["provision_member_account_api_families__family_id__member_accounts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/account-context": {
         parameters: {
             query?: never;
@@ -1538,7 +1698,7 @@ export interface paths {
         patch: operations["update_service_api_families__family_id__services__service_code__patch"];
         trace?: never;
     };
-    "/api/families/{family_id}/doran/rooms": {
+    "/api/families/{family_id}/wagle/rooms": {
         parameters: {
             query?: never;
             header?: never;
@@ -1546,17 +1706,41 @@ export interface paths {
             cookie?: never;
         };
         /** List Rooms */
-        get: operations["list_rooms_api_families__family_id__doran_rooms_get"];
+        get: operations["list_rooms_api_families__family_id__wagle_rooms_get"];
         put?: never;
         /** Create Room */
-        post: operations["create_room_api_families__family_id__doran_rooms_post"];
+        post: operations["create_room_api_families__family_id__wagle_rooms_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/families/{family_id}/doran/rooms/{room_id}": {
+    "/api/families/{family_id}/wagle/room-summaries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Room Summaries
+         * @description Room list with last-message preview and unread count in one call.
+         *
+         *     Added alongside `/rooms` rather than replacing it: the bare list is still
+         *     the right shape for callers that only need room identity, and changing an
+         *     existing response in place would break them for no benefit.
+         */
+        get: operations["list_room_summaries_api_families__family_id__wagle_room_summaries_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/wagle/rooms/{room_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1564,17 +1748,17 @@ export interface paths {
             cookie?: never;
         };
         /** Get Room */
-        get: operations["get_room_api_families__family_id__doran_rooms__room_id__get"];
+        get: operations["get_room_api_families__family_id__wagle_rooms__room_id__get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
         /** Patch Room */
-        patch: operations["patch_room_api_families__family_id__doran_rooms__room_id__patch"];
+        patch: operations["patch_room_api_families__family_id__wagle_rooms__room_id__patch"];
         trace?: never;
     };
-    "/api/families/{family_id}/doran/rooms/{room_id}/participants": {
+    "/api/families/{family_id}/wagle/rooms/{room_id}/participants": {
         parameters: {
             query?: never;
             header?: never;
@@ -1582,17 +1766,17 @@ export interface paths {
             cookie?: never;
         };
         /** Participants */
-        get: operations["participants_api_families__family_id__doran_rooms__room_id__participants_get"];
+        get: operations["participants_api_families__family_id__wagle_rooms__room_id__participants_get"];
         put?: never;
         /** Add Participant */
-        post: operations["add_participant_api_families__family_id__doran_rooms__room_id__participants_post"];
+        post: operations["add_participant_api_families__family_id__wagle_rooms__room_id__participants_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/families/{family_id}/doran/rooms/{room_id}/participants/{participant_id}": {
+    "/api/families/{family_id}/wagle/rooms/{room_id}/participants/{participant_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1603,13 +1787,13 @@ export interface paths {
         put?: never;
         post?: never;
         /** Remove Participant */
-        delete: operations["remove_participant_api_families__family_id__doran_rooms__room_id__participants__participant_id__delete"];
+        delete: operations["remove_participant_api_families__family_id__wagle_rooms__room_id__participants__participant_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/families/{family_id}/doran/rooms/{room_id}/leave": {
+    "/api/families/{family_id}/wagle/rooms/{room_id}/leave": {
         parameters: {
             query?: never;
             header?: never;
@@ -1619,14 +1803,14 @@ export interface paths {
         get?: never;
         put?: never;
         /** Leave */
-        post: operations["leave_api_families__family_id__doran_rooms__room_id__leave_post"];
+        post: operations["leave_api_families__family_id__wagle_rooms__room_id__leave_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/families/{family_id}/doran/rooms/{room_id}/messages": {
+    "/api/families/{family_id}/wagle/rooms/{room_id}/messages": {
         parameters: {
             query?: never;
             header?: never;
@@ -1634,17 +1818,17 @@ export interface paths {
             cookie?: never;
         };
         /** Messages */
-        get: operations["messages_api_families__family_id__doran_rooms__room_id__messages_get"];
+        get: operations["messages_api_families__family_id__wagle_rooms__room_id__messages_get"];
         put?: never;
         /** Send */
-        post: operations["send_api_families__family_id__doran_rooms__room_id__messages_post"];
+        post: operations["send_api_families__family_id__wagle_rooms__room_id__messages_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/families/{family_id}/doran/rooms/{room_id}/messages/{message_id}": {
+    "/api/families/{family_id}/wagle/rooms/{room_id}/messages/{message_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1655,13 +1839,13 @@ export interface paths {
         put?: never;
         post?: never;
         /** Delete Message */
-        delete: operations["delete_message_api_families__family_id__doran_rooms__room_id__messages__message_id__delete"];
+        delete: operations["delete_message_api_families__family_id__wagle_rooms__room_id__messages__message_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/families/{family_id}/doran/rooms/{room_id}/read-state": {
+    "/api/families/{family_id}/wagle/rooms/{room_id}/read-state": {
         parameters: {
             query?: never;
             header?: never;
@@ -1669,9 +1853,9 @@ export interface paths {
             cookie?: never;
         };
         /** Get Read State */
-        get: operations["get_read_state_api_families__family_id__doran_rooms__room_id__read_state_get"];
+        get: operations["get_read_state_api_families__family_id__wagle_rooms__room_id__read_state_get"];
         /** Put Read State */
-        put: operations["put_read_state_api_families__family_id__doran_rooms__room_id__read_state_put"];
+        put: operations["put_read_state_api_families__family_id__wagle_rooms__room_id__read_state_put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1679,7 +1863,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/families/{family_id}/doran/service/actions": {
+    "/api/families/{family_id}/wagle/service/actions": {
         parameters: {
             query?: never;
             header?: never;
@@ -1689,14 +1873,14 @@ export interface paths {
         get?: never;
         put?: never;
         /** Publish Service Action */
-        post: operations["publish_service_action_api_families__family_id__doran_service_actions_post"];
+        post: operations["publish_service_action_api_families__family_id__wagle_service_actions_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/families/{family_id}/doran/services/{service_code}/room": {
+    "/api/families/{family_id}/wagle/services/{service_code}/room": {
         parameters: {
             query?: never;
             header?: never;
@@ -1706,8 +1890,200 @@ export interface paths {
         get?: never;
         put?: never;
         /** Onboard Service Room */
-        post: operations["onboard_service_room_api_families__family_id__doran_services__service_code__room_post"];
+        post: operations["onboard_service_room_api_families__family_id__wagle_services__service_code__room_post"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/access": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Markpoint Access
+         * @description The calling Account's own Markpoint access in this family.
+         *
+         *     Read-only; computes default access from ServiceSubscription + Membership
+         *     state on every call rather than trusting a cached or client-sent value.
+         */
+        get: operations["get_markpoint_access_api_families__family_id__markpoint_access_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Activate Markpoint
+         * @description FamilyAdmin direct activation (D5-A3). Idempotent; grants no role.
+         */
+        post: operations["activate_markpoint_api_families__family_id__markpoint_activate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/activation-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Markpoint Activation Requests
+         * @description FamilyAdmin reviews this family's activation requests.
+         */
+        get: operations["list_markpoint_activation_requests_api_families__family_id__markpoint_activation_requests_get"];
+        put?: never;
+        /**
+         * Request Markpoint Activation
+         * @description A FamilyMember requests activation (D5-A3 member-request path).
+         *
+         *     Any ACTIVE member of the path family may ask; no extra permission is
+         *     required because asking grants nothing. The requester is the authenticated
+         *     Membership, never a value from the request body.
+         */
+        post: operations["request_markpoint_activation_api_families__family_id__markpoint_activation_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/activation-requests/{request_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Markpoint Activation
+         * @description FamilyAdmin approves and activates. Grants the requester no admin role.
+         */
+        post: operations["approve_markpoint_activation_api_families__family_id__markpoint_activation_requests__request_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/activation-requests/{request_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject Markpoint Activation
+         * @description FamilyAdmin rejects. The service stays inactive.
+         */
+        post: operations["reject_markpoint_activation_api_families__family_id__markpoint_activation_requests__request_id__reject_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/restrictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Markpoint Restrictions */
+        get: operations["list_markpoint_restrictions_api_families__family_id__markpoint_restrictions_get"];
+        put?: never;
+        /**
+         * Restrict Markpoint Member
+         * @description Explicitly remove one member's default access (D5-B). Idempotent.
+         */
+        post: operations["restrict_markpoint_member_api_families__family_id__markpoint_restrictions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/restrictions/{target_membership_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Restore Markpoint Member
+         * @description Lift a restriction, returning the member to default access.
+         */
+        delete: operations["restore_markpoint_member_api_families__family_id__markpoint_restrictions__target_membership_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/service-admins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign Markpoint Service Admin
+         * @description Explicit Markpoint ServiceAdmin grant (D4). FamilyAdmin only; never automatic.
+         */
+        post: operations["assign_markpoint_service_admin_api_families__family_id__markpoint_service_admins_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/service-admins/{assignment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Revoke Markpoint Service Admin
+         * @description Explicit Markpoint ServiceAdmin revocation (D4). FamilyAdmin only.
+         */
+        delete: operations["revoke_markpoint_service_admin_api_families__family_id__markpoint_service_admins__assignment_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1743,6 +2119,64 @@ export interface components {
             /** Families */
             families: components["schemas"]["FamilySummary"][];
         };
+        /** AccountLoginRequest */
+        AccountLoginRequest: {
+            /** Username */
+            username: string;
+            /** Password */
+            password: string;
+            /** Device Id */
+            device_id: string;
+            /** Device Label */
+            device_label?: string | null;
+        };
+        /** AccountLoginResponse */
+        AccountLoginResponse: {
+            /** Access Token */
+            access_token: string;
+            /** Refresh Token */
+            refresh_token: string;
+            /**
+             * Token Type
+             * @default bearer
+             */
+            token_type: string;
+            /** Account Id */
+            account_id: number;
+            /** Display Name */
+            display_name: string;
+            /** Is Password Change Required */
+            is_password_change_required: boolean;
+        };
+        /** ActivationDecisionRequest */
+        ActivationDecisionRequest: {
+            /** Decision Note */
+            decision_note?: string | null;
+        };
+        /** ActivationRequestResponse */
+        ActivationRequestResponse: {
+            /** Id */
+            id: number;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Service Code */
+            service_code: string;
+            /** Requester Membership Id */
+            requester_membership_id: number;
+            /** Status */
+            status: string;
+            /** Processed By Membership Id */
+            processed_by_membership_id?: number | null;
+            /**
+             * Requested At
+             * Format: date-time
+             */
+            requested_at: string;
+            /** Processed At */
+            processed_at?: string | null;
+            /** Decision Note */
+            decision_note?: string | null;
+        };
         /** AdminLoginRequest */
         AdminLoginRequest: {
             /** Username */
@@ -1768,6 +2202,30 @@ export interface components {
              * @default true
              */
             is_admin: boolean;
+        };
+        /**
+         * AuthorizedFamilySummary
+         * @description One entry of the server-derived AuthorizedFamilySet.
+         */
+        AuthorizedFamilySummary: {
+            /** Family Group Id */
+            family_group_id: number;
+            /** Name */
+            name: string;
+            /** Membership Id */
+            membership_id: number;
+            /** Relationship */
+            relationship: string;
+            /**
+             * Roles
+             * @default []
+             */
+            roles: components["schemas"]["RoleSummary"][];
+            /**
+             * Permissions
+             * @default []
+             */
+            permissions: string[];
         };
         /** BatchDeleteRequest */
         BatchDeleteRequest: {
@@ -2172,6 +2630,81 @@ export interface components {
              */
             message: string;
         };
+        /** MarkpointAccessResponse */
+        MarkpointAccessResponse: {
+            /** Family Group Id */
+            family_group_id: number;
+            /** Service Code */
+            service_code: string;
+            /** Subscription Status */
+            subscription_status: string;
+            /** Membership Status */
+            membership_status: string;
+            /** Has Default Access */
+            has_default_access: boolean;
+            /**
+             * Is Restricted
+             * @default false
+             */
+            is_restricted: boolean;
+            /** Restriction Reason */
+            restriction_reason?: string | null;
+            /** Is Service Admin */
+            is_service_admin: boolean;
+            /**
+             * Service Admin Roles
+             * @default []
+             */
+            service_admin_roles: string[];
+        };
+        /** MarkpointActivationResponse */
+        MarkpointActivationResponse: {
+            /** Family Group Id */
+            family_group_id: number;
+            /** Service Code */
+            service_code: string;
+            /** Status */
+            status: string;
+        };
+        /** MeResponse */
+        MeResponse: {
+            /** Account Id */
+            account_id: number;
+            /** Display Name */
+            display_name: string;
+            /** Is Password Change Required */
+            is_password_change_required: boolean;
+            /**
+             * Authorized Families
+             * @default []
+             */
+            authorized_families: components["schemas"]["AuthorizedFamilySummary"][];
+        };
+        /** MemberAccountProvisionRequest */
+        MemberAccountProvisionRequest: {
+            /** Display Name */
+            display_name: string;
+            /** Username */
+            username: string;
+            /**
+             * Relationship
+             * @default unknown
+             */
+            relationship: string;
+        };
+        /** MemberAccountProvisionResponse */
+        MemberAccountProvisionResponse: {
+            /** Account Id */
+            account_id: number;
+            /** Membership Id */
+            membership_id: number;
+            /** Username */
+            username: string;
+            /** Initial Password */
+            initial_password: string;
+            /** Is Password Change Required */
+            is_password_change_required: boolean;
+        };
         /** MembershipCreate */
         MembershipCreate: {
             /** Account Id */
@@ -2531,6 +3064,13 @@ export interface components {
             /** Left At */
             left_at: string | null;
         };
+        /** PasswordChangeRequest */
+        PasswordChangeRequest: {
+            /** Current Password */
+            current_password: string;
+            /** New Password */
+            new_password: string;
+        };
         /** PlayerCreate */
         PlayerCreate: {
             /** Name */
@@ -2674,6 +3214,58 @@ export interface components {
             /** Last Read Sequence */
             last_read_sequence: number;
         };
+        /** RefreshRequest */
+        RefreshRequest: {
+            /** Refresh Token */
+            refresh_token: string;
+        };
+        /** RefreshResponse */
+        RefreshResponse: {
+            /** Access Token */
+            access_token: string;
+            /** Refresh Token */
+            refresh_token: string;
+            /**
+             * Token Type
+             * @default bearer
+             */
+            token_type: string;
+            /** Account Id */
+            account_id: number;
+        };
+        /** RestrictionCreateRequest */
+        RestrictionCreateRequest: {
+            /** Target Membership Id */
+            target_membership_id: number;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** RestrictionResponse */
+        RestrictionResponse: {
+            /** Id */
+            id: number;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Service Code */
+            service_code: string;
+            /** Target Membership Id */
+            target_membership_id: number;
+            /** Status */
+            status: string;
+            /** Reason */
+            reason?: string | null;
+            /** Restricted By Membership Id */
+            restricted_by_membership_id: number;
+            /**
+             * Restricted At
+             * Format: date-time
+             */
+            restricted_at: string;
+            /** Restored By Membership Id */
+            restored_by_membership_id?: number | null;
+            /** Restored At */
+            restored_at?: string | null;
+        };
         /** RoleAssignmentCreate */
         RoleAssignmentCreate: {
             /** Role Code */
@@ -2717,6 +3309,29 @@ export interface components {
             /** Participant Membership Ids */
             participant_membership_ids?: number[];
         };
+        /**
+         * RoomLastMessagePreview
+         * @description Just enough of the last message to render a room-list row.
+         *
+         *     A deleted message is surfaced as a tombstone with no body, matching
+         *     `message_out()`'s per-message rule — the list must not become a way to read
+         *     content the message endpoint would withhold.
+         */
+        RoomLastMessagePreview: {
+            /** Sequence */
+            sequence: number;
+            /** Message Type */
+            message_type: string;
+            /** Body */
+            body: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Deleted */
+            deleted: boolean;
+        };
         /** RoomResponse */
         RoomResponse: {
             /**
@@ -2745,6 +3360,44 @@ export interface components {
              */
             updated_at: string;
         };
+        /**
+         * RoomSummaryResponse
+         * @description One room-list row: the room, the caller's cursor, and its unread count.
+         */
+        RoomSummaryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Room Type */
+            room_type: string;
+            /** Title */
+            title: string | null;
+            /** Status */
+            status: string;
+            /** Next Message Sequence */
+            next_message_sequence: number;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Participant Id
+             * Format: uuid
+             */
+            participant_id: string;
+            /** Participant Status */
+            participant_status: string;
+            /** Last Read Sequence */
+            last_read_sequence: number;
+            /** Unread Count */
+            unread_count: number;
+            last_message: components["schemas"]["RoomLastMessagePreview"] | null;
+        };
         /** RoomUpdate */
         RoomUpdate: {
             /** Title */
@@ -2756,7 +3409,7 @@ export interface components {
          * ServiceActionPublish
          * @description The only shape a Service Principal may submit. There is no client-set
          *     family_id, sender, sequence, Principal id, or free-form executable payload
-         *     - family_id comes from the URL like every other Doran endpoint, and only
+         *     - family_id comes from the URL like every other Wagle endpoint, and only
          *     an allow-listed action type/version plus a small display snapshot may be
          *     submitted here.
          */
@@ -2776,6 +3429,30 @@ export interface components {
             source_event_id: string;
             /** Snapshot */
             snapshot?: Record<string, never>;
+        };
+        /** ServiceAdminAssignRequest */
+        ServiceAdminAssignRequest: {
+            /** Membership Id */
+            membership_id: number;
+            /**
+             * Role Code
+             * @description mission_manager or point_admin
+             */
+            role_code: string;
+        };
+        /** ServiceAdminAssignmentResponse */
+        ServiceAdminAssignmentResponse: {
+            /** Id */
+            id: number;
+            /** Membership Id */
+            membership_id: number;
+            /** Role Code */
+            role_code: string;
+            /**
+             * Assigned At
+             * Format: date-time
+             */
+            assigned_at: string;
         };
         /**
          * ServiceRoomOnboardResponse
@@ -2825,6 +3502,27 @@ export interface components {
         ServiceSubscriptionUpdate: {
             /** Status */
             status: string;
+        };
+        /** SessionSummary */
+        SessionSummary: {
+            /** Id */
+            id: number;
+            /** Device Id */
+            device_id: string;
+            /** Device Label */
+            device_label?: string | null;
+            /**
+             * Issued At
+             * Format: date-time
+             */
+            issued_at: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Last Seen At */
+            last_seen_at?: string | null;
         };
         /** SubscriptionResponse */
         SubscriptionResponse: {
@@ -5612,6 +6310,225 @@ export interface operations {
             };
         };
     };
+    account_login_api_auth_account_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccountLoginRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountLoginResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    account_refresh_api_auth_account_refresh_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefreshRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RefreshResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    account_logout_api_auth_account_logout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_me_api_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeResponse"];
+                };
+            };
+        };
+    };
+    change_my_password_api_me_password_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordChangeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_my_sessions_api_me_sessions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionSummary"][];
+                };
+            };
+        };
+    };
+    unlink_my_device_api_me_devices__device_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                device_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    provision_member_account_api_families__family_id__member_accounts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MemberAccountProvisionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberAccountProvisionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     account_context_api_account_context_get: {
         parameters: {
             query?: never;
@@ -6055,7 +6972,7 @@ export interface operations {
             };
         };
     };
-    list_rooms_api_families__family_id__doran_rooms_get: {
+    list_rooms_api_families__family_id__wagle_rooms_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -6086,7 +7003,7 @@ export interface operations {
             };
         };
     };
-    create_room_api_families__family_id__doran_rooms_post: {
+    create_room_api_families__family_id__wagle_rooms_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -6121,7 +7038,38 @@ export interface operations {
             };
         };
     };
-    get_room_api_families__family_id__doran_rooms__room_id__get: {
+    list_room_summaries_api_families__family_id__wagle_room_summaries_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoomSummaryResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_room_api_families__family_id__wagle_rooms__room_id__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -6153,7 +7101,7 @@ export interface operations {
             };
         };
     };
-    patch_room_api_families__family_id__doran_rooms__room_id__patch: {
+    patch_room_api_families__family_id__wagle_rooms__room_id__patch: {
         parameters: {
             query?: never;
             header?: never;
@@ -6189,7 +7137,7 @@ export interface operations {
             };
         };
     };
-    participants_api_families__family_id__doran_rooms__room_id__participants_get: {
+    participants_api_families__family_id__wagle_rooms__room_id__participants_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -6221,7 +7169,7 @@ export interface operations {
             };
         };
     };
-    add_participant_api_families__family_id__doran_rooms__room_id__participants_post: {
+    add_participant_api_families__family_id__wagle_rooms__room_id__participants_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -6257,7 +7205,7 @@ export interface operations {
             };
         };
     };
-    remove_participant_api_families__family_id__doran_rooms__room_id__participants__participant_id__delete: {
+    remove_participant_api_families__family_id__wagle_rooms__room_id__participants__participant_id__delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -6290,7 +7238,7 @@ export interface operations {
             };
         };
     };
-    leave_api_families__family_id__doran_rooms__room_id__leave_post: {
+    leave_api_families__family_id__wagle_rooms__room_id__leave_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -6322,7 +7270,7 @@ export interface operations {
             };
         };
     };
-    messages_api_families__family_id__doran_rooms__room_id__messages_get: {
+    messages_api_families__family_id__wagle_rooms__room_id__messages_get: {
         parameters: {
             query?: {
                 after_sequence?: number | null;
@@ -6358,7 +7306,7 @@ export interface operations {
             };
         };
     };
-    send_api_families__family_id__doran_rooms__room_id__messages_post: {
+    send_api_families__family_id__wagle_rooms__room_id__messages_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -6394,7 +7342,7 @@ export interface operations {
             };
         };
     };
-    delete_message_api_families__family_id__doran_rooms__room_id__messages__message_id__delete: {
+    delete_message_api_families__family_id__wagle_rooms__room_id__messages__message_id__delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -6427,7 +7375,7 @@ export interface operations {
             };
         };
     };
-    get_read_state_api_families__family_id__doran_rooms__room_id__read_state_get: {
+    get_read_state_api_families__family_id__wagle_rooms__room_id__read_state_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -6459,7 +7407,7 @@ export interface operations {
             };
         };
     };
-    put_read_state_api_families__family_id__doran_rooms__room_id__read_state_put: {
+    put_read_state_api_families__family_id__wagle_rooms__room_id__read_state_put: {
         parameters: {
             query?: never;
             header?: never;
@@ -6495,7 +7443,7 @@ export interface operations {
             };
         };
     };
-    publish_service_action_api_families__family_id__doran_service_actions_post: {
+    publish_service_action_api_families__family_id__wagle_service_actions_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -6530,7 +7478,7 @@ export interface operations {
             };
         };
     };
-    onboard_service_room_api_families__family_id__doran_services__service_code__room_post: {
+    onboard_service_room_api_families__family_id__wagle_services__service_code__room_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -6550,6 +7498,367 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ServiceRoomOnboardResponse"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_markpoint_access_api_families__family_id__markpoint_access_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarkpointAccessResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    activate_markpoint_api_families__family_id__markpoint_activate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarkpointActivationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_markpoint_activation_requests_api_families__family_id__markpoint_activation_requests_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivationRequestResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_markpoint_activation_api_families__family_id__markpoint_activation_requests_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivationRequestResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_markpoint_activation_api_families__family_id__markpoint_activation_requests__request_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActivationDecisionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivationRequestResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reject_markpoint_activation_api_families__family_id__markpoint_activation_requests__request_id__reject_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                request_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActivationDecisionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivationRequestResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_markpoint_restrictions_api_families__family_id__markpoint_restrictions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RestrictionResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restrict_markpoint_member_api_families__family_id__markpoint_restrictions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RestrictionCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RestrictionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_markpoint_member_api_families__family_id__markpoint_restrictions__target_membership_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                target_membership_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RestrictionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assign_markpoint_service_admin_api_families__family_id__markpoint_service_admins_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceAdminAssignRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceAdminAssignmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_markpoint_service_admin_api_families__family_id__markpoint_service_admins__assignment_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                assignment_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

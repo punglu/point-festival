@@ -22,7 +22,6 @@ Every table below is classified `KEEP_AS_IS` (already target-shaped, evidence-co
 | `service_outbox_events` | KEEP_AS_IS | Owner-agnostic, already platform-shaped. **D6** requires its write to share a Transaction boundary with message persistence — verify before accepting reuse | `service_outbox/models.py` |
 | `account_sessions` | **IMPLEMENTED (Wave 1)** | **D3.** Account-scoped persistent Session; the `AuthorizedFamilySet` is derived per request from ACTIVE memberships rather than stored on the row, so ending one membership never invalidates the Session. Refresh tokens are stored only as SHA-256 hashes; rotation revokes the presented row and issues a new one, so replaying a rotated token is rejected. `device_id` is a plain column, not a separate Device aggregate — device unlink is a bulk revoke over `(account_id, device_id)`, which keeps a future `account_devices` table (Wagle PIN, Push subscriptions) possible without reshaping this one | `family/models.py` (`AccountSession`), migration `0005` |
 | `account_credentials` | **IMPLEMENTED (Wave 1)** | **D2.** `아이디 + 플랫폼 비밀번호`; email/phone are absent by design, not merely optional. One live credential per Account and one live username globally, both via partial unique indexes on `deleted_at IS NULL` so a revoked username cannot be re-registered by someone else. Carries credential status, initial-credential/`is_password_change_required` state, failed-attempt count with `locked_until`, `issued_by_account_id` for issuer audit, and `password_changed_at`. No legacy credential row is read or converted (D8 RESET) | `family/models.py` (`AccountCredential`), migration `0005` |
-| **Wagle PIN store** — see below | **NOT_IMPLEMENTED** | Unchanged; Wave 3. The Wave 1 Session contract deliberately keeps `device_id` as a first-class column so an `Account + Device` PIN can attach later | none |
 | **Wagle PIN store** | **NOT_IMPLEMENTED** | **D3-PIN-SCOPE approved** an optional `Account + Device` local screen lock. Reset-not-recovery, never readable by FamilyAdmin, no shared/per-family PIN. Whether any of it is server-side at all is Wave 3 design | none |
 | **Push subscription store** | **NOT_IMPLEMENTED** | **D6 approved** PWA Web Push bound to Account and Device/PWA installation, revoked on logout, Account suspension, Session revoke, device unlink or Account switch | none |
 
@@ -30,26 +29,26 @@ Every table below is classified `KEEP_AS_IS` (already target-shaped, evidence-co
 
 | Target table | Classification | Evidence |
 |---|---|---|
-| `doran_rooms` | KEEP_AS_IS | `doran/models.py:11-28` |
-| `doran_direct_pairs` | KEEP_AS_IS | `doran/models.py:31-43` |
-| `doran_participants` | KEEP_AS_IS | `doran/models.py:46-65` |
-| `doran_messages` | KEEP_AS_IS | `doran/models.py:86-121` |
-| `doran_participant_read_states` | KEEP_AS_IS | `doran/models.py:124-129` |
-| `service_principals` | KEEP_AS_IS | `doran/models.py:132-146` |
-| `doran_service_bindings` | KEEP_AS_IS | `doran/models.py:149-165` |
-| `doran_service_audit_log` | KEEP_AS_IS | `doran/models.py:168-188` |
+| `wagle_rooms` | KEEP_AS_IS | `wagle/models.py:11-28` |
+| `wagle_direct_pairs` | KEEP_AS_IS | `wagle/models.py:31-43` |
+| `wagle_participants` | KEEP_AS_IS | `wagle/models.py:46-65` |
+| `wagle_messages` | KEEP_AS_IS | `wagle/models.py:86-121` |
+| `wagle_participant_read_states` | KEEP_AS_IS | `wagle/models.py:124-129` |
+| `service_principals` | KEEP_AS_IS | `wagle/models.py:132-146` |
+| `wagle_service_bindings` | KEEP_AS_IS | `wagle/models.py:149-165` |
+| `wagle_service_audit_log` | KEEP_AS_IS | `wagle/models.py:168-188` |
 
-No renaming (e.g. a `doran_*` -> `wagle_*` physical rename to match the Korean product name) is proposed here — the current prefix is an internal codename, not user-facing, and this task treats a purely cosmetic internal rename as out of scope unless PM explicitly wants it (flagged, not assumed).
+**Renamed 2026-08-01** by migration `0007` (`MONGLE-PARALLEL-W2-W4-INTEGRATION-COMPLETION-001`): these tables, their indexes, constraints and trigger functions moved from the historical `doran_*` prefix to `wagle_*`, together with the service code, the permission codes and the route prefix. Wagle is the Target product name; the historical name survives only inside that migration as the rename's source value, and in Axis-A/historical documents.
 
 ## MarkPoint-on-Mongle layer — TRANSFORM (ownership FK change), business logic REUSE_LOGIC_ONLY
 
-Every table below currently owns its rows via `player_id -> players.id` (a legacy identity). **D5-B approves** `FamilyMembership` as Markpoint's human identity and `FamilyGroup` as owner, which matches the pattern the Doran domain already uses (`doran_participants.family_membership_id`, `doran_messages` via participant) and keeps one consistent ownership model across the platform.
+Every table below currently owns its rows via `player_id -> players.id` (a legacy identity). **D5-B approves** `FamilyMembership` as Markpoint's human identity and `FamilyGroup` as owner, which matches the pattern the Wagle domain already uses (`wagle_participants.family_membership_id`, `wagle_messages` via participant) and keeps one consistent ownership model across the platform.
 
 **This is not an instruction to rewrite legacy rows.** Under **D8 RESET** the Target ownership shape applies to **newly created** Markpoint records only. No `player_id` value is converted to `family_membership_id`, and no legacy mission, point, ledger, level or reward row is imported or backfilled. The legacy tables below are `ARCHIVE_ONLY` reference; whether the Target reuses these table names or creates new ones is Wave 5 physical design.
 
 | Current table | Target table (name unchanged unless noted) | Classification | Current FK | Proposed target FK | Reasoning |
 |---|---|---|---|---|---|
-| `missions` | `missions` | TRANSFORM | `player_id` | `family_membership_id` | Mirrors Doran's ownership pattern; a mission is a Membership-scoped concept (one child's task within one Family) |
+| `missions` | `missions` | TRANSFORM | `player_id` | `family_membership_id` | Mirrors Wagle's ownership pattern; a mission is a Membership-scoped concept (one child's task within one Family) |
 | `mission_templates` | `mission_templates` | TRANSFORM | `player_id` | `family_membership_id` | same |
 | `level_tiers` | `level_tiers` | KEEP_AS_IS (structurally) | none (global config table, not player-owned) | none | This table is not player-scoped at all today (keyed by `job_code`, not `player_id`) — no transform needed regardless of identity model |
 | `daily_points` | `daily_points` | TRANSFORM | `player_id` | `family_membership_id` | same reasoning |

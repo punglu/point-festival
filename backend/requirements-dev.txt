@@ -1,0 +1,27 @@
+# MONGLE-NAMING-CLOSEOUT-E2E-ENVIRONMENT-RECOVERY-001
+#
+# Test-only dependencies. Until now the repository declared none, so
+# `python3 -m pytest -q` — the invocation documented in tests/README.md and
+# engineering/TESTING_GUIDE.md — depended entirely on whatever happened to be
+# installed on the host. On this machine that is the macOS system Python 3.9,
+# which has pytest but not pytest-asyncio, so collection failed with an import
+# error that reads exactly like a product failure. It is not one; there was
+# simply no declared test environment to run in.
+#
+# Install alongside requirements.txt:
+#   pip install -r requirements.txt -r requirements-dev.txt
+#
+# `asyncio_mode = auto` in pytest.ini means pytest-asyncio is mandatory, not
+# optional: without it every async test is collected and skipped or errors.
+-r requirements.txt
+
+pytest==8.3.4
+# >= 0.26.0 is required, not preferred: pytest.ini sets
+# `asyncio_default_test_loop_scope = session`, which 0.25.x does not recognise.
+# On 0.25.0 pytest reports it as an unknown config option and silently keeps the
+# per-test loop scope, and the session fixture is then finalized against a loop
+# that has already moved on — measured here as an `InterfaceError` at teardown
+# while all three tests themselves passed. Pinning the version that honours the
+# option removes the error entirely.
+pytest-asyncio==0.26.0
+httpx==0.28.1

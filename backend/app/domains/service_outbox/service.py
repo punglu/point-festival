@@ -2,7 +2,7 @@
 claim (PostgreSQL FOR UPDATE SKIP LOCKED - safe across concurrent Worker
 processes, no process-local lock), and record delivery outcome.
 
-This module never talks to Doran or any other consumer - see
+This module never talks to Wagle or any other consumer - see
 app/workers/service_outbox.py for the Worker that drains this table.
 """
 from __future__ import annotations

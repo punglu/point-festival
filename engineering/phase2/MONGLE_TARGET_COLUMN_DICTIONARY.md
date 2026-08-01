@@ -10,7 +10,7 @@ Each row below replaces exactly one column; every other column of the named tabl
 
 | Table | Removed column | Added column | data_type | nullable | constraint | reference | evidence for the change reasoning |
 |---|---|---|---|---|---|---|---|
-| `missions` | `player_id` (Integer, FK->`players.id` CASCADE) | `family_membership_id` | Integer | no | FK RESTRICT (matches Doran's own ondelete convention for Membership references, not CASCADE — a Membership going away should not silently mass-delete a mission history) | `family_memberships.id` | `MONGLE_TARGET_TABLE_DICTIONARY.md` |
+| `missions` | `player_id` (Integer, FK->`players.id` CASCADE) | `family_membership_id` | Integer | no | FK RESTRICT (matches Wagle's own ondelete convention for Membership references, not CASCADE — a Membership going away should not silently mass-delete a mission history) | `family_memberships.id` | `MONGLE_TARGET_TABLE_DICTIONARY.md` |
 | `mission_templates` | `player_id` | `family_membership_id` | Integer | no | FK RESTRICT | `family_memberships.id` | same |
 | `daily_points` | `player_id` | `family_membership_id` | Integer | no | FK RESTRICT; UNIQUE with `date` (unchanged shape, new referent) | `family_memberships.id` | same |
 | `deductions` | `player_id` | `family_membership_id` | Integer | no | FK RESTRICT | `family_memberships.id` | same |

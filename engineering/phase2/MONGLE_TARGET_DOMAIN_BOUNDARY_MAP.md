@@ -61,18 +61,18 @@ Cross-cutting: `service_outbox_events` (generic transactional outbox) sits at th
 
 **Approved D6 delivery boundary:** WebSocket foreground + Web Push background, durable DB and transactional Outbox as SSOT, at-least-once delivery with deduplication, ordering per `FamilyGroup + Room` (never global), one logical subscription per `Account + Device + Session` multiplexing the whole `AuthorizedFamilySet`, and per-FamilyGroup failure isolation. The Doran domain below is the durable-messaging **core candidate** for this contract; the realtime/Push transport is not built. See `MONGLE_REALTIME_MESSAGING_CONTRACT.md`.
 
-**Physical naming:** the code uses `doran_*` / `doran`; the product name is 와글와글/Wagle. Renaming physical tables is a cosmetic, still-open naming question that D1–D8 do not decide and that blocks nothing.
+**Physical naming:** the code uses `wagle_*` / `wagle`; the product name is 와글와글/Wagle. Renaming physical tables is a cosmetic, still-open naming question that D1–D8 do not decide and that blocks nothing.
 
 | Sub-domain | Current code location | Status |
 |---|---|---|
-| Room (DIRECT/GROUP/SERVICE) | `backend/app/domains/doran/models.py::DoranRoom` | Implemented, already Group-scoped |
-| Direct-pair uniqueness | `.../models.py::DoranDirectPair` | Implemented |
-| Participant | `.../models.py::DoranParticipant` | Implemented, scoped to Membership (not Player) |
-| Message | `.../models.py::DoranMessage` | Implemented, tombstone-pattern soft delete |
-| Read State | `.../models.py::DoranParticipantReadState` | Implemented |
-| Service Principal / Binding (for cross-service message relay, e.g. MarkPoint -> 와글와글) | `.../models.py::ServicePrincipal,DoranServiceBinding,DoranServiceAuditLog` | Implemented |
-| API surface | `backend/app/domains/doran/router.py` (16 operations) | Implemented, tested (71 backend tests total incl. Doran-specific suites), zero frontend consumer (see `MONGLE_MIGRATION_CUTOVER_GAP_REPORT.md`) |
-| Frontend | `frontend/src/platform/pages/DoranLanding.tsx` + `platform/doran/components/*` | UI components exist; render exclusively from static preview fixtures, not the real API |
+| Room (DIRECT/GROUP/SERVICE) | `backend/app/domains/wagle/models.py::WagleRoom` | Implemented, already Group-scoped |
+| Direct-pair uniqueness | `.../models.py::WagleDirectPair` | Implemented |
+| Participant | `.../models.py::WagleParticipant` | Implemented, scoped to Membership (not Player) |
+| Message | `.../models.py::WagleMessage` | Implemented, tombstone-pattern soft delete |
+| Read State | `.../models.py::WagleParticipantReadState` | Implemented |
+| Service Principal / Binding (for cross-service message relay, e.g. MarkPoint -> 와글와글) | `.../models.py::ServicePrincipal,WagleServiceBinding,WagleServiceAuditLog` | Implemented |
+| API surface | `backend/app/domains/wagle/router.py` (16 operations) | Implemented, tested (71 backend tests total incl. Doran-specific suites), zero frontend consumer (see `MONGLE_MIGRATION_CUTOVER_GAP_REPORT.md`) |
+| Frontend | `frontend/src/platform/pages/DoranLanding.tsx` + `platform/doran/components/*` | UI components exist; render exclusively from static preview fixtures, not the real API. **These paths still carry the historical name** — the Wave 2/4 rename covered the backend only, and renaming the frontend is a separate task (`MONGLE-WAGLE-FRONTEND-IDENTIFIER-MIGRATION-001`, not yet opened). |
 
 **Legacy overlap to explicitly not carry forward as SSOT**: `chat_messages`/`ChatMessage` (pre-Doran, Player-to-Player 1:1 messaging) is a structurally separate, Player-scoped table that the Doran model's own docstring explicitly declines to reuse ("These tables deliberately do not reuse legacy `chat_messages`. Account, Service, and System message actors are structurally distinct."). Under the corrected framing, legacy `chat_messages` is reference-only UX material for "what a simple 1:1 chat looked like," not a component of 와글와글's target architecture.
 

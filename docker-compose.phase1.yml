@@ -48,6 +48,14 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        # MONGLE-NAMING-CLOSEOUT-E2E-ENVIRONMENT-RECOVERY-001: set by
+        # tests/e2e/scripts/start-mongle-phase1.sh from the worktree source, and
+        # re-checked against the running container by
+        # verify-current-source-frontend.sh. `unset` here means the image was
+        # built outside the harness, which the guard treats as a failure rather
+        # than trusting the image name.
+        BUILD_FINGERPRINT: ${MONGLE_FRONTEND_FINGERPRINT:-unset}
     restart: "no"
     ports:
       - "13001:80"

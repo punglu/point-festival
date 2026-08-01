@@ -17,6 +17,9 @@ from app.domains.family.models import (  # noqa: F401
     Role, Permission, RolePermission, MembershipRoleAssignment,
     ServiceSubscription, LegacyIdentityMapping,
 )
-from app.domains.doran.models import DoranRoom, DoranDirectPair, DoranParticipant, DoranMessage, DoranParticipantReadState  # noqa: F401
-from app.domains.doran.models import ServicePrincipal, DoranServiceBinding, DoranServiceAuditLog  # noqa: F401
+from app.domains.wagle.models import WagleRoom, WagleDirectPair, WagleParticipant, WagleMessage, WagleParticipantReadState  # noqa: F401
+from app.domains.wagle.models import ServicePrincipal, WagleServiceBinding, WagleServiceAuditLog  # noqa: F401
 from app.domains.service_outbox.models import ServiceOutboxEvent  # noqa: F401
+from app.domains.markpoint_access.models import (  # noqa: F401
+    MarkpointAccessRestriction, MarkpointActivationRequest,
+)

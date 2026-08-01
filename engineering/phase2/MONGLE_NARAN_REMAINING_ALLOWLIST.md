@@ -1,5 +1,33 @@
 # MONGLE_NARAN_REMAINING_ALLOWLIST
 
+> **CLOSED 2026-08-01 — `ACTIVE_NARAN_ALLOWLIST: EMPTY`.**
+>
+> ```text
+> ACTIVE_NARAN_ALLOWLIST:         EMPTY
+> ACTIVE_NARAN_ROUTE_EXCEPTION:   NONE
+> ACTIVE_NARAN_STORAGE_EXCEPTION: NONE
+> ```
+>
+> This document is now a **historical record** of what was kept, and why, up to
+> `MONGLE-NARAN-RUNTIME-RETIREMENT-AND-FRONTEND-CLOSEOUT-001`. It is not a live
+> allowlist and grants no current exception.
+>
+> **Two of its keeps were released by explicit PM decision (2026-08-01) and are
+> now retired in code:**
+>
+> | Former class | Item | Current state |
+> |---|---|---|
+> | `ROUTE_CONTRACT_KEEP` | `/naran/doran`, `/naran/family` route aliases | **Removed.** No redirect, no fallback, no alias. Those paths fall through to the not-found page. Old bookmarks 404 by explicit cutover decision. |
+> | `EXTERNAL_OR_PERSISTED_CONTRACT` | `naran.activeFamily.*` localStorage key | **Migrated.** A one-time migration carries the value to `mongle.activeFamily.*` and then deletes the retired key. The retired name survives only as that migration's source value, in `frontend/src/shared/storage/activeFamilyStorageMigration.ts` and its tests. |
+>
+> The remaining rows below stay accurate as history: archived Task IDs, QA
+> evidence, commit-anchored reports and capture manifests are permanent records
+> and are not rewritten.
+>
+> Storage-migration source is **not** an active allowlist entry and must not be
+> counted as one.
+
+
 TASK ID: MONGLE-TECHNICAL-NAMESPACE-ALIGNMENT-001
 
 ## Search command and scope

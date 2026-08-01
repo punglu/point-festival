@@ -74,16 +74,21 @@ export function MongleAppShell({ children }: MongleAppShellProps) {
   const reset = useFamilyContextStore((state) => state.reset);
   const isLegacyDashboard = location.pathname === '/dashboard';
   const isAdminSurface = location.pathname.startsWith('/admin');
-  // Doran mobile conversation: ChatHeader가 화면의 주 헤더여야 하므로(Wave 6.0B §6.1),
+  // Wagle mobile conversation: ChatHeader가 화면의 주 헤더여야 하므로(Wave 6.0B §6.1),
   // 이 route+상태에서만, 그리고 모바일 폭에서만(CSS media query) 전역 상단 바를 숨긴다.
   // route/인증/FamilyContext 로직은 전혀 바꾸지 않는다 — 시각적 숨김뿐이다.
   // Room List(room 미선택)나 legacy/admin/다른 route에는 영향이 없다.
-  // MONGLE-FE-ROUTE-NAMESPACE-MIGRATION-001: canonical path는 /wagle (구 /naran/doran).
-  const isDoranConversationMobile = location.pathname === '/wagle' && Boolean(searchParams.get('room'));
+  // canonical path는 /wagle. 구 네임스페이스 alias는
+  // MONGLE-NARAN-RUNTIME-RETIREMENT-AND-FRONTEND-CLOSEOUT-001에서 제거됐다.
+  const isWagleConversationMobile = location.pathname === '/wagle' && Boolean(searchParams.get('room'));
   const hasFamily = activeFamilyId !== null;
   const activeFamily = context?.families.find((family) => family.id === activeFamilyId);
   const hasPermission = (permission: string) => activeFamily?.permissions.includes(permission) ?? false;
-  const doranState = serviceStatus('doran');
+  // Service code is `wagle` as of migration 0007, which renamed the whole
+  // runtime identity. This reads real `/api/account-context` data, so comparing
+  // against the historical code here silently reported every active Wagle
+  // subscription as unavailable.
+  const wagleState = serviceStatus('wagle');
   const navItems = [
     { to: '/dashboard', label: '마크포인트', visible: true },
     { to: '/wagle', label: '와글와글', visible: hasFamily },
@@ -100,7 +105,7 @@ export function MongleAppShell({ children }: MongleAppShellProps) {
 
   return (
     <div
-      className={`${styles.shell} ${isDoranConversationMobile ? styles.doranConversationMode : ''}`}
+      className={`${styles.shell} ${isWagleConversationMobile ? styles.wagleConversationMode : ''}`}
       data-testid="mongle-shell"
     >
       <header className={styles.header}>
@@ -152,7 +157,7 @@ export function MongleAppShell({ children }: MongleAppShellProps) {
           </NavLink>
         </nav>
       )}
-      {doranState !== 'active' && location.pathname === '/wagle' && (
+      {wagleState !== 'active' && location.pathname === '/wagle' && (
         <span className={styles.srOnly}>와글와글은 아직 사용할 수 없는 서비스입니다.</span>
       )}
     </div>

@@ -85,14 +85,14 @@
     color: var(--color-brand-700);
   }
 
-  /* Doran mobile conversation: ChatHeader가 화면의 주 헤더가 되도록 전역 상단 바를 숨기고
+  /* Wagle mobile conversation: ChatHeader가 화면의 주 헤더가 되도록 전역 상단 바를 숨기고
      .body가 그 공간을 다시 차지하게 한다(Wave 6.0B §6.1). Room List/legacy/admin/desktop은
-     영향받지 않는다 — isDoranConversationMode 클래스 자체가 해당 route+상태에서만 붙는다. */
-  .doranConversationMode .header {
+     영향받지 않는다 — isWagleConversationMode 클래스 자체가 해당 route+상태에서만 붙는다. */
+  .wagleConversationMode .header {
     display: none;
   }
 
-  .doranConversationMode .body {
+  .wagleConversationMode .body {
     min-height: 100dvh;
   }
 }

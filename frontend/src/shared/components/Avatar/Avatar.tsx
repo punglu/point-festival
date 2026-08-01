@@ -4,7 +4,7 @@ export type AvatarNamedSize = 'xs' | 'sm' | 'md' | 'lg';
 /*
  * MONGLE_W6_1: AvatarSize is widened, not replaced — the original numeric union
  * is kept in full for existing consumers (ChatHeader/MessageBubble/RoomItem/
- * DoranLanding all currently pass numeric literals; zero behavior change for
+ * WagleLanding all currently pass numeric literals; zero behavior change for
  * them). The named xs/sm/md/lg scale is the tablet-confirmed, canonical-token-
  * backed scale (MONGLE_W6_DESIGN_TOKEN_FREEZE.md "Avatar scale", promoted per
  * Component Boundary Freeze's explicit Wave 6.1 recommendation) offered as an

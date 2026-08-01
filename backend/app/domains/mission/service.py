@@ -320,7 +320,7 @@ async def _emit_mission_completed_event(db: AsyncSession, mission: Mission) -> N
     diverge from what the Outbox recorded.
 
     Mark Point remains the SSOT for mission status and point balance - this
-    only ever appends a display-minimum snapshot for Doran to relay, never a
+    only ever appends a display-minimum snapshot for Wagle to relay, never a
     business decision.
     """
     from app.domains.family import service as family_service
@@ -726,7 +726,7 @@ async def bulk_approve_missions(db: AsyncSession, player_id: int, date_str: str)
     pending = list((await db.execute(pending_stmt)).scalars())
     total_points = sum(mission.point for mission in pending)
 
-    # Keep the existing bulk-event policy: no Doran Outbox event is emitted.
+    # Keep the existing bulk-event policy: no Wagle Outbox event is emitted.
     now_utc = datetime.now(timezone.utc)
     for mission in pending:
         mission.status = "completed"

@@ -36,11 +36,30 @@ request rather than trusting the JWT alone.
 
 ## Realtime messaging layer (와글와글) — KEEP_AS_IS, frontend wiring is the only real gap
 
-All 16 Doran routes (`/api/families/{family_id}/doran/*`) are already Group/Membership-scoped, tested, and require no schema or contract change under the corrected framing — see `MONGLE_BACKEND_API_CONTRACT_INVENTORY.md`'s Doran section for the full list. The only gap is what was already found before this correction: zero frontend consumers, and no batch room-list-with-preview endpoint. Both remain valid Gaps under the *target* framing too (they are not legacy-vs-target disagreements — 와글와글 genuinely needs this wiring regardless of axis). Restated in `MONGLE_MIGRATION_CUTOVER_GAP_REPORT.md`.
+All 16 Wagle routes (`/api/families/{family_id}/wagle/*`) are already Group/Membership-scoped, tested, and require no schema or contract change under the corrected framing — see `MONGLE_BACKEND_API_CONTRACT_INVENTORY.md`'s Wagle (historically Doran) section for the full list. The only gap is what was already found before this correction: zero frontend consumers, and no batch room-list-with-preview endpoint. Both remain valid Gaps under the *target* framing too (they are not legacy-vs-target disagreements — 와글와글 genuinely needs this wiring regardless of axis). Restated in `MONGLE_MIGRATION_CUTOVER_GAP_REPORT.md`.
+
+### Wave 2 additions (2026-08-01, `MONGLE-W2-WAGLE-DURABLE-MESSAGING-AUTONOMOUS-001`)
+
+| Route | Method | Actor | Scope | Notes |
+|---|---|---|---|---|
+| `/api/families/{family_id}/wagle/room-summaries` | GET | family member (`wagle.messages.read`) | family | Batch room list: each room with its last visible message preview and the caller's unread count, in one round trip. Closes the "no batch room-list-with-preview endpoint" gap noted above. Added **alongside** `/rooms` rather than replacing it, so existing callers that only need room identity are unaffected. A deleted last message keeps its list slot but surrenders its body, matching the per-message tombstone rule. |
+
+`POST /rooms/{room_id}/messages` is unchanged in request/response shape, but its
+transaction now also appends a `service_outbox_events` row
+(`owner_service="wagle"`, `event_type="wagle.message.created"`,
+`aggregate_type="wagle_message"`, v1) so a persisted message always has its
+delivery event. **Consuming** that event — WebSocket broadcast, Web Push —
+remains Wave 3 and is not implemented. No user-facing `DELIVERED` state was
+introduced.
+
+Naming: the whole runtime is Wagle as of migration `0007` — route prefix
+`/api/families/{familyId}/wagle/...`, permission codes `wagle.*`, service code
+`wagle`, tables `wagle_*`. The historical `/doran/` prefix is no longer served
+and returns 404; no alias or fallback was kept.
 
 ## MarkPoint-on-Mongle layer — auth dependency TRANSFORM, business endpoints REUSE_LOGIC_ONLY
 
-Every current MarkPoint route (`/api/missions/*`, `/api/mission-templates/*`, `/api/level-tiers/*`, `/api/daily-points/*`, `/api/deductions/*`, `/api/cheers/*`, `/api/feedbacks/*`, `/api/notifications/*`, `/api/admin/*`) authorizes via legacy `PLAYER_ONLY`/`ADMIN_ONLY`/`ADMIN_JWT` dependencies (`app/dependencies.py` or `app/domains/auth/dependencies.py`) — never via a Group Role/Permission check. Under the target architecture, these need the same authorization pattern Doran already uses (`family.service.require_permission` against `markpoint.*` permission codes, which already exist in the seeded Role/Permission table — see Target User/Group/Role Matrix). This is a **TRANSFORM of the auth dependency only** — the route path, request/response schema, and underlying business logic (mission state machine, point ledger math, level calculation, cycle-range logic) are all `REUSE_LOGIC_ONLY`, unchanged.
+Every current MarkPoint route (`/api/missions/*`, `/api/mission-templates/*`, `/api/level-tiers/*`, `/api/daily-points/*`, `/api/deductions/*`, `/api/cheers/*`, `/api/feedbacks/*`, `/api/notifications/*`, `/api/admin/*`) authorizes via legacy `PLAYER_ONLY`/`ADMIN_ONLY`/`ADMIN_JWT` dependencies (`app/dependencies.py` or `app/domains/auth/dependencies.py`) — never via a Group Role/Permission check. Under the target architecture, these need the same authorization pattern Wagle already uses (`family.service.require_permission` against `markpoint.*` permission codes, which already exist in the seeded Role/Permission table — see Target User/Group/Role Matrix). This is a **TRANSFORM of the auth dependency only** — the route path, request/response schema, and underlying business logic (mission state machine, point ledger math, level calculation, cycle-range logic) are all `REUSE_LOGIC_ONLY`, unchanged.
 
 | Current route group | Business logic classification | Auth dependency classification | Evidence |
 |---|---|---|---|

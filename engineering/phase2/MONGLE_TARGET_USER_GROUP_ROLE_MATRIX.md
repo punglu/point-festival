@@ -10,7 +10,7 @@ Per PM instruction, no user-group name, role name, or permission is confirmed he
 |---|---|---|---|
 | `FAMILY` | (none) | A permission that applies across the whole Group, not tied to any one Service | `roles.scope_type` CHECK — `family/models.py:38-51` |
 | `SERVICE` | `markpoint` | A permission scoped to the MarkPoint service within one Group | same |
-| `SERVICE` | `doran` | A permission scoped to the 와글와글 (Doran) service within one Group | same |
+| `SERVICE` | `wagle` | A permission scoped to the 와글와글 (Wagle) service within one Group | same |
 
 **RESOLVED by approved D1:** 몽글 is a family platform and the Family-specific vocabulary is retained. `FAMILY` stays; renaming it to a generic `GROUP` scope_type is **rejected**, not pending. The former open question is `STALE_CONFLICT_REMOVED`.
 
@@ -29,8 +29,8 @@ Per PM instruction, no user-group name, role name, or permission is confirmed he
 | `participant` | SERVICE | `markpoint` | MarkPoint participant | `markpoint.own.read` | lines 171-179 |
 | `mission_manager` | SERVICE | `markpoint` | Mission manager | `markpoint.missions.manage` | same |
 | `point_admin` | SERVICE | `markpoint` | Point administrator | `markpoint.points.adjust` | same |
-| `participant` | SERVICE | `doran` | Doran participant | `doran.messages.read`, `doran.messages.send` | `0002_doran_messaging_foundation.py:39-40` |
-| `room_admin` | SERVICE | `doran` | Doran room admin | above + `doran.rooms.create`, `doran.rooms.manage`, `doran.participants.manage` | same, line 41 |
+| `participant` | SERVICE | `wagle` | Wagle participant | `wagle.messages.read`, `wagle.messages.send` | `0002_doran_messaging_foundation.py:39-40` |
+| `room_admin` | SERVICE | `wagle` | Wagle room admin | above + `wagle.rooms.create`, `wagle.rooms.manage`, `wagle.participants.manage` | same, line 41 |
 
 **Caveat on `owner`**: the seed migration's `owner` grant is a cross-join of *every currently-seeded permission at migration-apply time* (`SELECT r.id, p.id FROM roles r CROSS JOIN permissions p WHERE r.scope_type='FAMILY' AND r.code='owner'`), not an explicit, auditable list like every other role gets. This means `owner`'s actual permission set silently grows every time a future migration adds a new FAMILY-scope permission (via its own seed statement) unless that migration also explicitly re-grants it, or shrinks/stays fixed if a later migration doesn't touch it. This is a real, evidence-confirmed implicit-scope-growth risk worth PM awareness, not an invented concern.
 
@@ -48,11 +48,11 @@ Per PM instruction, no user-group name, role name, or permission is confirmed he
 | `markpoint.own.read` | Read own mapped MarkPoint data | MarkPoint service |
 | `markpoint.missions.manage` | Manage MarkPoint missions | MarkPoint service |
 | `markpoint.points.adjust` | Adjust MarkPoint points | MarkPoint service |
-| `doran.rooms.create` | Create Doran rooms | 와글와글 service |
-| `doran.rooms.manage` | Manage own Doran rooms | 와글와글 service |
-| `doran.participants.manage` | Manage Doran participants | 와글와글 service |
-| `doran.messages.read` | Read Doran messages | 와글와글 service |
-| `doran.messages.send` | Send Doran messages | 와글와글 service |
+| `wagle.rooms.create` | Create Wagle rooms | 와글와글 service |
+| `wagle.rooms.manage` | Manage own Wagle rooms | 와글와글 service |
+| `wagle.participants.manage` | Manage Wagle participants | 와글와글 service |
+| `wagle.messages.read` | Read Wagle messages | 와글와글 service |
+| `wagle.messages.send` | Send Wagle messages | 와글와글 service |
 
 ## Wave 1 changes to the seeded registry (implemented, measured)
 

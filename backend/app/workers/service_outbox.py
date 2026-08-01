@@ -6,7 +6,7 @@ and its own concurrency (multiple replicas) never needs anything beyond what
 service_outbox.service.claim_batch's FOR UPDATE SKIP LOCKED already gives it.
 
 Delivery contract: at-least-once from this Worker's side, made safe by
-Doran's own idempotent SERVICE_ACTION ingress on the receiving side -
+Wagle's own idempotent SERVICE_ACTION ingress on the receiving side -
 publish_service_action() is called in-process (never over HTTP with a Bearer
 credential) because this Worker already holds a trusted ServicePrincipal row
 loaded directly from the database, the same trust boundary any other
@@ -20,8 +20,8 @@ import signal
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.doran import service as doran_service
-from app.domains.doran.schemas import ServiceActionPublish
+from app.domains.wagle import service as wagle_service
+from app.domains.wagle.schemas import ServiceActionPublish
 from app.domains.service_outbox import service as outbox_service
 from app.domains.service_outbox.models import ServiceOutboxEvent
 
@@ -42,7 +42,7 @@ DEFAULT_POLL_INTERVAL_SECONDS = 2.0
 
 async def _principal_for(db: AsyncSession, owner_service: str):
     display_name = PRINCIPAL_DISPLAY_NAME_BY_OWNER.get(owner_service, owner_service)
-    return await doran_service.bootstrap_service_principal(db, owner_service, display_name)
+    return await wagle_service.bootstrap_service_principal(db, owner_service, display_name)
 
 
 async def process_one(db: AsyncSession, event: ServiceOutboxEvent) -> str:
@@ -52,7 +52,7 @@ async def process_one(db: AsyncSession, event: ServiceOutboxEvent) -> str:
     try:
         principal = await _principal_for(db, event.owner_service)
         allowed_actions = ALLOWED_ACTIONS_BY_OWNER.get(event.owner_service, [])
-        binding = await doran_service.ensure_canonical_service_binding(db, principal, event.family_id, allowed_actions)
+        binding = await wagle_service.ensure_canonical_service_binding(db, principal, event.family_id, allowed_actions)
         publish_data = ServiceActionPublish(
             room_id=binding.room_id,
             action_type=event.event_type,
@@ -63,8 +63,8 @@ async def process_one(db: AsyncSession, event: ServiceOutboxEvent) -> str:
         )
         # Durable the instant this returns, whether newly created or an
         # idempotent replay - a crash on the next line still leaves exactly
-        # one Doran message, and the next attempt marks this row PUBLISHED.
-        await doran_service.publish_service_action(db, principal, event.family_id, publish_data)
+        # one Wagle message, and the next attempt marks this row PUBLISHED.
+        await wagle_service.publish_service_action(db, principal, event.family_id, publish_data)
         await outbox_service.mark_published(db, event)
         return "published"
     except HTTPException as exc:

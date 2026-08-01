@@ -1,4 +1,17 @@
+import { execFileSync } from 'node:child_process';
+import path from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
+
+// MONGLE-NAMING-CLOSEOUT-E2E-ENVIRONMENT-RECOVERY-001: compute the frontend
+// source fingerprint here, in the Playwright process, and hand the same value
+// down to the bring-up script. Computing it only inside the script would leave
+// the tests with nothing to compare against — a child process cannot export a
+// variable back to its parent — so the "is this the current build?" assertion
+// would silently skip, which is the failure mode this whole task exists to fix.
+process.env.MONGLE_FRONTEND_FINGERPRINT ??= execFileSync(
+  path.join(__dirname, 'scripts', 'frontend-source-fingerprint.sh'),
+  { encoding: 'utf8' },
+).trim();
 
 // MONGLE-FE-E2E-HARNESS-RESTORE-001: webServer/globalTeardown restore the
 // previously-deleted isolated mc_phase1 stack (db+backend+frontend,
@@ -16,7 +29,15 @@ export default defineConfig({
   webServer: {
     command: './scripts/start-mongle-phase1.sh',
     url: process.env.MONGLE_PLAYWRIGHT_BASE_URL || 'http://localhost:13001',
-    reuseExistingServer: true,
+    // MONGLE-NAMING-CLOSEOUT-E2E-ENVIRONMENT-RECOVERY-001: was `true`, which is
+    // the second stale-image path and the one `--build` cannot close — when
+    // something already answers on this port Playwright skips the start script
+    // entirely, so neither the rebuild nor the current-source guard ever runs.
+    // That is exactly how a previous run produced 41 failures against an image
+    // built before the source under test existed. Bring-up is idempotent and
+    // layer-cached, so paying for it every run is cheaper than a result that
+    // silently describes the wrong build.
+    reuseExistingServer: false,
     timeout: 180000,
   },
   globalTeardown: process.env.MONGLE_SKIP_TEARDOWN ? undefined : './scripts/mongle-phase1-teardown.ts',

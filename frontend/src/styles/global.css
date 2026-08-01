@@ -88,7 +88,7 @@
   /*
    * Safe-area tokens, MONGLE_W6_RESPONSIVE_CANONICAL_FREEZE.md item 15. Additive
    * named aliases only — existing direct env(safe-area-inset-*) call sites
-   * (MongleAppShell/ChatComposer/DoranLanding) are left untouched.
+   * (MongleAppShell/ChatComposer/WagleLanding) are left untouched.
    */
   --safe-area-inset-top: env(safe-area-inset-top, 0px);
   --safe-area-inset-right: env(safe-area-inset-right, 0px);

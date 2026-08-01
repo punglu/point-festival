@@ -1,0 +1,27 @@
+# MONGLE-NAMING-CLOSEOUT-E2E-ENVIRONMENT-RECOVERY-001
+#
+# Without this file the frontend build context was 106.98 MB / ~7.6k files,
+# almost all of it the host's `node_modules`. That tree is built for
+# darwin-arm64, and `COPY . .` layered it on top of the `npm ci` tree the
+# container had just installed for linux-arm64/musl. The build survived only
+# because Rollup picks its native binary by platform at runtime and the musl
+# one happened to still be present alongside — a coincidence, not a contract.
+#
+# Excluding it makes the image depend on `package-lock.json` alone, which is
+# what "clean isolated build" has to mean.
+#
+# Everything the build genuinely needs — source, package-lock.json, index.html,
+# public/, vite/tsconfig/eslint config, nginx.conf — is deliberately NOT listed.
+node_modules
+dist
+build
+coverage
+playwright-report
+test-results
+.git
+.gitignore
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
