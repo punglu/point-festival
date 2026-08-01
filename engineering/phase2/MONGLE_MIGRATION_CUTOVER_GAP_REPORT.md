@@ -1,5 +1,7 @@
 # MONGLE_MIGRATION_CUTOVER_GAP_REPORT
 
+> **PARTIALLY_SUPERSEDED:** D8 `RESET` is approved. This report's Legacy mapping/backfill/reconciliation recommendations are historical only; Target starts empty and Legacy is retained separately read-only until PM-approved retirement.
+
 Task: MONGLE-DATA-BACKEND-CONTRACT-RECONCILIATION-001 (Axis B)
 
 Per PM's corrected framing: a Gap here means the *target* Mongle product cannot do something it needs to, not merely "this differs from the legacy system." Classified using the same taxonomy as the original Gap Report (`NO_CHANGE_REQUIRED`/`DOCUMENTATION_ONLY`/`API_ADAPTER_REQUIRED`/`API_CHANGE_REQUIRED`/`QUERY_OR_READ_MODEL_REQUIRED`/`MIGRATION_REQUIRED`/`UNKNOWN`), plus a cutover-sequencing section the original report didn't need (since it assumed no wholesale identity-model change).
@@ -8,9 +10,11 @@ Per PM's corrected framing: a Gap here means the *target* Mongle product cannot 
 
 ### GT1 — No Account-native Authentication/Session exists at all
 
-**Classification: `MIGRATION_REQUIRED` + `API_CHANGE_REQUIRED`** (new tables + new routes), blocked on PM_DECISION_REQUIRED #2 (Business Glossary).
+**Classification: `IMPLEMENTATION_REQUIRED`** (new tables + new routes). **No longer decision-blocked** — approved D2 fixes the credential (`아이디 + 플랫폼 비밀번호`, email/phone not required, FamilyAdmin may provision independent Accounts) and approved D3 fixes the persistent Account-scoped Session and the separate optional Wagle PIN. This is Wave 1 implementation scope.
 
-This is the single largest gap in the entire target architecture: every other Mongle-native capability (Group/Membership/Role/Doran messaging) is reachable only by first logging in through the legacy PIN/admin-password mechanism and being bridged via `LegacyIdentityMapping`. There is no way today to create a new Account that isn't first a legacy Player/Admin. Until this is built, Mongle cannot be described as "owning" Auth/Session in any real sense — it currently borrows legacy Auth entirely.
+Current-state fact: every other platform capability (FamilyGroup/Membership/Role/Doran messaging) is today reachable only by first logging in through the legacy PIN/admin-password mechanism and being bridged via `LegacyIdentityMapping`, and there is no way yet to create an Account that was not first a legacy Player/Admin.
+
+**This does not make `LegacyIdentityMapping` a Target bootstrapping path.** Under D8 RESET the Wave 1 credential/Session work creates new Accounts directly; it must not be designed as a legacy-identity bridge, and the current dependency is precisely what Wave 1 removes.
 
 ### GT2 — 와글와글 frontend has zero wiring to its own (already-target-shaped) backend
 
@@ -26,35 +30,33 @@ This is a target-framing-specific Gap that would not have been flagged under the
 
 ### GT4 — No real-time delivery transport exists for 와글와글
 
-**Classification: `UNKNOWN` scope, likely `API_CHANGE_REQUIRED` (new WebSocket/SSE endpoint) or a product decision to accept polling** — restated from `MONGLE_REALTIME_MESSAGING_CONTRACT.md` item 5. Confirmed zero WebSocket code anywhere in `backend/app` or `frontend/src` by direct grep this task. Whether "실시간" (realtime) in the product name requires push delivery or whether a well-tuned polling interval is acceptable for launch is a product decision, not decided here.
+**Classification: `IMPLEMENTATION_REQUIRED`.** D6 approves WebSocket foreground realtime and Web Push background notification; polling-only Target is rejected. The current absence of a complete transport remains implementation scope, not a product-decision gap.
 
-### GT5 — Legacy cutover sequencing has a genuine bootstrapping problem
+### GT5 — Legacy cutover sequencing
 
-**Classification: `UNDECIDED`, product/PM sequencing decision, not a code Gap per se.**
+**Classification: `RESET_CUTOVER_REQUIRED`.** D8 resolves the former migration choice: no Legacy identity auto-provisioning or credential backfill occurs. Users create a new Account/FamilyGroup or newly join a family. Legacy remains read-only backup/reference and is not automatic fallback; destructive deletion requires the separate PM retirement gate.
 
-Every currently-working login path in the entire repository is legacy (`player_auth` PIN, `admin_auth` username/password). If GT1 (Account-native Auth) is built and the legacy paths are then deprecated per the Legacy-to-Target Mapping's `DEPRECATE` classification, there must be a real migration step that either (a) auto-provisions an Account+credential for every existing legacy identity as part of a one-time backfill, or (b) requires every existing family to "re-register" under the new Auth before they can log in again. Neither is designed here; both have real UX consequences a PM must weigh. This is flagged as its own Gap specifically because "just delete the legacy auth tables" is not a safe cutover without one of these two paths existing first.
+### GT6 — Legacy point/mission history
 
-### GT6 — Data-migration decision for existing point/mission history is unmade
-
-**Classification: `UNDECIDED`**, restated from `MONGLE_MARKPOINT_ON_MONGLE_CONTRACT.md`'s closing section. Whether existing `missions`/`daily_points`/`deductions`/`feedbacks`/`cheer_messages` rows get backfilled onto newly-created Memberships, or whether MarkPoint-on-Mongle launches with a clean slate, is unresolved and consequential (real families' point history either survives or doesn't).
+**Classification: `RESET_APPROVED`.** Existing mission, point, balance, approval, level, reward and chat history is not imported. New Markpoint begins with a new ledger and new records; Legacy history is separately retained read-only until retirement approval.
 
 ## Findings carried forward unchanged from the original (Axis A) Gap Report
 
 These remain valid internal-consistency findings regardless of framing — restated by reference, not re-derived:
 
-- G3 (`total_points` vs `total_earned` naming ambiguity) — still applies once `total_earned` is re-homed to `family_memberships` (see Target Column Dictionary); the naming ambiguity itself is unaffected by which table owns the column.
+- G3 (`total_points` vs `total_earned` naming ambiguity) — Legacy reference evidence only under D8; any new Target ledger naming is defined afresh.
 - G4 (duplicate `get_current_user` function names) — both are classified `REPLACE` in the Legacy-to-Target Mapping; the naming-hazard observation itself remains a valid caution during the transition period while both still exist.
-- G5 (`missions.status` CHECK constraint missing `cancelled`) — unaffected by the ownership-FK transform; still needs its own resolution (migration or code fix) independent of this reconciliation.
+- G5 (`missions.status` CHECK constraint missing `cancelled`) — Legacy reference defect; it is not a data-import or Target migration gate under D8.
 - G9 (`GET /api/players` has no authentication) — under the target framing, this specific route is itself `REFERENCE_ONLY`/heading toward `REPLACE` (see Legacy-to-Target Mapping), so the unauthenticated-access observation is scoped to a route that won't survive cutover anyway, not a live target-architecture concern.
 - G11, G12, G13, G14 (unrelated structural/documentation notes: `reply_to_message_id` no FK, `doran_rooms.version` unused, test deps not in requirements.txt, migration filename/revision-id mismatches) — unaffected by this framing correction, still open as originally classified.
 
 ## Cutover sequencing (recommended order, not a PM-approved plan)
 
-1. PM resolves the open PM_DECISION_REQUIRED items (Group-vs-Family naming, Auth/Session model choice, MarkPoint's Group-scoping URL convention, data-migration approach for GT6).
+1. Use the approved D1–D8 Target contract; D8 requires an empty new-start data boundary rather than Legacy migration.
 2. Build Account-native Auth/Session (GT1) — nothing else in this sequence can be tested end-to-end as a real user journey without it.
-3. TRANSFORM MarkPoint's ownership FKs and auth dependencies (GT3), since this is the highest-volume, most mechanical change and benefits from having real Sessions to test against.
+3. Build new Markpoint ownership/auth boundaries without importing or transforming Legacy operational records.
 4. Wire 와글와글's frontend to its already-complete backend (GT2), build the missing batch room-list endpoint, and build the Outbox-relay worker.
-5. Decide and, if needed, build real-time delivery (GT4).
-6. Execute the legacy data migration/cutover (GT5/GT6) and only then deprecate the legacy PIN/admin-password/`chat_messages` paths.
+5. Implement the approved D6 WebSocket/Web Push realtime contract.
+6. Validate new-start journeys, freeze Legacy writes/access as planned, retain read-only backup, and retire Legacy only after PM approval.
 
-This order is a recommendation grounded in dependency logic (Auth blocks everything; MarkPoint's transform is independent of 와글와글's frontend wiring and can proceed in parallel once Auth exists), not a PM-approved project plan.
+This order is a historical dependency recommendation, not the implementation plan. The next authorized planning work is `APPROVED-DECISIONS-TO-IMPLEMENTATION-PLAN`.

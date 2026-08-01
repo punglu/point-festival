@@ -30,3 +30,17 @@ Do not create new top-level or ad hoc directories without PM approval and
 without declaring them in `agent-system/relay/current.md` first. Repeated
 undeclared directory creation is what broke source control tracking here
 before (see `docs/temp/` incident, fixed in commit `f9da663`).
+
+All agent-created project material stays inside this Git worktree; external
+directories, `/tmp` project artifacts, adjacent copies, and external worktrees
+are prohibited. See [the repository-boundary decision](agent-system/decisions/DEC-2026-005-repository-boundary-enforcement.md).
+
+## Test-governance linkage
+
+Frontend work complies with the [Frontend guide](engineering/FRONTEND_GUIDE.md);
+backend work complies with the [Backend guide](engineering/BACKEND_GUIDE.md).
+All feature work follows the [Test Policy](agent-system/qa/TEST_POLICY.md): run
+the relevant existing test first, add only the minimum test for an otherwise
+unprotected flow, and report actual PASS plus a Coverage Map update (or a
+BLOCKED reason). Independent verification follows
+[the Test Agent definition](.claude/agents/test-agent.md).

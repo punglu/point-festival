@@ -2,9 +2,15 @@
 
 Task: MONGLE-DATA-BACKEND-CONTRACT-RECONCILIATION-001 (Axis B)
 
-마크포인트 잔치 is a Service built on Mongle's Account/Group/Membership/Role/Permission/Session structure, per PM's corrected framing — not the legacy `players`-owned system as-is. This contract inventories exactly which business logic is reusable unchanged (`REUSE_LOGIC_ONLY`) versus which persistence/authorization surface must change (`TRANSFORM`), and flags the one open naming/routing decision (`PM_DECISION_REQUIRED`) this document depends on.
+> **STATUS: PARTIALLY_SUPERSEDED_BY_MONGLE_TARGET_DECISION_FREEZE.** Current inventory remains valid. D5-B approves FamilyGroup ownership, FamilyMembership identity and no separate MarkpointParticipant at this stage; D5-C is machine-only; D8 RESET prohibits Legacy data import/backfill. Pure arithmetic is reuse candidate material; state transitions, ledger/balance, approval, expiry and notifications require Target contract review for actor/scope/transaction/idempotency/audit and the `cancelled` mismatch.
 
-**PM_DECISION_REQUIRED (blocks the specifics below, not the classification)**: this contract recommends `family_membership_id` as MarkPoint's target ownership FK (see Target Table/Column Dictionaries for the full reasoning: consistency with Doran's own already-approved pattern) and recommends MarkPoint's authorization move from legacy `PLAYER_ONLY`/`ADMIN_ONLY` to the same `family.service.require_permission`-style Group/Role/Permission check Doran already uses, against the already-seeded `markpoint.*` permission codes. Neither is finalized without PM confirmation.
+마크포인트 (Markpoint) is a `FAMILY`-owned optional service built on 몽글's Account/FamilyGroup/FamilyMembership/Role/Permission/Session structure — not the legacy `players`-owned system as-is. This contract inventories which business logic is reusable (`REUSE_LOGIC_ONLY`) versus which persistence/authorization surface must be newly built (`TRANSFORM`).
+
+**Approved Target boundary (D5-B):** Owner is `FamilyGroup`; human identity is `FamilyMembership`. A FamilyMember may request activation; FamilyAdmin approves or activates directly. Once `ACTIVE`, every `ACTIVE` FamilyMembership has default MEMBER access — **default access is not forced Mission participation**, and per-membership restriction is available by explicit policy. ServiceAdmin authority exists only by explicit assignment, and the registrant is never automatically ServiceAdmin. **No `MarkpointParticipant` aggregate is introduced at this stage.**
+
+**Approved routing (D7):** Markpoint is reached under `/families/{familyId}/markpoint`; the server never trusts a URL or client `familyId` and revalidates Session, Membership, service ownership, Role/Permission and resource ownership. The former "open naming/routing decision" is therefore **closed** — only the cosmetic physical-table naming question remains open elsewhere, and it blocks nothing here.
+
+**Approved data boundary (D8):** the exact physical schema and API realisation is implementation work. It is **not** a license to convert, import or backfill existing Legacy rows.
 
 ## Reusable business logic — REUSE_LOGIC_ONLY, verified by direct source read this task
 
@@ -19,11 +25,13 @@ Task: MONGLE-DATA-BACKEND-CONTRACT-RECONCILIATION-001 (Axis B)
 | Mission-completion Outbox event emission (`_emit_mission_completed_event`) | `mission/service.py:308-363` | Already written to resolve the *current* identity model (`family_service.resolve_current_account({"player_id": ...})`) to a Group-scoped event — this function is the one piece of MarkPoint code that already explicitly bridges legacy Player identity to the Mongle Account/Group model, and its own docstring frames the legacy-Player case as the expected near-term reality ("most legacy players have no linked Account/Family yet... that is not an error"). Once mission ownership itself moves to `family_membership_id`, this bridging step becomes unnecessary (the Membership's Group is already known directly), simplifying this function, not breaking it. |
 | Point-cycle guard validation (`validate_cycle_change`: locks cycle changes mid-period or while active recurring templates exist) | `config/service.py:32-75` | Pure date/count comparison logic against `mission`/`mission_template` tables, no identity coupling beyond whatever FK those tables already use |
 
-**Conclusion**: MarkPoint's entire algorithmic core is reusable without modification. Every change required to re-host it on Mongle is a persistence-ownership change (which FK column) and an authorization change (which dependency function gates each route) — never a business-rule rewrite.
+**Conclusion**: pure calculation logic is a reuse candidate. State transitions, approvals, ledger/balance and events need Target contract review; implementation creates new Target records and does not migrate Legacy operational data.
+
+**Reuse of business logic ≠ migration of operational data.** Porting a verified pure function into the Target codebase is approved in principle. Reading, converting or backfilling any legacy `players`/`missions`/`daily_points` **row** into Target is prohibited by D8. The two must never be bundled into one task.
 
 ## What must change (TRANSFORM) — summarized, full detail in Target Table/Column/API Inventory documents
 
-1. Ownership FK on `missions`, `mission_templates`, `daily_points`, `deductions`, `feedbacks`, `notifications`: `player_id` -> `family_membership_id`.
+1. New Target Markpoint ownership is FamilyGroup/FamilyMembership-scoped per D5-B; no direct Legacy `player_id` conversion or row import is authorized.
 2. A Group-scope column added to `cheer_messages` (`family_group_id`) since it currently has no scope column at all.
 3. The leveling input (`total_earned`) re-homed from `players` to `family_memberships`.
 4. Every MarkPoint route's auth dependency: legacy `PLAYER_ONLY`/`ADMIN_ONLY`/`ADMIN_JWT` -> Group Role/Permission check against the already-seeded `markpoint.own.read`/`markpoint.missions.manage`/`markpoint.points.adjust` permission codes.
@@ -33,6 +41,20 @@ Task: MONGLE-DATA-BACKEND-CONTRACT-RECONCILIATION-001 (Axis B)
 
 Per PM's instruction, a difference from the legacy system's current behavior is not automatically a Gap — only a failure to meet the *target* product's requirement is. None of the above TRANSFORM items are regressions: MarkPoint's actual mission/point/level UX (what a parent or child sees and does) does not change at all; only the underlying ownership identity and authorization mechanism does, invisibly to the end user. The `MONGLE_MIGRATION_CUTOVER_GAP_REPORT.md` reserves the term "Gap" for cases where the target product genuinely cannot do something it needs to (e.g. 와글와글 having no frontend wiring), not for this kind of internal re-platforming work.
 
-## Data worth carrying forward (MIGRATE_DATA candidates, not decided here)
+## Markpoint → Wagle system notifications — D5-C approved
 
-Existing legacy point/mission history (`missions`, `daily_points`, `deductions`, `feedbacks`, `cheer_messages`, `level_tiers`' seed rows) represents a real family's actual usage history. Whether to migrate this data (mapping each legacy `player_id` to a newly-created Membership via a one-time backfill, similar in spirit to how `LegacyIdentityMapping` already bridges Player->Account) versus starting MarkPoint-on-Mongle with a clean slate is a product/PM decision with real user-facing consequences (a family losing their point history vs. a migration script needing to run against production data) — not resolved in this task, and explicitly out of scope for any document here to decide unilaterally.
+Automated Markpoint notifications are published under a **non-human 마크포인트 system actor**, technically represented by `ServicePrincipal`. They are never sent under a FamilyAdmin, ServiceAdmin or FamilyMember name, and `ServicePrincipal` never substitutes for FamilyMembership, ServiceAdmin, Registrant or Owner.
+
+Required properties:
+
+- delivered only to an approved Wagle Room in the **FamilyGroup where the source event occurred**; cross-family delivery is prohibited
+- human messages and system messages are distinguishable in both UI and audit
+- each system message is traceable to its source Markpoint event, and duplicate publication of the same mission/approval/point event is prevented
+- unaffected by FamilyAdmin, ServiceAdmin or registrant changes
+- **no new automated notification is published** for a FamilyGroup where Markpoint is `INACTIVE` or `SUSPENDED`
+
+Whether the existing `service_principals` rows and Wagle service bindings are physically fit for reuse is an implementation verification item. It is not permission to reverse this approved logical contract, and `player_id` must never be auto-converted to either `family_membership_id` or `service_principal_id`.
+
+## Legacy data disposition — D8 RESET
+
+Legacy point/mission history (`missions`, `daily_points`, `deductions`, `feedbacks`, `cheer_messages`, `level_tiers` seed rows) is not migrated or backfilled. It may be retained separately read-only for reference/audit until PM-approved retirement, but new Markpoint starts with new records and a new ledger.

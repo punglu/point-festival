@@ -1,5 +1,7 @@
 # MONGLE_TARGET_ARCHITECTURE_RECONCILIATION_REPORT
 
+> **PARTIALLY_SUPERSEDED:** current-code inventory is retained; Target readiness and ownership follow the Decision Freeze. D5-B is approved without a separate MarkpointParticipant, and D8 RESET supersedes this historical report's Legacy data-migration/backfill alternatives.
+
 ```text
 Task: MONGLE-DATA-BACKEND-CONTRACT-RECONCILIATION-001
 Worktree: /Users/mac/mac_Project/mongle_ui-data-backend-worktree (isolated)
@@ -99,7 +101,9 @@ QUERY_OR_READ_MODEL_REQUIRED: 와글와글's batch room-list-with-preview
   endpoint (GT2, unchanged from Axis A).
 MIGRATION_REQUIRED: MarkPoint's ownership-FK transform across 7 tables plus
   a new scope column on `cheer_messages` (GT3); a new Account-credential/
-  Session table pair, shape pending PM_DECISION_REQUIRED #2 (GT1); the
+  Session store, contract approved by D2/D3 with physical shape as Wave 1
+  design work (GT1) — and note that under D8 RESET the Markpoint entry means
+  newly created Target records, never conversion of legacy rows; the
   pre-existing `missions.status` CHECK-constraint gap (Axis A G5, still
   open, unaffected by this correction).
 UNKNOWN: `doran_rooms.version` column's read/write site (Axis A G12,

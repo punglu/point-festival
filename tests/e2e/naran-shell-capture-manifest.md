@@ -1,9 +1,12 @@
-# Naran Shell Capture Manifest
+# Naran Shell Capture Manifest (historical external-artifact record)
 
-Captures are generated only from the isolated `mc_phase1` synthetic runtime;
-PNG artifacts are intentionally kept outside Git at
-`/tmp/phase1-naran-shell-captures`. Chromium viewport emulation is a runtime
-baseline, not physical iPhone, iPad, or Android-device evidence.
+The listed captures were generated from the isolated `mc_phase1` synthetic
+runtime and were historically stored at `/tmp/phase1-naran-shell-captures`.
+That external path is not an approved output destination under
+`DEC-2026-005-repository-boundary-enforcement`; do not recreate or update it
+until a separately approved task moves the workflow inside the worktree.
+Chromium viewport emulation is a runtime baseline, not physical iPhone, iPad,
+or Android-device evidence.
 
 | screen_id | role | route | viewport | capture_file | result | source_commit | notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |

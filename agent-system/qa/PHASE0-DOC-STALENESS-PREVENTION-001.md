@@ -1,5 +1,6 @@
 # PHASE0-DOC-STALENESS-PREVENTION-001 Evidence
 
+- Task ID: `PHASE0-DOC-STALENESS-PREVENTION-001`
 - Verification: `NOT_TESTED`
 - Self-check only: `true`
 - Independent QA: `not_applicable` — documentation/process rule change only;

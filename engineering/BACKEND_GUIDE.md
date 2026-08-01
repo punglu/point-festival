@@ -37,6 +37,37 @@ Do not infer universal ownership checks or response envelopes from one route. Se
 
 Sources: family-platform Backend draft (adapted), Outlook BE guide (thin controller/security/query lessons), Viblot BE DRAFT (service/rules boundaries).
 
+## TARGET CONTRACT — giant-source prevention and bounded decomposition
+
+File length alone is not a defect. Judge a backend source by number of
+concerns, cohesion, domain-boundary ownership, and whether a router contains
+business or persistence logic. A large single-purpose query/analysis slice, or
+a router containing many already-thin endpoints, is not automatically a split
+candidate.
+
+For new or materially changed domains:
+
+1. Keep one `router.py` per domain. Do not create subrouters merely to reduce
+   file length. When a router grows because it contains logic, move that logic
+   into the domain service and restore the thin-controller boundary.
+2. A growing service may be decomposed only along explicit responsibility axes:
+   `query`, `command`, or `lifecycle` (for example `query_service.py`). Do not
+   create arbitrary numeric, temporal, or convenience splits without first
+   defining the ownership boundary.
+3. Treat giant-source decomposition as a separately approved task, not an
+   opportunistic change inside feature work. A previously split slice is not
+   automatically a new split candidate just because it remains large.
+4. Across decomposed service files, import the owning module and call through a
+   dotted reference (`module.function()`); do not directly import a callable
+   from another service slice. This preserves patch seams. Before introducing a
+   new decomposed service family, obtain PM approval for an enforceable lint or
+   static guard; the current repository has no such automated guard.
+
+Existing code is not retroactively reorganized by this rule. Any proposed
+decomposition records the observed concern/boundary failure, chosen split axis,
+affected tests and patch seams, and a rollback-safe verification plan before
+implementation.
+
 ## LEGACY CONDITION — transaction and response variation
 
 - Commits occur in both routers and services: examples include `domains/chat/router.py`, `domains/mission_template/router.py`, `domains/auth/service.py`, `domains/daily_point/service.py`, and `domains/mission/service.py`.
@@ -75,3 +106,28 @@ multi-runtime contracts.
 ## Backend verification minimums
 
 For core API changes, verify normal, validation, unauthenticated, permission or ownership, not-found, forbidden transition, and invariant/rollback outcomes against an isolated synthetic DB. Existing executable evidence is indexed in `agent-system/qa/COVERAGE_MAP.md`; do not describe unrun scenarios as PASS.
+
+## TARGET CONTRACT — release gate and existing-debt audit
+
+Before declaring backend work complete, check thin-controller scope, service
+layer ownership, no direct cross-domain DB access, service-to-service boundary,
+async consistency, proportionate Intent/Query/Audit SQL annotation, soft delete,
+timestamps, RBAC, input validation, and transaction boundary. Verify a real API
+call and, when the contract needs it, a DB invariant against an isolated
+synthetic DB. Then apply the feature-completion safety net in
+[`agent-system/qa/TEST_POLICY.md`](../agent-system/qa/TEST_POLICY.md): run the
+relevant existing lifecycle test first, add one minimal test only for an
+unprotected core flow, record actual PASS, update
+[`agent-system/qa/COVERAGE_MAP.md`](../agent-system/qa/COVERAGE_MAP.md), and
+record a policy BLOCKED reason if execution cannot occur. See
+[`tests/README.md`](../tests/README.md) for actual commands and cleanup.
+
+Before implementing an API event, record its branches under the
+[synthetic-data and event-matrix decision](../agent-system/decisions/DEC-2026-003-e2e-synthetic-data-and-event-matrix.md),
+including actor/precondition, API result, durable invariant, and cleanup where
+applicable. Do not use operating data as a test fixture.
+
+Existing-debt auditing is read-only: detect → evidence → verdict →
+transition-candidate registration → PM approval → separate repair. Use `PASS`,
+`CONDITIONAL`, `FAIL`, or `N/A` with a file/line or execution result. Do not
+change backend code or the database while auditing.

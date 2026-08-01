@@ -4,8 +4,16 @@
 - Closeout Contract: `v1`
 - Branch: `dev`
 - Start HEAD: `83aad8198610fe3c3a442e9d51320f34a395142e`
-- End HEAD: `pending — final baseline evidence commit`
-- Final Commit: `pending — final baseline evidence commit`
+- End HEAD: `c4ab1bff431a25a9de18edf330874523b2cf1976` (partial match — see note)
+- Final Commit: `c4ab1bff431a25a9de18edf330874523b2cf1976` (partial match — see note)
+- Note (added by `PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-001`, 2026-07-31): `c4ab1bf`
+  ("chore(phase0): restore tooling and isolated runtime") matches this handoff's own
+  "Implemented baseline" description for the OpenAPI-generation slice only
+  (`frontend/src/generated/openapi.d.ts`, `frontend/src/shared/api/openapiBoundary.ts`,
+  `openapi-typescript` dependency add). It does not confirm the test-script
+  `PHASE0_API_BASE_URL` default changes, the 15 screen captures, or the guide-decision
+  writeups also described below — those remain `UNVERIFIED` against a specific commit.
+  This is a registration correction only, not a completeness or QA claim.
 - Existing Dirty State: `CLAUDE.md` modified; root prompt and `docs/` deletions. User-owned and excluded.
 - Decision: PM-approved development-guide decisions 01–05.
 

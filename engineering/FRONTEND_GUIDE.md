@@ -36,8 +36,24 @@
 - Core mutations (points, approval, roles, subscriptions, message membership) must not be treated as successful before server confirmation.
 - Keep API wire changes compatible with actual backend responses. Phase 0–1 uses
   OpenAPI-generated types at the API boundary; generated files are not edited
-  and page/view types remain local mappings.
+  and page/view types remain local mappings. The API schema, not DB column
+  naming, is the frontend type contract; screen-only types use explicit mapping
+  where needed.
 - Use CSS Modules and the existing shared component/token surfaces. Respect safe-area, keyboard, mobile/tablet, and desktop requirements when a surface is affected; do not import Outlook's desktop visual tokens or layout rules.
+
+## TARGET CONTRACT — page responsibility and source growth
+
+Keep a page entry component focused on route-level assembly. Separate API
+calls, state/derived logic, complex interaction, independent screen sections,
+and modals by responsibility when they cease to be local presentation detail.
+Do not impose one mandatory folder or filename layout beyond the current
+page-oriented colocation model.
+
+Judge a split by concerns, cohesion, and real reuse—not line count. A large,
+single-purpose file may remain intact; a previously separated slice is not
+split again without first defining a new responsibility boundary. Large source
+decomposition or structural reorganization is a separately approved task, not
+an incidental part of feature work.
 
 ## LEGACY CONDITION
 
@@ -52,6 +68,30 @@ PWA/mobile behavior is a family-platform requirement, but runtime/device confirm
 ## Playwright selector and journey rules
 
 Prefer role plus accessible name, then labels, then stable test IDs; avoid CSS module hash/DOM-depth selectors. Existing test configuration is `tests/e2e/playwright.config.ts`, using the isolated `mc_phase0` Compose project and port 13000. Do not remove assertions, skip defects, or increase retries to mask a product failure.
+
+## TARGET CONTRACT — release gate and existing-debt audit
+
+Before declaring new frontend code complete, verify the applicable component
+boundary, colocation, CSS Module, token use, UI/business-logic separation,
+presentation/API-adapter separation, accessibility, responsive behavior, and
+existing-test protection. Then follow the feature-completion safety net in
+[`agent-system/qa/TEST_POLICY.md`](../agent-system/qa/TEST_POLICY.md): select
+the relevant existing lifecycle test first, add at most one clear-value test
+only when unprotected, record actual PASS, update
+[`agent-system/qa/COVERAGE_MAP.md`](../agent-system/qa/COVERAGE_MAP.md), and
+record a policy BLOCKED reason for an unrun required test. Commands, data,
+artifacts, and cleanup are in [`tests/README.md`](../tests/README.md).
+
+Before implementing a user-visible event, record its event branches under the
+[synthetic-data and event-matrix decision](../agent-system/decisions/DEC-2026-003-e2e-synthetic-data-and-event-matrix.md).
+UI expectations must map explicitly to API-backed outcomes; do not use
+operating data as a test fixture.
+
+Auditing an existing screen is not code-change authorization. Use this order:
+detect → evidence → verdict → transition-candidate registration → PM approval →
+separate fix. Allowed audit verdicts are `PASS`, `CONDITIONAL`, `FAIL`, and
+`N/A`; record a file/line or execution result. Do not perform global edits,
+token replacement, or CSS rewriting during an audit.
 
 ## DEFERRED
 

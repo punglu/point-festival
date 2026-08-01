@@ -4,17 +4,12 @@
 
 ## CURRENT CONTRACT — test layers and evidence
 
-The local tier definitions are authoritative in `agent-system/qa/TEST_POLICY.md`:
-
-| Tier | Current local meaning | Current examples |
-| --- | --- | --- |
-| TIER 0 STATIC | source/build/static checks | Agent System checkers; frontend lint/build |
-| TIER 1 UNIT | isolated logic | `backend/tests/test_weekly.py` |
-| TIER 2 INTEGRATION | component/boundary checks | API scripts listed in Coverage Map; environment dependent |
-| TIER 3 JOURNEY | user flow | `tests/e2e/specs/*.spec.ts` |
-| TIER 4 RUNTIME_DEVICE | runtime/browser/device | isolated Compose and future physical-device evidence |
-
-The Coverage Map is a compact index, not a completion log. It currently records six backend unit tests and nine self-checked Playwright tests from the isolated Phase 0 runtime. Read `agent-system/qa/COVERAGE_MAP.md` for command/evidence boundaries; never convert SOURCE_VERIFIED or unrun work into PASS.
+The operational tier, coverage, confidence, lifecycle, blocker, and failure
+definitions are authoritative in `agent-system/qa/TEST_POLICY.md`. The Coverage
+Map is a compact index, not a completion log; read
+`agent-system/qa/COVERAGE_MAP.md` for current source-backed state and
+`tests/README.md` for actual commands/evidence boundaries. Never convert an
+unrun scenario into PASS.
 
 ## CURRENT CONTRACT — isolated runtime
 

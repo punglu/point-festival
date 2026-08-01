@@ -148,6 +148,10 @@ secrets/sensitive material.
 
 - Do not create a new top-level or `agent-system/` directory without PM
   approval and a declared scope in `relay/current.md` first.
+- Do not create, write, or move project files, documentation, artifacts,
+  temporary work directories, or copies outside the Git worktree. `/tmp`,
+  repository-adjacent directories, and external worktrees are prohibited for
+  project material; historical external artifacts do not create an exception.
 - Do not self-award independent QA PASS; the implementing session's own check
   is evidence, not the verdict (Invariant 6).
 - Do not rewrite `graduated/` or `decisions/` history in place; append or
