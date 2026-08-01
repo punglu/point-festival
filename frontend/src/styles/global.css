@@ -4,11 +4,10 @@
  * MONGLE_W6_1_FONT_DELIVERY_CONTRACT.md: Noto Sans KR is delivered via the same
  * already-shipping Google Fonts CDN mechanism this @import already uses for
  * Pretendard/Black Han Sans/Inter, matching the exact origin/family/API embedded
- * in the approved tablet-canonical design evidence. Weights limited to 400/600/700
- * — the actual weights the canonical typography scale consumes (not the source's
- * full 400/500/700/900 bundle).
+ * in the approved canonical design evidence. The approved Account Login screen
+ * explicitly consumes Noto Sans KR 400/500/700/900.
  */
-@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&family=Noto+Sans+KR:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
 
 :root {
   --bg: #f8fafc;

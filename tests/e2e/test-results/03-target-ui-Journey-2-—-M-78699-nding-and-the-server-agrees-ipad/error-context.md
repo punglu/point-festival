@@ -1,0 +1,167 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - link "몽글 홈" [ref=e5] [cursor=pointer]:
+      - /url: /dashboard
+      - text: 몽글
+    - generic [ref=e6]:
+      - generic [ref=e7]: 가족
+      - combobox "활성 가족 선택" [ref=e8]:
+        - option "Synthetic Family Alpha" [selected]
+    - generic [ref=e9]:
+      - generic [ref=e10]: Synthetic Service Participant
+      - button "로그아웃" [ref=e11] [cursor=pointer]
+  - generic [ref=e12]:
+    - navigation "몽글 서비스 탐색" [ref=e13]:
+      - link "마크포인트" [ref=e14] [cursor=pointer]:
+        - /url: /markpoint
+      - link "와글와글" [ref=e15] [cursor=pointer]:
+        - /url: /wagle
+      - link "가족" [ref=e16] [cursor=pointer]:
+        - /url: /family
+    - main [ref=e17]:
+      - region "마크포인트" [ref=e18]:
+        - generic [ref=e19]:
+          - paragraph [ref=e20]: 몽글 · 마크포인트
+          - heading "마크포인트" [level=1] [ref=e21]
+        - generic [ref=e22]:
+          - article "현재 포인트" [ref=e23]:
+            - heading "현재 포인트" [level=2] [ref=e24]
+            - paragraph [ref=e25]: "50"
+            - generic [ref=e26]:
+              - generic [ref=e27]:
+                - term [ref=e28]: 오늘 획득
+                - definition [ref=e29]: "50"
+              - generic [ref=e30]:
+                - term [ref=e31]: 오늘 차감
+                - definition [ref=e32]: "0"
+              - generic [ref=e33]:
+                - term [ref=e34]: 기간 획득
+                - definition [ref=e35]: "50"
+              - generic [ref=e36]:
+                - term [ref=e37]: 기간 차감
+                - definition [ref=e38]: "0"
+          - article "레벨" [ref=e39]:
+            - heading "레벨" [level=2] [ref=e40]
+            - paragraph [ref=e41]: Lv.2
+            - paragraph [ref=e42]: 돌 검 용사
+            - progressbar "다음 레벨까지 진행도" [ref=e43]
+            - paragraph [ref=e45]: 누적 획득 50 · 다음 80
+          - article "남은 미션" [ref=e46]:
+            - heading "남은 미션" [level=2] [ref=e47]
+            - paragraph [ref=e48]: "0"
+            - paragraph [ref=e49]: 예상 0포인트
+        - region "이번 주기 미션 2026-08-01 ~ 2026-08-31 · monthly" [ref=e50]:
+          - heading "이번 주기 미션 2026-08-01 ~ 2026-08-31 · monthly" [level=2] [ref=e51]:
+            - text: 이번 주기 미션
+            - generic [ref=e52]: 2026-08-01 ~ 2026-08-31 · monthly
+          - list [ref=e53]:
+            - listitem [ref=e54]:
+              - generic [ref=e55]:
+                - generic [ref=e56]: 08-01
+                - generic [ref=e57]: 오늘
+              - list [ref=e58]:
+                - listitem [ref=e59]:
+                  - generic [ref=e60]: 방 정리하기
+                  - generic [ref=e61]: "+30"
+                  - generic [ref=e62]: 완료
+                - listitem [ref=e63]:
+                  - generic [ref=e64]: 숙제 끝내기
+                  - generic [ref=e65]: "+20"
+                  - generic [ref=e66]: 완료
+            - listitem [ref=e67]:
+              - generic [ref=e69]: 08-02
+              - paragraph [ref=e70]: 미션 없음
+            - listitem [ref=e71]:
+              - generic [ref=e73]: 08-03
+              - paragraph [ref=e74]: 미션 없음
+            - listitem [ref=e75]:
+              - generic [ref=e77]: 08-04
+              - paragraph [ref=e78]: 미션 없음
+            - listitem [ref=e79]:
+              - generic [ref=e81]: 08-05
+              - paragraph [ref=e82]: 미션 없음
+            - listitem [ref=e83]:
+              - generic [ref=e85]: 08-06
+              - paragraph [ref=e86]: 미션 없음
+            - listitem [ref=e87]:
+              - generic [ref=e89]: 08-07
+              - paragraph [ref=e90]: 미션 없음
+            - listitem [ref=e91]:
+              - generic [ref=e93]: 08-08
+              - paragraph [ref=e94]: 미션 없음
+            - listitem [ref=e95]:
+              - generic [ref=e97]: 08-09
+              - paragraph [ref=e98]: 미션 없음
+            - listitem [ref=e99]:
+              - generic [ref=e101]: 08-10
+              - paragraph [ref=e102]: 미션 없음
+            - listitem [ref=e103]:
+              - generic [ref=e105]: 08-11
+              - paragraph [ref=e106]: 미션 없음
+            - listitem [ref=e107]:
+              - generic [ref=e109]: 08-12
+              - paragraph [ref=e110]: 미션 없음
+            - listitem [ref=e111]:
+              - generic [ref=e113]: 08-13
+              - paragraph [ref=e114]: 미션 없음
+            - listitem [ref=e115]:
+              - generic [ref=e117]: 08-14
+              - paragraph [ref=e118]: 미션 없음
+            - listitem [ref=e119]:
+              - generic [ref=e121]: 08-15
+              - paragraph [ref=e122]: 미션 없음
+            - listitem [ref=e123]:
+              - generic [ref=e125]: 08-16
+              - paragraph [ref=e126]: 미션 없음
+            - listitem [ref=e127]:
+              - generic [ref=e129]: 08-17
+              - paragraph [ref=e130]: 미션 없음
+            - listitem [ref=e131]:
+              - generic [ref=e133]: 08-18
+              - paragraph [ref=e134]: 미션 없음
+            - listitem [ref=e135]:
+              - generic [ref=e137]: 08-19
+              - paragraph [ref=e138]: 미션 없음
+            - listitem [ref=e139]:
+              - generic [ref=e141]: 08-20
+              - paragraph [ref=e142]: 미션 없음
+            - listitem [ref=e143]:
+              - generic [ref=e145]: 08-21
+              - paragraph [ref=e146]: 미션 없음
+            - listitem [ref=e147]:
+              - generic [ref=e149]: 08-22
+              - paragraph [ref=e150]: 미션 없음
+            - listitem [ref=e151]:
+              - generic [ref=e153]: 08-23
+              - paragraph [ref=e154]: 미션 없음
+            - listitem [ref=e155]:
+              - generic [ref=e157]: 08-24
+              - paragraph [ref=e158]: 미션 없음
+            - listitem [ref=e159]:
+              - generic [ref=e161]: 08-25
+              - paragraph [ref=e162]: 미션 없음
+            - listitem [ref=e163]:
+              - generic [ref=e165]: 08-26
+              - paragraph [ref=e166]: 미션 없음
+            - listitem [ref=e167]:
+              - generic [ref=e169]: 08-27
+              - paragraph [ref=e170]: 미션 없음
+            - listitem [ref=e171]:
+              - generic [ref=e173]: 08-28
+              - paragraph [ref=e174]: 미션 없음
+            - listitem [ref=e175]:
+              - generic [ref=e177]: 08-29
+              - paragraph [ref=e178]: 미션 없음
+            - listitem [ref=e179]:
+              - generic [ref=e181]: 08-30
+              - paragraph [ref=e182]: 미션 없음
+            - listitem [ref=e183]:
+              - generic [ref=e185]: 08-31
+              - paragraph [ref=e186]: 미션 없음
+        - region "차감 내역" [ref=e187]:
+          - heading "차감 내역" [level=2] [ref=e188]
+          - paragraph [ref=e189]: 차감 내역이 없어요.
+```

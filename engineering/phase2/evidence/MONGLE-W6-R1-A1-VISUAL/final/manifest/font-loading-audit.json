@@ -1,0 +1,455 @@
+{
+  "requiredFamily": "Noto Sans KR",
+  "requiredWeights": [
+    400,
+    500,
+    700,
+    900
+  ],
+  "viewports": {
+    "375x812": {
+      "canonical": {
+        "bodyFontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+        "bodyFontWeight": "400",
+        "fontStatus": "loaded",
+        "faceChecks": {
+          "400": true,
+          "500": true,
+          "700": true,
+          "900": true
+        },
+        "typography": {
+          "serviceTitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "31px",
+            "fontWeight": "900",
+            "lineHeight": "normal",
+            "letterSpacing": "-0.31px"
+          },
+          "serviceSubtitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "formTitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "19px",
+            "fontWeight": "900",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "fieldLabel": null,
+          "inputText": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "errorText": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "primaryButton": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "secondaryButton": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "footer": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          }
+        }
+      },
+      "implementation": {
+        "bodyFontFamily": "\"Noto Sans KR\", Pretendard, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyFontWeight": "400",
+        "fontStatus": "loaded",
+        "faceChecks": {
+          "400": true,
+          "500": true,
+          "700": true,
+          "900": true
+        },
+        "typography": {
+          "serviceTitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "31px",
+            "fontWeight": "900",
+            "lineHeight": "45px",
+            "letterSpacing": "-0.31px"
+          },
+          "serviceSubtitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "formTitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "19px",
+            "fontWeight": "900",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "fieldLabel": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "inputText": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "20px",
+            "letterSpacing": "normal"
+          },
+          "errorText": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "primaryButton": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "secondaryButton": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "footer": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          }
+        }
+      }
+    },
+    "390x844": {
+      "canonical": {
+        "bodyFontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+        "bodyFontWeight": "400",
+        "fontStatus": "loaded",
+        "faceChecks": {
+          "400": true,
+          "500": true,
+          "700": true,
+          "900": true
+        },
+        "typography": {
+          "serviceTitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "31px",
+            "fontWeight": "900",
+            "lineHeight": "normal",
+            "letterSpacing": "-0.31px"
+          },
+          "serviceSubtitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "formTitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "19px",
+            "fontWeight": "900",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "fieldLabel": null,
+          "inputText": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "errorText": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "primaryButton": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "secondaryButton": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "footer": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          }
+        }
+      },
+      "implementation": {
+        "bodyFontFamily": "\"Noto Sans KR\", Pretendard, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyFontWeight": "400",
+        "fontStatus": "loaded",
+        "faceChecks": {
+          "400": true,
+          "500": true,
+          "700": true,
+          "900": true
+        },
+        "typography": {
+          "serviceTitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "31px",
+            "fontWeight": "900",
+            "lineHeight": "45px",
+            "letterSpacing": "-0.31px"
+          },
+          "serviceSubtitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "formTitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "19px",
+            "fontWeight": "900",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "fieldLabel": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "inputText": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "20px",
+            "letterSpacing": "normal"
+          },
+          "errorText": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "primaryButton": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "secondaryButton": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "footer": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          }
+        }
+      }
+    },
+    "430x932": {
+      "canonical": {
+        "bodyFontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+        "bodyFontWeight": "400",
+        "fontStatus": "loaded",
+        "faceChecks": {
+          "400": true,
+          "500": true,
+          "700": true,
+          "900": true
+        },
+        "typography": {
+          "serviceTitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "31px",
+            "fontWeight": "900",
+            "lineHeight": "normal",
+            "letterSpacing": "-0.31px"
+          },
+          "serviceSubtitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "formTitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "19px",
+            "fontWeight": "900",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "fieldLabel": null,
+          "inputText": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "errorText": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "primaryButton": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "secondaryButton": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "footer": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          }
+        }
+      },
+      "implementation": {
+        "bodyFontFamily": "\"Noto Sans KR\", Pretendard, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "bodyFontWeight": "400",
+        "fontStatus": "loaded",
+        "faceChecks": {
+          "400": true,
+          "500": true,
+          "700": true,
+          "900": true
+        },
+        "typography": {
+          "serviceTitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "31px",
+            "fontWeight": "900",
+            "lineHeight": "45px",
+            "letterSpacing": "-0.31px"
+          },
+          "serviceSubtitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "formTitle": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "19px",
+            "fontWeight": "900",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "fieldLabel": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "inputText": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "20px",
+            "letterSpacing": "normal"
+          },
+          "errorText": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "primaryButton": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "secondaryButton": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "700",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          },
+          "footer": {
+            "fontFamily": "\"Noto Sans KR\", system-ui, sans-serif",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "lineHeight": "normal",
+            "letterSpacing": "normal"
+          }
+        }
+      }
+    }
+  }
+}

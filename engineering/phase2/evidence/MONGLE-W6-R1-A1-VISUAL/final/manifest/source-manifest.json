@@ -1,0 +1,27 @@
+{
+  "screen_id": "1a-1",
+  "screen_label": "로그인 폼",
+  "structural_source": {
+    "path": "engineering/phase2/evidence/mongle-wave6-tablet-canonical/source/가족 플랫폼 화면 재현.dc.html",
+    "sha256": "d0c4222790eb20a8b6e391f56bdc9d1751d719801577a182406788f2d2a30fb9",
+    "size_bytes": 636567
+  },
+  "token_helper": {
+    "path": "engineering/phase2/evidence/mongle-wave6-tablet-canonical/source/가족 플랫폼 화면 재현-tokenized.html",
+    "sha256": "1d11874d0bceb227b5cecd81bdb8954fd3d620818292f9b608300aa925da5327",
+    "size_bytes": 471252
+  },
+  "tablet_source": {
+    "path": "engineering/phase2/evidence/mongle-wave6-tablet-canonical/source/가족 플랫폼 화면 재현-tablet.dc.html",
+    "sha256": "24a02ab63b7e4aafccbbc064ba7f99d1ffe429ef4f43f8427f6699defcf571d6",
+    "drive_file_id": "1Dm8NwSmsjExwhjAJ3I07Qae3hR5vs1YV",
+    "size_bytes": 831509,
+    "implementation_status": "NOT_STARTED"
+  },
+  "brand_asset": {
+    "path": "engineering/phase2/evidence/mongle-wave6-tablet-canonical/assets/uploads/family_platform_pin_logo_transparent_1024.png",
+    "sha256": "dd5c48b3e670636b7822a5893e213ce8e99fd667b82b4cb53026e344bea4f0b8",
+    "dimensions": "1024x1024",
+    "frontend_copy_byte_identical": true
+  }
+}

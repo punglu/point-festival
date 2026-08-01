@@ -1,0 +1,201 @@
+{
+  "task": "MONGLE-W6-R1-A1-CANONICAL-REIMPLEMENT-AND-MAIN-AUTO-TRANSITION-001",
+  "browser": "chromium",
+  "deviceScaleFactor": 1,
+  "fullPage": false,
+  "colorScheme": "light",
+  "captures": [
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "canonical": "/Users/mac/mac_Project/mongle_ui/engineering/phase2/evidence/MONGLE-W6-R1-A1-VISUAL/final/canonical/canonical-a1-375x812.png",
+      "implementation": "/Users/mac/mac_Project/mongle_ui/engineering/phase2/evidence/MONGLE-W6-R1-A1-VISUAL/final/implementation/implementation-a1-375x812.png",
+      "fullPage": false,
+      "actualDimensions": "375x812",
+      "geometry": {
+        "canonical": {
+          "hero": {
+            "x": 0,
+            "y": 0,
+            "width": 375,
+            "height": 240
+          },
+          "sheet": {
+            "x": 12,
+            "y": 260,
+            "width": 351,
+            "height": 622
+          },
+          "primaryButton": {
+            "x": 32,
+            "y": 598,
+            "width": 311,
+            "height": 56
+          },
+          "notice": {
+            "x": 32,
+            "y": 764,
+            "width": 311,
+            "height": 65
+          }
+        },
+        "implementation": {
+          "hero": {
+            "x": 0,
+            "y": 0,
+            "width": 375,
+            "height": 240
+          },
+          "sheet": {
+            "x": 12,
+            "y": 260,
+            "width": 351,
+            "height": 621.796875
+          },
+          "primaryButton": {
+            "x": 32,
+            "y": 597.796875,
+            "width": 311,
+            "height": 56
+          },
+          "notice": {
+            "x": 32,
+            "y": 763.796875,
+            "width": 311,
+            "height": 65
+          }
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "canonical": "/Users/mac/mac_Project/mongle_ui/engineering/phase2/evidence/MONGLE-W6-R1-A1-VISUAL/final/canonical/canonical-a1-390x844.png",
+      "implementation": "/Users/mac/mac_Project/mongle_ui/engineering/phase2/evidence/MONGLE-W6-R1-A1-VISUAL/final/implementation/implementation-a1-390x844.png",
+      "fullPage": false,
+      "actualDimensions": "390x844",
+      "geometry": {
+        "canonical": {
+          "hero": {
+            "x": 0,
+            "y": 0,
+            "width": 390,
+            "height": 240
+          },
+          "sheet": {
+            "x": 12,
+            "y": 260,
+            "width": 366,
+            "height": 622
+          },
+          "primaryButton": {
+            "x": 32,
+            "y": 598,
+            "width": 326,
+            "height": 56
+          },
+          "notice": {
+            "x": 32,
+            "y": 764,
+            "width": 326,
+            "height": 65
+          }
+        },
+        "implementation": {
+          "hero": {
+            "x": 0,
+            "y": 0,
+            "width": 390,
+            "height": 240
+          },
+          "sheet": {
+            "x": 12,
+            "y": 260,
+            "width": 366,
+            "height": 621.796875
+          },
+          "primaryButton": {
+            "x": 32,
+            "y": 597.796875,
+            "width": 326,
+            "height": 56
+          },
+          "notice": {
+            "x": 32,
+            "y": 763.796875,
+            "width": 326,
+            "height": 65
+          }
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "canonical": "/Users/mac/mac_Project/mongle_ui/engineering/phase2/evidence/MONGLE-W6-R1-A1-VISUAL/final/canonical/canonical-a1-430x932.png",
+      "implementation": "/Users/mac/mac_Project/mongle_ui/engineering/phase2/evidence/MONGLE-W6-R1-A1-VISUAL/final/implementation/implementation-a1-430x932.png",
+      "fullPage": false,
+      "actualDimensions": "430x932",
+      "geometry": {
+        "canonical": {
+          "hero": {
+            "x": 0,
+            "y": 0,
+            "width": 430,
+            "height": 240
+          },
+          "sheet": {
+            "x": 12,
+            "y": 260,
+            "width": 406,
+            "height": 672
+          },
+          "primaryButton": {
+            "x": 32,
+            "y": 581,
+            "width": 366,
+            "height": 56
+          },
+          "notice": {
+            "x": 32,
+            "y": 747,
+            "width": 366,
+            "height": 65
+          }
+        },
+        "implementation": {
+          "hero": {
+            "x": 0,
+            "y": 0,
+            "width": 430,
+            "height": 240
+          },
+          "sheet": {
+            "x": 12,
+            "y": 260,
+            "width": 406,
+            "height": 672
+          },
+          "primaryButton": {
+            "x": 32,
+            "y": 580.796875,
+            "width": 366,
+            "height": 56
+          },
+          "notice": {
+            "x": 32,
+            "y": 746.796875,
+            "width": 366,
+            "height": 65
+          }
+        }
+      }
+    }
+  ]
+}

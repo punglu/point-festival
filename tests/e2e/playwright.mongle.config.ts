@@ -14,7 +14,7 @@ process.env.MONGLE_FRONTEND_FINGERPRINT ??= execFileSync(
 ).trim();
 
 // MONGLE-FE-E2E-HARNESS-RESTORE-001: webServer/globalTeardown restore the
-// previously-deleted isolated mc_phase1 stack (db+backend+frontend,
+// isolated mongle stack (db+backend+frontend,
 // ports 15434/18001/13001) so this suite is runnable again without any
 // shared/operating environment dependency. See
 // tests/e2e/scripts/start-mongle-phase1.sh and docker-compose.phase1.yml.

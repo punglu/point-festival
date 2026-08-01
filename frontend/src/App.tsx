@@ -6,9 +6,8 @@ import { useAuthStore } from './shared/stores/useAuthStore';
 import ToastContainer from './shared/components/Toast/ToastContainer';
 import { FamilyContextLoader } from './shared/family/FamilyContextLoader';
 import { MongleAppShell } from './platform/shell/MongleAppShell';
-import { WagleLanding } from './platform/pages/WagleLanding';
-import { FamilyLanding } from './platform/pages/FamilyLanding';
-import { AccessBoundary } from './platform/access/AccessBoundary';
+import A1AccountLoginPage from './pages/A1AccountLogin';
+import { PointFestivalPreview } from './pages/PointFestivalPreview';
 import pageStyles from './platform/pages/PlatformPages.module.css';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -71,15 +70,14 @@ export default function App() {
             }
           />
 
-          {/* MONGLE-FE-ROUTE-NAMESPACE-MIGRATION-001: canonical routes. */}
-          <Route
-            path="/wagle"
-            element={<ProtectedRoute><MongleAppShell><WagleLanding /></MongleAppShell></ProtectedRoute>}
-          />
-          <Route
-            path="/family"
-            element={<ProtectedRoute><MongleAppShell><AccessBoundary permission="family.read"><FamilyLanding /></AccessBoundary></MongleAppShell></ProtectedRoute>}
-          />
+          {/* Wave 6 recovery baseline: `/family`, `/markpoint*`, and `/wagle`
+              remain detached from noncanonical UI. `/login` is the ordered A1
+              presentation-only reconstruction; API/session code remains parked. */}
+          <Route path="/login" element={<A1AccountLoginPage />} />
+
+          {/* Wave 6 1c visual-only preview. This is intentionally not product
+              navigation and has no API, session or dashboard connection. */}
+          <Route path="/__wave6/1c" element={<PointFestivalPreview />} />
 
           {/* MONGLE-NARAN-RUNTIME-RETIREMENT-AND-FRONTEND-CLOSEOUT-001:
               the `/naran/*` compatibility aliases were removed by explicit PM

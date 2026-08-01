@@ -22,6 +22,7 @@ from app.domains.family.router import router as family_router
 from app.domains.wagle.router import router as wagle_router
 from app.domains.wagle.realtime_router import router as wagle_realtime_router
 from app.domains.markpoint_access.router import router as markpoint_access_router
+from app.domains.markpoint_target.router import router as markpoint_target_router
 
 
 async def _wagle_realtime_pump(stop: "asyncio.Event", port) -> None:
@@ -137,6 +138,7 @@ app.include_router(family_router)
 app.include_router(wagle_router)
 app.include_router(wagle_realtime_router)
 app.include_router(markpoint_access_router)
+app.include_router(markpoint_target_router)
 
 
 @app.get("/api/health")

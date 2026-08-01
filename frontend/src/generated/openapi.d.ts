@@ -2257,6 +2257,430 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/families/{family_id}/markpoint/missions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Admin Missions */
+        get: operations["admin_missions_api_families__family_id__markpoint_missions_get"];
+        put?: never;
+        /** Create */
+        post: operations["create_api_families__family_id__markpoint_missions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/missions/{mission_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit */
+        post: operations["submit_api_families__family_id__markpoint_missions__mission_id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/missions/{mission_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve */
+        post: operations["approve_api_families__family_id__markpoint_missions__mission_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/missions/{mission_id}/reverse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reverse */
+        post: operations["reverse_api_families__family_id__markpoint_missions__mission_id__reverse_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/missions/{mission_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject */
+        post: operations["reject_api_families__family_id__markpoint_missions__mission_id__reject_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/missions/{mission_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel */
+        post: operations["cancel_api_families__family_id__markpoint_missions__mission_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/missions/expire": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Expire */
+        post: operations["expire_api_families__family_id__markpoint_missions_expire_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Templates */
+        get: operations["templates_api_families__family_id__markpoint_templates_get"];
+        put?: never;
+        /** Template Create */
+        post: operations["template_create_api_families__family_id__markpoint_templates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/templates/{template_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Template Deactivate */
+        delete: operations["template_deactivate_api_families__family_id__markpoint_templates__template_id__delete"];
+        options?: never;
+        head?: never;
+        /** Template Patch */
+        patch: operations["template_patch_api_families__family_id__markpoint_templates__template_id__patch"];
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/templates/{template_id}/materialize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Materialize */
+        post: operations["materialize_api_families__family_id__markpoint_templates__template_id__materialize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/ledger/adjustments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Adjustment */
+        post: operations["adjustment_api_families__family_id__markpoint_ledger_adjustments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/markpoint/missions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Missions */
+        get: operations["my_missions_api_me_markpoint_missions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/markpoint/ledger": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Ledger */
+        get: operations["my_ledger_api_me_markpoint_ledger_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/markpoint/balance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Balance */
+        get: operations["my_balance_api_me_markpoint_balance_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/markpoint/level": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Level */
+        get: operations["my_level_api_me_markpoint_level_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/markpoint/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Summary */
+        get: operations["my_summary_api_me_markpoint_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/markpoint/deductions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Deductions */
+        get: operations["my_deductions_api_me_markpoint_deductions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Config */
+        get: operations["read_config_api_families__family_id__markpoint_config_get"];
+        /** Update Config */
+        put: operations["update_config_api_families__family_id__markpoint_config_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/templates/materialize-window": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Materialize Window
+         * @description Generate the rolling window's missions for one Template or all active ones.
+         */
+        post: operations["materialize_window_api_families__family_id__markpoint_templates_materialize_window_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/markpoint/weekly": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Weekly */
+        get: operations["my_weekly_api_me_markpoint_weekly_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/markpoint/projection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Projection */
+        get: operations["my_projection_api_me_markpoint_projection_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/markpoint/deductions/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Deduction History */
+        get: operations["my_deduction_history_api_me_markpoint_deductions_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/ledger/{entry_id}/correct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Correct Deduction
+         * @description Reverse a debit and optionally replace it. The Ledger is append-only:
+         *     this writes new rows and never edits the original.
+         */
+        post: operations["correct_deduction_api_families__family_id__markpoint_ledger__entry_id__correct_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/markpoint/missions/bulk-approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Bulk Approve
+         * @description All-or-nothing. No approved contract defines partial success, so an
+         *     ineligible mission rolls the whole batch back rather than leaving a
+         *     half-applied balance.
+         */
+        post: operations["bulk_approve_api_families__family_id__markpoint_missions_bulk_approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -2395,6 +2819,21 @@ export interface components {
              */
             permissions: string[];
         };
+        /** BalanceOut */
+        BalanceOut: {
+            /** Family Group Id */
+            family_group_id: number;
+            /** Family Membership Id */
+            family_membership_id: number;
+            /** Current Balance */
+            current_balance: number;
+            /** Lifetime Earned */
+            lifetime_earned: number;
+            /** Lifetime Spent */
+            lifetime_spent: number;
+            /** Version */
+            version: number;
+        };
         /** BatchDeleteRequest */
         BatchDeleteRequest: {
             /** Template Ids */
@@ -2408,6 +2847,11 @@ export interface components {
             mission_date_start?: string | null;
             /** Mission Date End */
             mission_date_end?: string | null;
+        };
+        /** BulkApproval */
+        BulkApproval: {
+            /** Mission Ids */
+            mission_ids: number[];
         };
         /** ChatMessageCreate */
         ChatMessageCreate: {
@@ -2493,6 +2937,34 @@ export interface components {
             /** Value */
             value?: string | null;
         };
+        /** CycleConfigOut */
+        CycleConfigOut: {
+            /** Family Group Id */
+            family_group_id: number;
+            /** Cycle Type */
+            cycle_type: string;
+            /**
+             * Effective From
+             * Format: date
+             */
+            effective_from: string;
+            /**
+             * Effective To
+             * Format: date
+             */
+            effective_to: string;
+            /** Display Name */
+            display_name?: string | null;
+            /** Configured */
+            configured: boolean;
+        };
+        /** CycleConfigUpdate */
+        CycleConfigUpdate: {
+            /** Cycle Type */
+            cycle_type?: string | null;
+            /** Display Name */
+            display_name?: string | null;
+        };
         /**
          * DailyPointAdjust
          * @description Delta-based point adjustment (FIX-003)
@@ -2533,6 +3005,13 @@ export interface components {
             spent: number;
             /** Balance */
             balance: number;
+        };
+        /** DeductionCorrection */
+        DeductionCorrection: {
+            /** New Amount */
+            new_amount?: number | null;
+            /** Reason */
+            reason: string;
         };
         /** DeductionCreate */
         DeductionCreate: {
@@ -2705,6 +3184,49 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** LedgerOut */
+        LedgerOut: {
+            /** Id */
+            id: number;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Family Membership Id */
+            family_membership_id: number;
+            /** Amount */
+            amount: number;
+            /** Entry Type */
+            entry_type: string;
+            /** Source Type */
+            source_type: string;
+            /** Source Identifier */
+            source_identifier: string;
+            /** Reason */
+            reason: string | null;
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+        };
+        /** LevelOut */
+        LevelOut: {
+            /** Family Group Id */
+            family_group_id: number;
+            /** Family Membership Id */
+            family_membership_id: number;
+            /** Lifetime Earned */
+            lifetime_earned: number;
+            /** Level */
+            level: number;
+            /** Title */
+            title: string;
+            /** Current Threshold */
+            current_threshold: number;
+            /** Next Threshold */
+            next_threshold: number;
+            /** Progress Percent */
+            progress_percent: number;
         };
         /**
          * LevelTierBulkSave
@@ -3044,35 +3566,30 @@ export interface components {
                 [key: string]: number;
             } | null;
         };
-        /** MissionCreate */
-        MissionCreate: {
-            /** Player Id */
-            player_id: number;
+        /** MissionDecision */
+        MissionDecision: {
+            /** Reason */
+            reason?: string | null;
+        };
+        /** MissionOut */
+        MissionOut: {
+            /** Id */
+            id: number;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Assignee Membership Id */
+            assignee_membership_id: number;
+            /** Title */
+            title: string;
             /**
-             * Date
+             * Scheduled For
              * Format: date
              */
-            date: string;
-            /** Text */
-            text: string;
-            /** Point */
-            point: number;
-            /** Sender */
-            sender?: string | null;
-            /** Msg */
-            msg?: string | null;
-            /**
-             * Status
-             * @default active
-             */
+            scheduled_for: string;
+            /** Reward Amount */
+            reward_amount: number;
+            /** Status */
             status: string;
-            /**
-             * Sort Order
-             * @default 0
-             */
-            sort_order: number;
-            /** Group Id */
-            group_id?: string | null;
         };
         /** MissionPropose */
         MissionPropose: {
@@ -3356,6 +3873,17 @@ export interface components {
         PlayerVisibilityRequest: {
             /** Is Dashboard Visible */
             is_dashboard_visible?: boolean | null;
+        };
+        /** PointAdjustment */
+        PointAdjustment: {
+            /** Beneficiary Membership Id */
+            beneficiary_membership_id: number;
+            /** Amount */
+            amount: number;
+            /** Reason */
+            reason: string;
+            /** Idempotency Key */
+            idempotency_key: string;
         };
         /**
          * PointCycleSummary
@@ -3757,6 +4285,66 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** TemplateCreate */
+        TemplateCreate: {
+            /** Assignee Membership Id */
+            assignee_membership_id: number;
+            /** Title */
+            title: string;
+            /** Reward Amount */
+            reward_amount: number;
+            /**
+             * Cycle Type
+             * @default weekly
+             */
+            cycle_type: string;
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+            /** End Date */
+            end_date?: string | null;
+            /** Day Of Week */
+            day_of_week?: number | null;
+        };
+        /** TemplateOut */
+        TemplateOut: {
+            /** Id */
+            id: number;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Assignee Membership Id */
+            assignee_membership_id: number;
+            /** Title */
+            title: string;
+            /** Reward Amount */
+            reward_amount: number;
+            /** Cycle Type */
+            cycle_type: string;
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+            /** End Date */
+            end_date: string | null;
+            /** Day Of Week */
+            day_of_week: number | null;
+            /** Status */
+            status: string;
+        };
+        /** TemplateUpdate */
+        TemplateUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Reward Amount */
+            reward_amount?: number | null;
+            /** End Date */
+            end_date?: string | null;
+            /** Day Of Week */
+            day_of_week?: number | null;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -3765,6 +4353,50 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** MissionCreate */
+        app__domains__markpoint_target__schemas__MissionCreate: {
+            /** Assignee Membership Id */
+            assignee_membership_id: number;
+            /** Title */
+            title: string;
+            /**
+             * Scheduled For
+             * Format: date
+             */
+            scheduled_for: string;
+            /** Reward Amount */
+            reward_amount: number;
+        };
+        /** MissionCreate */
+        app__domains__mission__schema__MissionCreate: {
+            /** Player Id */
+            player_id: number;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Text */
+            text: string;
+            /** Point */
+            point: number;
+            /** Sender */
+            sender?: string | null;
+            /** Msg */
+            msg?: string | null;
+            /**
+             * Status
+             * @default active
+             */
+            status: string;
+            /**
+             * Sort Order
+             * @default 0
+             */
+            sort_order: number;
+            /** Group Id */
+            group_id?: string | null;
         };
     };
     responses: never;
@@ -4039,7 +4671,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["MissionCreate"];
+                "application/json": components["schemas"]["app__domains__mission__schema__MissionCreate"];
             };
         };
         responses: {
@@ -5023,7 +5655,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["MissionCreate"];
+                "application/json": components["schemas"]["app__domains__mission__schema__MissionCreate"];
             };
         };
         responses: {
@@ -8381,6 +9013,953 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_missions_api_families__family_id__markpoint_missions_get: {
+        parameters: {
+            query?: {
+                assignee_membership_id?: number | null;
+                mission_status?: string | null;
+                template_id?: number | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_api_families__family_id__markpoint_missions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["app__domains__markpoint_target__schemas__MissionCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_api_families__family_id__markpoint_missions__mission_id__submit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                mission_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_api_families__family_id__markpoint_missions__mission_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                mission_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reverse_api_families__family_id__markpoint_missions__mission_id__reverse_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                mission_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MissionDecision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reject_api_families__family_id__markpoint_missions__mission_id__reject_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                mission_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MissionDecision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_api_families__family_id__markpoint_missions__mission_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                mission_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MissionDecision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    expire_api_families__family_id__markpoint_missions_expire_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    templates_api_families__family_id__markpoint_templates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    template_create_api_families__family_id__markpoint_templates_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TemplateCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    template_deactivate_api_families__family_id__markpoint_templates__template_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                template_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    template_patch_api_families__family_id__markpoint_templates__template_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                template_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TemplateUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemplateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    materialize_api_families__family_id__markpoint_templates__template_id__materialize_post: {
+        parameters: {
+            query: {
+                scheduled_for: string;
+            };
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                template_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    adjustment_api_families__family_id__markpoint_ledger_adjustments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PointAdjustment"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LedgerOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_missions_api_me_markpoint_missions_get: {
+        parameters: {
+            query: {
+                family_id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_ledger_api_me_markpoint_ledger_get: {
+        parameters: {
+            query: {
+                family_id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LedgerOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_balance_api_me_markpoint_balance_get: {
+        parameters: {
+            query: {
+                family_id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BalanceOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_level_api_me_markpoint_level_get: {
+        parameters: {
+            query: {
+                family_id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LevelOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_summary_api_me_markpoint_summary_get: {
+        parameters: {
+            query: {
+                family_id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_deductions_api_me_markpoint_deductions_get: {
+        parameters: {
+            query: {
+                family_id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LedgerOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_config_api_families__family_id__markpoint_config_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CycleConfigOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_config_api_families__family_id__markpoint_config_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CycleConfigUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CycleConfigOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    materialize_window_api_families__family_id__markpoint_templates_materialize_window_post: {
+        parameters: {
+            query?: {
+                template_id?: number | null;
+            };
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_weekly_api_me_markpoint_weekly_get: {
+        parameters: {
+            query: {
+                family_id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_projection_api_me_markpoint_projection_get: {
+        parameters: {
+            query: {
+                family_id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_deduction_history_api_me_markpoint_deductions_history_get: {
+        parameters: {
+            query: {
+                family_id: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    correct_deduction_api_families__family_id__markpoint_ledger__entry_id__correct_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeductionCorrection"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bulk_approve_api_families__family_id__markpoint_missions_bulk_approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkApproval"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
             };
             /** @description Validation Error */
             422: {

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # MONGLE-FE-E2E-HARNESS-RESTORE-001: deterministic bring-up for the isolated
-# mc_phase1 stack (db+backend+frontend, ports 15434/18001/13001) that
+# mongle stack (db+backend+frontend, ports 15434/18001/13001) that
 # tests/e2e/specs-mongle/01-shell.spec.ts requires. Restored from git history
 # (commit 92bd75c^) — this is a test-only isolated environment, not an
 # operating/production stack. Safe to run repeatedly: `up --wait` is
@@ -9,7 +9,7 @@
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 
-COMPOSE="docker compose -p mc_phase1 --env-file .env.phase0.example -f docker-compose.phase1.yml"
+COMPOSE="docker compose -p mongle --env-file .env.phase0.example -f docker-compose.phase1.yml"
 
 # Bring up db+backend first and seed synchronously BEFORE starting frontend.
 # Playwright's webServer only polls the frontend URL, and frontend's nginx

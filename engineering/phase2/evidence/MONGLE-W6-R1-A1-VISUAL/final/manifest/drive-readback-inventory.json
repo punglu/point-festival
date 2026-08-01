@@ -1,0 +1,14 @@
+{
+  "observed_at": "2026-08-01T14:35:00+09:00",
+  "task_folder_id": "1Gyz58P_Wc5hjFkJkmqaarf70bPX5K7kH",
+  "task_folder_url": "https://drive.google.com/drive/folders/1Gyz58P_Wc5hjFkJkmqaarf70bPX5K7kH",
+  "readback": "PASS",
+  "categories": {
+    "canonical_mobile": { "count": 3, "ids": ["1JRwGMGHpnjbfJaeqJANGU9_Exwu7L7Al", "11rbQyge56LaweRCVwwAo1zl5ba5Gh4Vu", "1Z4rD20s0KXlGUlvT2hhZdjIMiT-85cow"] },
+    "implementation_mobile": { "count": 3, "ids": ["1m8TyIgpFw5dfMfn_w4ZyOJo9T8NLaxWL", "1JWiBM0EmI2X-cwOyZVIKUkmnblqJYREm", "1Z-sv0ZahDm8RoYqfKUD_33SdASc3eZga"] },
+    "side_by_side": { "count": 3, "ids": ["16Id49O3e7VQNJbSczFyyZRng_aflH4MU", "1dIBMS4Q_VZNnWJHihCBW1-4A722CQr-Z", "1YN5yn6oE8_blXYAJQOOamiheo--MGpHB"] },
+    "pixel_diff": { "count": 3, "ids": ["1KOQsHbS6ErZeHbzWJNPRGSzS77IecMzy", "1gW-9RH0se0xCHGwl0WrFncdpIJo6ITfS", "1qVzcOrcJaackA0exwqitr1QPIPL5lMWW"] }
+  },
+  "missing_required_files": 0,
+  "superseded_evidence_parent": "1HwL-Q8naO1LfmZAFTOs-y7c7RvY-4aD-"
+}

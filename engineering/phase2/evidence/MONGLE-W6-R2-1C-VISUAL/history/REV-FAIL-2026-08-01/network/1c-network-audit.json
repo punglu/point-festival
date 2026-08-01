@@ -1,0 +1,499 @@
+{
+  "implementationUrl": "http://localhost:13001/__wave6/1c",
+  "requests": [
+    {
+      "url": "http://localhost:13001/__wave6/1c",
+      "type": "document",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/index-DtG63OFh.js",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/index-HSEAg-hm.css",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/family-platform-mascot-Bha6cqoD.png",
+      "type": "image",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.118.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5CgmG0X7twpAcuQ.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.119.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.113.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.117.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.116.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.115.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.114.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.112.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.109.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/__wave6/1c",
+      "type": "document",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/index-DtG63OFh.js",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/index-HSEAg-hm.css",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/family-platform-mascot-Bha6cqoD.png",
+      "type": "image",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.118.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5CgmG0X7twpAcuQ.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.119.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.113.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.117.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.116.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.115.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.114.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.112.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.109.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/__wave6/1c",
+      "type": "document",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/index-DtG63OFh.js",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/index-HSEAg-hm.css",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/family-platform-mascot-Bha6cqoD.png",
+      "type": "image",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.118.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5CgmG0X7twpAcuQ.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.119.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.113.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.117.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.116.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.115.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.114.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.112.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.109.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/__wave6/1c",
+      "type": "document",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/index-DtG63OFh.js",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/index-HSEAg-hm.css",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/family-platform-mascot-Bha6cqoD.png",
+      "type": "image",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.118.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5CgmG0X7twpAcuQ.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.119.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.113.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.117.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.116.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.115.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.114.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.112.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.109.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/__wave6/1c",
+      "type": "document",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/index-DtG63OFh.js",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/index-HSEAg-hm.css",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/family-platform-mascot-Bha6cqoD.png",
+      "type": "image",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.118.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5CgmG0X7twpAcuQ.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.119.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.113.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.117.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.116.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.115.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.114.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.112.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.109.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/__wave6/1c",
+      "type": "document",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/index-DtG63OFh.js",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/index-HSEAg-hm.css",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "http://localhost:13001/assets/family-platform-mascot-Bha6cqoD.png",
+      "type": "image",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.118.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5CgmG0X7twpAcuQ.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.119.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.113.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.117.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.116.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.115.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.114.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.112.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.109.woff2",
+      "type": "font",
+      "method": "GET"
+    }
+  ],
+  "violations": [],
+  "metrics": {
+    "375x812": {
+      "navigationCount": 0,
+      "storage": {
+        "localStorage": {},
+        "sessionStorage": {},
+        "mode": "ui-only",
+        "scroll": [
+          0,
+          0
+        ]
+      }
+    },
+    "390x844": {
+      "navigationCount": 0,
+      "storage": {
+        "localStorage": {},
+        "sessionStorage": {},
+        "mode": "ui-only",
+        "scroll": [
+          0,
+          0
+        ]
+      }
+    },
+    "430x932": {
+      "navigationCount": 0,
+      "storage": {
+        "localStorage": {},
+        "sessionStorage": {},
+        "mode": "ui-only",
+        "scroll": [
+          0,
+          0
+        ]
+      }
+    },
+    "backendApiRequestCount": 0,
+    "websocketConnectionCount": 0,
+    "sessionWriteCount": 0,
+    "authStorageWriteCount": 0,
+    "navigationCount": 0
+  }
+}

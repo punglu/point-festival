@@ -101,10 +101,26 @@ slice, D1–D8/D6-P1–P8 reopening, any Legacy backfill, a second Alembic head,
 
 ## Closeout Synchronization
 
-- Contract: v1
+- Contract: `v1`
 - ACTIVE: `UPDATED`
-- HANDOFF: `UPDATED` — this file
-- QA EVIDENCE: `UPDATED` — `agent-system/qa/MONGLE-W3-WAGLE-INDEPENDENT-QA-001.md`
-- Independent QA: `this is the independent QA` — PASS
-- COVERAGE MAP: `NOT_MODIFIED_BY_THIS_SESSION`
+- ACTIVE Evidence: `agent-system/graduated/2026-08.md`
+- HANDOFF: `UPDATED`
+- HANDOFF Path: `agent-system/handoffs/archive/2026-08/MONGLE-W3-WAGLE-INDEPENDENT-QA-001.md`
+- QA EVIDENCE: `UPDATED`
+- QA Evidence Path: `agent-system/qa/MONGLE-W3-WAGLE-INDEPENDENT-QA-001.md`
+- Independent QA: `self` — this task **is** the independent QA of the two Wave 3
+  implementation tasks; its verdict was PASS.
+- COVERAGE MAP: `NO_CHANGE_REQUIRED`
+- COVERAGE MAP Reason: reviewed; no row required a change beyond what the PM
+  graduation pass added. The one new test protects an existing Coverage Map
+  row's claim rather than opening a new one.
 - CLOSEOUT GATE: `PASS`
+
+<!-- PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002, format only — no status
+     value was raised. Three parse defects were corrected: field values shared a
+     line with their explanation, so `check_closeout.py` read HANDOFF and
+     QA EVIDENCE as empty and then reported "CLOSEOUT GATE is PASS while
+     HANDOFF is missing" for a task whose handoff and QA evidence both exist on
+     disk; `HANDOFF Path` and `QA Evidence Path` were absent; and
+     `NOT_MODIFIED_BY_THIS_SESSION` is outside the allowed set, normalized to
+     the `NO_CHANGE_REQUIRED` it already described in prose. -->

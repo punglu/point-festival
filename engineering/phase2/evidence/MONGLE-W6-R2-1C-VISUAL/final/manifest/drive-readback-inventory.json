@@ -1,0 +1,19 @@
+{
+  "task_folder_id": "1O24Y45q73T37CZ3RUNbwteiw2BBT85rw",
+  "task_folder_url": "https://drive.google.com/drive/folders/1O24Y45q73T37CZ3RUNbwteiw2BBT85rw",
+  "readback": "PASS",
+  "required_counts": {
+    "canonical_mobile": 3,
+    "implementation_mobile": 3,
+    "side_by_side": 3,
+    "pixel_diff": 3,
+    "font_audit": 1,
+    "network_audit": 1,
+    "visual_manifest": 1,
+    "sha256sums": 1
+  },
+  "missing_required_files": 0,
+  "implementation_ids": ["1khX3PjRz6MuKrZQa0yC4jNuzZLvY8ppG", "132T-tptgYuWSCj1-L7qdzH3In-FDIHc_", "1NPq0h35h-maSforqxdOLE4QoD_xWXjBL"],
+  "comparison_ids": ["1ptDEu9SbPaTZYV_G99mVZt1Z92cscEly", "1BrJSmykneIv4feqLmktkeCU2kkoJ5_wZ", "1ejBSnzEFMkjkbKmqGJmmxlGR_D4M7754"],
+  "diff_ids": ["1l0gWTxUHVZL5s6BYJdNMm8F9S1oZW901", "1YOLYoCgTSnXlBrp7ugRXkJlkojzv6I4_", "1VvVut9BOuKX1EMCVMlQ7l6BM8hPh8DVI"]
+}

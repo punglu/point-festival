@@ -89,12 +89,27 @@ export function MongleAppShell({ children }: MongleAppShellProps) {
   // against the historical code here silently reported every active Wagle
   // subscription as unavailable.
   const wagleState = serviceStatus('wagle');
+  // MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001: navigation now points at the
+  // Target screens. `/markpoint` replaces the legacy `/dashboard` entry, and
+  // the two admin entries collapse into one `/markpoint/admin` whose panels are
+  // gated per permission inside the screen — a mission manager and a point
+  // admin see different halves of the same route.
+  //
+  // Visibility here is convenience only. Every screen re-checks with the
+  // server, so a stale permission in this store can hide a link but can never
+  // grant access.
+  const markpointState = serviceStatus('markpoint');
+  const canManageMissions = hasPermission('markpoint.missions.manage');
+  const canAdjustPoints = hasPermission('markpoint.points.adjust');
   const navItems = [
-    { to: '/dashboard', label: '마크포인트', visible: true },
+    { to: '/markpoint', label: '마크포인트', visible: hasFamily && markpointState === 'active' },
     { to: '/wagle', label: '와글와글', visible: hasFamily },
     { to: '/family', label: '가족', visible: hasFamily && hasPermission('family.read') },
-    { to: '/admin/missions', label: '미션 관리', visible: hasFamily && hasPermission('markpoint.missions.manage') },
-    { to: '/admin/points', label: '포인트 관리', visible: hasFamily && hasPermission('markpoint.points.adjust') },
+    {
+      to: '/markpoint/admin',
+      label: '마크포인트 관리',
+      visible: hasFamily && (canManageMissions || canAdjustPoints),
+    },
   ];
 
   const handleLogout = () => {

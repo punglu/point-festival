@@ -119,7 +119,7 @@ Family's revocation or on a PIN failure; legacy PIN reuse or backfill; a
 - ACTIVE: `UPDATED`
 - ACTIVE Evidence: `agent-system/active.md`
 - HANDOFF: `UPDATED`
-- HANDOFF Path: `agent-system/handoffs/active/MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001.md`
+- HANDOFF Path: `agent-system/handoffs/archive/2026-08/MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001.md`
 - QA EVIDENCE: `UPDATED`
 - QA Evidence Path: `agent-system/qa/MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001.md`
 - Independent QA: `pending`

@@ -60,7 +60,18 @@ Per the task brief: no self-awarded independent QA PASS on anything found incomp
 ## Closeout Synchronization
 
 - Contract: `v1`
-- ACTIVE: `BLOCKED` — this task's own `active.md` entry, and all 9 proposed new entries plus 2 corrections it found, cannot be written while `MONGLE-APPROVED-DECISIONS-FREEZE-AND-DECOMPOSITION-001` holds single-writer ownership of `active.md`. Proposed content is fully drafted in the QA evidence file for the next writer.
+- ACTIVE: `BLOCKED`
+- ACTIVE Reason: this task's own `active.md` entry, and all 9 proposed new
+  entries plus 2 corrections it found, could not be written while
+  `MONGLE-APPROVED-DECISIONS-FREEZE-AND-DECOMPOSITION-001` held single-writer
+  ownership of `active.md`. Proposed content was fully drafted in the QA
+  evidence file for the next writer.
+- ACTIVE Resolution: F5/F6 were applied by
+  `MONGLE-W1A-ACTIVE-REGISTER-CLOSEOUT-001`; the 9 F1–F4 registrations were
+  applied on 2026-08-01 by `PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002`.
+  **This task's own gate stays `BLOCKED`** — that is what actually happened
+  here, and re-scoring it to `PASS` would credit this session with work a
+  later one did.
 - ACTIVE Evidence: `agent-system/relay/current.md` (single-writer claim), `agent-system/qa/PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-001.md` (drafted entries)
 - HANDOFF: `UPDATED`
 - HANDOFF Path: `agent-system/handoffs/archive/2026-08/PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-001.md`
@@ -69,4 +80,12 @@ Per the task brief: no self-awarded independent QA PASS on anything found incomp
 - Independent QA: `pending`
 - COVERAGE MAP: `NO_CHANGE_REQUIRED`
 - COVERAGE MAP Reason: registration-only audit; no test path, tier, journey, or execution evidence changed by this pass.
-- CLOSEOUT GATE: `BLOCKED` — ACTIVE is blocked (see above); per `rules.md` a `PASS` gate requires ACTIVE, HANDOFF, and QA EVIDENCE all `UPDATED`.
+- CLOSEOUT GATE: `BLOCKED`
+- CLOSEOUT GATE Reason: ACTIVE was blocked (see above); per `rules.md` a `PASS`
+  gate requires ACTIVE, HANDOFF and QA EVIDENCE all `UPDATED`.
+
+<!-- Field values are kept alone on their own line so `check_closeout.py` can
+     parse them. Before this correction the explanation shared the line and the
+     checker read both fields as empty, reporting "invalid or missing value"
+     for a block that was in fact correctly filled in. Format fix only: no
+     status value was changed. -->

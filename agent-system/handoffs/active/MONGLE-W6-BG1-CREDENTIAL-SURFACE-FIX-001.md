@@ -192,8 +192,13 @@ credential-surface issue).
 - HANDOFF Path: `agent-system/handoffs/active/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001.md`
 - QA EVIDENCE: `UPDATED`
 - QA Evidence Path: `agent-system/qa/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001.md`
-- Independent QA: `not started`
+- Independent QA: `CONDITIONAL` — initial independent QA correctly blocked
+  malformed `sid`; the repair then passed the bounded independent HTTP suite
+  twice on fresh DBs. A complete independent full-suite run is still pending.
 - COVERAGE MAP: `UPDATED`
 - COVERAGE MAP Reason: added `API-W6-BG1-CREDENTIAL-SURFACE-001` for `test_bg1_credential_surface_unification.py`; `PARTIAL`/`NOT_CONFIRMED` pending independent QA.
 - CLOSEOUT GATE: `BLOCKED`
-- CLOSEOUT GATE Reason: fix implemented, root-cause duplication removed, regression-tested and full-suite verified; independent QA still pending, so the gate cannot read PASS yet.
+- CLOSEOUT GATE Reason: fix implemented and the malformed-`sid` repair is
+  independently verified at the HTTP boundary, but the independent full-suite
+  run did not complete. The gate remains blocked until that regression is
+  measured to completion.

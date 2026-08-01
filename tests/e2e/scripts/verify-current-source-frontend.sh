@@ -24,7 +24,7 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 
 BASE_URL="${MONGLE_PLAYWRIGHT_BASE_URL:-http://localhost:13001}"
-COMPOSE="docker compose -p mc_phase1 --env-file .env.phase0.example -f docker-compose.phase1.yml"
+COMPOSE="docker compose -p mongle --env-file .env.phase0.example -f docker-compose.phase1.yml"
 
 fail() { echo "STALE_FRONTEND_GUARD: FAIL — $*" >&2; exit 1; }
 
@@ -41,7 +41,7 @@ grep -q 'dockerfile: Dockerfile' docker-compose.phase1.yml \
 worktree="$(./tests/e2e/scripts/frontend-source-fingerprint.sh)"
 
 image_ref="$($COMPOSE images -q frontend 2>/dev/null || true)"
-[ -n "$image_ref" ] || fail "no frontend image is running under project mc_phase1"
+[ -n "$image_ref" ] || fail "no frontend image is running under project mongle"
 
 image_fp="$(docker image inspect --format '{{ index .Config.Labels "org.mongle.build-fingerprint" }}' "$image_ref")"
 [ -n "$image_fp" ] && [ "$image_fp" != "unset" ] \

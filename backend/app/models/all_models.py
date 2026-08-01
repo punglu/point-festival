@@ -26,3 +26,7 @@ from app.domains.service_outbox.models import ServiceOutboxEvent  # noqa: F401
 from app.domains.markpoint_access.models import (  # noqa: F401
     MarkpointAccessRestriction, MarkpointActivationRequest,
 )
+from app.domains.markpoint_target.models import (  # noqa: F401
+    MarkpointMissionTemplate, MarkpointMission, MarkpointLedgerEntry,
+    MarkpointBalanceProjection, MarkpointAuditEvent, MarkpointFamilyConfig,
+)

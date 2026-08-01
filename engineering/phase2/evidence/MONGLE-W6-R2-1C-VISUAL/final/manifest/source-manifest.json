@@ -1,0 +1,18 @@
+{
+  "screen": "1c",
+  "label": "포인트 잔치",
+  "structural_source": {
+    "path": "engineering/phase2/evidence/mongle-wave6-tablet-canonical/source/가족 플랫폼 화면 재현.dc.html",
+    "sha256": "d0c4222790eb20a8b6e391f56bdc9d1751d719801577a182406788f2d2a30fb9"
+  },
+  "token_helper": {
+    "path": "engineering/phase2/evidence/mongle-wave6-tablet-canonical/source/가족 플랫폼 화면 재현-tokenized.html",
+    "sha256": "1d11874d0bceb227b5cecd81bdb8954fd3d620818292f9b608300aa925da5327"
+  },
+  "approved_png": {
+    "path": "engineering/phase2/evidence/mongle-wave6-tablet-canonical/assets/uploads/screen_point_festival_approved.png",
+    "sha256": "35bdeff64cc9524b243adcd37db08023394ebbcd1e2b847bf7f08b141f75eb93",
+    "dimensions": "941x1672"
+  },
+  "excluded_from_comparison": ["gallery label", "1c badge", "mock status bar", "home indicator", "device frame", "design board shadow"]
+}

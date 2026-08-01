@@ -1,6 +1,12 @@
 # Current Relay
 
-Current Task: none — Wave 5 closed and graduated on 2026-08-01.
+Current Task: none — 1c mobile visual and source-separation closeout complete.
+
+- Closed: A1 and 1c mobile visual/source separation. 1c preserved visual,
+  behavioral and network identity across 375/390/430 after page-local colocation.
+- Next: 1e admin sample canonical measurement only — confirm PNG/HTML authority,
+  desktop capture contract, sidebar/header/table/action density and existing-admin
+  comparison before any 1e implementation. Tablet remains not started.
 
 - **Wave 5 Markpoint Core is complete and independently verified.** Coverage
   Matrix: `COVERED_TARGET 10` / Core `PARTIALLY_COVERED 0` /
@@ -42,7 +48,7 @@ cause, recovery and prevention rule on the record instead of deleting them:
    when splicing Markdown by heading, anchor on the line start, never on the
    words** — a quoted mention of a heading inside prose will match first.
 
-## BG-1 credential-surface gap — one round of independent QA done, one fix pending re-QA (2026-08-01)
+## BG-1 credential-surface gap — correction re-verified, full-suite gate remains (2026-08-01)
 
 `MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001`'s `BLOCKED` finding (no single
 credential reached both the family/Wagle API and the Markpoint Target API)
@@ -60,14 +66,17 @@ system working as intended — an independent QA that reproduces from
 scratch and attacks the boundary instead of re-reading the self-check
 report. Fixed with the same guard pattern already used for `sub`; a
 regression test was added and confirmed (via `git stash`) to fail pre-fix
-and pass post-fix. **This specific correction still needs its own
-independent re-QA before BG-1 is treated as closed** — the rest of the
-original finding (role widening, shared resolver, 38-usage enumeration)
-already passed and does not need repeating.
+and pass post-fix. The correction was then independently rechecked on two
+separately initialized disposable databases: the six targeted HTTP tests
+passed twice and independently crafted malformed claim variants all failed
+closed with 401. A fresh full-suite run did not complete (it remained running
+after 32 tests and was deliberately stopped), so BG-1 remains **CONDITIONAL**
+until a complete independent full regression is recorded. The role widening,
+shared resolver, and 38-usage enumeration remain separately evidenced.
 
 ## Next Task
 
-**Independent re-QA of the `sid`-parsing correction in
+**Complete an uncontended independent full-backend regression for
 `MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001`**, then
 **`MONGLE-W6-TARGET-UI-START-REVIEW`** — Wave 6 Target UI Start Review.
 

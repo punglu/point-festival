@@ -31,9 +31,14 @@ from app.domains.service_outbox.models import ServiceOutboxEvent
 # Worker code changes.
 ALLOWED_ACTIONS_BY_OWNER: dict[str, list[dict]] = {
     "mark-point": [{"action_type": "mission.completed", "schema_version": 1}],
+    "markpoint": [
+        {"action_type": "mission.approved", "schema_version": 1},
+        {"action_type": "points.adjusted", "schema_version": 1},
+    ],
 }
 PRINCIPAL_DISPLAY_NAME_BY_OWNER: dict[str, str] = {
     "mark-point": "Mark Point",
+    "markpoint": "Markpoint",
 }
 
 DEFAULT_BATCH_SIZE = 10

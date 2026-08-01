@@ -3,6 +3,23 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
+## MONGLE-W6-R2-1C-POINT-FESTIVAL-MOBILE-VISUAL-001
+
+- Task ID: MONGLE-W6-R2-1C-POINT-FESTIVAL-MOBILE-VISUAL-001
+- Lifecycle: COMPLETE
+- Decision: DESIGN_APPROVED (PM canonical screen direction, 2026-08-01)
+- Verification: GPT_VISUAL_GATE_PASS / SOURCE_SEPARATION_PASS
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Scope: mobile-only, presentation-only preview route `/__wave6/1c` for
+  canonical screen `1c` / `포인트 잔치`; no dashboard replacement or API/session
+  connection.
+- A1 protection: required — no A1 source, route, or screenshot mutation.
+- Measured evidence: 1c GPT visual review and zero-change source separation both
+  passed. The three 375/390/430 post-move PNG hashes are byte-identical to the
+  pre-move captures; browser audit remains API/WebSocket/storage/navigation 0.
+  1e admin canonical measurement is next; tablet remains not started.
+
 ## Approved Target decision baseline (D1–D8)
 
 `engineering/phase2/MONGLE_TARGET_DECISION_FREEZE.md` is the Target product
@@ -46,7 +63,8 @@ that anything implementing it exists.
   decision items, then "근본적 해결을해라 / 임시 해결말고" directing a
   root-cause fix rather than a documented workaround)
 - Verification: SELF_CHECK_PASS / INDEPENDENT_QA_BLOCKED_THEN_CORRECTED /
-  INDEPENDENT_RE_QA_PENDING
+  INDEPENDENT_RE_QA_CONDITIONAL (targeted repair evidence PASS twice; complete
+  independent full-suite regression NOT_RUN_TO_COMPLETION)
 - Execution: SUCCEEDED
 - Closeout Contract: v1
 - Handoff: agent-system/handoffs/active/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001.md
@@ -88,18 +106,17 @@ that anything implementing it exists.
   via `git stash` to fail pre-fix and pass post-fix. Full suite re-run
   clean on a freshly recreated disposable DB. Detail in the handoff's own
   "Correction applied after independent QA" section and QA evidence §8.
-- Next Action: independent **re**-QA of this specific correction (the
-  `sid` parse fix and its regression test) before BG-1 is treated as closed
-  for Wave 6 Target UI purposes. The rest of the original independent QA
-  finding (role widening, shared resolver, 38-usage enumeration) already
-  passed independent scrutiny and does not need re-litigating.
+- Next Action: complete an uncontended independent full-backend regression
+  before BG-1 is treated as closed for Wave 6 Target UI purposes. The `sid`
+  repair itself passed independent targeted QA twice; no lifecycle closure is
+  inferred from that bounded result.
 
 ## MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001
 
 - Task ID: MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001
-- Lifecycle: BLOCKED
+- Lifecycle: IN_PROGRESS
 - Decision: DESIGN_APPROVED
-- Verification: BLOCKED
+- Verification: CONDITIONAL
 - Execution: SUCCEEDED
 - Closeout Contract: v1
 - Handoff: agent-system/handoffs/active/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001.md
@@ -221,54 +238,6 @@ that anything implementing it exists.
   substantive frontend/backend-gap claims is warranted before the
   recommended follow-up (a backend task unifying the credential surface) is
   opened.
-
-## MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001
-
-- Task ID: MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001
-- Kind: Wave 6 Target UI frontend slice (registration retroactively applied
-  by `PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002-INDEPENDENT-QA-001`
-  above — the work and its QA evidence are real and pre-existing; only the
-  registration was missing)
-- Lifecycle: BLOCKED
-- Decision: DESIGN_APPROVED (Wave 6 Start Review directive)
-- Verification: NOT_TESTED — the task's own report is self-check only;
-  registering it here makes the work visible, it does not independently
-  confirm the `BLOCKED` finding or the frontend implementation claims
-- Execution: SUCCEEDED (frontend implementation) / BLOCKED (integration —
-  see below)
-- Closeout Contract: v1
-- Handoff: agent-system/handoffs/active/MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001.md
-- QA Evidence: agent-system/qa/MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001.md
-- Baseline: `dev-newmarkp` @ `25c8d0c`, unchanged start → end. No commit.
-- Result (self-reported): `WAVE_6_TARGET_UI_INTEGRATION_BLOCKED` /
-  `EXACT_BACKEND_DESIGN_OR_RUNTIME_BLOCKER_RECORDED` / `NO_FALSE_PASS`. The
-  Wave 6 frontend is implemented (Account sign-in, Markpoint user/admin
-  screens, real Wagle room view, Family hub, Target routes/guards; tsc/lint
-  clean; zero preview fixtures in the production bundle) but cannot run
-  end-to-end: no single credential reaches both the family-context API and
-  the Markpoint Target API (Account tokens get 401 from
-  `/api/families/{id}/wagle/*`... measured table is in the QA evidence §1).
-  Reported `BLOCKED` rather than `CONDITIONAL` since the Markpoint Core API
-  is unconnected at runtime — no false PASS.
-- Changed files (self-reported, matches this session's own `git status`
-  exactly): new `shared/api/{markpointApi,wagleApi,accountAuthApi}.ts`,
-  `platform/markpoint/{MarkpointUser,MarkpointAdmin}.tsx`+css,
-  `platform/wagle/WagleRoomView.tsx`+css,
-  `platform/auth/AccountLoginView.tsx`+css,
-  `platform/pages/FamilyLanding.module.css`,
-  `tests/e2e/specs-mongle/03-target-ui.spec.ts`,
-  `agent-system/qa/artifacts/wave6/BLOCKER_MEASUREMENT.md`; modified
-  `App.tsx`, `shell/MongleAppShell.tsx`, `pages/WagleLanding.tsx`,
-  `pages/FamilyLanding.tsx`, `shared/stores/useAuthStore.ts`,
-  `backend/scripts/phase1_seed_synthetic.py` (fixture only).
-- Independent QA: not started — this registration is a documentation
-  correction only, per `PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002`'s
-  own constraint against self-awarding QA PASS for anything found
-  incomplete during a registration pass.
-- Next Action: the recommended follow-up (a backend task unifying the
-  credential surface) is done — see `MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001`
-  above. This frontend is ready to be verified as-is once that task's
-  independent QA completes.
 
 ## MONGLE-W1-INDEPENDENT-QA-001 (independent QA of Wave 1)
 
@@ -876,3 +845,15 @@ that anything implementing it exists.
 - QA Evidence: agent-system/qa/MONGLE-REPOSITORY-BOUNDARY-ENFORCEMENT-001.md
 - Independent QA: NOT_REQUIRED_FOR_DOCS_ONLY
 - Next Action: WAIT_FOR_DATA_A_RESULT
+## MONGLE-W6-CANONICAL-UI-RECOVERY-BASELINE-001
+
+- Task ID: MONGLE-W6-CANONICAL-UI-RECOVERY-BASELINE-001
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED
+- Verification: PASS (recovery baseline only; not visual QA)
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W6-CANONICAL-UI-RECOVERY-BASELINE-001.md
+- QA Evidence: agent-system/qa/MONGLE-W6-CANONICAL-UI-RECOVERY-BASELINE-001.md
+- Result: canonical archive remeasured; noncanonical connected UI routes detached;
+  API, session, authorization, and realtime code parked pending R8 integration.

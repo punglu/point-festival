@@ -40,9 +40,15 @@ async def list_templates(db: AsyncSession, player_id: int | None = None) -> list
 
 def get_rolling_window() -> tuple[date, date]:
     """
-    롤링 윈도우 범위: 오늘 ~ 다음 주 일요일
-    예) 오늘이 토요일(4/4)이면 → 4/4(토) ~ 4/12(일) = 9일간
-    예) 오늘이 월요일(3/30)이면 → 3/30(월) ~ 4/5(일) = 7일간 (이번 주만)
+    롤링 윈도우 범위: 오늘 ~ **다음 주** 일요일 (양 끝 포함)
+
+    Legacy reference implementation. 실제 계산은 이번 주 일요일에서 7일을 더한
+    날까지이며, PM이 확정한 Target 계약과 동일하다. 양 끝을 포함하므로 기간이
+    7의 배수가 되지 않는다.
+
+    예) 오늘이 월요일(3/30)이면 → 3/30(월) ~ 4/12(일) = 14일
+    예) 오늘이 토요일(4/4)이면  → 4/4(토)  ~ 4/12(일) =  9일
+    예) 오늘이 일요일(4/5)이면  → 4/5(일)  ~ 4/12(일) =  8일
     """
     from datetime import timedelta
     today = date.today()

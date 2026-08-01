@@ -1,15 +1,18 @@
 # MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001
 
 - Task ID: MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001
-- Lifecycle: BLOCKED
+- Lifecycle: IN_PROGRESS
 - Decision: DESIGN_APPROVED
-- Verification: BLOCKED
+- Verification: CONDITIONAL
 - Execution: SUCCEEDED
 - Closeout Contract: v1
 
-Independent QA found `resolve_account_from_session_claim` raises an unhandled
-`ValueError` for a non-numeric Account-token `sid`. See the QA evidence for
-fresh DB reproduction and the required repair/regression test.
+Initial independent QA found `resolve_account_from_session_claim` raised an
+unhandled `ValueError` for a non-numeric Account-token `sid`. The repair was
+then independently rechecked: six targeted HTTP tests passed twice on two
+fresh disposable DBs and malformed claim probes returned 401. A complete
+independent backend-suite run is still required; its attempted run was stopped
+after 32 tests without a final result.
 
 ## Closeout Synchronization
 

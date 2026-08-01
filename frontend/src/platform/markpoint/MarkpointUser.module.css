@@ -1,0 +1,127 @@
+/* MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001 — Markpoint user screen.
+   Token names follow the ones the Wagle components already use, so this screen
+   inherits the same scale rather than introducing a second one. */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-5);
+  max-width: var(--layout-content-max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.header { display: flex; flex-direction: column; gap: var(--space-1); }
+.eyebrow { margin: 0; color: var(--color-ink-500); font-size: 13px; }
+.header h1 { margin: 0; color: var(--color-ink-900); font-size: 24px; font-weight: 700; }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--space-4);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border-radius: var(--radius-hero);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.cardTitle { margin: 0; color: var(--color-ink-500); font-size: 14px; font-weight: 600; }
+.bigNumber { margin: 0; color: var(--color-brand-700); font-size: 34px; font-weight: 700; line-height: 1.1; }
+.levelTitle { margin: 0; color: var(--color-ink-900); font-size: 16px; font-weight: 600; }
+.muted { margin: 0; color: var(--color-ink-500); font-size: 13px; }
+
+.subStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin: 0;
+}
+.subStats > div { display: flex; justify-content: space-between; gap: var(--space-2); }
+.subStats dt { color: var(--color-ink-500); font-size: 13px; }
+.subStats dd { margin: 0; color: var(--color-ink-900); font-size: 14px; font-weight: 600; }
+
+.progressTrack {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-brand-50);
+  overflow: hidden;
+}
+.progressFill { height: 100%; background: var(--color-brand-500); transition: width var(--duration-quick) ease; }
+
+.block { display: flex; flex-direction: column; gap: var(--space-3); }
+.block h2 {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2);
+  margin: 0; color: var(--color-ink-900); font-size: 18px; font-weight: 700;
+}
+.periodHint { color: var(--color-ink-500); font-size: 13px; font-weight: 400; }
+
+.dayList { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.day {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card-list);
+  background: var(--color-surface);
+}
+.dayToday { border-color: var(--color-brand-500); background: var(--color-brand-50); }
+.dayHead { display: flex; align-items: center; gap: var(--space-2); }
+.dayDate { color: var(--color-ink-900); font-size: 14px; font-weight: 700; }
+.todayTag {
+  padding: 0 var(--space-2); border-radius: 999px;
+  background: var(--color-brand-500); color: #ffffff; font-size: 12px; font-weight: 700;
+}
+.dayEmpty { margin: 0; color: var(--color-ink-500); font-size: 13px; }
+
+.missionList { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.mission { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.missionTitle { flex: 1 1 8rem; color: var(--color-ink-900); font-size: 14px; }
+.missionReward { color: var(--color-success); font-size: 14px; font-weight: 700; }
+
+.badge {
+  padding: 2px var(--space-2); border-radius: 999px;
+  background: var(--color-brand-50); color: var(--color-brand-700);
+  font-size: 12px; font-weight: 600; white-space: nowrap;
+}
+.badge_completed { background: var(--color-brand-200); color: var(--color-brand-700); }
+.badge_pending_approval { background: var(--color-brand-50); color: var(--color-brand-700); }
+.badge_rejected, .badge_cancelled, .badge_expired { background: var(--color-line); color: var(--color-ink-500); }
+
+.deductionList { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.deduction {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card-list);
+}
+.deductionAmount { color: var(--color-danger); font-size: 15px; font-weight: 700; min-width: 3rem; }
+.deductionReason { flex: 1 1 8rem; color: var(--color-ink-900); font-size: 14px; }
+.deductionDate { color: var(--color-ink-500); font-size: 13px; }
+.correctedTag, .reversalTag {
+  padding: 2px var(--space-2); border-radius: 999px;
+  background: var(--color-line); color: var(--color-ink-500); font-size: 12px;
+}
+
+.empty { margin: 0; padding: var(--space-5); text-align: center; color: var(--color-ink-500); font-size: 14px; }
+.error { margin: 0; color: var(--color-danger); font-size: 14px; }
+
+.primary, .secondary {
+  min-height: var(--size-touch-min);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-control);
+  font-size: 14px; cursor: pointer;
+}
+.primary { border: none; background: var(--color-brand-500); color: #ffffff; font-weight: 700; }
+.secondary { border: 1px solid var(--color-brand-500); background: transparent; color: var(--color-brand-700); font-weight: 600; }
+.secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+.primary:focus-visible, .secondary:focus-visible { outline: 2px solid var(--color-brand-500); outline-offset: 2px; }
+
+@media (max-width: 700px) {
+  .page { padding: var(--space-4) var(--layout-gutter-mobile); }
+  .subStats { grid-template-columns: 1fr; }
+}

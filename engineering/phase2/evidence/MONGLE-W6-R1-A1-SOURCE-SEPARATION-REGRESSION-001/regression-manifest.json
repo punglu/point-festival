@@ -1,0 +1,22 @@
+{
+  "task": "A1_SOURCE_SEPARATION",
+  "route": "/login",
+  "before_source": "frontend/src/platform/auth/AccountLoginView.tsx",
+  "after_page_entry": "frontend/src/pages/A1AccountLogin/index.tsx",
+  "after_css_module": "frontend/src/pages/A1AccountLogin/A1AccountLogin.module.css",
+  "viewports": ["375x812", "390x844", "430x932"],
+  "visual_change_count": 0,
+  "behavior_change_count": 0,
+  "network_change_count": 0,
+  "unresolved_import_count": 0,
+  "duplicate_a1_implementation_count": 0,
+  "capture_comparison": "before and after PNG SHA-256 values are identical for every viewport",
+  "ui_only_network_metrics": {
+    "login_api_request_count": 0,
+    "backend_api_request_count": 0,
+    "websocket_connection_count": 0,
+    "session_write_count": 0,
+    "auth_storage_write_count": 0,
+    "navigation_count": 0
+  }
+}
