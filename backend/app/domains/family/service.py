@@ -6,6 +6,8 @@ from fastapi import HTTPException, status
 from sqlalchemy import and_, select, update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domains.family import auth_service
+from app.domains.family.auth_service import ACCOUNT_TOKEN_ROLE
 from app.domains.family.models import (
     Account, FamilyGroup, FamilyMembership, LegacyIdentityMapping,
     MembershipRoleAssignment, Permission, Role, RolePermission,
@@ -35,6 +37,27 @@ def _legacy_identity(user: dict) -> tuple[str, str, str]:
 
 
 async def resolve_current_account(db: AsyncSession, user: dict) -> Account:
+    """Resolve the calling Account from either credential system.
+
+    MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001 added the Account branch. This
+    function is the single consumer of the `user` dict across
+    `/api/account-context` and every Wagle route, so teaching it the Target
+    credential unblocks both without touching a single router or any business
+    rule — the alternative was rewriting the authentication of 16 routes that
+    Wave 3's independent QA had already verified in their current form.
+
+    An Account token is resolved through the same
+    `auth_service.resolve_account_from_session_claim` that
+    `family.dependencies.get_current_account` uses, so Session-liveness and
+    Account-active checks live in exactly one place regardless of which
+    dependency chain decoded the token.
+
+    The legacy branch below is unchanged and still resolves through
+    `LegacyIdentityMapping`.
+    """
+    if user.get("role") == ACCOUNT_TOKEN_ROLE:
+        return await auth_service.resolve_account_from_session_claim(db, user)
+
     legacy_system, identity_type, identity_id = _legacy_identity(user)
     try:
         legacy_id = int(identity_id)

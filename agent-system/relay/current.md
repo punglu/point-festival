@@ -1,48 +1,102 @@
 # Current Relay
 
-Current Task: none — Wave 3 Core Lifecycle closed and graduated 2026-08-01
-by PM final decision.
+Current Task: none — Wave 5 closed and graduated on 2026-08-01.
 
-- PM verdict: `MONGLE-W3-FRONTEND-RUNTIME-CLOSEOUT-QA-001: PASS` /
-  `WAVE_3_CORE_LIFECYCLE: COMPLETE` / `WAGLE_FRONTEND_CURRENT_SCOPE:
-  INDEPENDENT_QA_PASS` / `WAVE_6_ROOM_UI_DEPENDENT_SCENARIOS:
-  DEFERRED_WITH_EXPLICIT_ACCEPTANCE_CRITERIA` / `READY_FOR_WAVE_5: YES`.
-- Graduated to `agent-system/graduated/2026-08.md`:
-  `MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001`,
-  `MONGLE-W3-WAGLE-MULTIWORKER-FANOUT-001`,
-  `MONGLE-W3-WAGLE-INDEPENDENT-QA-001`,
-  `MONGLE-W3-FRONTEND-RUNTIME-CLOSEOUT-QA-001`. Their handoffs moved to
-  `agent-system/handoffs/archive/2026-08/`. Backlog rows for
-  `MONGLE-W2-WAGLE-REALTIME-001` (Wave 3 scope), `MONGLE-W3-WAGLE-
-  RECONNECT-RESUME-001`, `MONGLE-W3-WAGLE-MULTIFAMILY-SUBSCRIPTION-001`,
-  `MONGLE-W3-WAGLE-FAILURE-ISOLATION-001`, `MONGLE-W3-WAGLE-PIN-LOCK-001`,
-  `MONGLE-W3-WAGLE-PUSH-SUBSCRIPTION-001` (foundational scope) marked `DONE`.
-- Five browser-level realtime scenarios (ordinary reconnect, resume/missed-
-  message recovery, duplicate-render prevention, sequence-gap refetch,
-  per-Family-revoke UI isolation) plus a two-browser realtime journey were
-  **not** opened as a new task (`MONGLE-W6-WAGLE-ROOM-REALTIME-UI-E2E-001`
-  was explicitly declined by PM) — merged instead into
-  `MONGLE-W5-TARGET-UI-001`'s existing Wave 6 DoD in
-  `engineering/phase2/MONGLE_IMPLEMENTATION_BACKLOG.md`, to be proven once
-  `WagleLanding` renders real rooms instead of preview fixtures. They are
-  already independently verified at the Backend/API layer (239/239).
-  Markpoint-route-unaffected-by-PIN-lock was added to the same DoD row,
-  conditioned on a Markpoint frontend route existing (Wave 5 UI).
-- D6-P1–P8 remain `DEFERRED_TO_RELEVANT_TASK_START_GATE`, untouched.
+- **Wave 5 Markpoint Core is complete and independently verified.** Coverage
+  Matrix: `COVERED_TARGET 10` / Core `PARTIALLY_COVERED 0` /
+  `MISSING_REQUIRED_IN_WAVE_5 0` / `UNCLASSIFIED 0`. Independent QA found
+  **0 product defects**; its only `CONDITIONAL` cause was two stale docstrings,
+  now corrected by `MONGLE-W5-ROLLING-WINDOW-DOC-CLOSEOUT-001`.
+- Graduated: `MONGLE-W4-MARKPOINT-MISSION-LEDGER-001`,
+  `MONGLE-W5-MARKPOINT-FUNCTIONAL-COVERAGE-GAP-COMPLETION-001`,
+  `MONGLE-W5-MARKPOINT-CORE-GAP-CLOSEOUT-001`,
+  `MONGLE-W5-MARKPOINT-INDEPENDENT-QA-001`,
+  `MONGLE-W5-ROLLING-WINDOW-DOC-CLOSEOUT-001`.
+- Effective Wave 5 verdict: **PASS after the required documentation
+  correction.** The independent QA's own `CONDITIONAL` is preserved verbatim in
+  its report and deliberately not rewritten — the record that the gap existed
+  and was found is worth more than a tidy verdict line.
+
+## Two record defects, corrected — PM-dispositioned 2026-08-01
+
+```text
+Concurrent writer claim coexistence : RESOLVED_PROCESS_INCIDENT
+Markdown header splice corruption   : RESOLVED_PROCESS_INCIDENT
+Product impact                      : NONE
+Lifecycle impact                    : NONE
+```
+
+Recorded rather than quietly repaired, because both are the shape the record
+audit exists to catch and both were mine. PM approved keeping the occurrence,
+cause, recovery and prevention rule on the record instead of deleting them:
+
+1. **This file briefly carried two writer claims** — the record-integrity audit
+   claimed the top while the Wave 5 writer claimed the `Current Task` section,
+   because the two ran concurrently. `rules.md` treats the relay as the
+   single-writer register, so that is a genuine defect. Neither writer's content
+   was lost.
+2. **A naive string splice mangled this file's header.** An edit that searched
+   for the `Current Task` heading matched an *earlier quoted mention* of the
+   same words inside a sentence and cut there, truncating the audit's own note
+   mid-clause. Fixed by rewriting the header. **Standing rule, PM-retained:
+   when splicing Markdown by heading, anchor on the line start, never on the
+   words** — a quoted mention of a heading inside prose will match first.
+
+## BG-1 credential-surface gap — fixed, pending independent QA (2026-08-01)
+
+`MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001`'s `BLOCKED` finding (no single
+credential reached both the family/Wagle API and the Markpoint Target API)
+is closed by `MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001`: a pre-existing but
+uncommitted/unregistered fix was found, re-measured live (confirmed
+working), then root-cause corrected — its Account-branch had duplicated
+`get_current_account`'s Session-liveness check verbatim; both entry points
+now share one function, `auth_service.resolve_account_from_session_claim`.
+38 `Depends(get_current_user)` usages enumerated for identity-confusion
+risk, none found unsafe. 317/0/0 full-suite result, 5 new regression tests.
+**Independent QA of this task is required before Wave 6 Target UI
+journeys are treated as unblocked.**
 
 ## Next Task
 
-None claimed. Per PM's final status:
+**`MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001` independent QA**, then
+**`MONGLE-W6-TARGET-UI-START-REVIEW`** — Wave 6 Target UI Start Review.
+
+## Markpoint rules the next writer must not undo
+
+- **The Ledger is append-only and the database enforces it** —
+  `markpoint_ledger_no_update` / `markpoint_ledger_no_delete`. A correction is a
+  reversal plus an optional replacement, never an edit. Found by a test of mine
+  being refused, which is the guard working.
+- **Cycle config is per Family, not the legacy global `configs` row.** One
+  Family's change must never move another's period boundaries.
+- **No force override on Guard A or Guard B.** None is defined by contract, and
+  an override is exactly where a guard quietly stops meaning anything.
+- **Level input is `lifetime_earned`, never `current_balance`** — using the
+  balance would drop a child's level the moment they spend points.
+- **Bulk approval is all-or-nothing.** No approved contract defines partial
+  success; adding per-item results is a contract change, not an improvement.
+- **Rolling window: the code wins over its own docstring.**
+  `get_rolling_window` gives a Monday 14 days while its docstring claims 7
+  ("이번 주만"). The code is preserved. Do not "fix" it to match the prose
+  without PM approval — it changes how many missions every Monday generates.
+- **`markpoint.missions.manage` ≠ FamilyAdmin.** A family owner is refused every
+  admin capability, and the HTTP matrix asserts it.
+
+## Wave status
 
 ```text
-WAVE_0..WAVE_4: COMPLETE
-WAVE_3_CORE: COMPLETE
-WAVE_5: READY_TO_START — MONGLE-W5-MARKPOINT-TARGET-OWNERSHIP-001 /
-  MONGLE-W4-MARKPOINT-MISSION-LEDGER-001 (mission, ledger, level, reward on
-  Target FamilyGroup/FamilyMembership ownership)
-WAVE_6: NOT_STARTED
-WAVE_7: NOT_STARTED
+WAVE_0..WAVE_5: COMPLETE   (Wave 5 graduated 2026-08-01)
+WAVE_6: READY_TO_START — Target UI (MP-U01), the browser-level Markpoint
+  journey, and the Cheer / Feedback / in-app Notification product decisions
+  (MP-S01..S03), which remain PM_DECISION_REQUIRED and were never retired
+  or reclassified
+WAVE_7: NOT_STARTED — cutover, including retirement of the legacy
+  `configs.point_cycle` row that Markpoint Target no longer reads
 ```
+
+Wave 5 effective verdict: **EFFECTIVE_PASS_AFTER_DOCUMENTATION_CORRECTION**.
+The independent QA's `CONDITIONAL` stands verbatim in its own report; it was a
+documentation-freshness gate, not a product defect (Core defects: 0).
 
 ## Rules that stay in force
 
@@ -61,6 +115,36 @@ WAVE_7: NOT_STARTED
 - Wave 5 must land Target ownership **before** Markpoint product logic —
   never the reverse (per `MONGLE_DEPENDENCY_AND_WAVE_PLAN.md`'s own
   parallelization rule 4).
+
+## Approved documentation-hygiene item (PM 2026-08-01)
+
+```text
+STALE_TEST_DOCSTRING : NON_BLOCKING_DOCUMENTATION_HYGIENE
+WAVE_5_REOPEN        : NO
+WAVE_6_START_BLOCK   : NO
+```
+
+`backend/tests/test_markpoint_core_gap_wave5.py::test_rolling_window_preserves_the_implemented_legacy_behaviour`
+still carries a name and docstring describing the rolling-window contradiction
+as unresolved. Its **assertions are correct and the product is unaffected** —
+this is prose that outlived its context.
+
+`MONGLE-W5-ROLLING-WINDOW-DOC-CLOSEOUT-001` was explicitly forbidden from
+modifying test files, so leaving it was the right call there, and PM has
+confirmed that. The next session **holding test-documentation authority**
+applies it:
+
+```text
+rename to : test_rolling_window_uses_today_through_next_week_sunday_inclusive
+docstring : restate the approved contract
+            TODAY_THROUGH_NEXT_WEEK_SUNDAY_INCLUSIVE
+            (Monday 14 / Saturday 9 / Sunday 8 inclusive dates)
+do NOT change: assertions, fixtures, or any other test
+```
+
+Recorded here rather than left in a report, because the whole point of the
+closeout it came from is that stale prose beside correct code is how a settled
+decision gets reversed by someone tidying up.
 
 ## Carried-forward items the next writer must not mistake for settled
 

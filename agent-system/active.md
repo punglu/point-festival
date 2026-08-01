@@ -34,6 +34,213 @@ that anything implementing it exists.
 | D6-P7 | 메시지·시스템 이벤트 보존 기간 | Retention task |
 | D6-P8 | 오프라인 발신 Queue의 v1 포함 여부 | Offline outbound queue task |
 
+## MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001
+
+- Task ID: MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001
+- Kind: backend fix + regression tests — registers, root-cause-fixes and
+  hardens the previously uncommitted/unregistered credential-surface change
+  that closes backend gap "BG-1" (`MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001`'s
+  `BLOCKED` finding)
+- Lifecycle: IMPLEMENTED_AWAITING_INDEPENDENT_QA
+- Decision: DESIGN_APPROVED (PM, via "그래" — item 5 of the 5 reviewed PM
+  decision items, then "근본적 해결을해라 / 임시 해결말고" directing a
+  root-cause fix rather than a documented workaround)
+- Verification: SELF_CHECK_PASS / INDEPENDENT_QA_PENDING
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001.md
+- QA Evidence: agent-system/qa/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001.md
+- Result: the pre-existing uncommitted fix in `app/dependencies.py` /
+  `family/service.py` (widened `get_current_user` role set to
+  `{player, admin, account}`) was re-measured live and confirmed working
+  (`/api/account-context` 401→200 for an Account token), then root-cause
+  corrected: its Account-branch had duplicated
+  `family/dependencies.py::get_current_account`'s Session-liveness check
+  verbatim (own docstring admitted it). Extracted to one shared function,
+  `auth_service.resolve_account_from_session_claim`, now the single call
+  site both entry points delegate to. All 38 `Depends(get_current_user)`
+  usages across 8 files enumerated for unsafe direct `user["sub"]`
+  extraction (the identity-confusion/IDOR risk an `account`-role `sub`
+  being an `account_id`, not a `player_id`, could create) — none found;
+  the one direct-extraction site (`feedback/router.py`) sits behind an
+  explicit role gate that rejects `account` tokens first.
+- Test evidence: 33/33 Wave 1 account-auth tests, 41/41 Wagle/family tests,
+  5/5 new regression tests (`test_bg1_credential_surface_unification.py`),
+  full suite 317 passed / 0 failed / 0 errors (re-run twice; an
+  interleaved first run's 3 failed/11 errors traced to pre-existing
+  cross-file batch DB-connection contention unrelated to this change —
+  same files 86/86 clean standalone).
+- Environment: disposable `postgres:16.9-alpine` (port 15435, matches
+  `tests/conftest.py`), `database/init.sql` + `alembic upgrade head` →
+  `0011`, throwaway Python 3.11 venv (system default 3.9 cannot import this
+  codebase). Container and venv torn down after use, zero residue.
+- Next Action: independent QA of this task's specific claims (shared-
+  function refactor, 38-usage safety enumeration, new tests, full-suite
+  result) before BG-1 is treated as closed for Wave 6 Target UI purposes.
+
+## PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002
+
+- Task ID: PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002
+- Kind: second execution of the `AGENT_SYSTEM_INTEGRITY_AUDIT_PROMPT.md` brief.
+  A new ID because `-001` is already in `graduated/2026-08.md` with its handoff
+  archived, and Invariant #1 forbids one Task ID resolving to both an open and
+  a closed location. That graduated row itself names "a separate future task"
+  as the owner of findings F1–F4; this is it.
+- Lifecycle: IMPLEMENTED_AWAITING_INDEPENDENT_QA
+- Decision: DESIGN_APPROVED (standing PM brief, re-issued 2026-08-01)
+- Verification: CONDITIONAL (self-check) / INDEPENDENT_QA_PENDING
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002.md
+- QA Evidence: agent-system/qa/PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002.md
+- Baseline: `dev-newmarkp` @ `25c8d0c`, unchanged start → end. No commit.
+- Clean: Invariant #1 violations 0; graduated rows with a dead git ref 0 (29
+  checked); missing archived handoffs 0; `SUCCEEDED` handoffs declaring absent
+  files 0; `CLAUDE.md` still a 46-line thin pointer with no re-accumulated
+  state. The predecessor's two named untracked commits (`0393971`, `91eb98e`)
+  are now traceable — that finding is closed by evidence, not assertion.
+- Applied (registration/consistency only, no status raised): the **9 F1–F4
+  registrations** (block above, all `NOT_TESTED`); three Closeout blocks whose
+  field values shared a line with their explanations and so parsed as empty;
+  two graduated Wave 3 handoffs still declaring `handoffs/active/` paths.
+  `check_closeout.py` warnings **14 → 6**.
+- **A correction to my own finding, kept visible rather than replaced:** F-B was
+  first recorded as "gate PASS while handoff and QA evidence do not exist". That
+  was wrong — both files exist and the gate is properly backed; the defect was
+  that the checker could not parse the block. I had reported a checker message
+  as a fact about the repository without opening the files it named, which is
+  the exact failure this audit exists to catch.
+- Concurrent writer: `MONGLE-W4-MARKPOINT-MISSION-LEDGER-001` was added to this
+  file by another writer **during** the audit. My edit was verified purely
+  additive (62 insertions, their section intact). Their files were not touched.
+- Open findings left for their owners: F-A (2 docs-only untraceable commits),
+  F-C (that task's handoff/QA carry no `- Task ID:` line), F-D (3 open tasks
+  with no handoff), and the long-standing `PHASE2-DORAN-MESSAGING-FOUNDATION-001-R2`
+  gap.
+- Independent QA: **complete — CONDITIONAL** (2026-08-01,
+  `PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002-INDEPENDENT-QA-001`, see
+  below). Every clean-finding claim (Invariant #1: 0 violations,
+  re-checked directly against the current file set; graduated git refs:
+  spot-checked, all exist; row-count reconciliation: 29 at this task's own
+  snapshot = 18 in `2026-08.md` + 11 in `2026-07.md`, both independently
+  recounted) re-confirmed true. **One new registration gap found that
+  post-dates this task's own git_ref snapshot and could not have been
+  caught by it**: `MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001` (below) —
+  the same failure shape this audit exists to catch, recurring immediately
+  after the previous pass. Registered as part of the independent QA's own
+  in-scope registration-fix authority, following this task's own F1–F4
+  precedent.
+- PM Disposition (2026-08-01): items 1 (F-C) and 2 (nine F1–F4 tasks) are
+  resolved — item 1 self-resolved, item 2 graduated as historical to
+  `graduated/2026-08.md` (self-reported only, not independently QA'd).
+  Item 3 (`42fa4ae`/`9220859`) resolved as `NO_RETROACTIVE_TASK_ID` /
+  `PRE_SYSTEM`. Full disposition text in this task's own QA evidence.
+- Next Action: item 4 (`PHASE2-DORAN-MESSAGING-FOUNDATION-001-R2`, flagged
+  as next priority) remains open. Item 5's re-verification is **complete —
+  see `MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001`** below: the BG-1 fix was
+  found already present but unregistered, root-cause corrected (a
+  duplicated security check consolidated into one shared function), and
+  regression-tested; independent QA of that task is the new open item.
+
+## PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002-INDEPENDENT-QA-001
+
+- Task ID: PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002-INDEPENDENT-QA-001
+- Kind: independent QA of `PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002`,
+  re-running the `AGENT_SYSTEM_INTEGRITY_AUDIT_PROMPT.md` brief's own 8-step
+  method against current repository state rather than re-reading -002's
+  report as evidence.
+- Lifecycle: IN_PROGRESS (evidence complete; PM decision pending)
+- Decision: DESIGN_APPROVED (process task)
+- Verification: CONDITIONAL
+- Verification detail: `INVARIANT_1_CLEAN` (re-confirmed), `GRADUATED_REFS_
+  CLEAN` (re-confirmed), `NEW_UNREGISTERED_TASK_FOUND_AND_FIXED`
+  (`MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001`)
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Branch / Start HEAD: `dev-newmarkp` / `25c8d0ccfa0406e2b458da7e8ca251ac8737b840`
+  (unchanged end, no commit)
+- Result: -002's own claims re-verified against the live repository, not
+  accepted from its report: Invariant #1 (0 overlap between `active.md`
+  headers and `graduated/*.md` rows, re-extracted and `comm -12`'d
+  directly); 4 graduated git refs spot-checked via `git cat-file -e` (all
+  exist); `check_closeout.py`/`check_active.py`/`check_handoff_refs.py`
+  re-run live (not read from a prior log) — confirmed -002's F-B/F-C format
+  fixes are actually in effect (those specific warnings no longer appear);
+  confirmed `PHASE2-DORAN-MESSAGING-FOUNDATION-001-R2`'s QA-evidence and
+  Closeout-block gaps are still present, unchanged (2 checker warnings).
+  **New finding**: `MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001` has real
+  product code (10 new + 6 modified frontend files, matching this session's
+  own `git status` exactly), a real QA report with an honest `BLOCKED`
+  verdict (no false PASS), but was registered in **neither** `active.md`
+  nor `graduated/` — and its own Closeout Synchronization block falsely
+  claimed `ACTIVE: UPDATED` and a specific `HANDOFF Path` that did not
+  exist, independently confirmed by `check_closeout.py`'s own live output
+  ("QA evidence declares Closeout Contract v1 but no active or archived
+  handoff exists"), not merely by this session's manual grep. Fixed: task
+  registered in `active.md` (below), the missing handoff synthesized from
+  its own already-real QA evidence content (no fabrication — every claim in
+  the handoff traces to a section of the existing report), and the QA
+  report's own Closeout Synchronization block corrected to match what is
+  now actually true. The task's own substantive verdict (`BLOCKED` on
+  backend gap BG-1) was **not** touched or re-judged — that is product
+  verification, out of this registration-integrity audit's scope.
+- Handoff: agent-system/qa/PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002-INDEPENDENT-QA-001.md (QA evidence serves as handoff, same convention as MONGLE-W1-INDEPENDENT-QA-001)
+- QA Evidence: agent-system/qa/PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002-INDEPENDENT-QA-001.md
+- Next Action: PM decision on whether `MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001`'s
+  `BLOCKED` verdict (backend credential-surface gap "BG-1") is accepted as
+  the accurate current Wave 6 blocker, and whether independent QA of its
+  substantive frontend/backend-gap claims is warranted before the
+  recommended follow-up (a backend task unifying the credential surface) is
+  opened.
+
+## MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001
+
+- Task ID: MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001
+- Kind: Wave 6 Target UI frontend slice (registration retroactively applied
+  by `PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002-INDEPENDENT-QA-001`
+  above — the work and its QA evidence are real and pre-existing; only the
+  registration was missing)
+- Lifecycle: BLOCKED
+- Decision: DESIGN_APPROVED (Wave 6 Start Review directive)
+- Verification: NOT_TESTED — the task's own report is self-check only;
+  registering it here makes the work visible, it does not independently
+  confirm the `BLOCKED` finding or the frontend implementation claims
+- Execution: SUCCEEDED (frontend implementation) / BLOCKED (integration —
+  see below)
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001.md
+- QA Evidence: agent-system/qa/MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001.md
+- Baseline: `dev-newmarkp` @ `25c8d0c`, unchanged start → end. No commit.
+- Result (self-reported): `WAVE_6_TARGET_UI_INTEGRATION_BLOCKED` /
+  `EXACT_BACKEND_DESIGN_OR_RUNTIME_BLOCKER_RECORDED` / `NO_FALSE_PASS`. The
+  Wave 6 frontend is implemented (Account sign-in, Markpoint user/admin
+  screens, real Wagle room view, Family hub, Target routes/guards; tsc/lint
+  clean; zero preview fixtures in the production bundle) but cannot run
+  end-to-end: no single credential reaches both the family-context API and
+  the Markpoint Target API (Account tokens get 401 from
+  `/api/families/{id}/wagle/*`... measured table is in the QA evidence §1).
+  Reported `BLOCKED` rather than `CONDITIONAL` since the Markpoint Core API
+  is unconnected at runtime — no false PASS.
+- Changed files (self-reported, matches this session's own `git status`
+  exactly): new `shared/api/{markpointApi,wagleApi,accountAuthApi}.ts`,
+  `platform/markpoint/{MarkpointUser,MarkpointAdmin}.tsx`+css,
+  `platform/wagle/WagleRoomView.tsx`+css,
+  `platform/auth/AccountLoginView.tsx`+css,
+  `platform/pages/FamilyLanding.module.css`,
+  `tests/e2e/specs-mongle/03-target-ui.spec.ts`,
+  `agent-system/qa/artifacts/wave6/BLOCKER_MEASUREMENT.md`; modified
+  `App.tsx`, `shell/MongleAppShell.tsx`, `pages/WagleLanding.tsx`,
+  `pages/FamilyLanding.tsx`, `shared/stores/useAuthStore.ts`,
+  `backend/scripts/phase1_seed_synthetic.py` (fixture only).
+- Independent QA: not started — this registration is a documentation
+  correction only, per `PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002`'s
+  own constraint against self-awarding QA PASS for anything found
+  incomplete during a registration pass.
+- Next Action: the recommended follow-up (a backend task unifying the
+  credential surface) is done — see `MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001`
+  above. This frontend is ready to be verified as-is once that task's
+  independent QA completes.
+
 ## MONGLE-W1-INDEPENDENT-QA-001 (independent QA of Wave 1)
 
 - Task ID: MONGLE-W1-INDEPENDENT-QA-001

@@ -41,24 +41,7 @@ async def get_current_account(
             headers={"WWW-Authenticate": "Bearer"},
         )
     payload = auth_service.decode_access_token(credentials.credentials)
-
-    session_id = payload.get("sid")
-    if session_id is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="세션 정보가 없는 토큰입니다")
-    session_row = await auth_service.load_active_session(db, int(session_id))
-
-    try:
-        account_id = int(payload["sub"])
-    except (KeyError, TypeError, ValueError):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="유효하지 않은 토큰입니다")
-    if session_row.account_id != account_id:
-        # Token and session disagree about who is calling.
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="유효하지 않은 세션입니다")
-
-    account = await db.get(Account, account_id)
-    if account is None or account.status != "active" or account.deleted_at is not None:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="사용할 수 없는 계정입니다")
-    return account
+    return await auth_service.resolve_account_from_session_claim(db, payload)
 
 
 async def get_current_session_id(

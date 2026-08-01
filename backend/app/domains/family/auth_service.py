@@ -412,3 +412,33 @@ async def load_active_session(db: AsyncSession, session_id: int) -> AccountSessi
             headers={"WWW-Authenticate": "Bearer"},
         )
     return session_row
+
+
+async def resolve_account_from_session_claim(db: AsyncSession, payload: dict) -> Account:
+    """Resolve the live Account an Account-token payload names.
+
+    Single source of truth for every entry point that accepts an Account-
+    native token: the Session named by `sid` must still be live, it must agree
+    with `sub` about which Account is calling, and that Account must still be
+    active. Two call sites need this — `family.dependencies.get_current_account`
+    (decodes the token itself) and the Account branch of
+    `resolve_current_account` below (receives an already-decoded payload from
+    the legacy-token-shaped `get_current_user`) — so the rule is defined here
+    once instead of twice, since a divergence between two copies of a
+    Session-liveness check is exactly the kind of drift a future security fix
+    could apply to only one of them.
+    """
+    session_id = payload.get("sid")
+    if session_id is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="세션 정보가 없는 토큰입니다")
+    session_row = await load_active_session(db, int(session_id))
+    try:
+        account_id = int(payload["sub"])
+    except (KeyError, TypeError, ValueError):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="유효하지 않은 토큰입니다")
+    if session_row.account_id != account_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="유효하지 않은 세션입니다")
+    account = await db.get(Account, account_id)
+    if account is None or account.status != "active" or account.deleted_at is not None:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="사용할 수 없는 계정입니다")
+    return account
