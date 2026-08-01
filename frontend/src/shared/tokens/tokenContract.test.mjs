@@ -29,6 +29,7 @@ function read(relPath) {
 
 const globalCss = read('styles/global.css');
 const avatarTsx = read('shared/components/Avatar/Avatar.tsx');
+const avatarCss = read('shared/components/Avatar/Avatar.module.css');
 const iconButtonTsx = read('shared/components/IconButton/IconButton.tsx');
 const iconButtonCss = read('shared/components/IconButton/IconButton.module.css');
 const buttonTsx = read('shared/components/Button/Button.tsx');
@@ -123,6 +124,27 @@ test('Avatar requires an accessible name (alt) and preserves fallback aria-label
 test('Avatar image-failure fallback branch is still present (src ? <img> : fallback span)', () => {
   assert.match(avatarTsx, /\{src \? \(/);
   assert.match(avatarTsx, /styles\.fallback/);
+});
+
+// MONGLE-W6-1-AVATAR-STATUS-DOT-CLIP-FIX-001: .avatar's overflow:hidden used
+// to clip the corner-positioned .statusDot into a quarter-circle. The circular
+// clip now lives on a dedicated inner wrapper so the status dot, a sibling of
+// that wrapper, is never clipped.
+test('circular clipping is scoped to an inner wrapper, not the outer .avatar box', () => {
+  assert.doesNotMatch(avatarCss, /\.avatar\s*{[^}]*overflow:\s*hidden/s);
+  assert.match(avatarCss, /\.avatarInner\s*{[^}]*overflow:\s*hidden/s);
+});
+
+test('Avatar renders the image/fallback inside the inner clipping wrapper', () => {
+  assert.match(avatarTsx, /<span className=\{styles\.avatarInner\}>/);
+});
+
+test('statusDot is a sibling of avatarInner, not nested inside it (so it cannot be clipped by it)', () => {
+  const openTag = avatarTsx.indexOf('<span className={styles.avatarInner}>');
+  const closeTag = avatarTsx.indexOf('</span>', openTag);
+  const statusDotIdx = avatarTsx.indexOf('styles.statusDot');
+  assert.ok(openTag > -1 && closeTag > -1 && statusDotIdx > -1);
+  assert.ok(statusDotIdx > closeTag, 'statusDot must be rendered after avatarInner closes');
 });
 
 // --- (C) IconButton primitive tests --------------------------------------

@@ -3,9 +3,25 @@
   display: inline-flex;
   flex-shrink: 0;
   border-radius: var(--radius-pill);
-  overflow: hidden;
   background: var(--color-brand-100);
   color: var(--color-brand-700);
+}
+
+/*
+ * MONGLE-W6-1-AVATAR-STATUS-DOT-CLIP-FIX-001: overflow:hidden previously lived
+ * on .avatar itself, which also clipped the corner-positioned .statusDot into
+ * a quarter-circle. Circular clipping now happens on this inner wrapper
+ * (image/fallback only) so .statusDot, a sibling of this wrapper, renders as
+ * a full ringed dot.
+ */
+.avatarInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
 }
 
 .image {

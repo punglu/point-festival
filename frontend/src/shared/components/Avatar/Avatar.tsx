@@ -47,13 +47,15 @@ export default function Avatar({ src, alt, fallback, size = 44, status, classNam
 
   return (
     <span className={cls} style={{ width: sizePx, height: sizePx }}>
-      {src ? (
-        <img className={styles.image} src={src} alt={alt} width={sizePx} height={sizePx} />
-      ) : (
-        <span className={styles.fallback} style={{ fontSize: sizePx * 0.4 }} role="img" aria-label={alt}>
-          {fallback}
-        </span>
-      )}
+      <span className={styles.avatarInner}>
+        {src ? (
+          <img className={styles.image} src={src} alt={alt} width={sizePx} height={sizePx} />
+        ) : (
+          <span className={styles.fallback} style={{ fontSize: sizePx * 0.4 }} role="img" aria-label={alt}>
+            {fallback}
+          </span>
+        )}
+      </span>
       {status && (
         <>
           <span className={`${styles.statusDot} ${statusClass[status]}`} aria-hidden="true" />
