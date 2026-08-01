@@ -19,12 +19,15 @@ reintroduce the two-copies drift the refactor removed.
 """
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 
 import pytest
+from jose import jwt
 from sqlalchemy import select
 
+from app.config import settings
 from app.domains.family import auth_service
+from app.domains.family.auth_service import ACCOUNT_TOKEN_ROLE
 from app.domains.family.models import Account, AccountSession
 
 from tests.conftest import auth_headers, create_family, _create_legacy_player
@@ -134,3 +137,29 @@ async def test_account_id_colliding_with_a_legacy_player_id_is_not_confused(db, 
         headers=auth_headers(player_id),
     )
     assert legacy_resp.status_code == 200
+
+
+def _validly_signed_token_with(**overrides) -> str:
+    payload = {
+        "sub": "1",
+        "role": ACCOUNT_TOKEN_ROLE,
+        "sid": 1,
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=30),
+    }
+    payload.update(overrides)
+    return jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+
+
+async def test_non_numeric_sid_is_rejected_as_401_not_a_server_error(db, client):
+    """`MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001` found that
+    a validly-signed Account token with a non-numeric `sid` escaped the auth
+    contract as an unhandled `ValueError` from `int(session_id)` (a 500)
+    instead of the 401 every other malformed-claim case in
+    `resolve_account_from_session_claim` produces. Exercised through both
+    entry points that call it."""
+    await _account_with_login(db, "bg1-badsid", "bg1.badsid")
+
+    token = _validly_signed_token_with(sid="bad")
+
+    assert (await client.get("/api/me", headers=_bearer(token))).status_code == 401
+    assert (await client.get("/api/account-context", headers=_bearer(token))).status_code == 401

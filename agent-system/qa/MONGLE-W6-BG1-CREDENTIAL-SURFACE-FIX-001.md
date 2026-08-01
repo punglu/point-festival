@@ -94,15 +94,52 @@ unexplained result.
 5. `test_account_id_colliding_with_a_legacy_player_id_is_not_confused` —
    worst-case IDOR scenario (Account.id == Player.id, both row 1 of a
    freshly truncated table): still 403, never treated as that player.
+6. `test_non_numeric_sid_is_rejected_as_401_not_a_server_error` — added
+   after independent QA (§8 below); crafts a validly-signed Account token
+   with `sid="bad"` and asserts 401 on both `/api/me` and
+   `/api/account-context`.
 
 ## 6. Environment teardown
 
 `docker rm -f mongle-bg1-fixdb` confirmed removed; throwaway venv at
-`/private/tmp/mongle_bg1_venv` deleted. Zero residue.
+`/private/tmp/mongle_bg1_venv` deleted. Zero residue. (Repeated for the
+correction pass in §8 with a second disposable container/venv, also torn
+down.)
 
-## 7. Verdict
+## 7. Verdict (original pass, superseded by §8)
 
 `BG1_FIX_CONFIRMED_WORKING` / `ROOT_CAUSE_DUPLICATION_REMOVED` /
 `NO_IDENTITY_CONFUSION_DEFECT_FOUND` / `REGRESSION_CLEAN_317_0_0` /
-`INDEPENDENT_QA_PENDING`. This is self-check evidence from the session that
-made the change; independent QA has not run.
+`INDEPENDENT_QA_PENDING`. This was self-check evidence from the session
+that made the original change.
+
+## 8. Independent QA finding and correction (2026-08-01)
+
+`MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001` (verdict
+`BLOCKED`; see `agent-system/qa/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001.md`)
+independently reproduced the fix's core behavior (role widening, shared
+resolver, 38-usage safety enumeration, the 5/5 test result) and then found
+a real gap the self-check evidence above did not cover: a validly-signed
+Account token with a non-numeric `sid` claim reached
+`resolve_account_from_session_claim`'s unguarded `int(session_id)` and
+raised `ValueError` — an HTTP 500, not the 401 every other malformed-claim
+branch in the same function produces. Confirmed by direct reproduction on a
+fresh disposable DB, not by re-reading this report.
+
+Correction: `int(session_id)` is now behind the same
+`try`/`except (TypeError, ValueError)` → 401 pattern already used for the
+`sub` claim. Regression test 6 above added, confirmed to fail against the
+pre-fix code and pass against the fix (verified with `git stash` isolating
+just the one-line change). Full `backend/tests/` suite re-run against a
+newly recreated disposable Postgres container, twice: first pass 315
+passed / 3 failed, all three in Wagle dispatcher/outbox concurrency tests
+this task never touches; re-ran those two files standalone (67/67 clean),
+matching the same batch-scale `asyncio.gather`-timing flakiness pattern
+already documented in this report's §4 — not a regression. Second full
+pass, uncontended: **318 passed, 0 failed, 0 errors**. This §8 self-check
+evidence is not itself independent QA — the correction still needs its own
+independent re-verification before BG-1 is treated as closed.
+
+**Revised verdict**: `MALFORMED_SID_DEFECT_FIXED` /
+`REGRESSION_TEST_ADDED_AND_CONFIRMED_TO_CATCH_THE_DEFECT` /
+`INDEPENDENT_RE_QA_PENDING`.

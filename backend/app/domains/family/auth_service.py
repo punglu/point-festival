@@ -431,7 +431,11 @@ async def resolve_account_from_session_claim(db: AsyncSession, payload: dict) ->
     session_id = payload.get("sid")
     if session_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="세션 정보가 없는 토큰입니다")
-    session_row = await load_active_session(db, int(session_id))
+    try:
+        session_id = int(session_id)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="유효하지 않은 토큰입니다")
+    session_row = await load_active_session(db, session_id)
     try:
         account_id = int(payload["sub"])
     except (KeyError, TypeError, ValueError):

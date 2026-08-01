@@ -45,7 +45,8 @@ that anything implementing it exists.
 - Decision: DESIGN_APPROVED (PM, via "그래" — item 5 of the 5 reviewed PM
   decision items, then "근본적 해결을해라 / 임시 해결말고" directing a
   root-cause fix rather than a documented workaround)
-- Verification: SELF_CHECK_PASS / INDEPENDENT_QA_PENDING
+- Verification: SELF_CHECK_PASS / INDEPENDENT_QA_BLOCKED_THEN_CORRECTED /
+  INDEPENDENT_RE_QA_PENDING
 - Execution: SUCCEEDED
 - Closeout Contract: v1
 - Handoff: agent-system/handoffs/active/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001.md
@@ -74,9 +75,37 @@ that anything implementing it exists.
   `tests/conftest.py`), `database/init.sql` + `alembic upgrade head` →
   `0011`, throwaway Python 3.11 venv (system default 3.9 cannot import this
   codebase). Container and venv torn down after use, zero residue.
-- Next Action: independent QA of this task's specific claims (shared-
-  function refactor, 38-usage safety enumeration, new tests, full-suite
-  result) before BG-1 is treated as closed for Wave 6 Target UI purposes.
+- **Correction applied 2026-08-01** after
+  `MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001` (verdict
+  `BLOCKED`, below): a validly-signed Account token with a non-numeric
+  `sid` reached `resolve_account_from_session_claim`'s unguarded
+  `int(session_id)` and raised an unhandled `ValueError` (500) instead of
+  401. Pre-existed in both original duplicated copies; carried forward, not
+  introduced, by the consolidation — still had to be fixed before BG-1
+  closes. Fixed with the same `try`/`except (TypeError, ValueError)` → 401
+  pattern already used for `sub` two lines below. Added regression test 6
+  (`test_non_numeric_sid_is_rejected_as_401_not_a_server_error`), confirmed
+  via `git stash` to fail pre-fix and pass post-fix. Full suite re-run
+  clean on a freshly recreated disposable DB. Detail in the handoff's own
+  "Correction applied after independent QA" section and QA evidence §8.
+- Next Action: independent **re**-QA of this specific correction (the
+  `sid` parse fix and its regression test) before BG-1 is treated as closed
+  for Wave 6 Target UI purposes. The rest of the original independent QA
+  finding (role widening, shared resolver, 38-usage enumeration) already
+  passed independent scrutiny and does not need re-litigating.
+
+## MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001
+
+- Task ID: MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001
+- Lifecycle: BLOCKED
+- Decision: DESIGN_APPROVED
+- Verification: BLOCKED
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001.md
+- Handoff Path: agent-system/handoffs/active/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001.md
+- QA Evidence: agent-system/qa/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001.md
+- QA Evidence Path: agent-system/qa/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001.md
 
 ## PHASE0-AGENT-SYSTEM-RECORD-INTEGRITY-AUDIT-002
 

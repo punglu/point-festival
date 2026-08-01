@@ -42,23 +42,33 @@ cause, recovery and prevention rule on the record instead of deleting them:
    when splicing Markdown by heading, anchor on the line start, never on the
    words** — a quoted mention of a heading inside prose will match first.
 
-## BG-1 credential-surface gap — fixed, pending independent QA (2026-08-01)
+## BG-1 credential-surface gap — one round of independent QA done, one fix pending re-QA (2026-08-01)
 
 `MONGLE-W6-TARGET-UI-MULTIFAMILY-JOURNEY-001`'s `BLOCKED` finding (no single
 credential reached both the family/Wagle API and the Markpoint Target API)
-is closed by `MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001`: a pre-existing but
-uncommitted/unregistered fix was found, re-measured live (confirmed
-working), then root-cause corrected — its Account-branch had duplicated
+was addressed by `MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001`: a pre-existing
+but uncommitted/unregistered fix was found, re-measured live, then
+root-cause corrected — its Account-branch had duplicated
 `get_current_account`'s Session-liveness check verbatim; both entry points
 now share one function, `auth_service.resolve_account_from_session_claim`.
-38 `Depends(get_current_user)` usages enumerated for identity-confusion
-risk, none found unsafe. 317/0/0 full-suite result, 5 new regression tests.
-**Independent QA of this task is required before Wave 6 Target UI
-journeys are treated as unblocked.**
+
+**Independent QA ran and returned `BLOCKED`**
+(`MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001`): a
+validly-signed Account token with a non-numeric `sid` escaped the auth
+contract as an unhandled `ValueError` (500) instead of 401. This is the
+system working as intended — an independent QA that reproduces from
+scratch and attacks the boundary instead of re-reading the self-check
+report. Fixed with the same guard pattern already used for `sub`; a
+regression test was added and confirmed (via `git stash`) to fail pre-fix
+and pass post-fix. **This specific correction still needs its own
+independent re-QA before BG-1 is treated as closed** — the rest of the
+original finding (role widening, shared resolver, 38-usage enumeration)
+already passed and does not need repeating.
 
 ## Next Task
 
-**`MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001` independent QA**, then
+**Independent re-QA of the `sid`-parsing correction in
+`MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001`**, then
 **`MONGLE-W6-TARGET-UI-START-REVIEW`** — Wave 6 Target UI Start Review.
 
 ## Markpoint rules the next writer must not undo

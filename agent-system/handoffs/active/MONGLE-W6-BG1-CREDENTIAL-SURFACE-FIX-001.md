@@ -123,6 +123,44 @@ value is ever compared to that player's data.
 - `backend/tests/test_bg1_credential_surface_unification.py` (this task —
   new, 5 tests)
 
+## Correction applied after independent QA (2026-08-01)
+
+`MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001` (verdict
+`BLOCKED`, see `agent-system/qa/MONGLE-W6-BG1-CREDENTIAL-SURFACE-FIX-001-INDEPENDENT-QA-001.md`)
+found that `resolve_account_from_session_claim` parsed `sid` with a bare
+`int(session_id)`: a validly-signed Account token whose `sid` claim is
+non-numeric raised an unhandled `ValueError` (HTTP 500) instead of the 401
+every other malformed-claim branch in the same function produces. This
+pre-existed in both the original duplicated copies (the as-found patch and
+`get_current_account`) — the consolidation carried the defect forward
+rather than introducing it, but it still blocked BG-1 closure.
+
+Fixed: the `int(session_id)` call is now wrapped in the same
+`try`/`except (TypeError, ValueError)` → 401 pattern already used for the
+`sub` claim two lines below it, in `backend/app/domains/family/auth_service.py`.
+Added `test_non_numeric_sid_is_rejected_as_401_not_a_server_error` to
+`backend/tests/test_bg1_credential_surface_unification.py` (6 tests total),
+using a token crafted with the real JWT secret/algorithm but a non-numeric
+`sid` — confirmed to fail with the pre-fix code (`ValueError` surfaces,
+verified via `git stash` isolating just that one line) and pass with the
+fix. Full suite re-run on a freshly recreated disposable DB, twice: first
+pass 315 passed / 3 failed (`test_dispatcher_never_touches_the_durable_message_when_delivery_fails`,
+`test_dispatcher_is_safe_to_run_twice_on_the_same_event`,
+`test_outbox_07_two_workers_no_double_claim` — all in files this task never
+touches; re-ran those two files standalone: 67/67 clean, confirming the
+same batch-scale, `asyncio.gather`-concurrency-timing flakiness pattern
+already documented in the first BG-1 pass, not a regression from this
+change); second full pass, uncontended: **318 passed, 0 failed, 0
+errors**.
+
+Not fixed, out of this task's scope: `family/dependencies.py::get_current_session_id`
+has the same unguarded `int(session_id)` pattern, used only by
+`/api/auth/account/logout`. Independent QA's finding was scoped to
+`resolve_account_from_session_claim`; `get_current_session_id` predates
+this task, is unreachable by anything BG-1 unblocks (it never accepts a
+legacy-shaped token), and fixing it here would be scope creep beyond what
+was found. Flagged for a future session rather than silently bundled in.
+
 ## Risks and Human Gate
 
 - This is an authentication-boundary change. It is backed by regression
