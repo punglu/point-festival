@@ -77,12 +77,27 @@ async def process_one(db: AsyncSession, event: ServiceOutboxEvent) -> str:
 
 
 async def run_once(db: AsyncSession, batch_size: int = DEFAULT_BATCH_SIZE) -> dict:
-    claimed = await outbox_service.claim_batch(db, batch_size=batch_size)
+    """Drain one batch of SERVICE_ACTION rows.
+
+    Claims are now scoped to the owners this Worker actually knows how to
+    publish. MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001: before this, the
+    claim was unfiltered, so once Wave 2 started writing `owner_service="wagle"`
+    delivery events this Worker picked them up and tried to publish a human
+    message as a Service Action - provisioning a bogus `wagle` ServicePrincipal
+    and retrying the row to DEAD. Wagle's own rows belong to
+    `app.workers.wagle_realtime`.
+    """
     outcomes = {"published": 0, "retry_scheduled": 0, "dead": 0}
-    for event in claimed:
-        outcome = await process_one(db, event)
-        outcomes[outcome] = outcomes.get(outcome, 0) + 1
-    return {"claimed": len(claimed), **outcomes}
+    total_claimed = 0
+    for owner_service in ALLOWED_ACTIONS_BY_OWNER:
+        claimed = await outbox_service.claim_batch(
+            db, batch_size=batch_size, owner_service=owner_service
+        )
+        total_claimed += len(claimed)
+        for event in claimed:
+            outcome = await process_one(db, event)
+            outcomes[outcome] = outcomes.get(outcome, 0) + 1
+    return {"claimed": total_claimed, **outcomes}
 
 
 async def main_loop(poll_interval_seconds: float = DEFAULT_POLL_INTERVAL_SECONDS) -> None:

@@ -11,6 +11,17 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    // MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001: the Wagle Push service
+    // worker runs in the ServiceWorkerGlobalScope, where `self` is the global.
+    // Without this it lints as browser code and every `self` is an undefined
+    // variable. Scoped to the one file rather than loosening `no-undef`.
+    files: ['public/sw.js'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: { ...globals.serviceworker, ...globals.browser },
+    },
+  },
+  {
     files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,

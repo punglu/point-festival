@@ -13,7 +13,9 @@ import {
   LoadingState,
   EmptyState,
   ErrorState,
+  WaglePinLock,
 } from '../wagle/components';
+import { useWagleRealtime } from '../wagle/realtime/useWagleRealtime';
 import {
   waglePreviewRooms,
   waglePreviewRoomLabels,
@@ -129,7 +131,7 @@ function Conversation({ room, onBack }: ConversationProps) {
   );
 }
 
-export function WagleLanding() {
+function WagleLandingContent() {
   const family = useFamilyContextStore((state) => state.context?.families.find((item) => item.id === state.activeFamilyId));
   // Service code is `wagle` as of migration 0007; this reads real API data,
   // so the historical code would always miss and report 'unavailable'.
@@ -265,5 +267,34 @@ export function WagleLanding() {
         )}
       </div>
     </section>
+  );
+}
+
+
+/**
+ * MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001.
+ *
+ * Two Wave 3 concerns wrap the screen without changing what it renders:
+ *
+ * 1. **Device screen lock.** The gate covers this screen only — the Account
+ *    Session, Markpoint, the Family screens and Push all keep working behind
+ *    it, which is contract, not an accident of placement.
+ * 2. **Realtime connection.** The socket is opened here so the connection
+ *    state is real and observable. It subscribes to no rooms yet: this screen
+ *    still renders preview fixtures rather than API rooms, so there are no real
+ *    room ids to subscribe to. Wiring those is `MONGLE-W5-TARGET-UI-001`
+ *    (Wave 6), whose own Start Gate forbids claiming integration while
+ *    rendering from fixtures. Reported rather than papered over.
+ */
+export function WagleLanding() {
+  const navigate = useNavigate();
+  const { state } = useWagleRealtime({ rooms: [] });
+
+  return (
+    <WaglePinLock onLeave={() => navigate('/dashboard')}>
+      <div data-wagle-realtime-state={state}>
+        <WagleLandingContent />
+      </div>
+    </WaglePinLock>
   );
 }

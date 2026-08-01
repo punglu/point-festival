@@ -8,3 +8,4 @@ export * from './ServiceActionCard';
 export * from './LoadingState';
 export * from './EmptyState';
 export * from './ErrorState';
+export * from './WaglePinLock';

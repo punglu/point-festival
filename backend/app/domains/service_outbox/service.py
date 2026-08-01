@@ -88,22 +88,44 @@ async def enqueue_event(
 
 
 async def claim_batch(
-    db: AsyncSession, *, batch_size: int = 10, lease_seconds: int = DEFAULT_LEASE_SECONDS
+    db: AsyncSession,
+    *,
+    batch_size: int = 10,
+    lease_seconds: int = DEFAULT_LEASE_SECONDS,
+    owner_service: str | None = None,
 ) -> list[ServiceOutboxEvent]:
     """Atomically claims up to `batch_size` deliverable rows: PENDING rows due
     for (re)attempt, plus PROCESSING rows whose lease has expired (a Worker
     died mid-delivery). FOR UPDATE SKIP LOCKED means a second Worker running
     this concurrently simply skips rows already claimed instead of blocking
-    or double-claiming - no in-process lock involved."""
+    or double-claiming - no in-process lock involved.
+
+    `owner_service` restricts the claim to one owner's rows.
+    MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001 added it because this table
+    stopped having a single consumer: Wave 2 began writing
+    `owner_service="wagle"` rows, and the SERVICE_ACTION Worker claimed them
+    too, then tried to publish a human message as a Service Action. That path
+    provisions a bogus `wagle` ServicePrincipal, fails the action allowlist,
+    and retries the row to DEAD - losing the delivery event for a message that
+    is itself perfectly intact. Filtering at the claim is the fix; releasing
+    rows after claiming them would still stall the other consumer for a lease.
+
+    The parameter is optional so existing callers keep their current behaviour;
+    both Workers pass it.
+    """
     now = datetime.now(timezone.utc)
+    conditions = [
+        or_(
+            and_(ServiceOutboxEvent.status == "PENDING", ServiceOutboxEvent.next_attempt_at <= now),
+            and_(ServiceOutboxEvent.status == "PROCESSING", ServiceOutboxEvent.locked_until < now),
+        )
+    ]
+    if owner_service is not None:
+        conditions.append(ServiceOutboxEvent.owner_service == owner_service)
+
     ids_stmt = (
         select(ServiceOutboxEvent.id)
-        .where(
-            or_(
-                and_(ServiceOutboxEvent.status == "PENDING", ServiceOutboxEvent.next_attempt_at <= now),
-                and_(ServiceOutboxEvent.status == "PROCESSING", ServiceOutboxEvent.locked_until < now),
-            )
-        )
+        .where(*conditions)
         .order_by(ServiceOutboxEvent.created_at)
         .limit(batch_size)
         .with_for_update(skip_locked=True)
@@ -136,7 +158,21 @@ async def mark_published(db: AsyncSession, event: ServiceOutboxEvent) -> None:
 
 async def record_failure(db: AsyncSession, event: ServiceOutboxEvent, error_code: str) -> None:
     """Bounded retry with exponential backoff; DEAD once MAX_ATTEMPTS is
-    exceeded so a permanently-undeliverable row stops being retried forever."""
+    exceeded so a permanently-undeliverable row stops being retried forever.
+
+    The refresh below is load-bearing, not defensive tidiness. Every caller
+    reaches here from an `except` block that has just called `db.rollback()`,
+    and a rollback expires every attached instance. Touching `attempt_count` on
+    an expired instance then triggers a lazy reload from inside a synchronous
+    attribute access, which raises `MissingGreenlet` under the async driver -
+    so the failure handler itself failed, and the row stayed PROCESSING until
+    its lease expired instead of being scheduled for retry.
+
+    MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001 found this while testing the
+    realtime dispatcher's failure path; `app.workers.service_outbox` has the
+    same call shape and was affected identically.
+    """
+    await db.refresh(event)
     event.attempt_count += 1
     event.last_error_code = error_code[:60]
     event.locked_until = None

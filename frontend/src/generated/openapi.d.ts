@@ -1897,6 +1897,174 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/families/{family_id}/wagle/rooms/{room_id}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Resume Room
+         * @description Events durably recorded after `after_sequence`.
+         *
+         *     This is the recovery contract: reconnect, server restart, device sleep, PWA
+         *     relaunch and a lost Push all resolve here, against the database, not
+         *     against any transport buffer. It is safe to call with a cursor the client
+         *     already covered — replay is expected, and duplicates are removed by
+         *     `(room_id, room_sequence)`.
+         */
+        get: operations["resume_room_api_families__family_id__wagle_rooms__room_id__resume_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/wagle/realtime-context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Realtime Context
+         * @description The server-derived AuthorizedFamilySet for this Account.
+         *
+         *     The client uses it to know what it may subscribe to. It is advisory: the
+         *     WebSocket re-derives the same set server-side on every subscribe, so a
+         *     client that ignores this and asks for something else is simply denied.
+         */
+        get: operations["realtime_context_api_me_wagle_realtime_context_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/wagle/push-subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Push Subscriptions
+         * @description Only ever this Account's own rows — `account.id` comes from the verified
+         *     Session, never from a query parameter, so there is no id to tamper with.
+         */
+        get: operations["list_push_subscriptions_api_me_wagle_push_subscriptions_get"];
+        put?: never;
+        /** Register Push Subscription */
+        post: operations["register_push_subscription_api_me_wagle_push_subscriptions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/wagle/push-subscriptions/{device_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Revoke Push Subscription */
+        delete: operations["revoke_push_subscription_api_me_wagle_push_subscriptions__device_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/wagle/device-pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Device Pin Status */
+        get: operations["get_device_pin_status_api_me_wagle_device_pin_get"];
+        /** Set Device Pin */
+        put: operations["set_device_pin_api_me_wagle_device_pin_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/wagle/device-pin/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify Device Pin
+         * @description Unlock this device's Wagle screen.
+         *
+         *     Failing here locks a screen. It does not revoke the Session, does not touch
+         *     another device, and does not stop Push — all three of which would be
+         *     plausible-looking and all three of which are forbidden.
+         */
+        post: operations["verify_device_pin_api_me_wagle_device_pin_verify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/wagle/device-pin/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset Device Pin
+         * @description Recovery is replacement. There is no endpoint that reads a PIN back.
+         */
+        post: operations["reset_device_pin_api_me_wagle_device_pin_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/wagle/device-pin/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Disable Device Pin */
+        post: operations["disable_device_pin_api_me_wagle_device_pin_disable_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/families/{family_id}/markpoint/access": {
         parameters: {
             query?: never;
@@ -2402,6 +2570,33 @@ export interface components {
             reason?: string | null;
             /** Amount */
             amount?: number | null;
+        };
+        /** DevicePinSet */
+        DevicePinSet: {
+            /** Device Id */
+            device_id: string;
+            /** Pin */
+            pin: string;
+        };
+        /** DevicePinStatusResponse */
+        DevicePinStatusResponse: {
+            /** Configured */
+            configured: boolean;
+            /** Locked */
+            locked: boolean;
+            /** Locked Until */
+            locked_until?: string | null;
+            /** Remaining Attempts */
+            remaining_attempts?: number | null;
+            /** Pin Version */
+            pin_version?: number | null;
+        };
+        /** DevicePinVerify */
+        DevicePinVerify: {
+            /** Device Id */
+            device_id: string;
+            /** Pin */
+            pin: string;
         };
         /** FamilyCreate */
         FamilyCreate: {
@@ -3191,6 +3386,33 @@ export interface components {
             day_count: number;
             /** Label */
             label: string;
+        };
+        /** PushSubscriptionCreate */
+        PushSubscriptionCreate: {
+            /** Device Id */
+            device_id: string;
+            /** Endpoint */
+            endpoint: string;
+            /** P256Dh Key */
+            p256dh_key: string;
+            /** Auth Secret */
+            auth_secret: string;
+        };
+        /**
+         * PushSubscriptionResponse
+         * @description Deliberately excludes `endpoint`, `p256dh_key` and `auth_secret`.
+         *
+         *     Those three together are a capability to push to that browser. Echoing them
+         *     back would put them in logs, proxies and browser history for no benefit —
+         *     the client already has the values it just sent.
+         */
+        PushSubscriptionResponse: {
+            /** Id */
+            id: number;
+            /** Device Id */
+            device_id: string;
+            /** Status */
+            status: string;
         };
         /** ReadStateResponse */
         ReadStateResponse: {
@@ -7497,6 +7719,306 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ServiceRoomOnboardResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resume_room_api_families__family_id__wagle_rooms__room_id__resume_get: {
+        parameters: {
+            query?: {
+                after_sequence?: number;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    realtime_context_api_me_wagle_realtime_context_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    list_push_subscriptions_api_me_wagle_push_subscriptions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PushSubscriptionResponse"][];
+                };
+            };
+        };
+    };
+    register_push_subscription_api_me_wagle_push_subscriptions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PushSubscriptionCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PushSubscriptionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_push_subscription_api_me_wagle_push_subscriptions__device_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                device_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_device_pin_status_api_me_wagle_device_pin_get: {
+        parameters: {
+            query: {
+                device_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DevicePinStatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_device_pin_api_me_wagle_device_pin_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DevicePinSet"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DevicePinStatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_device_pin_api_me_wagle_device_pin_verify_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DevicePinVerify"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_device_pin_api_me_wagle_device_pin_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DevicePinSet"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DevicePinStatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    disable_device_pin_api_me_wagle_device_pin_disable_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DevicePinVerify"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DevicePinStatusResponse"];
                 };
             };
             /** @description Validation Error */

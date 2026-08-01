@@ -89,12 +89,36 @@ async def test_database_carries_no_historical_identifier(db):
         assert (await db.execute(text(query))).scalar_one() == 0, query
 
 
+# The tables migration `0007` renamed out of the historical `doran` namespace.
+# MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001 replaced a `count(*) == 7`
+# assertion with this explicit set. The count was not wrong, it was fragile and
+# weaker: any seven `wagle%` tables satisfied it, and it failed the moment the
+# domain legitimately grew (Wave 3 added three). Naming them proves the actual
+# claim — that each renamed table exists — and keeps proving it as the domain
+# grows.
+RENAMED_WAGLE_TABLES = {
+    "wagle_rooms",
+    "wagle_direct_pairs",
+    "wagle_participants",
+    "wagle_messages",
+    "wagle_participant_read_states",
+    "wagle_service_bindings",
+    "wagle_service_audit_log",
+}
+
+
 async def test_wagle_objects_and_role_bindings_survived_the_rename(db):
-    tables = (
-        await db.execute(
-            text("SELECT count(*) FROM pg_tables WHERE schemaname='public' AND tablename LIKE 'wagle%'")
-        )
-    ).scalar_one()
+    present = {
+        row
+        for row in (
+            await db.execute(
+                text(
+                    "SELECT tablename FROM pg_tables "
+                    "WHERE schemaname='public' AND tablename LIKE 'wagle%'"
+                )
+            )
+        ).scalars()
+    }
     perms = (
         await db.execute(text("SELECT count(*) FROM permissions WHERE code LIKE 'wagle%'"))
     ).scalar_one()
@@ -106,7 +130,8 @@ async def test_wagle_objects_and_role_bindings_survived_the_rename(db):
             )
         )
     ).scalar_one()
-    assert tables == 7
+    missing = RENAMED_WAGLE_TABLES - present
+    assert not missing, f"migration 0007 left these tables un-renamed: {sorted(missing)}"
     assert perms == 5
     assert bound > 0, "renaming a permission code must not orphan its role bindings"
 

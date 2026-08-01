@@ -20,11 +20,50 @@ from app.domains.chat.router import router as chat_router
 from app.domains.level_tier.router import router as level_tier_router
 from app.domains.family.router import router as family_router
 from app.domains.wagle.router import router as wagle_router
+from app.domains.wagle.realtime_router import router as wagle_realtime_router
 from app.domains.markpoint_access.router import router as markpoint_access_router
+
+
+async def _wagle_realtime_pump(stop: "asyncio.Event", port) -> None:
+    """Drain Wagle delivery events from inside the web process.
+
+    MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001, extended by
+    MONGLE-W3-WAGLE-MULTIWORKER-FANOUT-001.
+
+    The WebSocket registry is process-local, so the dispatcher runs *here* for
+    this worker's own clients, and `port` is the LISTEN/NOTIFY fan-out that
+    reaches the other ASGI workers. `app.workers.wagle_realtime` remains the
+    standalone process for deployments that separate the two; running both is
+    safe - `claim_batch` leases with `FOR UPDATE SKIP LOCKED`, and whichever
+    loses the race publishes nothing while NOTIFY and the durable catch-up
+    cover the clients either way.
+
+    Failures here are swallowed on purpose: notification delivery must never be
+    able to take the API process down. The message is already durable by the
+    time this runs.
+    """
+    import asyncio as _asyncio
+
+    from app.database import AsyncSessionLocal
+    from app.domains.wagle import realtime_dispatcher
+
+    while not stop.is_set():
+        try:
+            async with AsyncSessionLocal() as db:
+                await realtime_dispatcher.run_once(db, port=port)
+        except Exception:
+            pass
+        try:
+            await _asyncio.wait_for(stop.wait(), timeout=1.0)
+            return
+        except _asyncio.TimeoutError:
+            pass
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import asyncio
+
     # 서버 시작 시 마감 경과 미션 자동 실패 처리
     try:
         from app.database import AsyncSessionLocal
@@ -35,7 +74,33 @@ async def lifespan(app: FastAPI):
                 print(f"[startup] 마감 경과 미션 {count}건 실패 처리")
     except Exception as e:
         print(f"[startup] 미션 만료 처리 실패: {e}")
-    yield
+
+    # MONGLE-W3-WAGLE-MULTIWORKER-FANOUT-001: every ASGI worker holds its own
+    # WebSocket registry, so an event committed on one worker must be announced
+    # to the others. PostgreSQL LISTEN/NOTIFY is the approved channel - no new
+    # infrastructure - and it is a wake-up signal only: the database and the
+    # Outbox remain the source of truth, and the per-connection durable cursor
+    # catch-up is deliberately kept as the fallback that makes NOTIFY optional.
+    from app.domains.wagle.realtime import fanout as local_fanout
+    from app.domains.wagle.realtime_notify import PostgresNotifyFanout, to_asyncpg_dsn
+
+    notify_fanout = PostgresNotifyFanout(local_fanout, to_asyncpg_dsn(settings.DATABASE_URL))
+    try:
+        await notify_fanout.start_listener()
+    except Exception as e:
+        # A worker that cannot listen still serves its own clients correctly and
+        # still recovers everything through the durable cursor; it just loses
+        # instant cross-worker delivery. Degrade loudly, never fail startup.
+        print(f"[wagle_realtime] LISTEN unavailable, falling back to cursor catch-up: {e}")
+
+    stop = asyncio.Event()
+    pump = asyncio.create_task(_wagle_realtime_pump(stop, notify_fanout))
+    try:
+        yield
+    finally:
+        stop.set()
+        pump.cancel()
+        await notify_fanout.stop_listener()
 
 
 app = FastAPI(
@@ -70,6 +135,7 @@ app.include_router(chat_router)
 app.include_router(level_tier_router)
 app.include_router(family_router)
 app.include_router(wagle_router)
+app.include_router(wagle_realtime_router)
 app.include_router(markpoint_access_router)
 
 

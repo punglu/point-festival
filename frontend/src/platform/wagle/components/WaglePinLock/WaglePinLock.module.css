@@ -1,0 +1,114 @@
+/* MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001: Wagle device screen lock.
+   Token names follow the ones the sibling Wagle components already use
+   (--color-ink-*, --color-brand-*, --radius-control, --size-touch-min), so this
+   screen inherits the same scale instead of introducing a second one. */
+.gate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: var(--space-5);
+}
+
+.panel {
+  width: 100%;
+  max-width: 22rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border-radius: var(--radius-hero);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.title {
+  margin: 0;
+  color: var(--color-ink-900);
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.help,
+.meta {
+  margin: 0;
+  color: var(--color-ink-500);
+  font-size: 14px;
+}
+
+.label {
+  color: var(--color-ink-500);
+  font-size: 13px;
+}
+
+.input {
+  width: 100%;
+  min-height: var(--size-touch-min);
+  padding: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: var(--input-bg);
+  color: var(--color-ink-900);
+  font-size: 19px;
+  letter-spacing: 0.4em;
+  text-align: center;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.primary,
+.secondary,
+.leave {
+  min-height: var(--size-touch-min);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-control);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.primary {
+  border: none;
+  background: var(--color-brand-500);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondary {
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink-900);
+}
+
+.leave {
+  border: none;
+  background: transparent;
+  color: var(--color-ink-500);
+  font-size: 14px;
+}
+
+.primary:focus-visible,
+.secondary:focus-visible,
+.leave:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}

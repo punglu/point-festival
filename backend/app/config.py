@@ -21,6 +21,29 @@ class Settings(BaseSettings):
     # Length of the generated initial password handed to a FamilyAdmin once.
     ACCOUNT_INITIAL_PASSWORD_LENGTH: int = 12
 
+    # --- Wagle realtime / Push / device PIN (Wave 3, D6) --------------------
+    # These are operational knobs, not product policy. The user-facing rules
+    # they touch (Push payload disclosure D6-P1, mute D6-P2, bundling D6-P3)
+    # are undecided and are NOT encoded anywhere in code — see
+    # `wagle/push_service.py`.
+    #
+    # PIN length and lock duration are config rather than constants precisely
+    # because they are UX decisions nobody has made yet; the defaults mirror
+    # the already-approved Account credential parameters above so that this
+    # task is not quietly inventing a second, different security posture.
+    WAGLE_PIN_LENGTH: int = 6
+    WAGLE_PIN_MAX_ATTEMPTS: int = 5
+    WAGLE_PIN_LOCK_DURATION_SECONDS: int = 300
+    # How often a live WebSocket re-derives its authority from the database.
+    # This is the upper bound on how long a revoked membership can still
+    # receive events, so it is a security-relevant number, stated rather than
+    # buried: with the default, a revocation takes effect within 15 seconds.
+    WAGLE_REALTIME_REVALIDATE_SECONDS: int = 15
+    # Bounded durable catch-up. Also the cross-process delivery interval — see
+    # `InProcessFanout`'s docstring for why that matters under `--workers 2`.
+    WAGLE_REALTIME_CATCHUP_SECONDS: int = 5
+    WAGLE_PUSH_MAX_ATTEMPTS: int = 5
+
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
 
     class Config:

@@ -19,6 +19,9 @@ from app.domains.family.models import (  # noqa: F401
 )
 from app.domains.wagle.models import WagleRoom, WagleDirectPair, WagleParticipant, WagleMessage, WagleParticipantReadState  # noqa: F401
 from app.domains.wagle.models import ServicePrincipal, WagleServiceBinding, WagleServiceAuditLog  # noqa: F401
+from app.domains.wagle.realtime_models import (  # noqa: F401
+    WagleDevicePin, WaglePushDeliveryAttempt, WaglePushSubscription,
+)
 from app.domains.service_outbox.models import ServiceOutboxEvent  # noqa: F401
 from app.domains.markpoint_access.models import (  # noqa: F401
     MarkpointAccessRestriction, MarkpointActivationRequest,
