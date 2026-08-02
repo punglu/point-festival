@@ -1,3 +1,4 @@
-import { useState } from 'react';
-import styles from './PinChangePreview.module.css';
-export function PinChangePreview(){const [step,setStep]=useState(0);const [value,setValue]=useState('');const labels=['현재 PIN 번호','새 PIN 번호','새 PIN 번호 확인'];return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="1u"><header><button type="button">←</button><h1>PIN 변경</h1></header><section><span className={styles.step}>{step+1} / 3</span><h2>{labels[step]}</h2><p>안전한 가족 공간을 위해 PIN 번호를 설정해 주세요.</p><div className={styles.dots}>{[0,1,2,3].map(i=><i key={i} className={i<value.length?styles.filled:''}/>)}</div><div className={styles.keys}>{['1','2','3','4','5','6','7','8','9','취소','0','←'].map(key=><button key={key} type="button" onClick={()=>key==='←'?setValue(v=>v.slice(0,-1)):key==='취소'?setValue(''):setValue(v=>(v+key).slice(0,4))}>{key}</button>)}</div><button type="button" className={styles.next} onClick={()=>{if(value.length===4){setStep(s=>Math.min(2,s+1));setValue('')}}}>다음</button></section></main>}
+import { PinChangeScreen } from '../../screens/family/PinChange';
+export function PinChangePreview() {
+  return <PinChangeScreen />;
+}

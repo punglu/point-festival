@@ -1,0 +1,20 @@
+{
+  "taskFolderId": "1quSactt5njuhyRlccjR1XhvR_z4QPeiQ",
+  "readback": "PASS",
+  "readbackMethod": "Drive folder metadata plus raw-file reference verification",
+  "missingEvidence": 0,
+  "staleEvidence": 0,
+  "wrongParent": 0,
+  "duplicateCurrentEvidence": 0,
+  "dimensionsMismatch": 0,
+  "hashMismatch": 0,
+  "files": [
+    { "name": "canonical-original.png", "id": "1y-gJ1NObEmgqNBBkK_zGTzSmrXs8A5cb", "size": 1152637, "sha256": "c7172ed789ecdbcba04049dcc70faab8e2c90138959ab09de691318c5065a099" },
+    { "name": "implementation.png", "id": "1oHGf0EkZDv98bcpJCHzafwfh91fly1Oh", "size": 158445, "sha256": "3f98d191ba1e979f5e65fc94609832c0e84e5d24cbb6e9a6948395fd977bcc2c" },
+    { "name": "side-by-side.png", "id": "1AvOhjugB0nZItYJS1mSji_prymsVrOLI", "size": 1337732, "sha256": "aa0aa1fba7bac2a96f650b44971ea35f604db8cf80d6e498128baffa7c2fbbcf" },
+    { "name": "pixel-diff.png", "id": "1YFfjAsxIFpNXQyuYv70gAFm_ArS8ClXl", "size": 194177, "sha256": "a14a79660f054f96edd15448816df3ec2898dca53190c8641851f7bfd8b397f5" },
+    { "name": "visual-overlay.png", "id": "152RuRMAyPQTWDJpgRVYEkirhqndsPied", "size": 428491, "sha256": "1c4ee94a9cdfb9fe7d17b1ff80013994434025afa8ed41e400054b7fec69427d" },
+    { "name": "1e-visual-manifest.json", "id": "1mcogyHp4PUuf_AW08w8U1G5HKzPGAnxG", "size": 2009, "sha256": "06b84e7b382a5cfe0ae585e8ebed63a269de5e0cf0393d5fad090437327b45d6" },
+    { "name": "SHA256SUMS.txt", "id": "1uM8_fDKcyacGD9mcLluXaiZuMaBkXVpq", "size": 957 }
+  ]
+}

@@ -29,10 +29,20 @@ import {
   type MarkpointLevel,
   type MarkpointProjection,
   type MarkpointWeekly,
+  type MarkpointWeeklyDay,
   type MissionStatus,
 } from '../../shared/api/markpointApi';
+
+type WeeklyMission = MarkpointWeeklyDay['missions'][number];
 import { useFamilyContextStore } from '../../shared/stores/useFamilyContextStore';
 import { AccessBoundary } from '../access/AccessBoundary';
+import { MissionDetailScreen, missionDetailFixture } from '../../screens/markpoint/MissionDetail';
+import { MissionRejectScreen, missionRejectFixture } from '../../screens/markpoint/MissionReject';
+import { LevelUpScreen } from '../../screens/markpoint/LevelUp';
+import { ExchangeConfirmScreen } from '../../screens/markpoint/ExchangeConfirm';
+import type { RewardShopItem } from '../../screens/markpoint/RewardShop';
+import { RewardShopScreen, rewardShopFixture } from '../../screens/markpoint/RewardShop';
+import { RewardExchangeScreen, rewardExchangeFixture } from '../../screens/markpoint/RewardExchange';
 import styles from './MarkpointUser.module.css';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error' | 'forbidden';
@@ -58,6 +68,11 @@ export function MarkpointUser() {
   const [deductions, setDeductions] = useState<MarkpointDeduction[]>([]);
   const [busyMissionId, setBusyMissionId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [selectedMission, setSelectedMission] = useState<WeeklyMission | null>(null);
+  const [showRejection, setShowRejection] = useState(false);
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [rewardOverlay, setRewardOverlay] = useState<'none' | 'shop' | 'exchange'>('none');
+  const [selectedReward, setSelectedReward] = useState<RewardShopItem | { name: string; cost: number } | null>(null);
 
   const load = useCallback(
     async (familyId: number, signal?: AbortSignal) => {
@@ -157,6 +172,14 @@ export function MarkpointUser() {
       <header className={styles.header}>
         <p className={styles.eyebrow}>몽글 · 마크포인트</p>
         <h1 id="markpoint-title">마크포인트</h1>
+        <div className={styles.headerActions}>
+          <button type="button" className={styles.secondary} onClick={() => setRewardOverlay('exchange')} data-testid="open-reward-exchange">
+            보상 교환
+          </button>
+          <button type="button" className={styles.secondary} onClick={() => setRewardOverlay('shop')} data-testid="open-reward-shop">
+            리워드샵
+          </button>
+        </div>
       </header>
 
       {/* Balance and EXP are deliberately separate cards. They are different
@@ -193,6 +216,9 @@ export function MarkpointUser() {
         <article className={styles.card} aria-labelledby="mp-level">
           <h2 id="mp-level" className={styles.cardTitle}>
             레벨
+            <button type="button" className={styles.levelUpTrigger} onClick={() => setShowLevelUp(true)} aria-label="레벨업 축하 보기" data-testid="open-level-up">
+              🎉
+            </button>
           </h2>
           <p className={styles.bigNumber} data-testid="markpoint-level">
             Lv.{level?.level ?? 1}
@@ -259,7 +285,14 @@ export function MarkpointUser() {
                   <ul className={styles.missionList}>
                     {day.missions.map((mission) => (
                       <li key={mission.id} className={styles.mission} data-mission-id={mission.id}>
-                        <span className={styles.missionTitle}>{mission.title}</span>
+                        <button
+                          type="button"
+                          className={styles.missionTitle}
+                          onClick={() => setSelectedMission(mission)}
+                          data-testid={`open-mission-detail-${mission.id}`}
+                        >
+                          {mission.title}
+                        </button>
                         <span className={styles.missionReward}>+{mission.reward_amount}</span>
                         <MissionStatusBadge status={mission.status} />
                         {mission.status === 'active' && (
@@ -311,6 +344,97 @@ export function MarkpointUser() {
           </ul>
         )}
       </section>
+
+      {selectedMission && !showRejection && (
+        <div className={styles.overlay} data-testid="markpoint-mission-detail-overlay">
+          <MissionDetailScreen
+            model={{
+              ...missionDetailFixture,
+              title: selectedMission.title,
+              reward: `+${selectedMission.reward_amount}P`,
+            }}
+            onBack={() => setSelectedMission(null)}
+            onSubmit={
+              selectedMission.status === 'rejected'
+                ? () => setShowRejection(true)
+                : () => { void handleSubmit(selectedMission.id); setSelectedMission(null); }
+            }
+          />
+        </div>
+      )}
+
+      {selectedMission && showRejection && (
+        <div className={styles.overlay} data-testid="markpoint-mission-reject-overlay">
+          {/* canonical 1s (미션 반려) — reached from a rejected mission's
+              detail overlay. No reviewer-note API is wired yet
+              (DATA_AND_BEHAVIOR_WIRING_PENDING); real mission title flows
+              through. */}
+          <MissionRejectScreen
+            model={{ ...missionRejectFixture, missionTitle: selectedMission.title }}
+            onBack={() => setShowRejection(false)}
+            onRetry={() => { setShowRejection(false); setSelectedMission(null); }}
+          />
+        </div>
+      )}
+
+      {showLevelUp && (
+        <div className={styles.overlay} data-testid="markpoint-level-up-overlay">
+          {/* canonical 2c (레벨업 축하) — manually triggered here for
+              structural verification; a real product trigger would be an
+              automatic event on level-up, which requires backend push
+              support that does not exist yet (W7.5 scope). */}
+          <LevelUpScreen
+            model={{
+              playerInitial: (level?.title ?? '나').charAt(0),
+              playerName: level?.title ?? '',
+              level: level?.level ?? 1,
+              levelTitle: level?.title ?? '',
+              bonusPoints: 0,
+            }}
+            onConfirm={() => setShowLevelUp(false)}
+          />
+        </div>
+      )}
+
+      {rewardOverlay === 'shop' && (
+        <div className={styles.overlay} data-testid="markpoint-reward-shop-overlay">
+          <RewardShopScreen
+            model={{ ...rewardShopFixture, balance: projection?.current_balance ?? rewardShopFixture.balance }}
+            onSelectReward={(reward) => setSelectedReward(reward)}
+          />
+          <button type="button" className={styles.overlayClose} onClick={() => setRewardOverlay('none')} aria-label="닫기">✕ 닫기</button>
+        </div>
+      )}
+
+      {rewardOverlay === 'exchange' && (
+        <div className={styles.overlay} data-testid="markpoint-reward-exchange-overlay">
+          <RewardExchangeScreen
+            model={{ ...rewardExchangeFixture, balance: projection?.current_balance ?? rewardExchangeFixture.balance }}
+            onBack={() => setRewardOverlay('none')}
+            onSelectReward={(reward) => setSelectedReward({ name: reward.name, cost: 0 })}
+          />
+        </div>
+      )}
+
+      {selectedReward && (
+        <div className={styles.overlay} data-testid="markpoint-exchange-confirm-overlay">
+          {/* canonical 2h (교환 확인) — reached by selecting a reward in
+              either 리워드샵 (2j) or 보상 교환 (1l). No exchange-mutation
+              API is wired yet (MUTATION_WIRING_PENDING). */}
+          <ExchangeConfirmScreen
+            model={{
+              icon: '🎁',
+              rewardName: selectedReward.name,
+              note: '',
+              currentBalance: projection?.current_balance ?? 0,
+              balanceAfter: Math.max(0, (projection?.current_balance ?? 0) - selectedReward.cost),
+              cost: selectedReward.cost,
+            }}
+            onCancel={() => setSelectedReward(null)}
+            onConfirm={() => { setSelectedReward(null); setRewardOverlay('none'); }}
+          />
+        </div>
+      )}
     </section>
   );
 }

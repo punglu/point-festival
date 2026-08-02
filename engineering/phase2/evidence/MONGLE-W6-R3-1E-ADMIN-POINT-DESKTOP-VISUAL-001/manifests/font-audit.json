@@ -1,0 +1,31 @@
+{
+  "status": "loaded",
+  "checks": [
+    {
+      "weight": 400,
+      "loaded": true
+    },
+    {
+      "weight": 500,
+      "loaded": true
+    },
+    {
+      "weight": 700,
+      "loaded": true
+    },
+    {
+      "weight": 900,
+      "loaded": true
+    }
+  ],
+  "scroll": [
+    0,
+    0
+  ],
+  "root": {
+    "width": 1448,
+    "height": 1086,
+    "x": 0,
+    "y": 0
+  }
+}

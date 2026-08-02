@@ -1,2 +1,4 @@
-import styles from './ScheduleAddPreview.module.css';
-export function ScheduleAddPreview(){const noOp=()=>undefined;return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="1o"><header><button type="button" onClick={noOp}>←</button><h1>일정 추가</h1><button type="button" onClick={noOp}>저장</button></header><form className={styles.form}><label>일정 제목<input value="가족 저녁 · 삼겹살 파티" readOnly /></label><label>날짜와 시간<div><input value="2026년 7월 22일" readOnly/><input value="오후 7:00" readOnly/></div></label><label>장소<input value="집" readOnly/></label><label>참석자<div className={styles.people}><button type="button" onClick={noOp}>아빠 ✓</button><button type="button" onClick={noOp}>엄마 ✓</button><button type="button" onClick={noOp}>민준 ✓</button><button type="button" onClick={noOp}>서연 ✓</button></div></label><label>알림<select value="10분 전" disabled><option>10분 전</option></select></label><label>메모<textarea value="맛있는 저녁을 함께 먹어요!" readOnly /></label><aside>▣ 일정은 가족 모두에게 알림으로 전달돼요.</aside></form></main>}
+import { ScheduleAddScreen, scheduleAddFixture } from '../../screens/family/ScheduleAdd';
+export function ScheduleAddPreview() {
+  return <ScheduleAddScreen model={scheduleAddFixture} />;
+}

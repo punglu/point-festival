@@ -1,0 +1,85 @@
+{
+  "dimensions": [
+    1448,
+    1086
+  ],
+  "threshold": 18,
+  "rois": {
+    "sidebar_logo": [
+      60,
+      40,
+      160,
+      150
+    ],
+    "active_nav": [
+      10,
+      430,
+      300,
+      90
+    ],
+    "footer": [
+      0,
+      930,
+      310,
+      130
+    ],
+    "title": [
+      330,
+      35,
+      260,
+      90
+    ],
+    "date": [
+      980,
+      45,
+      260,
+      100
+    ],
+    "summary_1": [
+      330,
+      250,
+      380,
+      190
+    ],
+    "table": [
+      330,
+      410,
+      1090,
+      550
+    ],
+    "row_1": [
+      330,
+      490,
+      1090,
+      95
+    ],
+    "pagination": [
+      330,
+      840,
+      1090,
+      100
+    ],
+    "banner": [
+      330,
+      930,
+      1090,
+      130
+    ]
+  },
+  "decoder": "Playwright Chromium Canvas",
+  "inputs": {
+    "canonical": {
+      "width": 1448,
+      "height": 1086,
+      "channels": 4,
+      "sha256": "c7172ed789ecdbcba04049dcc70faab8e2c90138959ab09de691318c5065a099"
+    },
+    "implementation": {
+      "width": 1448,
+      "height": 1086,
+      "channels": 4,
+      "sha256": "f0a3f5c8f04d1088064aa2b2ff3e93bcba417eaa9b556bd99f3d45f4d8edf30a"
+    }
+  },
+  "status": "PNG_DECODE_PASS_VISIBLE_MASK_PENDING"
+}

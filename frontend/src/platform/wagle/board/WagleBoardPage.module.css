@@ -1,0 +1,29 @@
+.wrap {
+  position: relative;
+  max-width: var(--layout-content-max-width);
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+.popularLink {
+  display: block;
+  margin: var(--space-3) auto 0;
+  border: 1px solid var(--color-line);
+  background: #fff;
+  border-radius: 999px;
+  padding: var(--space-2) var(--space-4);
+  color: var(--color-brand-700);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.overlay {
+  position: fixed; inset: 0; z-index: 40;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-3);
+  background: rgba(23, 16, 58, .35);
+  padding: var(--space-4);
+  overflow-y: auto;
+}
+.overlayClose {
+  border: 0; border-radius: 999px; background: #fff; color: var(--color-ink-900);
+  padding: var(--space-2) var(--space-4); font-size: 13px; font-weight: 700; cursor: pointer;
+}

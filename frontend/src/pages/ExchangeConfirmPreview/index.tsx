@@ -1,2 +1,4 @@
-import styles from './ExchangeConfirmPreview.module.css';
-export function ExchangeConfirmPreview(){const noOp=()=>undefined;return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="2h"><section><div className={styles.icon}>♧</div><h1>편의점 젤리 교환권을<br/>교환할까요?</h1><p>교환 후에는 보호자 승인 대기 상태가 됩니다.</p><article><div><span>필요 포인트</span><b>30P</b></div><i>→</i><div><span>교환 후 포인트</span><b>290P</b></div></article><button type="button" onClick={noOp}>30P로 교환하기</button><button type="button" className={styles.secondary} onClick={noOp}>취소</button></section></main>}
+import { ExchangeConfirmScreen, exchangeConfirmFixture } from '../../screens/markpoint/ExchangeConfirm';
+export function ExchangeConfirmPreview() {
+  return <ExchangeConfirmScreen model={exchangeConfirmFixture} />;
+}

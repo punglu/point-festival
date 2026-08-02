@@ -1,0 +1,184 @@
+{
+  "task": "MONGLE-W6-A2-FAMILY-HOME-INTEGRATION-PRACTICAL-CLOSEOUT-001",
+  "runtime": "official mongle Docker frontend",
+  "baseUrl": "http://localhost:13001",
+  "route": "/__wave6/1b",
+  "primary": {
+    "viewport": "470x779",
+    "deviceScaleFactor": 2,
+    "fonts": {
+      "status": "loaded",
+      "family": "\"Noto Sans KR\", Pretendard, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "checks": {
+        "400": true,
+        "500": true,
+        "700": true,
+        "900": true
+      }
+    },
+    "zones": {
+      "profile": {
+        "x": 18,
+        "y": 10,
+        "width": 434,
+        "height": 47
+      },
+      "hero": {
+        "x": 18,
+        "y": 74,
+        "width": 434,
+        "height": 208
+      },
+      "activity": {
+        "x": 18,
+        "y": 299,
+        "width": 434,
+        "height": 222
+      },
+      "services": {
+        "x": 18,
+        "y": 553,
+        "width": 434,
+        "height": 152
+      },
+      "dock": {
+        "x": 0,
+        "y": 713,
+        "width": 470,
+        "height": 66
+      },
+      "horizontalOverflowPx": 0,
+      "verticalScrollbar": false,
+      "text": {
+        "greeting": "",
+        "heroTitle": "가족 대화"
+      }
+    },
+    "storage": {
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "cookie": ""
+    },
+    "audit": {
+      "consoleErrorCount": 0,
+      "consoleErrors": [],
+      "failedRequestCount": 0,
+      "failedRequests": [],
+      "websocketCount": 0,
+      "websockets": [],
+      "viteHmrWebSocketCount": 0,
+      "backendApiRequestCount": 0,
+      "navigationCountAfterLoad": 0,
+      "externalHosts": [
+        "localhost:13001",
+        "fonts.googleapis.com",
+        "fonts.gstatic.com"
+      ]
+    }
+  },
+  "secondary": {
+    "375x812": {
+      "hero": {
+        "y": 74,
+        "height": 208,
+        "width": 339
+      },
+      "services": {
+        "y": 566,
+        "height": 165,
+        "width": 339
+      },
+      "dock": {
+        "y": 746,
+        "height": 66,
+        "width": 375
+      },
+      "tile0": {
+        "y": 600,
+        "height": 128,
+        "width": 76
+      },
+      "horizontalOverflowPx": 0,
+      "verticalScrollbar": false,
+      "consoleErrorCount": 0,
+      "failedRequestCount": 0,
+      "websocketCount": 0
+    },
+    "390x844": {
+      "hero": {
+        "y": 74,
+        "height": 208,
+        "width": 354
+      },
+      "services": {
+        "y": 553,
+        "height": 165,
+        "width": 354
+      },
+      "dock": {
+        "y": 778,
+        "height": 66,
+        "width": 390
+      },
+      "tile0": {
+        "y": 587,
+        "height": 128,
+        "width": 79.75
+      },
+      "horizontalOverflowPx": 0,
+      "verticalScrollbar": false,
+      "consoleErrorCount": 0,
+      "failedRequestCount": 0,
+      "websocketCount": 0
+    },
+    "430x932": {
+      "hero": {
+        "y": 74,
+        "height": 208,
+        "width": 394
+      },
+      "services": {
+        "y": 553,
+        "height": 165,
+        "width": 394
+      },
+      "dock": {
+        "y": 866,
+        "height": 66,
+        "width": 430
+      },
+      "tile0": {
+        "y": 587,
+        "height": 128,
+        "width": 89.75
+      },
+      "horizontalOverflowPx": 0,
+      "verticalScrollbar": false,
+      "consoleErrorCount": 0,
+      "failedRequestCount": 0,
+      "websocketCount": 0
+    }
+  },
+  "routeMatrix": {
+    "1b": {
+      "path": "/__wave6/1b",
+      "status": 200,
+      "renderedScreenId": "1b"
+    },
+    "1c": {
+      "path": "/__wave6/1c",
+      "status": 200,
+      "renderedScreenId": "1c"
+    },
+    "1e": {
+      "path": "/__wave6/1e",
+      "status": 200,
+      "renderedScreenId": "1e"
+    },
+    "login": {
+      "path": "/login",
+      "status": 200,
+      "renderedScreenId": "1a-1"
+    }
+  }
+}

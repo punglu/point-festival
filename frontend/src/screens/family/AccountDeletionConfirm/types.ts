@@ -1,1 +1,13 @@
-export type AccountDeletionConfirmModel={title:string;description:string;secondary:string;primary:string};export type AccountDeletionConfirmProps={model:AccountDeletionConfirmModel;onBack?:()=>void;onConfirm?:()=>void};
+export type AccountDeletionConfirmModel = {
+  title: string;
+  question: string;
+  itemsIntro: string;
+  items: string[];
+  confirmHint: string;
+  confirmWord: string;
+};
+export type AccountDeletionConfirmProps = {
+  model: AccountDeletionConfirmModel;
+  onBack?: () => void;
+  onConfirm?: (typed: string) => void;
+};

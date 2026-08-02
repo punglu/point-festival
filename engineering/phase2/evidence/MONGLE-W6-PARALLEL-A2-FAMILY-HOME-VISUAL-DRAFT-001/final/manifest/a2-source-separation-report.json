@@ -1,0 +1,39 @@
+{
+  "task": "MONGLE-W6-A2-FAMILY-HOME-INTEGRATION-PRACTICAL-CLOSEOUT-001",
+  "scope": "frontend/src/pages/FamilyHomePreview/**",
+  "verdict": "A2_SOURCE_SEPARATION_PASS",
+  "note": "Visual-only preview separation. This is NOT a GPT Visual Gate result.",
+  "checks": {
+    "backendApiImportOrCall": 0,
+    "serviceLayerCall": 0,
+    "webSocket": 0,
+    "storageWrite": 0,
+    "productNavigation": 0,
+    "legacyFamilyHomeDependency": 0,
+    "a1_1c_1eDependency": 0,
+    "sharedOrPlatformImport": 0,
+    "storeOrContext": 0,
+    "timers": 0
+  },
+  "allowedSurface": {
+    "react": true,
+    "cssModule": true,
+    "pageLocalAssets": 2,
+    "pageLocalInlineSvg": 7,
+    "previewOnlyRouteImport": "App.tsx -> /__wave6/1b only"
+  },
+  "productRoutesUntouched": {
+    "/dashboard": "present, unmodified",
+    "/login": "present, unmodified",
+    "/__wave6/1c": "present, unmodified",
+    "/__wave6/1e": "present, unmodified"
+  },
+  "appTsxDiff": {
+    "linesAdded": 12,
+    "linesRemoved": 0,
+    "changeKinds": [
+      "FamilyHomePreview import",
+      "/__wave6/1b route"
+    ]
+  }
+}

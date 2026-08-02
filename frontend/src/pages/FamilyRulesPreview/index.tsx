@@ -1,3 +1,4 @@
-import styles from './FamilyRulesPreview.module.css';
-const rules=[['저녁 식사 시간','오후 7:00'],['하루 미디어 사용','1시간 30분'],['취침 시간','오후 10:00'],['주말 외출','보호자와 상의 후']];
-export function FamilyRulesPreview(){const noOp=()=>undefined;return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="1v"><header><button type="button" onClick={noOp}>←</button><div><h1>가족 규칙</h1><span>우리 가족의 약속을 정해요</span></div><button type="button" onClick={noOp}>저장</button></header><section><article><b>우리 가족의 약속</b><p>가족 모두가 편안하고 즐거운 생활을 위해 함께 정한 규칙이에요.</p></article><h2>생활 규칙</h2><div className={styles.list}>{rules.map(([name,value])=><button key={name} type="button" onClick={noOp}><span>{name}</span><b>{value}</b><em>›</em></button>)}</div><h2>포인트 규칙</h2><div className={styles.list}><button type="button" onClick={noOp}><span>미션 완료 포인트</span><b>보호자 승인 후 지급</b><em>›</em></button><button type="button" onClick={noOp}><span>보상 교환</span><b>보호자 승인 필요</b><em>›</em></button></div><button type="button" className={styles.add} onClick={noOp}>＋ 규칙 추가하기</button></section></main>}
+import { FamilyRulesScreen, familyRulesFixture } from '../../screens/family/FamilyRules';
+export function FamilyRulesPreview() {
+  return <FamilyRulesScreen model={familyRulesFixture} />;
+}

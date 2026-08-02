@@ -1,2 +1,4 @@
-import styles from './MissionRejectPreview.module.css';
-export function MissionRejectPreview(){const noOp=()=>undefined;return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="1s"><header><button type="button" onClick={noOp}>←</button><h1>미션 반려</h1></header><section><div className={styles.icon}>!</div><h2>인증 사진을 다시 확인해 주세요</h2><p>보호자가 미션 인증을 반려했어요.</p><article><b>숙제 다 하기</b><span>반려 사유</span><p>사진에서 독서록 내용을 확인하기 어려워요.<br/>독서록이 잘 보이도록 다시 촬영해 주세요.</p></article><button type="button" onClick={noOp}>인증 다시 제출하기</button><button type="button" className={styles.secondary} onClick={noOp}>나중에 할게요</button></section></main>}
+import { MissionRejectScreen, missionRejectFixture } from '../../screens/markpoint/MissionReject';
+export function MissionRejectPreview() {
+  return <MissionRejectScreen model={missionRejectFixture} />;
+}

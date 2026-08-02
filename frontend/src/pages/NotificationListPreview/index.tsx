@@ -1,3 +1,4 @@
-import styles from './NotificationListPreview.module.css';
-const notices=[['미션 완료를 축하해요!','서연이가 “숙제 다 하기”를 완료했어요. +40P','12분 전'],['포인트가 지급되었어요','보호자 승인으로 40P가 지급되었어요.','1시간 전'],['가족 일정 알림','오늘 저녁 7시, 가족 저녁 · 삼겹살 파티가 있어요.','2시간 전'],['새 사진이 추가됐어요','아빠가 가족 앨범에 사진 3장을 추가했어요.','오후 6:35'],['미션 마감이 다가와요','독서록 제출 미션이 오늘 마감돼요.','어제']];
-export function NotificationListPreview(){const noOp=()=>undefined;return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="1n"><header><button type="button" onClick={noOp}>←</button><div><h1>알림</h1><span>새 알림 3개</span></div><button type="button" onClick={noOp}>모두 읽음</button></header><section className={styles.content}><div className={styles.filters}>{['전체','새 알림','포인트','일정','앨범'].map((name,index)=><button type="button" key={name} className={index===0?styles.active:''} onClick={noOp}>{name}</button>)}</div><h2>오늘</h2><div className={styles.list}>{notices.map(([title,text,time],index)=><button key={title} type="button" onClick={noOp} className={index<3?styles.unread:''}><i>{['★','P','▣','▧','!'][index]}</i><div><b>{title}</b><span>{text}</span></div><time>{time}</time></button>)}</div><aside>♧ <span>알림 설정은 나 · 프로필에서 변경할 수 있어요.</span></aside></section></main>}
+import { NotificationListScreen, notificationListFixture } from '../../screens/family/NotificationList';
+export function NotificationListPreview() {
+  return <NotificationListScreen model={notificationListFixture} />;
+}

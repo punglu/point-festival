@@ -1,0 +1,29 @@
+.page,.page *{box-sizing:border-box}
+.page{box-sizing:border-box;width:min(100%,480px);min-height:852px;margin:0 auto;display:flex;flex-direction:column;background:#faf9fd;color:#251b4a;font-family:"Noto Sans KR",system-ui,sans-serif}
+.page header{display:flex;align-items:center;gap:10px;padding:14px 16px;background:#fff}
+.avatar{width:42px;height:42px;flex:none;border-radius:50%;background:#6944ef;color:#fff;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900}
+.page header div{display:flex;flex:1;flex-direction:column;gap:2px}
+.page h1{margin:0;font-size:19px}
+.page header span{color:#8a83a8;font-size:11px}
+.page section{display:flex;flex-direction:column;gap:12px;padding:16px}
+.banner{position:relative;display:flex;flex-direction:column;gap:4px;padding:20px;border-radius:24px;background:linear-gradient(150deg,#e8dfff,#d7c8fb)}
+.banner span{color:#6944ef;font-size:12px;font-weight:700}
+.banner b{font-size:28px}
+.star{position:absolute;right:20px;top:20px;width:34px;height:34px;border-radius:50%;background:linear-gradient(160deg,#ffc93c,#f1983a);color:#fff;display:flex;align-items:center;justify-content:center;font-style:normal}
+.filters{display:flex;gap:7px;overflow-x:auto}
+.filters button{border:1px solid #e5e1ef;border-radius:999px;background:#fff;padding:8px 16px;color:#5c5279;font:400 12.5px inherit;white-space:nowrap;flex:none;cursor:pointer}
+.filters .active{border-color:#6944ef;color:#6944ef;font-weight:700}
+.page h2{margin:3px 0;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.grid article{display:flex;flex-direction:column;gap:7px;padding:15px;border-radius:18px;background:#fff;box-shadow:0 5px 16px #3c1e780d}
+.grid article.disabled{opacity:.6}
+.grid i{display:grid;place-items:center;width:45px;height:45px;border-radius:14px;background:#eee9ff;color:#6944ef;font-size:20px;font-style:normal}
+.grid b{font-size:13px}
+.grid button{border:0;border-radius:999px;background:#6944ef;padding:8px;color:#fff;font:700 12px inherit;cursor:pointer}
+.need{color:#a8a5b6;font-size:12px;font-weight:700}
+.history{display:flex;align-items:center;gap:12px;padding:14px;border-radius:18px;background:#fff;box-shadow:0 5px 16px #3c1e780d}
+.history i{width:38px;height:38px;flex:none;border-radius:50%;background:#eee9ff;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:16px}
+.history div{flex:1;display:flex;flex-direction:column;gap:2px}
+.history b{font-size:13.5px}
+.history span{color:#8a83a8;font-size:11.5px}
+.history em{color:#df4164;font-weight:700;font-style:normal;font-size:13px}

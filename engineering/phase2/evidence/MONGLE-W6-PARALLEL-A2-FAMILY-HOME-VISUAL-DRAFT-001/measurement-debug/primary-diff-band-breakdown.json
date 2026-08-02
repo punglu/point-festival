@@ -1,0 +1,32 @@
+{
+  "profile row": {
+    "rows": "0-120",
+    "pixelsAbove12": 25735,
+    "percentOfBand": 22.81,
+    "percentOfFrame": 1.76
+  },
+  "hero card (mascot)": {
+    "rows": "120-470",
+    "pixelsAbove12": 281190,
+    "percentOfBand": 85.47,
+    "percentOfFrame": 19.2
+  },
+  "activity card": {
+    "rows": "470-910",
+    "pixelsAbove12": 162574,
+    "percentOfBand": 39.31,
+    "percentOfFrame": 11.1
+  },
+  "services card": {
+    "rows": "910-1290",
+    "pixelsAbove12": 122867,
+    "percentOfBand": 34.4,
+    "percentOfFrame": 8.39
+  },
+  "dock": {
+    "rows": "1290-1558",
+    "pixelsAbove12": 70538,
+    "percentOfBand": 28.0,
+    "percentOfFrame": 4.82
+  }
+}

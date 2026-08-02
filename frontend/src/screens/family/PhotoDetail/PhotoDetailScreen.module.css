@@ -1,0 +1,24 @@
+.page,.page *{box-sizing:border-box}
+.page{width:min(100%,480px);min-height:852px;margin:0 auto;display:flex;flex-direction:column;background:#1a1530;color:#fff;font-family:"Noto Sans KR",system-ui,sans-serif}
+.page header{display:flex;align-items:center;gap:10px;padding:16px}
+.page header button{border:0;background:transparent;color:#fff;font-size:18px;cursor:pointer}
+.page header div{flex:1;display:flex;flex-direction:column;gap:2px}
+.page header b{font-size:14px;font-weight:700}
+.page header span{color:rgba(255,255,255,.6);font-size:11.5px}
+.photo{position:relative;flex:1;min-height:340px;display:grid;place-items:center;background:repeating-linear-gradient(135deg,#2b2350 0 8px,#241d44 8px 16px);color:rgba(255,255,255,.4);font:12px/1.3 ui-monospace,monospace}
+.prev,.next{position:absolute;top:50%;transform:translateY(-50%);font-size:22px;font-style:normal;color:rgba(255,255,255,.5);cursor:pointer}
+.prev{left:12px}
+.next{right:12px}
+.page footer{padding:14px 16px 16px;background:#1a1530}
+.actions{display:flex;align-items:center;gap:20px}
+.actions span{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700}
+.actions i{font-style:normal;color:#ef4665}
+.actions span:nth-child(2) i{color:#fff}
+.bookmark{margin-left:auto;font-style:normal}
+.comment{margin-top:16px;display:flex;gap:8px;font-size:13.5px}
+.comment b{font-weight:700;flex:none;white-space:nowrap}
+.comment span{color:rgba(255,255,255,.85)}
+.input{margin-top:12px;display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(255,255,255,.15);border-radius:999px}
+.input span{flex:1;color:rgba(255,255,255,.5);font-size:12.5px}
+.input i{color:#5a35df;font-style:normal}
+@media(min-width:700px){.page{width:min(100%,768px);min-height:700px}}

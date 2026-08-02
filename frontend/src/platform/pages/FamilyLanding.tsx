@@ -20,6 +20,7 @@
 import { Link } from 'react-router-dom';
 
 import { useFamilyContextStore } from '../../shared/stores/useFamilyContextStore';
+import { AccessBoundary } from '../access/AccessBoundary';
 import styles from './FamilyLanding.module.css';
 
 const RELATIONSHIP_LABEL: Record<string, string> = {
@@ -117,6 +118,11 @@ export function FamilyLanding() {
             ))}
           </ul>
         )}
+        {families.length === 0 && (
+          <Link to="/onboarding" className={styles.createFamilyLink} data-testid="go-onboarding">
+            가족 만들기
+          </Link>
+        )}
       </section>
     );
   }
@@ -195,6 +201,19 @@ export function FamilyLanding() {
         </div>
       </section>
 
+      <section className={styles.block} aria-labelledby="family-features">
+        <h2 id="family-features">가족 기능</h2>
+        <div className={styles.services}>
+          <Link to="/family/schedule" className={styles.featureLink} data-testid="feature-schedule">가족 일정</Link>
+          <Link to="/family/album" className={styles.featureLink} data-testid="feature-album">앨범</Link>
+          <Link to="/family/todo" className={styles.featureLink} data-testid="feature-todo">할 일</Link>
+          <Link to="/family/members" className={styles.featureLink} data-testid="feature-members">가족 구성원</Link>
+          <Link to="/family/notifications" className={styles.featureLink} data-testid="feature-notifications">알림</Link>
+          <Link to="/family/rules" className={styles.featureLink} data-testid="feature-rules">가족 규칙</Link>
+          <Link to="/family/search" className={styles.featureLink} data-testid="feature-search">검색</Link>
+        </div>
+      </section>
+
       <section className={styles.block} aria-labelledby="family-permissions">
         <h2 id="family-permissions">내 권한</h2>
         {family.permissions.length === 0 ? (
@@ -210,5 +229,17 @@ export function FamilyLanding() {
         )}
       </section>
     </section>
+  );
+}
+
+/** Route entry point (`/family`). `family.read` matches the same permission
+ *  MongleAppShell already gates the nav link on — a member linked to this
+ *  family only through another service (e.g. Markpoint) reaches the shared
+ *  AccessBoundary "권한이 없어요" state instead of this screen. */
+export function FamilyLandingPage() {
+  return (
+    <AccessBoundary permission="family.read">
+      <FamilyLanding />
+    </AccessBoundary>
   );
 }

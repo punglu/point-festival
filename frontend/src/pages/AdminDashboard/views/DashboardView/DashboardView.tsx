@@ -11,6 +11,8 @@ import RecentAlerts from './components/RecentAlerts';
 import MissionRanking from './components/MissionRanking';
 import CardDetailTable from './components/CardDetailTable';
 import BalanceSection from './components/BalanceSection';
+import ActiveMissionDetailModal from './components/ActiveMissionDetailModal';
+import { MissionStatisticsFilterScreen } from '../../../../screens/admin/MissionStatisticsFilter';
 
 type CardMode = 'points' | 'active' | 'pending' | 'completed';
 
@@ -22,6 +24,8 @@ export default function DashboardView() {
   } = useAdminData();
 
   const [selectedCard, setSelectedCard] = useState<CardMode | null>(null);
+  const [showStatsFilter, setShowStatsFilter] = useState(false);
+  const [showActiveDetail, setShowActiveDetail] = useState(false);
 
   const handleCardClick = (mode: CardMode) => {
     setSelectedCard(prev => prev === mode ? null : mode);
@@ -111,6 +115,11 @@ export default function DashboardView() {
       {/* 상세 테이블 패널 (선택된 카드가 있을 때만) */}
       {selectedCard && (
         <div className={styles.detailPanel}>
+          {selectedCard === 'active' && (
+            <button type="button" className={styles.filterButton} onClick={() => setShowActiveDetail(true)}>
+              활성 미션 상세 보기
+            </button>
+          )}
           <CardDetailTable
             mode={selectedCard}
             missions={missions}
@@ -119,6 +128,18 @@ export default function DashboardView() {
           />
         </div>
       )}
+
+      {/* canonical 2m (미션 상세 폼 / 활성 미션 상세) -- this component existed
+          in the tree but was never imported anywhere (dead code, discovered
+          during W7.4 entry-test verification); wired to a real trigger here
+          rather than left orphaned. */}
+      <ActiveMissionDetailModal
+        open={showActiveDetail}
+        onClose={() => setShowActiveDetail(false)}
+        missions={missions}
+        players={players}
+        cycle={cycle}
+      />
 
       {/* 1. 플레이어 현황 */}
       <PlayerStatusCard
@@ -138,7 +159,21 @@ export default function DashboardView() {
 
       {/* 5. 이번 주 활동 랭킹 */}
       <WeeklyActivityChart missions={missions} players={players} cycle={cycle} />
+      <div className={styles.rankingHeader}>
+        <button type="button" className={styles.filterButton} onClick={() => setShowStatsFilter(true)}>
+          통계 필터
+        </button>
+      </div>
       <MissionRanking ranking={missionRanking} players={players} cycle={cycle} />
+
+      {showStatsFilter && (
+        <div className={styles.overlay} data-testid="admin-mission-stats-filter-overlay">
+          {/* canonical 3b (미션 통계 필터) — no dedicated filter state exists
+              on this view yet (TRUE_FUNCTIONAL_GAP, W7.5 scope); onApply is a
+              structural placeholder only, not real filtering. */}
+          <MissionStatisticsFilterScreen onClose={() => setShowStatsFilter(false)} onApply={() => setShowStatsFilter(false)} />
+        </div>
+      )}
     </div>
   );
 }

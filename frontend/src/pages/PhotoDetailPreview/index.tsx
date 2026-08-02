@@ -1,2 +1,4 @@
-import styles from './PhotoDetailPreview.module.css';
-export function PhotoDetailPreview(){const noOp=()=>undefined;return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="1p"><header><button type="button" onClick={noOp}>←</button><span>사진 상세</span><button type="button" onClick={noOp}>⋮</button></header><section className={styles.photo}>사진 1</section><section className={styles.info}><div><i>아빠</i><div><b>아빠</b><span>2026년 7월 22일 · 오후 6:36</span></div></div><h1>여름 여행 · 남해</h1><p>가족과 함께한 즐거운 여름 여행 사진이에요.</p><div className={styles.actions}><button type="button" onClick={noOp}>♡ 좋아요</button><button type="button" onClick={noOp}>↗ 공유</button><button type="button" onClick={noOp}>▣ 앨범</button></div></section><section className={styles.comments}><h2>댓글 3</h2>{[['엄마','사진 너무 예쁘다!'],['서연','다음 여행도 기대돼요 💜'],['민준','바다 진짜 재밌었어요!']].map(([name,text])=><div key={name}><i>{name}</i><p><b>{name}</b>{text}</p></div>)}<div className={styles.input}><span>댓글을 입력하세요</span><button type="button" onClick={noOp}>등록</button></div></section></main>}
+import { PhotoDetailScreen, photoDetailFixture } from '../../screens/family/PhotoDetail';
+export function PhotoDetailPreview() {
+  return <PhotoDetailScreen model={photoDetailFixture} />;
+}

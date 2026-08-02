@@ -1,0 +1,68 @@
+{
+  "375x812": {
+    "canonical": {
+      "status": "loaded",
+      "family": "\"Noto Sans KR\", system-ui, sans-serif",
+      "checks": {
+        "400": true,
+        "500": true,
+        "700": true,
+        "900": true
+      }
+    },
+    "implementation": {
+      "status": "loaded",
+      "family": "\"Noto Sans KR\", Pretendard, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "checks": {
+        "400": true,
+        "500": true,
+        "700": true,
+        "900": true
+      }
+    }
+  },
+  "390x844": {
+    "canonical": {
+      "status": "loaded",
+      "family": "\"Noto Sans KR\", system-ui, sans-serif",
+      "checks": {
+        "400": true,
+        "500": true,
+        "700": true,
+        "900": true
+      }
+    },
+    "implementation": {
+      "status": "loaded",
+      "family": "\"Noto Sans KR\", Pretendard, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "checks": {
+        "400": true,
+        "500": true,
+        "700": true,
+        "900": true
+      }
+    }
+  },
+  "430x932": {
+    "canonical": {
+      "status": "loaded",
+      "family": "\"Noto Sans KR\", system-ui, sans-serif",
+      "checks": {
+        "400": true,
+        "500": true,
+        "700": true,
+        "900": true
+      }
+    },
+    "implementation": {
+      "status": "loaded",
+      "family": "\"Noto Sans KR\", Pretendard, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "checks": {
+        "400": true,
+        "500": true,
+        "700": true,
+        "900": true
+      }
+    }
+  }
+}

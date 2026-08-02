@@ -1,0 +1,88 @@
+{
+  "task": "MONGLE-W6-PARALLEL-A2-FAMILY-HOME-MOBILE-VISUAL-001",
+  "screen": "A2",
+  "htmlAnchor": "1b",
+  "status": "DRAFT_NOT_MAIN_WORKTREE_INTEGRATED",
+  "canonicalComparisonBase": "canonical HTML 1b rendered per viewport (approved PNG is not a single-scale render of it \u2014 see measurement \u00a73)",
+  "viewports": [
+    {
+      "viewport": "375x812",
+      "scroll": [
+        0,
+        0
+      ],
+      "horizontalOverflowPx": 0,
+      "perZoneMaxDeltaPx": {
+        "content": 0,
+        "profile": 0,
+        "hero": 0,
+        "heroCta": 0,
+        "activity": 0,
+        "services": 0,
+        "dock": 0,
+        "activityRows": 0,
+        "serviceTiles": 0,
+        "dockItems": 0
+      },
+      "pixelDiffPercent": 3.221
+    },
+    {
+      "viewport": "390x844",
+      "scroll": [
+        0,
+        0
+      ],
+      "horizontalOverflowPx": 0,
+      "perZoneMaxDeltaPx": {
+        "content": 0,
+        "profile": 0,
+        "hero": 0,
+        "heroCta": 0,
+        "activity": 0,
+        "services": 0,
+        "dock": 0,
+        "activityRows": 0,
+        "serviceTiles": 0,
+        "dockItems": 0
+      },
+      "pixelDiffPercent": 3.0745
+    },
+    {
+      "viewport": "430x932",
+      "scroll": [
+        0,
+        0
+      ],
+      "horizontalOverflowPx": 0,
+      "perZoneMaxDeltaPx": {
+        "content": 0,
+        "profile": 0,
+        "hero": 0,
+        "heroCta": 0,
+        "activity": 0,
+        "services": 0,
+        "dock": 0,
+        "activityRows": 0,
+        "serviceTiles": 0,
+        "dockItems": 0
+      },
+      "pixelDiffPercent": 2.5666
+    }
+  ],
+  "worstGeometryDeltaPx": 0.0,
+  "uiOnly": {
+    "backendApiRequestCount": 0,
+    "productWebSocketCount": 0,
+    "viteHmrWebSocketCount": 3,
+    "localStorageWriteCount": 0,
+    "sessionStorageWriteCount": 0,
+    "cookieCount": 0,
+    "navigationCount": 0,
+    "externalHosts": [
+      "127.0.0.1:4174",
+      "fonts.googleapis.com",
+      "fonts.gstatic.com"
+    ]
+  },
+  "residualDiffCause": "D-A2-7 U+0020 advance 2.500px canonical vs 3.094px implementation; Korean glyph runs identical; mechanism UNRESOLVED; non-blocking raster"
+}

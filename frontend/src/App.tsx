@@ -6,6 +6,19 @@ import { useAuthStore } from './shared/stores/useAuthStore';
 import ToastContainer from './shared/components/Toast/ToastContainer';
 import { FamilyContextLoader } from './shared/family/FamilyContextLoader';
 import { MongleAppShell } from './platform/shell/MongleAppShell';
+import { FamilyLandingPage } from './platform/pages/FamilyLanding';
+import { MarkpointUserPage } from './platform/markpoint/MarkpointUser';
+import { WagleLanding } from './platform/pages/WagleLanding';
+import { WagleBoardPage } from './platform/wagle/board/WagleBoardPage';
+import { OnboardingFlowPage } from './features/family-onboarding/OnboardingFlowPage';
+import { ProfilePage } from './pages/profile/ProfilePage';
+import { FamilySchedulePage } from './features/family-schedule/FamilySchedulePage';
+import { FamilyAlbumPage } from './features/family-album/FamilyAlbumPage';
+import { FamilyTodoPage } from './features/family-todo/FamilyTodoPage';
+import { FamilyMembersPage } from './features/family-members/FamilyMembersPage';
+import { NotificationsPage } from './features/family-notifications/NotificationsPage';
+import { FamilyRulesPage } from './features/family-rules/FamilyRulesPage';
+import { FamilySearchPage } from './features/family-search/FamilySearchPage';
 import A1AccountLoginPage from './pages/A1AccountLogin';
 import { PointFestivalPreview } from './pages/PointFestivalPreview';
 import { FamilyHomePreview } from './pages/FamilyHomePreview';
@@ -133,9 +146,148 @@ export default function App() {
             }
           />
 
-          {/* Wave 6 recovery baseline: `/family`, `/markpoint*`, and `/wagle`
-              remain detached from noncanonical UI. `/login` is the ordered A1
-              presentation-only reconstruction; API/session code remains parked. */}
+          {/* W7.4: `/family`, `/markpoint`, `/wagle` — MongleAppShell has linked
+              its desktop nav and mobile dock to these paths since the Target UI
+              multi-family journey work; only the <Route> registration was
+              missing, so they 404'd via the catch-all. FamilyLandingPage and
+              MarkpointUserPage are existing, backend-integrated, tested route
+              entry points (AccessBoundary-gated) — used as-is, not reskinned to
+              the W7.3 canonical mockups: their real business logic (subscription
+              gating, balance-vs-EXP distinction, per-family permissions) has no
+              equivalent in the static canonical source, so replacing their
+              visuals would risk regressing working behavior for a mockup-parity
+              gain outside this task's structural scope. See W7.4 Matrix 1b/1c/1d. */}
+          <Route
+            path="/family"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="family"><FamilyLandingPage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          <Route
+            path="/markpoint"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="markpoint"><MarkpointUserPage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          <Route
+            path="/wagle"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="wagle"><WagleLanding /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          {/* canonical 3c (가족 게시판) — ROOT_OF per Ownership Matrix, sibling
+              surface to the chat room list under the same Wagle shell. */}
+          <Route
+            path="/wagle/board"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="wagle"><WagleBoardPage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          {/* canonical 1r (온보딩, ROOT_OF) + 2s (PIN 최초 설정, CHILD_OF 1r)
+              + 2w (가족 초대 수락, ROOT_OF, reached via the "이미 초대
+              코드가 있어요" branch) — frontend/src/features/family-onboarding/
+              was an empty scaffold with no real entry point before this pass. */}
+          <Route
+            path="/onboarding"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="family"><OnboardingFlowPage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          {/* canonical 1f (나 프로필, ROOT_OF) with 1u/2k/2n/2z/3f/3g/3h/3k/3l
+              as nested views. frontend/src/pages/profile/ was an empty
+              scaffold with no real entry point before this pass. */}
+          <Route
+            path="/profile"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="family"><ProfilePage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          {/* canonical 1g (가족 일정, CHILD_OF 1b) with 1o/2u/3a nested.
+              frontend/src/features/family-schedule/ was an empty scaffold. */}
+          <Route
+            path="/family/schedule"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="family"><FamilySchedulePage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          {/* canonical 1h (앨범, CHILD_OF 1b) with 1p/1w/2v/2y nested.
+              frontend/src/features/family-album/ was an empty scaffold. */}
+          <Route
+            path="/family/album"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="family"><FamilyAlbumPage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          {/* canonical 1i (할 일, CHILD_OF 1b). frontend/src/features/family-todo/
+              was an empty scaffold. */}
+          <Route
+            path="/family/todo"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="family"><FamilyTodoPage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          {/* canonical 1q (가족 구성원, CHILD_OF 1b) with 2f/2p/2r/3i nested.
+              frontend/src/features/family-members/ was an empty scaffold. */}
+          <Route
+            path="/family/members"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="family"><FamilyMembersPage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          {/* canonical 1n (알림, CHILD_OF 1b). frontend/src/features/family-notifications/
+              was an empty scaffold. */}
+          <Route
+            path="/family/notifications"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="family"><NotificationsPage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          {/* canonical 1v (가족 규칙, CHILD_OF 1b) with 2q nested.
+              frontend/src/features/family-rules/ was an empty scaffold. */}
+          <Route
+            path="/family/rules"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="family"><FamilyRulesPage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          {/* canonical 3j (검색 전체, CHILD_OF 1b). Re-verified via grep this
+              pass: no conflicting product search ownership exists, so this is
+              resolved rather than left as a genuine functional gap. */}
+          <Route
+            path="/family/search"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="family"><FamilySearchPage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+
+          {/* `/login` is the ordered A1 presentation-only reconstruction;
+              API/session code remains parked (see 1a-1 in the W7.3/W7.4 Matrix). */}
           <Route path="/login" element={<ProductContext><A1AccountLoginPage /></ProductContext>} />
 
           {/* Wave 6 1b mobile visual-only preview (A2 가족 플랫폼 홈). Like 1c and

@@ -32,6 +32,29 @@
 }
 .btnPrimary:hover { background: #B91C1C; }
 
+.headerActions { display: flex; gap: 8px; }
+.btnSecondary {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fff;
+  color: #1E293B;
+  border: 1px solid #E2E8F0;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.btnSecondary:hover { background: #F1F5F9; }
+
+.overlay {
+  position: fixed; inset: 0; z-index: 40;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(15, 23, 42, .4);
+  padding: 24px;
+  overflow-y: auto;
+}
+
 .filters {
   display: flex;
   align-items: center;

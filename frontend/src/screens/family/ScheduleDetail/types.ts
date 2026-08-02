@@ -1,2 +1,10 @@
-export type ScheduleDetailModel={title:string;date:string;time:string;place:string;description:string;attendees:string[]};
-export type ScheduleDetailProps={model:ScheduleDetailModel;onBack?:()=>void;onEdit?:()=>void};
+export type ScheduleAttendee = { name: string; tone: 'blue' | 'red' | 'purple' | 'green' };
+export type ScheduleDetailModel = {
+  category: string;
+  title: string;
+  dateTime: string;
+  place: string;
+  repeat: string;
+  attendees: ScheduleAttendee[];
+};
+export type ScheduleDetailProps = { model: ScheduleDetailModel; onBack?: () => void; onEdit?: () => void; onDelete?: () => void };

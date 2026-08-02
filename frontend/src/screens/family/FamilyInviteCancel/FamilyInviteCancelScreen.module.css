@@ -1,1 +1,15 @@
-.screen{box-sizing:border-box;display:flex;width:min(100%,480px);min-height:852px;margin:auto;flex-direction:column;padding:22px 16px;background:#f7f6fc;color:#17103a;font-family:inherit}.screen header{display:flex;gap:10px;align-items:center}.screen header button{border:0;background:transparent;color:#5a35df;font-size:24px}.screen h1{margin:0;font-size:20px}.screen section{display:grid;gap:12px;margin-top:34px}.screen section>i{display:grid;width:64px;height:64px;place-items:center;border-radius:22px;background:#e3dbfb;color:#5a35df;font-size:28px;font-style:normal}.screen section>p{margin:0 0 8px;color:#8a83a8;line-height:1.55}.screen section div{display:flex;justify-content:space-between;align-items:center;border-radius:16px;background:#fff;padding:16px}.screen section span{color:#8a83a8;font-size:12px}.screen footer{display:flex;gap:10px;margin-top:auto}.screen footer button{flex:1;border:1px solid #eae7f5;border-radius:13px;background:#fff;padding:14px;color:#4a3f72;font-weight:700}.screen footer button:last-child{border-color:#5a35df;background:#5a35df;color:#fff}
+.screen{box-sizing:border-box;display:flex;width:min(100%,480px);min-height:852px;margin:auto;flex-direction:column;padding:22px 16px 24px;background:#fff;color:#17103a;font-family:inherit}
+.screen header{display:flex;justify-content:space-between;align-items:center}
+.screen header button{border:0;background:transparent;color:#8a83a8;font-size:18px}
+.screen h1{margin:0;font-size:19px;font-weight:900}
+.code{display:flex;justify-content:space-between;align-items:center;margin-top:18px;border-radius:16px;background:#f7f6fc;padding:16px}
+.code strong{display:block;font-size:16px;font-weight:900}
+.code span{display:block;margin-top:3px;color:#8a83a8;font-size:12px}
+.code em{border-radius:999px;background:#fdf0d5;padding:4px 10px;color:#c98a1a;font-size:11px;font-style:normal;font-weight:700}
+.warning{margin:16px 0 0;color:#4a3f72;font-size:13px;line-height:1.6}
+.label{display:block;margin-top:18px;color:#17103a;font-size:13px;font-weight:700}
+.reason{margin-top:8px;min-height:70px;border:1px solid #eae7f5;border-radius:13px;background:#f7f6fc;padding:14px;font-size:13px;font-family:inherit}
+.actions{display:flex;gap:10px;margin-top:22px}
+.actions button{flex:1;border:0;border-radius:14px;padding:15px;font-weight:700}
+.back{background:#f4f2fa;color:#4a3f72}
+.confirm{background:#ef4665;color:#fff}

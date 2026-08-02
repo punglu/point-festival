@@ -1,1 +1,4 @@
-import { SearchAllScreen,searchAllFixture } from '../../screens/family/SearchAll';export function SearchAllPreview(){return <SearchAllScreen model={searchAllFixture} onBack={()=>undefined} onConfirm={()=>undefined}/>;}
+import { SearchAllScreen, searchAllFixture } from '../../screens/family/SearchAll';
+export function SearchAllPreview() {
+  return <SearchAllScreen model={searchAllFixture} onBack={() => undefined} onCancel={() => undefined} onFilter={() => undefined} />;
+}

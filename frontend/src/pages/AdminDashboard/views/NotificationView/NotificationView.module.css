@@ -32,6 +32,29 @@
 }
 .btnReadAll:hover { background: #EEF2FF; }
 
+.headerActions { display: flex; gap: 8px; align-items: center; }
+.btnPrimary {
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #4338CA;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.btnPrimary:hover { background: #3730A3; }
+
+.overlay {
+  position: fixed; inset: 0; z-index: 40;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(15, 23, 42, .4);
+  padding: 24px;
+  overflow-y: auto;
+}
+
 .list {
   background: #fff;
   border: 1px solid #E2E8F0;

@@ -1,0 +1,38 @@
+{
+  "375x812": {
+    "diffBoundingBox": [
+      28,
+      18,
+      345,
+      805
+    ],
+    "pixelsAboveThreshold12": 11643,
+    "totalPixels": 304500,
+    "percentAboveThreshold": 3.8236,
+    "maxChannelSumDelta": 668
+  },
+  "390x844": {
+    "diffBoundingBox": [
+      28,
+      18,
+      361,
+      837
+    ],
+    "pixelsAboveThreshold12": 11348,
+    "totalPixels": 329160,
+    "percentAboveThreshold": 3.4476,
+    "maxChannelSumDelta": 668
+  },
+  "430x932": {
+    "diffBoundingBox": [
+      29,
+      18,
+      401,
+      925
+    ],
+    "pixelsAboveThreshold12": 10869,
+    "totalPixels": 400760,
+    "percentAboveThreshold": 2.7121,
+    "maxChannelSumDelta": 668
+  }
+}

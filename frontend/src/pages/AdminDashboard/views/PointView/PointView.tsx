@@ -6,6 +6,7 @@ import DeductionList from './components/DeductionList';
 import AddDeductionModal from './components/AddDeductionModal';
 import EditDeductionModal from './components/EditDeductionModal';
 import type { Deduction } from '../../types/admin.types';
+import { PointPolicyEditorScreen, pointPolicyEditorFixture } from '../../../../screens/admin/PointPolicyEditor';
 
 export default function PointView() {
   const {
@@ -17,6 +18,7 @@ export default function PointView() {
 
   const [showAdd,      setShowAdd]      = useState(false);
   const [editTarget,   setEditTarget]   = useState<Deduction | null>(null);
+  const [showPolicy,   setShowPolicy]   = useState(false);
 
   const visiblePlayers = selectedPlayer === null
     ? players
@@ -30,7 +32,10 @@ export default function PointView() {
     <div className={styles.view}>
       <div className={styles.header}>
         <h1 className={styles.title}>포인트 관리</h1>
-        <button className={styles.btnPrimary} onClick={() => setShowAdd(true)}>+ 차감 추가</button>
+        <div className={styles.headerActions}>
+          <button className={styles.btnSecondary} onClick={() => setShowPolicy(true)}>정책 편집</button>
+          <button className={styles.btnPrimary} onClick={() => setShowAdd(true)}>+ 차감 추가</button>
+        </div>
       </div>
 
       <div className={styles.filters}>
@@ -90,6 +95,15 @@ export default function PointView() {
           deduction={editTarget}
           onSave={(data) => updateDeduction(editTarget.id, data)}
         />
+      )}
+
+      {showPolicy && (
+        <div className={styles.overlay} data-testid="admin-point-policy-overlay">
+          {/* canonical 2o (포인트 정책 편집) — no policy API exists yet
+              (TRUE_FUNCTIONAL_GAP, W7.5 scope); canonical fixture used as an
+              explicit pending adapter, not real policy data. */}
+          <PointPolicyEditorScreen model={pointPolicyEditorFixture} onClose={() => setShowPolicy(false)} onSave={() => setShowPolicy(false)} />
+        </div>
       )}
     </div>
   );

@@ -1,0 +1,525 @@
+{
+  "implementationUrl": "http://127.0.0.1:4174/a2-family-home-preview.html",
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4174/a2-family-home-preview.html",
+      "type": "document",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/@vite/client",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/pages/FamilyHomePreview/standalone.tsx",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/@react-refresh",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=31b275bb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/react.js?v=31b275bb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/react-dom_client.js?v=0a78390f",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/styles/reset.css",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/styles/global.css",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/pages/FamilyHomePreview/index.tsx",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/vite/dist/client/env.mjs",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/chunk-DRWLMN53.js?v=18d19cdb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/chunk-G3PMV62Z.js?v=18d19cdb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/assets/logos/family-platform-mascot.png?import",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/pages/FamilyHomePreview/FamilyHomePreview.module.css",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/chunk-NXESFFTV.js?v=18d19cdb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/assets/logos/family-platform-mascot.png",
+      "type": "image",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5CgmG0X7twpAcuQ.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.118.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.119.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.116.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.113.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.117.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.115.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.114.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.107.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.111.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.112.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.110.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/a2-family-home-preview.html",
+      "type": "document",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/@vite/client",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/pages/FamilyHomePreview/standalone.tsx",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/@react-refresh",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/vite/dist/client/env.mjs",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=31b275bb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/react.js?v=31b275bb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/react-dom_client.js?v=0a78390f",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/styles/reset.css",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/styles/global.css",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/pages/FamilyHomePreview/index.tsx",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/chunk-DRWLMN53.js?v=18d19cdb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/chunk-G3PMV62Z.js?v=18d19cdb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/assets/logos/family-platform-mascot.png?import",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/pages/FamilyHomePreview/FamilyHomePreview.module.css",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/chunk-NXESFFTV.js?v=18d19cdb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/assets/logos/family-platform-mascot.png",
+      "type": "image",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5CgmG0X7twpAcuQ.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.118.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.119.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.116.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.113.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.117.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.115.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.114.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.107.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.111.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.112.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.110.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/a2-family-home-preview.html",
+      "type": "document",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/@vite/client",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/pages/FamilyHomePreview/standalone.tsx",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/@react-refresh",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=31b275bb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/react.js?v=31b275bb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/react-dom_client.js?v=0a78390f",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/styles/reset.css",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/styles/global.css",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/pages/FamilyHomePreview/index.tsx",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/vite/dist/client/env.mjs",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/chunk-DRWLMN53.js?v=18d19cdb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/chunk-G3PMV62Z.js?v=18d19cdb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/assets/logos/family-platform-mascot.png?import",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/pages/FamilyHomePreview/FamilyHomePreview.module.css",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/node_modules/.vite/deps/chunk-NXESFFTV.js?v=18d19cdb",
+      "type": "script",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Black+Han+Sans&family=Inter:wght@300;500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap",
+      "type": "stylesheet",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4174/src/assets/logos/family-platform-mascot.png",
+      "type": "image",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5CgmG0X7twpAcuQ.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.118.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.119.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.116.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.113.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.117.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.115.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.114.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.107.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.111.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.112.woff2",
+      "type": "font",
+      "method": "GET"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/notosanskr/v39/PbykFmXiEBPT4ITbgNA5Cgm203Tq4JJWq209pU0DPdWuqxJFA4GNDCBYtw.110.woff2",
+      "type": "font",
+      "method": "GET"
+    }
+  ],
+  "violations": [
+    {
+      "url": "ws://127.0.0.1:4174/?token=NZVx03Td4iWs",
+      "type": "websocket"
+    },
+    {
+      "url": "ws://127.0.0.1:4174/?token=NZVx03Td4iWs",
+      "type": "websocket"
+    },
+    {
+      "url": "ws://127.0.0.1:4174/?token=NZVx03Td4iWs",
+      "type": "websocket"
+    }
+  ],
+  "metrics": {
+    "375x812": {
+      "navigationCountAfterLoad": 0,
+      "consoleErrorCount": 0,
+      "consoleErrors": [],
+      "failedRequestCount": 0,
+      "failedRequests": [],
+      "storage": {
+        "localStorage": {},
+        "sessionStorage": {},
+        "cookie": "",
+        "mode": "ui-only",
+        "screenId": "1b"
+      }
+    },
+    "390x844": {
+      "navigationCountAfterLoad": 0,
+      "consoleErrorCount": 0,
+      "consoleErrors": [],
+      "failedRequestCount": 0,
+      "failedRequests": [],
+      "storage": {
+        "localStorage": {},
+        "sessionStorage": {},
+        "cookie": "",
+        "mode": "ui-only",
+        "screenId": "1b"
+      }
+    },
+    "430x932": {
+      "navigationCountAfterLoad": 0,
+      "consoleErrorCount": 0,
+      "consoleErrors": [],
+      "failedRequestCount": 0,
+      "failedRequests": [],
+      "storage": {
+        "localStorage": {},
+        "sessionStorage": {},
+        "cookie": "",
+        "mode": "ui-only",
+        "screenId": "1b"
+      }
+    },
+    "backendApiRequestCount": 0,
+    "websocketConnectionCount": 3,
+    "localStorageWriteCount": 0,
+    "sessionStorageWriteCount": 0,
+    "cookieCount": 0,
+    "navigationCount": 0,
+    "totalRequestCount": 90,
+    "externalHosts": [
+      "127.0.0.1:4174",
+      "fonts.googleapis.com",
+      "fonts.gstatic.com"
+    ]
+  }
+}

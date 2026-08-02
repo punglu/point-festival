@@ -15,6 +15,8 @@
 .familySwitcher { display: flex; align-items: center; gap: 8px; color: #5c6077; font-size: 13px; font-weight: 700; }
 .familySwitcher select { min-width: 150px; border: 1px solid var(--mongle-border); border-radius: 8px; padding: 7px 30px 7px 10px; background: white; color: var(--mongle-ink); }
 .accountArea { display: flex; align-items: center; gap: 12px; margin-left: auto; color: #5c6077; font-size: 14px; }
+.accountArea a { color: inherit; text-decoration: none; }
+.accountArea a:hover { text-decoration: underline; }
 .accountArea button, .stateNotice button { border: 0; border-radius: 8px; padding: 7px 10px; background: #eceaf8; color: #463586; font: inherit; cursor: pointer; }
 .body { display: grid; grid-template-columns: 200px minmax(0, 1fr); min-height: calc(100dvh - 64px); }
 .desktopNav { display: flex; flex-direction: column; gap: 4px; padding: 20px 12px; background: #f8f8ff; border-right: 1px solid var(--mongle-border); }
@@ -32,7 +34,7 @@
   .shell { padding-bottom: calc(62px + env(safe-area-inset-bottom)); }
   .header { min-height: 56px; padding: 0 14px; gap: 10px; }
   .brand { font-size: 20px; }
-  .familySwitcher span, .accountArea span { display: none; }
+  .familySwitcher span, .accountArea a { display: none; }
   .familySwitcher select { min-width: 122px; max-width: 42vw; }
   .body { display: block; min-height: calc(100dvh - 56px); }
   .desktopNav { display: none; }

@@ -1,0 +1,35 @@
+{
+  "375x812": {
+    "diffBoundingBox": [
+      5,
+      5,
+      370,
+      805
+    ],
+    "pixelsAboveThreshold12": 103171,
+    "totalPixels": 304500,
+    "percentAboveThreshold": 33.8821
+  },
+  "390x844": {
+    "diffBoundingBox": [
+      5,
+      5,
+      385,
+      837
+    ],
+    "pixelsAboveThreshold12": 105278,
+    "totalPixels": 329160,
+    "percentAboveThreshold": 31.9838
+  },
+  "430x932": {
+    "diffBoundingBox": [
+      5,
+      5,
+      425,
+      925
+    ],
+    "pixelsAboveThreshold12": 110642,
+    "totalPixels": 400760,
+    "percentAboveThreshold": 27.608
+  }
+}

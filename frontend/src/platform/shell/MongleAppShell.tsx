@@ -127,7 +127,7 @@ export function MongleAppShell({ children }: MongleAppShellProps) {
         <Link className={styles.brand} to="/dashboard" aria-label="몽글 홈">몽글</Link>
         <FamilySwitcher />
         <div className={styles.accountArea}>
-          <span>{context?.display_name ?? (isAdmin ? '관리자' : '사용자')}</span>
+          <Link to="/profile" data-testid="open-profile">{context?.display_name ?? (isAdmin ? '관리자' : '사용자')}</Link>
           <button onClick={handleLogout}>로그아웃</button>
         </div>
       </header>

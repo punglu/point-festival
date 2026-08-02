@@ -17,6 +17,7 @@
  * hole the user would read as missing messages.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import {
   listMessages,
@@ -28,6 +29,12 @@ import {
 import { useFamilyContextStore } from '../../shared/stores/useFamilyContextStore';
 import { useWagleRealtime } from './realtime/useWagleRealtime';
 import type { WagleConnectionState } from './realtime/wagleRealtimeClient';
+import { ChatReplyScreen } from '../../screens/wagle/ChatReply';
+import type { ChatReplyModel } from '../../screens/wagle/ChatReply';
+import { ChatSettingsScreen, chatSettingsFixture } from '../../screens/wagle/ChatSettings';
+import type { ChatSettingsModel } from '../../screens/wagle/ChatSettings';
+import { FileViewerScreen, fileViewerFixture } from '../../screens/wagle/FileViewer';
+import type { FileViewerModel } from '../../screens/wagle/FileViewer';
 import styles from './WagleRoomView.module.css';
 
 const CONNECTION_LABEL: Record<WagleConnectionState, string> = {
@@ -41,7 +48,42 @@ const CONNECTION_LABEL: Record<WagleConnectionState, string> = {
 
 type ScreenState = 'loading' | 'ready' | 'error' | 'forbidden';
 
-function MessageRow({ message, ownParticipantId }: { message: WagleMessage; ownParticipantId: string | null }) {
+// Real-data adapter for the 2g canonical overlay (KEEP_PAGE_LOCAL/NO_ROUTE per
+// the W7.1 Ownership Matrix). No participant-name lookup is wired to this
+// component yet, so the quoted author falls back to a neutral label rather
+// than guessing a name — a real name is W7.5 data-wiring scope, not this
+// structural pass's.
+function buildChatReplyModel(target: WagleMessage, roomTitle: string): ChatReplyModel {
+  return {
+    roomTitle,
+    backgroundMessages: [{ tone: 'in', text: target.body ?? '' }],
+    quotedAuthor: '이 메시지',
+    quotedText: target.body ?? '',
+    draftText: '',
+  };
+}
+
+// No room-settings or file-listing API exists yet (TRUE_FUNCTIONAL_GAP, W7.5
+// scope) — the real room title is threaded through; member/file lists use the
+// canonical fixture as an explicit pending adapter, per the W7.4 boundary that
+// forbids fabricating data that looks real.
+function buildChatSettingsModel(roomTitle: string): ChatSettingsModel {
+  return { ...chatSettingsFixture, roomName: roomTitle };
+}
+
+function buildFileViewerModel(roomTitle: string): FileViewerModel {
+  return { ...fileViewerFixture, subtitle: roomTitle };
+}
+
+function MessageRow({
+  message,
+  ownParticipantId,
+  onReply,
+}: {
+  message: WagleMessage;
+  ownParticipantId: string | null;
+  onReply: (message: WagleMessage) => void;
+}) {
   const isService = message.message_type === 'SERVICE_ACTION';
   const isOwn = !isService && message.sender_participant_id === ownParticipantId;
 
@@ -73,6 +115,17 @@ function MessageRow({ message, ownParticipantId }: { message: WagleMessage; ownP
           <span className={styles.body}>{message.body}</span>
         )}
       </div>
+      {!message.deleted && !isService && (
+        <button
+          type="button"
+          className={styles.replyTrigger}
+          onClick={() => onReply(message)}
+          aria-label="답장하기"
+          data-testid={`wagle-reply-${message.id}`}
+        >
+          ↩
+        </button>
+      )}
     </li>
   );
 }
@@ -86,6 +139,8 @@ export function WagleRoomView() {
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [replyTarget, setReplyTarget] = useState<WagleMessage | null>(null);
+  const [activeOverlay, setActiveOverlay] = useState<'none' | 'settings' | 'files'>('none');
   const listEndRef = useRef<HTMLDivElement | null>(null);
 
   const selectedRoom = useMemo(
@@ -237,6 +292,9 @@ export function WagleRoomView() {
         <header className={styles.roomListHeader}>
           <p className={styles.eyebrow}>몽글 · 가족 대화</p>
           <h1 id="wagle-title">와글와글</h1>
+          <Link to="/wagle/board" className={styles.boardLink} data-testid="wagle-open-board">
+            가족 게시판 →
+          </Link>
         </header>
         {rooms.length === 0 ? (
           <p className={styles.empty} data-testid="wagle-rooms-empty">
@@ -287,6 +345,24 @@ export function WagleRoomView() {
               >
                 {CONNECTION_LABEL[connectionState]}
               </span>
+              <button
+                type="button"
+                className={styles.headerAction}
+                onClick={() => setActiveOverlay('files')}
+                aria-label="사진/파일"
+                data-testid="wagle-open-files"
+              >
+                🖼
+              </button>
+              <button
+                type="button"
+                className={styles.headerAction}
+                onClick={() => setActiveOverlay('settings')}
+                aria-label="채팅방 설정"
+                data-testid="wagle-open-settings"
+              >
+                ⚙
+              </button>
             </header>
 
             {messages.length === 0 ? (
@@ -296,7 +372,12 @@ export function WagleRoomView() {
             ) : (
               <ol className={styles.messages} data-testid="wagle-messages">
                 {messages.map((message) => (
-                  <MessageRow key={String(message.id)} message={message} ownParticipantId={null} />
+                  <MessageRow
+                    key={String(message.id)}
+                    message={message}
+                    ownParticipantId={null}
+                    onReply={setReplyTarget}
+                  />
                 ))}
               </ol>
             )}
@@ -341,6 +422,28 @@ export function WagleRoomView() {
           <p className={styles.empty}>대화방을 선택해주세요.</p>
         )}
       </div>
+
+      {replyTarget && (
+        <div className={styles.replyOverlay} data-testid="wagle-reply-overlay">
+          <ChatReplyScreen model={buildChatReplyModel(replyTarget, selectedRoom?.title ?? '가족 대화')} onCancelQuote={() => setReplyTarget(null)} onSend={() => setReplyTarget(null)} />
+        </div>
+      )}
+      {activeOverlay === 'settings' && (
+        <div className={styles.replyOverlay} data-testid="wagle-settings-overlay">
+          <ChatSettingsScreen
+            model={buildChatSettingsModel(selectedRoom?.title ?? '가족 대화')}
+            onBack={() => setActiveOverlay('none')}
+          />
+        </div>
+      )}
+      {activeOverlay === 'files' && (
+        <div className={styles.replyOverlay} data-testid="wagle-files-overlay">
+          <FileViewerScreen
+            model={buildFileViewerModel(selectedRoom?.title ?? '가족 대화')}
+            onBack={() => setActiveOverlay('none')}
+          />
+        </div>
+      )}
     </section>
   );
 }

@@ -1,1 +1,13 @@
-.screen{box-sizing:border-box;display:flex;width:min(100%,480px);min-height:852px;margin:auto;flex-direction:column;padding:22px 16px;background:#f7f6fc;color:#17103a;font-family:inherit}.screen header{display:flex;gap:10px;align-items:center}.screen header button{border:0;background:transparent;color:#5a35df;font-size:24px}.screen h1{margin:0;font-size:20px}.screen section{display:grid;gap:12px;margin-top:34px}.screen section>i{display:grid;width:64px;height:64px;place-items:center;border-radius:22px;background:#e3dbfb;color:#5a35df;font-size:28px;font-style:normal}.screen section>p{margin:0 0 8px;color:#8a83a8;line-height:1.55}.screen section div{display:flex;justify-content:space-between;align-items:center;border-radius:16px;background:#fff;padding:16px}.screen section span{color:#8a83a8;font-size:12px}.screen footer{display:flex;gap:10px;margin-top:auto}.screen footer button{flex:1;border:1px solid #eae7f5;border-radius:13px;background:#fff;padding:14px;color:#4a3f72;font-weight:700}.screen footer button:last-child{border-color:#5a35df;background:#5a35df;color:#fff}
+.screen{box-sizing:border-box;display:flex;width:min(100%,480px);min-height:852px;margin:auto;flex-direction:column;padding:22px 16px;background:#f7f6fc;color:#17103a;font-family:inherit}
+.screen header{display:flex;gap:10px;align-items:center}
+.screen header button{border:0;background:transparent;color:#5a35df;font-size:24px}
+.screen h1{margin:0;font-size:20px;font-weight:900}
+.list{display:flex;flex-direction:column;margin-top:20px;border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 5px 16px rgba(60,30,120,.05)}
+.list button{display:flex;justify-content:space-between;align-items:center;border:0;border-bottom:1px solid #f4f2fa;background:transparent;padding:18px 16px;color:#17103a;font-size:15px;font-weight:700;text-align:left}
+.list button:last-child{border-bottom:0}
+.on{width:22px;height:22px;border-radius:50%;background:#5a35df;color:#fff;display:grid;place-items:center}
+.on::after{content:'✓';font-size:12px}
+.off{width:20px;height:20px;border-radius:50%;border:1.5px solid #d9d2f3}
+.notice{display:flex;gap:10px;align-items:flex-start;margin-top:16px;border-radius:16px;background:#eee9ff;padding:14px}
+.notice span{display:grid;flex:none;width:22px;height:22px;place-items:center;border-radius:50%;background:#e3dbfb;color:#5a35df;font-size:12px;font-weight:900}
+.notice p{margin:0;color:#4a3f72;font-size:13px;line-height:1.5}

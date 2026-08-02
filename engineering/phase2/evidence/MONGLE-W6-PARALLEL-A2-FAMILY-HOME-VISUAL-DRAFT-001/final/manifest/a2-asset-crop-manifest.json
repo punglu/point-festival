@@ -1,0 +1,52 @@
+{
+  "sourcePng": "engineering/phase2/evidence/mongle-wave6-tablet-canonical/assets/uploads/screen_family_home_approved.png",
+  "sourceSha256": "d486d0eb921b1cf5ed4085fe9d23bc5d4597399c5415406af5674c5c4070e9f2",
+  "sourceDimensions": "941x1672",
+  "designScale": 2.0,
+  "rule": "crop only; no resize/stretch/warp",
+  "crops": [
+    {
+      "file": "frontend/src/pages/FamilyHomePreview/assets/a2-profile-avatar.png",
+      "description": "profile avatar photo",
+      "cropBoxXYWH": [
+        52,
+        102,
+        92,
+        92
+      ],
+      "croppedPixelSize": "92x92",
+      "displayCssPx": 46,
+      "sha256": "921d44146366a7f0f58bd797860650c9816326a89502b0feb55e6b569f434052"
+    },
+    {
+      "file": "frontend/src/pages/FamilyHomePreview/assets/a2-notification-bell.png",
+      "description": "notification bell icon",
+      "cropBoxXYWH": [
+        833,
+        122,
+        49,
+        52
+      ],
+      "croppedPixelSize": "49x52",
+      "displayCssPx": 24.5,
+      "sha256": "f5443bcd970fa7daa363f3a9ebb0b0f4bc7c2e31b70dcb850b0c56afea754d97"
+    }
+  ],
+  "declinedCrops": [
+    {
+      "asset": "hero mascot scene",
+      "reason": "sits on the hero's purple gradient; cropping would bake the gradient in. NOT cleanly separable.",
+      "state": "ASSET_AUTHORITY_UNRESOLVED"
+    },
+    {
+      "asset": "service tile icons (\uac00\uc871 \uc77c\uc815 / \uc568\ubc94 / \ud560 \uc77c)",
+      "reason": "illustrated glyph on a tinted rounded box whose bounds three independent measurement methods disagreed on (widths 177/120/121/114 px; vertical runs 8-25 px). NOT cleanly separable.",
+      "state": "ASSET_AUTHORITY_UNRESOLVED"
+    },
+    {
+      "asset": "activity row icons",
+      "reason": "gradient-filled circles already reproduced in CSS from canonical literals; no separable raster needed.",
+      "state": "REPRODUCED_IN_CSS"
+    }
+  ]
+}

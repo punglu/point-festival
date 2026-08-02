@@ -1,0 +1,28 @@
+.page,.page *{box-sizing:border-box}
+.page{position:relative;width:min(100%,480px);min-height:852px;margin:0 auto;display:flex;flex-direction:column;background:#f8f7fd;font-family:"Noto Sans KR",system-ui,sans-serif;overflow:hidden}
+.dimmed{display:flex;flex-direction:column;flex:1;min-height:0}
+.status{opacity:.45;padding:10px 30px 0;color:#17103a;font-size:15px;font-weight:700}
+.roomTitle{opacity:.45;padding:12px 18px 10px}
+.roomTitle span{font-size:19px;font-weight:900;color:#17103a}
+.thread{flex:1;opacity:.35;filter:blur(1px);padding:0 16px;display:flex;flex-direction:column;gap:10px}
+.bubbleIn,.bubbleOut{border-radius:6px 18px 18px 18px;padding:12px 14px;font-size:14px;max-width:78%}
+.bubbleIn{background:#f3f0ff;color:#17103a;align-self:flex-start}
+.bubbleOut{background:#6944ef;color:#fff;align-self:flex-end;border-radius:18px 6px 18px 18px}
+.overlay{position:absolute;left:16px;right:16px;top:180px;display:flex;flex-direction:column;gap:2px}
+.quoted{background:#f3f0ff;border-radius:6px 18px 18px 18px;padding:12px 14px;font-size:14px;color:#17103a;align-self:flex-start;box-shadow:0 10px 26px rgba(23,16,58,.18);border:2px solid #7c5aef;white-space:nowrap}
+.menu{align-self:flex-start;background:#fff;border-radius:18px;box-shadow:0 16px 34px rgba(23,16,58,.22);padding:8px;display:flex;flex-direction:column;gap:2px;min-width:200px}
+.menu button{border:0;background:transparent;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;font-size:13.5px;color:#17103a;cursor:pointer;font:inherit}
+.menu button span:first-child{font-size:16px}
+.menu button.danger,.menu button.danger span{color:#ef4665}
+.footer{margin-top:auto;padding:10px 14px 14px;display:flex;flex-direction:column;gap:8px}
+.replyBar{background:#efeafc;border-left:3px solid #5a35df;border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:10px}
+.replyText{flex:1;display:flex;flex-direction:column;gap:1px}
+.replyText span:first-child{font-size:11.5px;font-weight:700;color:#5a35df}
+.replyText span:last-child{font-size:12px;color:#6b6880}
+.cancel{font-size:16px;color:#a8a5b6;cursor:pointer}
+.inputBar{background:#fff;border:1px solid #efecf8;border-radius:999px;padding:8px 10px 8px 8px;display:flex;align-items:center;gap:10px;box-shadow:0 6px 16px rgba(60,30,120,.07)}
+.attach{width:38px;height:38px;border-radius:50%;background:#f1edfc;display:flex;align-items:center;justify-content:center;font-size:16px}
+.inputText{flex:1;font-size:14px;color:#17103a}
+.send{width:44px;height:44px;border-radius:50%;background:#5a35df;color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 6px 14px rgba(70,35,180,.32);cursor:pointer}
+@media(min-width:700px) and (orientation:portrait){.page{width:min(100%,768px);min-height:1024px}.status{display:none}.overlay{left:24px;right:24px;top:180px}}
+@media(min-width:700px) and (orientation:landscape){.page{width:min(100%,1024px);min-height:700px}.status{display:none}.overlay{left:24px;right:auto;top:70px}}

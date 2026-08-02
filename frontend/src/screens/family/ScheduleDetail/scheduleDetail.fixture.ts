@@ -1,2 +1,13 @@
 import type { ScheduleDetailModel } from './types';
-export const scheduleDetailFixture:ScheduleDetailModel={title:'가족 나들이',date:'7월 22일 (수)',time:'오후 7:00',place:'한강 공원',description:'저녁을 먹고 산책을 하기로 했어요.',attendees:['서연','민준','엄마','아빠']};
+export const scheduleDetailFixture: ScheduleDetailModel = {
+  category: '가족 행사',
+  title: '가족 저녁 · 삼겹살 파티',
+  dateTime: '7월 22일 (수) 오후 7:00',
+  place: '집',
+  repeat: '매주 반복 안 함',
+  attendees: [
+    { name: '아빠', tone: 'blue' },
+    { name: '엄마', tone: 'red' },
+    { name: '서연', tone: 'purple' },
+  ],
+};

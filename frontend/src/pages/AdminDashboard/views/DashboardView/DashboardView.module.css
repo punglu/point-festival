@@ -147,3 +147,24 @@
   .statGrid { gap: 10px; }
   .statGrid { grid-template-columns: repeat(2, 1fr); }
 }
+
+.rankingHeader { display: flex; justify-content: flex-end; margin: 12px 0 -4px; }
+.filterButton {
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #fff;
+  color: #1E293B;
+  border: 1px solid #E2E8F0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.filterButton:hover { background: #F1F5F9; }
+.overlay {
+  position: fixed; inset: 0; z-index: 40;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(15, 23, 42, .4);
+  padding: 24px;
+  overflow-y: auto;
+}

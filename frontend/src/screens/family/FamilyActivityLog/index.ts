@@ -1,3 +1,3 @@
 export { FamilyActivityLogScreen } from './FamilyActivityLogScreen';
 export { familyActivityLogFixture } from './familyActivityLog.fixture';
-export type { ActivityLogItem, FamilyActivityLogModel, FamilyActivityLogProps } from './types';
+export type { ActivityLogEvent, ActivityLogDay, FamilyActivityLogModel, FamilyActivityLogProps } from './types';

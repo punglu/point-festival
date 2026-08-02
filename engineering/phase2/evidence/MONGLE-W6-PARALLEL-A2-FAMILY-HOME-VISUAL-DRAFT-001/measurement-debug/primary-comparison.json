@@ -1,0 +1,91 @@
+{
+  "task": "MONGLE-W6-PARALLEL-A2-FAMILY-HOME-MOBILE-VISUAL-CORRECTION-001",
+  "authority": "APPROVED_PNG = visual-final. canonical HTML = structure/content/CSS reference only.",
+  "approvedPng": {
+    "path": "engineering/phase2/evidence/mongle-wave6-tablet-canonical/assets/uploads/screen_family_home_approved.png",
+    "sha256": "d486d0eb921b1cf5ed4085fe9d23bc5d4597399c5415406af5674c5c4070e9f2",
+    "fullDimensions": "941x1672",
+    "contentBounds": "0,0,941,1672",
+    "appContentCrop": {
+      "x": 0,
+      "y": 83,
+      "w": 941,
+      "h": 1558
+    }
+  },
+  "scaleDerivation": {
+    "method": "least-squares fit of PNG landmark heights vs implementation CSS heights; assumes no HTML value",
+    "fittedDeviceScaleFactor": 1.9961,
+    "usedDeviceScaleFactor": 2,
+    "designCanvasCssPx": "470.5 x 836",
+    "rmsResidualPx": 9.44,
+    "alternativesTested": {
+      "1.9604": 10.12,
+      "2.05": 10.17,
+      "2.2951": 23.2
+    }
+  },
+  "fontAudit": {
+    "status": "loaded",
+    "checks": {
+      "400": true,
+      "500": true,
+      "700": true,
+      "900": true
+    }
+  },
+  "implementationCss": {
+    "profile": {
+      "x": 18,
+      "y": 10,
+      "width": 434,
+      "height": 47
+    },
+    "hero": {
+      "x": 18,
+      "y": 74,
+      "width": 434,
+      "height": 208
+    },
+    "activity": {
+      "x": 18,
+      "y": 299,
+      "width": 434,
+      "height": 222
+    },
+    "services": {
+      "x": 18,
+      "y": 553,
+      "width": 434,
+      "height": 152
+    },
+    "dock": {
+      "x": 0,
+      "y": 713,
+      "width": 470,
+      "height": 66
+    },
+    "documentHeight": 779,
+    "horizontalOverflowPx": 0
+  },
+  "approvedPngCssEquivalent": {
+    "profileTop": 10,
+    "heroTop": 71.5,
+    "heroHeight": 208.5,
+    "activityTop": 300,
+    "activityHeight": 223.5,
+    "servicesTop": 553,
+    "servicesHeight": 151.5,
+    "dockTop": 714
+  },
+  "deltaCssPx": {
+    "profileTop": 0,
+    "heroTop": 2.5,
+    "heroHeight": -0.5,
+    "activityTop": -1,
+    "activityHeight": -1.5,
+    "servicesTop": 0,
+    "servicesHeight": 0.5,
+    "dockTop": -1
+  }
+}

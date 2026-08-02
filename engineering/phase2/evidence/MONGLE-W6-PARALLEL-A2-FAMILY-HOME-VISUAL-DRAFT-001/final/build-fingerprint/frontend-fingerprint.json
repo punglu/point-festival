@@ -1,0 +1,15 @@
+{
+  "task": "MONGLE-W6-PARALLEL-A2-FAMILY-HOME-MOBILE-VISUAL-CORRECTION-001",
+  "head": "3294c902a88a846d75e0896741784f75aa827fbe",
+  "branch": "dev-newmarkp",
+  "runtime": "vite dev 127.0.0.1:4174 \u2014 NOT the official mongle Docker runtime",
+  "sources": {
+    "frontend/src/pages/FamilyHomePreview/index.tsx": "a20a830432bcd1af2fb93b1431ad662bc8941e0d5b82ee31fae293043c53c19c",
+    "frontend/src/pages/FamilyHomePreview/FamilyHomePreview.module.css": "91892400fc88f0628df0ae130479c7824d6270caa7d9c09f0ae1855de9cda0a2",
+    "frontend/src/pages/FamilyHomePreview/standalone.tsx": "e8fee127ae1082662f926a2cd809f6ecb1f5942bb4edd8b68b06b016f29748db",
+    "frontend/src/pages/FamilyHomePreview/assets/a2-profile-avatar.png": "921d44146366a7f0f58bd797860650c9816326a89502b0feb55e6b569f434052",
+    "frontend/src/pages/FamilyHomePreview/assets/a2-notification-bell.png": "f5443bcd970fa7daa363f3a9ebb0b0f4bc7c2e31b70dcb850b0c56afea754d97",
+    "frontend/a2-family-home-preview.html": "fa1a29267af6106ef240692ab6a2ae0187fdf4ce99950658d5ef1af22dba223b",
+    "frontend/src/assets/logos/family-platform-mascot.png": "dd5c48b3e670636b7822a5893e213ce8e99fd667b82b4cb53026e344bea4f0b8"
+  }
+}

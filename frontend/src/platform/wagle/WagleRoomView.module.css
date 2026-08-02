@@ -10,6 +10,8 @@
 }
 .roomList { display: flex; flex-direction: column; gap: var(--space-3); }
 .roomListHeader { display: flex; flex-direction: column; gap: var(--space-1); }
+.boardLink { align-self: flex-start; color: var(--color-brand-700); font-size: 12.5px; font-weight: 700; text-decoration: none; }
+.boardLink:hover { text-decoration: underline; }
 .eyebrow { margin: 0; color: var(--color-ink-500); font-size: 13px; }
 .roomListHeader h1 { margin: 0; color: var(--color-ink-900); font-size: 22px; font-weight: 700; }
 .muted { margin: 0; color: var(--color-ink-500); font-size: 13px; }
@@ -57,6 +59,11 @@
 .connection[data-state='connected'] { color: var(--color-success); }
 .connection[data-state='offline'], .connection[data-state='recovering'] { color: var(--color-brand-700); }
 .connection[data-state='authorization_lost'] { color: var(--color-danger); }
+.headerAction {
+  border: 0; background: transparent; color: var(--color-ink-500);
+  font-size: 18px; line-height: 1; padding: var(--space-1); cursor: pointer;
+}
+.headerAction:hover { color: var(--color-ink-900); }
 
 .messages {
   display: flex; flex-direction: column; gap: var(--space-2);
@@ -76,6 +83,12 @@
 }
 .own .bubble { background: var(--color-chat-own); }
 .tombstone { color: var(--color-ink-500); font-style: italic; }
+.replyTrigger {
+  align-self: center;
+  border: 0; background: transparent; color: var(--color-ink-500);
+  font-size: 14px; padding: 0 var(--space-1); cursor: pointer; opacity: .55;
+}
+.replyTrigger:hover { opacity: 1; }
 
 .serviceRow { display: flex; justify-content: center; }
 .serviceCard {
@@ -121,4 +134,12 @@
   .page { grid-template-columns: 1fr; padding: var(--space-3) var(--layout-gutter-mobile); }
   .roomListHiddenMobile { display: none; }
   .backButton { display: inline-flex; align-items: center; justify-content: center; }
+}
+
+.replyOverlay {
+  position: fixed; inset: 0; z-index: 40;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(23, 16, 58, .35);
+  padding: var(--space-4);
+  overflow-y: auto;
 }

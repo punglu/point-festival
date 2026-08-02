@@ -1,1 +1,13 @@
-import type { ThemeSettingsModel } from './types';export const themeSettingsFixture:ThemeSettingsModel={title:'화면 테마 설정',description:'원하는 화면 테마를 선택해 주세요.',secondary:'라이트 모드',primary:'다크 모드'};
+import type { ThemeSettingsModel } from './types';
+export const themeSettingsFixture: ThemeSettingsModel = {
+  title: '화면 테마',
+  modes: [
+    { label: '라이트', selected: true },
+    { label: '다크', selected: false },
+    { label: '시스템 설정', selected: false },
+  ],
+  largeText: false,
+  highContrast: false,
+  fontScale: 50,
+  previewText: '가족 플랫폼',
+};

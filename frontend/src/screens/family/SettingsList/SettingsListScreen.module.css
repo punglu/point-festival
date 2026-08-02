@@ -1,0 +1,27 @@
+.page,.page *{box-sizing:border-box}
+.page{width:min(100%,480px);min-height:852px;margin:0 auto;background:#faf9fd;color:#251b4a;font-family:"Noto Sans KR",system-ui,sans-serif}
+.page header{display:flex;align-items:center;gap:10px;padding:14px 16px;background:#fff}
+.page header button{border:0;background:transparent;color:#6944ef;font-size:20px;cursor:pointer}
+.page h1{margin:0;font-size:19px}
+.page section{display:flex;flex-direction:column;gap:16px;padding:16px}
+.profile{display:flex;align-items:center;gap:14px;border:0;border-radius:20px;background:#fff;padding:16px;box-shadow:0 5px 16px #3c1e780d;text-align:left;cursor:pointer}
+.profile i{width:52px;height:52px;flex:none;border-radius:50%;background:#6944ef;color:#fff;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;font-size:18px}
+.profile div{flex:1;display:flex;flex-direction:column;gap:2px}
+.profile b{font-size:15px}
+.profile span{color:#8a83a8;font-size:12px}
+.profile em{color:#a8a5b6;font-size:18px;font-style:normal}
+.group{display:flex;flex-direction:column;gap:6px}
+.group h2{margin:0;padding:0 2px;font-size:13px;font-weight:700;color:#8a83a8}
+.group article{overflow:hidden;border-radius:20px;background:#fff;box-shadow:0 5px 16px #3c1e780d}
+.group button,.toggleRow{display:flex;align-items:center;gap:12px;width:100%;padding:14px 15px;border:0;border-bottom:1px solid #f0eef7;background:#fff;color:#251b4a;text-align:left;font:500 14px inherit;cursor:pointer}
+.group article>*:last-child{border-bottom:0}
+.group button i,.toggleRow i{width:32px;height:32px;flex:none;border-radius:10px;background:#f3f0fa;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:14px}
+.group button span,.toggleRow span{flex:1}
+.group small{color:#8a83a8;font-size:12px}
+.group em{color:#a8a5b6;font-size:18px;font-style:normal}
+.on,.off{width:42px;height:24px;border-radius:999px;padding:3px;display:flex;align-items:center;flex:none}
+.on{background:#6944ef;justify-content:flex-end}
+.off{background:#e3e1ea;justify-content:flex-start}
+.on::after,.off::after{content:'';width:18px;height:18px;border-radius:50%;background:#fff;display:block}
+.logout{border:1px solid #f8dde3;border-radius:15px;background:#fff;padding:14px;color:#df4164;font:700 14px inherit;text-align:center;cursor:pointer}
+.version{text-align:center;color:#a8a5b6;font-size:11px}

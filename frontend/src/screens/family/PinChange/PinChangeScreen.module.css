@@ -1,0 +1,17 @@
+.page{box-sizing:border-box;width:min(100%,480px);min-height:852px;margin:0 auto;display:flex;flex-direction:column;background:#f7f6fc;color:#17103a;font-family:"Noto Sans KR",system-ui,sans-serif}
+.page header{display:flex;align-items:center;gap:10px;padding:10px 16px 0}
+.page header button{border:0;background:transparent;color:#5a35df;font-size:20px;font-weight:700;cursor:pointer}
+.page h1{margin:0;font-size:19px;font-weight:900}
+.page section{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 24px 16px;text-align:center;flex:1}
+.progress{display:flex;align-items:center;gap:8px;width:100%;padding:2px 0 6px}
+.progress i{flex:1;height:6px;border-radius:3px;background:#ede8fa;display:block}
+.progress i.on{background:#5a35df}
+.lock{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#eee8ff;color:#5a35df;font-size:26px}
+.page h2{margin:2px 0 0;font-size:16px;font-weight:900}
+.page p{margin:0;color:#8a83a8;font-size:12.5px}
+.dots{display:flex;gap:16px}
+.dots i{width:16px;height:16px;border:2px solid #d9d2f3;border-radius:50%;display:block}
+.dots .filled{border-color:#5a35df;background:#5a35df}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;max-width:280px}
+.keys button{aspect-ratio:1;border:0;border-radius:50%;background:#fff;color:#17103a;font:700 22px inherit;box-shadow:0 3px 10px rgba(60,30,120,.06);cursor:pointer}
+.forgot{margin-top:auto;font-size:13px;font-weight:700;color:#5a35df}

@@ -1,1 +1,4 @@
-import { LanguageSettingsScreen,languageSettingsFixture } from '../../screens/family/LanguageSettings';export function LanguageSettingsPreview(){return <LanguageSettingsScreen model={languageSettingsFixture} onBack={()=>undefined} onConfirm={()=>undefined}/>;}
+import { LanguageSettingsScreen, languageSettingsFixture } from '../../screens/family/LanguageSettings';
+export function LanguageSettingsPreview() {
+  return <LanguageSettingsScreen model={languageSettingsFixture} onBack={() => undefined} onSelect={() => undefined} />;
+}

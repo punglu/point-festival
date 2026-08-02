@@ -1,0 +1,32 @@
+{
+  "task": "MONGLE-W6-A2-FAMILY-HOME-INTEGRATION-PRACTICAL-CLOSEOUT-001",
+  "runtime": "official mongle Docker compose project 'mongle' (docker-compose.phase1.yml)",
+  "action": "frontend service rebuilt and recreated with --no-deps; db and backend neither recreated nor modified",
+  "containers": {
+    "mongle-db-1": {
+      "status": "running",
+      "health": "healthy",
+      "restartCount": 0
+    },
+    "mongle-backend-1": {
+      "status": "running",
+      "health": "healthy",
+      "restartCount": 0
+    },
+    "mongle-frontend-1": {
+      "status": "running",
+      "health": "healthy",
+      "restartCount": 0
+    }
+  },
+  "routes": {
+    "/": 200,
+    "/login": 200,
+    "/__wave6/1b": 200,
+    "/__wave6/1c": 200,
+    "/__wave6/1e": 200
+  },
+  "verdict": "A2_OFFICIAL_DOCKER_REGRESSION_PASS",
+  "servedBundle": "index-CKD2lDqv.js",
+  "bundleContainsRoute1b": 1
+}

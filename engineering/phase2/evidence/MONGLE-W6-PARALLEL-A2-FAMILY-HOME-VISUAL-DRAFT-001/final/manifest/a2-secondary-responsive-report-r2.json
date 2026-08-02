@@ -1,0 +1,20 @@
+{
+  "note": "SECONDARY responsive regression against the canonical HTML render. NOT a canonical fidelity figure \u2014 the implementation deliberately departs from the HTML wherever the approved PNG overrides it.",
+  "results": {
+    "375x812": {
+      "pixelsAbove12": 101125,
+      "totalPixels": 304500,
+      "percentAboveThreshold": 33.2102
+    },
+    "390x844": {
+      "pixelsAbove12": 108865,
+      "totalPixels": 329160,
+      "percentAboveThreshold": 33.0736
+    },
+    "430x932": {
+      "pixelsAbove12": 119123,
+      "totalPixels": 400760,
+      "percentAboveThreshold": 29.7243
+    }
+  }
+}

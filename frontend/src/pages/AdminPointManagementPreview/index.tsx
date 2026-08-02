@@ -49,7 +49,7 @@ export function AdminPointManagementPreview() {
             <strong>우리 가족</strong><span>관리자 모드</span>
           </div>
           <nav className={styles.nav} aria-label="관리자 메뉴">
-            {navItems.map(({ icon, label, active }) => <a className={`${styles.navItem} ${active ? styles.navItemActive : ''}`} href="#" onClick={noOp} key={label}><Icon name={icon} />{label}</a>)}
+            {navItems.map(({ icon, label, active }) => <a className={`${styles.navItem} ${active ? styles.navItemActive : ''}`} href="#" onClick={noOp} key={label}><Icon name={icon} /><span>{label}</span></a>)}
           </nav>
           <div className={styles.accountFooter}>
             <span className={styles.adminAvatar}><Icon name="user" size={21} /></span><span className={styles.accountText}><strong>관리자</strong><small>admin@ourfamily.com</small></span><span className={styles.footerChevron}><Icon name="chevronDown" size={12} stroke={2.4} /></span>

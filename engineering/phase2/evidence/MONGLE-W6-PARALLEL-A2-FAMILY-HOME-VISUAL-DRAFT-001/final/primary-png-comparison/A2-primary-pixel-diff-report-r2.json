@@ -1,0 +1,28 @@
+{
+  "comparedSize": "940x1558",
+  "pixelsAboveThreshold12": 625531,
+  "totalPixels": 1464520,
+  "percentAboveThreshold": 42.7124,
+  "bands": {
+    "profile": {
+      "pixelsAbove12": 25704,
+      "percentOfFrame": 1.755
+    },
+    "hero": {
+      "pixelsAbove12": 281619,
+      "percentOfFrame": 19.229
+    },
+    "activity": {
+      "pixelsAbove12": 155945,
+      "percentOfFrame": 10.648
+    },
+    "services": {
+      "pixelsAbove12": 103068,
+      "percentOfFrame": 7.038
+    },
+    "dock": {
+      "pixelsAbove12": 59195,
+      "percentOfFrame": 4.042
+    }
+  }
+}
