@@ -1,0 +1,1 @@
+import { AlbumShareSettingsScreen,albumShareSettingsFixture } from '../../screens/family/AlbumShareSettings';export function AlbumShareSettingsPreview(){return <AlbumShareSettingsScreen model={albumShareSettingsFixture} onBack={()=>undefined} onSave={()=>undefined}/>;}

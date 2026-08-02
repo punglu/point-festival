@@ -1,0 +1,1 @@
+import { ProfileEditScreen,profileEditFixture } from '../../screens/family/ProfileEdit';export function ProfileEditPreview(){return <ProfileEditScreen model={profileEditFixture} onBack={()=>undefined} onSave={()=>undefined}/>;}

@@ -1,0 +1,2 @@
+import styles from './AccountLockPreview.module.css';
+export function AccountLockPreview(){return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="1j-1"><section><div className={styles.icon}>⌁</div><h1>지호의 계정이 잠겼어요</h1><p>PIN 번호를 5회 잘못 입력하여<br/>안전을 위해 일시적으로 잠겼습니다.</p><span>다시 시도할 수 있어요</span><strong>04:52</strong><button type="button">보호자에게 잠금 해제 요청</button><button type="button" className={styles.secondary}>프로필 선택으로 돌아가기</button></section></main>}

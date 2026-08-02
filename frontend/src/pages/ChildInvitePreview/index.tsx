@@ -1,0 +1,2 @@
+import styles from './ChildInvitePreview.module.css';
+export function ChildInvitePreview(){const noOp=()=>undefined;return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="2f"><section><div className={styles.icon}>✉</div><h1>민준님을 가족으로 초대할까요?</h1><p>초대 코드를 입력한 민준님이<br/>우리 가족방 참여를 요청했어요.</p><article><i>민준</i><div><b>민준</b><span>자녀 프로필 · PIN 설정 필요</span></div></article><button type="button" onClick={noOp}>초대 승인하기</button><button type="button" className={styles.secondary} onClick={noOp}>나중에 하기</button></section></main>}

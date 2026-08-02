@@ -1,0 +1,11 @@
+.screen { box-sizing: border-box; width: min(100%, 480px); min-height: 812px; margin: 0 auto; padding: 48px 24px; color: #17103a; background: linear-gradient(180deg, #c6a9f5 0%, #a579ec 42%, #f7f6fc 70%); }
+.heading { margin: 88px 0 28px; text-align: center; }
+.heading h1 { margin: 0 0 8px; font-size: 28px; }
+.heading p { margin: 0; color: #4a3f72; }
+.profiles { display: grid; gap: 12px; }
+.profile { display: flex; align-items: center; gap: 14px; width: 100%; padding: 16px; border: 0; border-radius: 18px; background: #fff; color: inherit; font: inherit; text-align: left; box-shadow: 0 8px 22px rgba(40,20,90,.12); }
+.avatar { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: #5a35df; color: #fff; font-weight: 900; }
+.profile strong, .profile span { display: block; }
+.profile span { margin-top: 2px; color: #8a83a8; font-size: 13px; }
+@media (min-width: 768px) { .screen { width: min(100%, 768px); min-height: 1024px; padding: 64px; } .profiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .screen { width: min(100%, 1024px); } .profiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } .profile { flex-direction: column; text-align: center; } }

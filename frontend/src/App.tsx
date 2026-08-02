@@ -8,6 +8,68 @@ import { FamilyContextLoader } from './shared/family/FamilyContextLoader';
 import { MongleAppShell } from './platform/shell/MongleAppShell';
 import A1AccountLoginPage from './pages/A1AccountLogin';
 import { PointFestivalPreview } from './pages/PointFestivalPreview';
+import { FamilyHomePreview } from './pages/FamilyHomePreview';
+import { AdminPointManagementPreview } from './pages/AdminPointManagementPreview';
+import { FamilyChatPreview } from './pages/FamilyChatPreview';
+import { MyProfilePreview } from './pages/MyProfilePreview';
+import { FamilySchedulePreview } from './pages/FamilySchedulePreview';
+import { FamilyTodoPreview } from './pages/FamilyTodoPreview';
+import { FamilyAlbumPreview } from './pages/FamilyAlbumPreview';
+import { MissionDetailPreview } from './pages/MissionDetailPreview';
+import { RewardExchangePreview } from './pages/RewardExchangePreview';
+import { NotificationListPreview } from './pages/NotificationListPreview';
+import { ScheduleAddPreview } from './pages/ScheduleAddPreview';
+import { PhotoDetailPreview } from './pages/PhotoDetailPreview';
+import { PinEntryPreview } from './pages/PinEntryPreview';
+import { AccountLockPreview } from './pages/AccountLockPreview';
+import { MissionApprovalPreview } from './pages/MissionApprovalPreview';
+import { FamilyMembersPreview } from './pages/FamilyMembersPreview';
+import { OnboardingPreview } from './pages/OnboardingPreview';
+import { MissionRejectPreview } from './pages/MissionRejectPreview';
+import { ChatSettingsPreview } from './pages/ChatSettingsPreview';
+import { PinChangePreview } from './pages/PinChangePreview';
+import { FamilyRulesPreview } from './pages/FamilyRulesPreview';
+import { AlbumSearchPreview } from './pages/AlbumSearchPreview';
+import { WeeklyReportPreview } from './pages/WeeklyReportPreview';
+import { BasicModalPreview } from './pages/BasicModalPreview';
+import { UserManagementDetailPreview } from './pages/UserManagementDetailPreview';
+import { FileViewerPreview } from './pages/FileViewerPreview';
+import { LevelUpPreview } from './pages/LevelUpPreview';
+import { MissionManagementPreview } from './pages/MissionManagementPreview';
+import { ChildInvitePreview } from './pages/ChildInvitePreview';
+import { ChatReplyPreview } from './pages/ChatReplyPreview';
+import { ExchangeConfirmPreview } from './pages/ExchangeConfirmPreview';
+import { ParentDashboardPreview } from './pages/ParentDashboardPreview';
+import { RewardShopPreview } from './pages/RewardShopPreview';
+import { SettingsListPreview } from './pages/SettingsListPreview';
+import { ProfileSelectorPreview } from './pages/ProfileSelectorPreview';
+import { MissionCreateFormPreview } from './pages/MissionCreateFormPreview';
+import { MissionDetailFormPreview } from './pages/MissionDetailFormPreview';
+import { NotificationPreferencesPreview } from './pages/NotificationPreferencesPreview';
+import { PointPolicyEditorPreview } from './pages/PointPolicyEditorPreview';
+import { InvitationListPreview } from './pages/InvitationListPreview';
+import { FamilyRulesGuidePreview } from './pages/FamilyRulesGuidePreview';
+import { FamilyActivityLogPreview } from './pages/FamilyActivityLogPreview';
+import { PinInitialSetupPreview } from './pages/PinInitialSetupPreview';
+import { AdminNotificationSendPreview } from './pages/AdminNotificationSendPreview';
+import { ScheduleDetailPreview } from './pages/ScheduleDetailPreview';
+import { AlbumUploadProgressPreview } from './pages/AlbumUploadProgressPreview';
+import { FamilyInviteAcceptancePreview } from './pages/FamilyInviteAcceptancePreview';
+import { MissionStatisticsDashboardPreview } from './pages/MissionStatisticsDashboardPreview';
+import { AlbumShareSettingsPreview } from './pages/AlbumShareSettingsPreview';
+import { ProfileEditPreview } from './pages/ProfileEditPreview';
+import { CalendarSharePreview } from './pages/CalendarSharePreview';
+import { MissionStatisticsFilterPreview } from './pages/MissionStatisticsFilterPreview';
+import { FamilyBoardPreview } from './pages/FamilyBoardPreview';
+import { CommentComposerPreview } from './pages/CommentComposerPreview';
+import { PopularPostsPreview } from './pages/PopularPostsPreview';
+import { LanguageSettingsPreview } from './pages/LanguageSettingsPreview';
+import { ThemeSettingsPreview } from './pages/ThemeSettingsPreview';
+import { AccountDeletionConfirmPreview } from './pages/AccountDeletionConfirmPreview';
+import { FamilyInviteCancelPreview } from './pages/FamilyInviteCancelPreview';
+import { SearchAllPreview } from './pages/SearchAllPreview';
+import { WidgetGalleryPreview } from './pages/WidgetGalleryPreview';
+import { ShortcutEditorPreview } from './pages/ShortcutEditorPreview';
 import pageStyles from './platform/pages/PlatformPages.module.css';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -34,19 +96,20 @@ function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function ProductContext({ children }: { children: React.ReactNode }) {
+  return <FamilyContextLoader>{children}</FamilyContextLoader>;
+}
+
 export default function App() {
   return (
     <>
-      <FamilyContextLoader>
       <BrowserRouter>
         <Routes>
           {/* "/" → 플레이어 선택 + PIN 인증 */}
           <Route
             path="/"
             element={
-              <div data-domain="user">
-                <AuthPage />
-              </div>
+              <ProductContext><div data-domain="user"><AuthPage /></div></ProductContext>
             }
           />
 
@@ -54,9 +117,9 @@ export default function App() {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
+              <ProductContext><ProtectedRoute>
                 <MongleAppShell><div data-domain="user"><UserDashboard /></div></MongleAppShell>
-              </ProtectedRoute>
+              </ProtectedRoute></ProductContext>
             }
           />
 
@@ -64,20 +127,101 @@ export default function App() {
           <Route
             path="/admin/*"
             element={
-              <AdminProtectedRoute>
+              <ProductContext><AdminProtectedRoute>
                 <MongleAppShell><div data-domain="admin"><AdminDashboard /></div></MongleAppShell>
-              </AdminProtectedRoute>
+              </AdminProtectedRoute></ProductContext>
             }
           />
 
           {/* Wave 6 recovery baseline: `/family`, `/markpoint*`, and `/wagle`
               remain detached from noncanonical UI. `/login` is the ordered A1
               presentation-only reconstruction; API/session code remains parked. */}
-          <Route path="/login" element={<A1AccountLoginPage />} />
+          <Route path="/login" element={<ProductContext><A1AccountLoginPage /></ProductContext>} />
+
+          {/* Wave 6 1b mobile visual-only preview (A2 가족 플랫폼 홈). Like 1c and
+              1e it is deliberately not product navigation: no API, session,
+              storage or dashboard connection, and it does NOT replace the
+              `/family` product route. */}
+          <Route path="/__wave6/1b" element={<FamilyHomePreview />} />
 
           {/* Wave 6 1c visual-only preview. This is intentionally not product
               navigation and has no API, session or dashboard connection. */}
           <Route path="/__wave6/1c" element={<PointFestivalPreview />} />
+
+          {/* Wave 6 1e desktop visual-only preview. It is intentionally detached
+              from the live admin routes, data services, and product navigation. */}
+          <Route path="/__wave6/1e" element={<AdminPointManagementPreview />} />
+
+          <Route path="/__wave6/1d" element={<FamilyChatPreview />} />
+
+          <Route path="/__wave6/1f" element={<MyProfilePreview />} />
+
+          <Route path="/__wave6/1g" element={<FamilySchedulePreview />} />
+
+          <Route path="/__wave6/1i" element={<FamilyTodoPreview />} />
+
+          <Route path="/__wave6/1h" element={<FamilyAlbumPreview />} />
+
+          <Route path="/__wave6/1k" element={<MissionDetailPreview />} />
+
+          <Route path="/__wave6/1l" element={<RewardExchangePreview />} />
+
+          <Route path="/__wave6/1n" element={<NotificationListPreview />} />
+
+          <Route path="/__wave6/1o" element={<ScheduleAddPreview />} />
+
+          <Route path="/__wave6/1p" element={<PhotoDetailPreview />} />
+
+          <Route path="/__wave6/1j" element={<PinEntryPreview />} />
+          <Route path="/__wave6/1j-1" element={<AccountLockPreview />} />
+          <Route path="/__wave6/1m" element={<MissionApprovalPreview />} />
+          <Route path="/__wave6/1q" element={<FamilyMembersPreview />} />
+          <Route path="/__wave6/1r" element={<OnboardingPreview />} />
+          <Route path="/__wave6/1s" element={<MissionRejectPreview />} />
+          <Route path="/__wave6/1t" element={<ChatSettingsPreview />} />
+          <Route path="/__wave6/1u" element={<PinChangePreview />} />
+          <Route path="/__wave6/1v" element={<FamilyRulesPreview />} />
+          <Route path="/__wave6/1w" element={<AlbumSearchPreview />} />
+          <Route path="/__wave6/1x" element={<WeeklyReportPreview />} />
+          <Route path="/__wave6/1z" element={<BasicModalPreview />} />
+          <Route path="/__wave6/2a" element={<UserManagementDetailPreview />} />
+          <Route path="/__wave6/2b" element={<FileViewerPreview />} />
+          <Route path="/__wave6/2c" element={<LevelUpPreview />} />
+          <Route path="/__wave6/2e" element={<MissionManagementPreview />} />
+          <Route path="/__wave6/2f" element={<ChildInvitePreview />} />
+          <Route path="/__wave6/2g" element={<ChatReplyPreview />} />
+          <Route path="/__wave6/2h" element={<ExchangeConfirmPreview />} />
+          <Route path="/__wave6/2i" element={<ParentDashboardPreview />} />
+          <Route path="/__wave6/2j" element={<RewardShopPreview />} />
+          <Route path="/__wave6/2k" element={<SettingsListPreview />} />
+          <Route path="/__wave6/1a" element={<ProfileSelectorPreview />} />
+          <Route path="/__wave6/2l" element={<MissionCreateFormPreview />} />
+          <Route path="/__wave6/2m" element={<MissionDetailFormPreview />} />
+          <Route path="/__wave6/2n" element={<NotificationPreferencesPreview />} />
+          <Route path="/__wave6/2o" element={<PointPolicyEditorPreview />} />
+          <Route path="/__wave6/2p" element={<InvitationListPreview />} />
+          <Route path="/__wave6/2q" element={<FamilyRulesGuidePreview />} />
+          <Route path="/__wave6/2r" element={<FamilyActivityLogPreview />} />
+          <Route path="/__wave6/2s" element={<PinInitialSetupPreview />} />
+          <Route path="/__wave6/2t" element={<AdminNotificationSendPreview />} />
+          <Route path="/__wave6/2u" element={<ScheduleDetailPreview />} />
+          <Route path="/__wave6/2v" element={<AlbumUploadProgressPreview />} />
+          <Route path="/__wave6/2w" element={<FamilyInviteAcceptancePreview />} />
+          <Route path="/__wave6/2x" element={<MissionStatisticsDashboardPreview />} />
+          <Route path="/__wave6/2y" element={<AlbumShareSettingsPreview />} />
+          <Route path="/__wave6/2z" element={<ProfileEditPreview />} />
+          <Route path="/__wave6/3a" element={<CalendarSharePreview />} />
+          <Route path="/__wave6/3b" element={<MissionStatisticsFilterPreview />} />
+          <Route path="/__wave6/3c" element={<FamilyBoardPreview />} />
+          <Route path="/__wave6/3d" element={<CommentComposerPreview />} />
+          <Route path="/__wave6/3e" element={<PopularPostsPreview />} />
+          <Route path="/__wave6/3f" element={<LanguageSettingsPreview />} />
+          <Route path="/__wave6/3g" element={<ThemeSettingsPreview />} />
+          <Route path="/__wave6/3h" element={<AccountDeletionConfirmPreview />} />
+          <Route path="/__wave6/3i" element={<FamilyInviteCancelPreview />} />
+          <Route path="/__wave6/3j" element={<SearchAllPreview />} />
+          <Route path="/__wave6/3k" element={<WidgetGalleryPreview />} />
+          <Route path="/__wave6/3l" element={<ShortcutEditorPreview />} />
 
           {/* MONGLE-NARAN-RUNTIME-RETIREMENT-AND-FRONTEND-CLOSEOUT-001:
               the `/naran/*` compatibility aliases were removed by explicit PM
@@ -88,10 +232,9 @@ export default function App() {
           {/* MONGLE-FE-ROUTE-ALIGNMENT-001 Wave 4: 등록되지 않은 모든 경로의 최소 안전망.
               기존 route의 동작·우선순위는 변경하지 않는다 — React Router는 더 구체적인
               경로를 먼저 매칭하므로 이 catch-all은 위 어떤 route도 가리지 않는다. */}
-          <Route path="*" element={<NotFoundPage />} />
+          <Route path="*" element={<ProductContext><NotFoundPage /></ProductContext>} />
         </Routes>
       </BrowserRouter>
-      </FamilyContextLoader>
       <ToastContainer />
     </>
   );

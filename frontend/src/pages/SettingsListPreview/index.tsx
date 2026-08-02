@@ -1,0 +1,3 @@
+import styles from './SettingsListPreview.module.css';
+const groups: Array<[string, string[]]>=[['계정',['내 프로필','PIN 변경','알림 설정']],['가족',['가족 구성원','가족 규칙','초대 코드']],['앱 정보',['도움말','버전 정보']]];
+export function SettingsListPreview(){const noOp=()=>undefined;return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="2k"><header><button type="button" onClick={noOp}>←</button><h1>설정</h1></header><section>{groups.map(([title,items])=><div className={styles.group} key={title}><h2>{title}</h2><article>{items.map(item=><button key={item} type="button" onClick={noOp}><span>{item}</span><em>›</em></button>)}</article></div>)}<button type="button" className={styles.logout} onClick={noOp}>로그아웃</button></section></main>}

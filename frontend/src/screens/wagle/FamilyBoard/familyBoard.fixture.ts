@@ -1,0 +1,1 @@
+import type { FamilyBoardModel } from './types';export const familyBoardFixture:FamilyBoardModel={posts:[{author:'엄마',title:'이번 주말 나들이',summary:'토요일에 한강 공원으로 갈까요?',likes:4,comments:2},{author:'서연',title:'새 앨범을 올렸어요',summary:'여름 여행 사진을 같이 봐요!',likes:6,comments:3}]};

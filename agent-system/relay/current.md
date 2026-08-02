@@ -1,6 +1,34 @@
 # Current Relay
 
-Current Task: none — 1c mobile visual and source-separation closeout complete.
+## MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001 (implementation writer)
+
+- Intended edits: new owner-local detached canonical screen/fixture/CSS files for the Matrix-filtered W7.2 rows, minimal `/__wave6/*` imports/routes in `frontend/src/App.tsx`, and this task's report/matrix/handoff/QA/active/relay records.
+- Scope: 28 `W7_2_PORT_READY=YES` labels only; detached presentation, local CSS Modules, typed fixtures, and responsive internal layout. No active product route, dashboard mount, API/store/storage/WebSocket, Shared extraction, backend, package, or configuration work.
+- Protected: all start-dirty paths other than task-owned App route additions; all existing 36 canonical previews and all product routes.
+
+## MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001 (audit writer)
+
+- Intended edits: `engineering/phase2/MONGLE_W7_SCREEN_OWNERSHIP_AND_TOPOLOGY_FREEZE.md`, `engineering/phase2/MONGLE_W7_SCREEN_OWNERSHIP_MATRIX.csv`, this task's handoff/QA record, and task registration state only.
+- Scope: read-only ownership/topology classification from the Wave 7.0 authority report/matrix and current frontend source. No React, CSS, routes, files/directories, API, backend, package, runtime, or Docker changes.
+- Protected: all existing dirty paths, including `frontend/src/App.tsx`, Wave 6 previews/evidence, and Wave 7.0 outputs.
+
+Current Task: none — `MONGLE-W6-ALL-TOKENIZED-SCREENS-SEQUENTIAL-PORTING-001` implementation closeout is ready for independent review. See its active handoff and QA evidence.
+
+- Intended edits: `frontend/src/pages/<ScreenName>/**`, minimal detached
+  `/__wave6/*` entries in `frontend/src/App.tsx`, one screen-status inventory,
+  and task handoff/QA/active records. Existing previews and active product
+  routes are protected; no shared-component, API, backend, DB, package, or
+  configuration work.
+- Current evidence state: 1448×1086 crop/resize 0; runtime, font, API,
+  WebSocket, storage, navigation, overflow and scrollbar checks passed.
+  Local SHA-256 inventory and Drive metadata readback are complete. The raster
+  decoder/ROI skeleton remains experimental and is not a Visual PASS basis.
+- Protected: A1, 1c, `/dashboard`, `/admin/points`,
+  `AdminDashboard/views/PointView/**`, Auth, Backend, DB, package/config, and
+  architecture documents. No API/session/navigation wiring.
+- Canonical contract: approved A5 PNG, full bounds `0,0,1448,1086`, no crop or
+  resize; HTML `1e` is structure-only. This task stops at
+  `READY_FOR_GPT_VISUAL_REVIEW` after evidence closeout.
 
 - Closed: A1 and 1c mobile visual/source separation. 1c preserved visual,
   behavioral and network identity across 375/390/430 after page-local colocation.

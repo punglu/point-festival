@@ -1,0 +1,1 @@
+import { FamilyBoardScreen,familyBoardFixture } from '../../screens/wagle/FamilyBoard';export function FamilyBoardPreview(){return <FamilyBoardScreen model={familyBoardFixture} onWrite={()=>undefined}/>;}

@@ -1,0 +1,1 @@
+import { AccountDeletionConfirmScreen,accountDeletionConfirmFixture } from '../../screens/family/AccountDeletionConfirm';export function AccountDeletionConfirmPreview(){return <AccountDeletionConfirmScreen model={accountDeletionConfirmFixture} onBack={()=>undefined} onConfirm={()=>undefined}/>;}

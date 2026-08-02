@@ -1,0 +1,1 @@
+export type FamilyInviteCancelModel={title:string;description:string;secondary:string;primary:string};export type FamilyInviteCancelProps={model:FamilyInviteCancelModel;onBack?:()=>void;onConfirm?:()=>void};

@@ -1,0 +1,1 @@
+import { WidgetGalleryScreen,widgetGalleryFixture } from '../../screens/family/WidgetGallery';export function WidgetGalleryPreview(){return <WidgetGalleryScreen model={widgetGalleryFixture} onBack={()=>undefined} onConfirm={()=>undefined}/>;}

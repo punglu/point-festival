@@ -1,0 +1,1 @@
+import type { FamilyInviteCancelModel } from './types';export const familyInviteCancelFixture:FamilyInviteCancelModel={title:'가족 초대 취소',description:'보낸 초대를 취소할 수 있어요.',secondary:'돌아가기',primary:'초대 취소'};

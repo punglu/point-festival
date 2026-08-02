@@ -1,0 +1,1 @@
+export type LanguageSettingsModel={title:string;description:string;secondary:string;primary:string};export type LanguageSettingsProps={model:LanguageSettingsModel;onBack?:()=>void;onConfirm?:()=>void};

@@ -1,0 +1,3 @@
+import { useState } from 'react';
+import styles from './BasicModalPreview.module.css';
+export function BasicModalPreview(){const [open,setOpen]=useState(true);return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="1z"><section><h1>기본 모달</h1><p>관리자 화면에서 사용하는 확인 모달 예시입니다.</p><button type="button" onClick={()=>setOpen(true)}>미션 삭제 모달 열기</button></section>{open&&<div className={styles.backdrop}><article role="dialog" aria-modal="true"><h2>미션을 삭제할까요?</h2><p>삭제한 미션은 복구할 수 없습니다.<br/>관련된 진행 기록은 유지됩니다.</p><div><button type="button" onClick={()=>setOpen(false)}>취소</button><button type="button" onClick={()=>setOpen(false)}>삭제</button></div></article></div>}</main>}

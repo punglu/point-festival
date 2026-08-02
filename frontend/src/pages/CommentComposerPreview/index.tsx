@@ -1,0 +1,1 @@
+import { CommentComposerScreen } from '../../screens/wagle/CommentComposer';export function CommentComposerPreview(){return <CommentComposerScreen onCancel={()=>undefined} onSubmit={()=>undefined}/>;}

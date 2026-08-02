@@ -1,0 +1,1 @@
+export type AccountDeletionConfirmModel={title:string;description:string;secondary:string;primary:string};export type AccountDeletionConfirmProps={model:AccountDeletionConfirmModel;onBack?:()=>void;onConfirm?:()=>void};

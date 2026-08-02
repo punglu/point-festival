@@ -3,6 +3,48 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
+## MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001
+
+- Task ID: MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001
+- Kind: detached React canonical port for Matrix-filtered W7.2-ready screens only.
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED (latest PM task direction)
+- Verification: NOT_TESTED
+- Execution: RUNNING
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001.md
+- HANDOFF Path: agent-system/handoffs/active/MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001.md
+- QA Evidence Path: agent-system/qa/MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001.md
+
+## MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001
+
+- Task ID: MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001
+- Kind: read-only product screen ownership and topology design freeze using Wave 7.0 authority evidence.
+- Lifecycle: IMPLEMENTED_AWAITING_INDEPENDENT_QA
+- Decision: NOT_REVIEWED
+- Verification: SELF_CHECK_PASS / INDEPENDENT_QA_PENDING
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001.md
+- HANDOFF Path: agent-system/handoffs/active/MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001.md
+- QA Evidence Path: agent-system/qa/MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001.md
+
+## MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001
+
+- Task ID: MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001
+- Kind: repository-wide screen-authority and React-coverage evidence audit; no product implementation.
+- Lifecycle: IMPLEMENTED_AWAITING_INDEPENDENT_QA
+- Decision: NOT_REVIEWED
+- Verification: SELF_CHECK_PASS / INDEPENDENT_QA_PENDING
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001.md
+- HANDOFF Path: agent-system/handoffs/active/MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001.md
+- QA Evidence Path: agent-system/qa/MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001.md
+
 ## MONGLE-W6-R2-1C-POINT-FESTIVAL-MOBILE-VISUAL-001
 
 - Task ID: MONGLE-W6-R2-1C-POINT-FESTIVAL-MOBILE-VISUAL-001

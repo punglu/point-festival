@@ -1,0 +1,3 @@
+import styles from './FamilyRulesGuideScreen.module.css';
+import type { FamilyRulesGuideProps } from './types';
+export function FamilyRulesGuideScreen({model,onBack}:FamilyRulesGuideProps){return <main className={styles.screen} data-canonical-screen-id="2q" data-canonical-screen-label="가족 규칙 안내" data-canonical-source="wave7-full-authority"><header><button type="button" onClick={onBack}>←</button><h1>{model.title}</h1></header><p className={styles.intro}>우리 가족이 편안하게 함께하기 위한 약속이에요.</p><section>{model.rules.map((rule,index)=><article key={rule.title}><i>{index+1}</i><div><strong>{rule.title}</strong><p>{rule.description}</p></div></article>)}</section><aside><strong>모두의 공간을 함께 만들어요</strong><p>서로를 배려하는 마음으로 즐거운 가족 생활을 이어가요.</p></aside></main>}

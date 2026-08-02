@@ -1,0 +1,1 @@
+import { FamilyInviteCancelScreen,familyInviteCancelFixture } from '../../screens/family/FamilyInviteCancel';export function FamilyInviteCancelPreview(){return <FamilyInviteCancelScreen model={familyInviteCancelFixture} onBack={()=>undefined} onConfirm={()=>undefined}/>;}

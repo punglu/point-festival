@@ -1,0 +1,3 @@
+import styles from './FamilyInviteAcceptanceScreen.module.css';
+import type { FamilyInviteAcceptanceProps } from './types';
+export function FamilyInviteAcceptanceScreen({model,onAccept,onDecline}:FamilyInviteAcceptanceProps){return <main className={styles.screen} data-canonical-screen-id="2w" data-canonical-screen-label="가족 초대 수락" data-canonical-source="wave7-full-authority"><section><div className={styles.mark}>♥</div><span>{model.inviter}님이 보낸 초대</span><h1>{model.familyName}</h1><p>{model.message}</p><div className={styles.people}><i>엄</i><i>아</i><i>서</i><i>민</i></div></section><div className={styles.actions}><button type="button" onClick={onAccept}>초대 수락하기</button><button type="button" onClick={onDecline}>나중에 할게요</button></div></main>}

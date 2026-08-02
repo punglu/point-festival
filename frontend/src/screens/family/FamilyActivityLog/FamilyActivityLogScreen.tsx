@@ -1,0 +1,3 @@
+import styles from './FamilyActivityLogScreen.module.css';
+import type { FamilyActivityLogProps } from './types';
+export function FamilyActivityLogScreen({model,onBack}:FamilyActivityLogProps){return <main className={styles.screen} data-canonical-screen-id="2r" data-canonical-screen-label="가족 활동 로그" data-canonical-source="wave7-full-authority"><header><button type="button" onClick={onBack}>←</button><h1>{model.title}</h1></header><p className={styles.caption}>우리 가족의 최근 활동을 한눈에 확인하세요.</p><span className={styles.day}>오늘</span><section>{model.items.map(item=><article key={item.title}><i>{item.kind}</i><div><strong>{item.title}</strong><p>{item.description}</p><time>{item.time}</time></div></article>)}</section></main>}

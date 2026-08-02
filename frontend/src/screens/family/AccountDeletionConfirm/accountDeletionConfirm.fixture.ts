@@ -1,0 +1,1 @@
+import type { AccountDeletionConfirmModel } from './types';export const accountDeletionConfirmFixture:AccountDeletionConfirmModel={title:'계정 탈퇴',description:'계정을 삭제하면 가족 활동 기록을 되돌릴 수 없어요.',secondary:'탈퇴하지 않기',primary:'계정 탈퇴'};

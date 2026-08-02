@@ -1,0 +1,2 @@
+import type { NotificationPreferencesModel } from './types';
+export const notificationPreferencesFixture:NotificationPreferencesModel={title:'알림 세부설정',groups:[{title:'미션 · 포인트',items:[{label:'미션 승인/반려',enabled:true},{label:'포인트 지급/차감',enabled:true},{label:'레벨업 · 배지',enabled:false}]},{title:'가족 활동',items:[{label:'가족 대화 메시지',enabled:true},{label:'일정 알림',enabled:true},{label:'앨범 새 사진',enabled:false}]},{title:'방해 금지',items:[{label:'방해 금지 시간',enabled:true},{label:'시간대',enabled:false,detail:'오후 9시 ~ 오전 7시'}]}]};

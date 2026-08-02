@@ -1,0 +1,2 @@
+import styles from './LevelUpPreview.module.css';
+export function LevelUpPreview(){const noOp=()=>undefined;return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="2c"><section><div className={styles.burst}>★</div><span>LEVEL UP!</span><h1>서연이가<br/>Lv.4 탐험가가 되었어요!</h1><p>새로운 모험이 기다리고 있어요.<br/>가족과 함께 더 많은 미션을 완료해 봐요!</p><div className={styles.level}>Lv.3 <i>→</i> <b>Lv.4</b></div><button type="button" onClick={noOp}>축하 메시지 보내기</button><button type="button" className={styles.secondary} onClick={noOp}>확인</button></section></main>}

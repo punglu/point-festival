@@ -1,0 +1,1 @@
+export type BoardPost={author:string;title:string;summary:string;likes:number;comments:number};export type FamilyBoardModel={posts:BoardPost[]};export type FamilyBoardProps={model:FamilyBoardModel;onWrite?:()=>void};

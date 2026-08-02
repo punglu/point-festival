@@ -1,0 +1,1 @@
+import { ShortcutEditorScreen,shortcutEditorFixture } from '../../screens/family/ShortcutEditor';export function ShortcutEditorPreview(){return <ShortcutEditorScreen model={shortcutEditorFixture} onBack={()=>undefined} onConfirm={()=>undefined}/>;}
