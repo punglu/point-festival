@@ -1,5 +1,33 @@
 # Current Relay
 
+## MONGLE-W7-5-MARKPOINT-PROJECTION-STABILITY-REMEDIATION-001 (implementation writer, current)
+
+- Intended/actual edits: `backend/app/domains/markpoint_target/service.py`
+  (`KST`/`_today_kst()` added, all 7 `date.today()` call sites replaced,
+  `_sum_ledger`/`own_summary`'s ledger day-boundary SQL converted to KST
+  before date extraction), `backend/tests/test_markpoint_core_gap_wave5.py`
+  (+5 deterministic regression tests), new
+  `agent-system/handoffs/active/MONGLE-W7-5-MARKPOINT-PROJECTION-STABILITY-REMEDIATION-001.md`
+  and `agent-system/qa/MONGLE-W7-5-MARKPOINT-PROJECTION-STABILITY-REMEDIATION-001.md`,
+  `agent-system/qa/COVERAGE_MAP.md`, `active.md`, this file.
+- Scope: fix `RE-QA-F-003` from
+  `agent-system/qa/MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-RE-QA-001.md`
+  only. No assertion/expected-value change, no touching the
+  Migration-0021/E2E-runner lineage beyond a non-modifying smoke re-run, no
+  touching the concurrently-active W7.4 REOPENED scope.
+- Protected: the persistent dev runtime; legacy `mission`/`mission_template`/
+  `config` domains (naive `date.today()` there is out of this task's scope,
+  and `mission_template`'s rolling-window day-count contract is a
+  separately PM-locked concern); all other domains' files.
+- Status: all required steps complete — reproduction matrix classified
+  `DATE_TIMEZONE_BOUNDARY_DEFECT` by direct measurement, fix applied and
+  regression-tested (5 new deterministic tests), focused tests 5/5
+  consecutive, backend suite 404/404 twice (one Wagle known-condition
+  failure on Run 1 confirmed pre-existing and unrelated via standalone
+  re-run), Hardening-lineage smoke clean, E2E runner 1x clean, static
+  checks clean. No self-declared Independent QA PASS; awaiting follow-up.
+  No commit/push/merge/rebase.
+
 ## MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-RE-QA-001 (independent QA, current)
 
 - Intended QA artifact: create only

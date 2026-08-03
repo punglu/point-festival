@@ -527,6 +527,147 @@ async def test_projection_isolates_date_boundaries(db):
     assert proj["today_earned"] == 7
 
 
+# ---------------------------------------------------------------------------
+# RE-QA-F-003 regression — MONGLE-W7-5-MARKPOINT-PROJECTION-STABILITY-
+# REMEDIATION-001. Independent Re-QA reproduced `today_earned`/
+# `today_deducted` measuring 0 instead of the ledger's real total: `anchor`
+# defaulted to the server process's OS-local `date.today()` while
+# `_sum_ledger` compared `occurred_at` (UTC) under the DB session's own UTC
+# date, silently disagreeing for roughly nine hours out of every day. Fixed
+# by anchoring both sides to the Family-facing KST business calendar date
+# (`service.KST`, the same convention `daily_point/service.py` already
+# uses), never the ambient server timezone. These tests use explicit,
+# deterministic UTC timestamps chosen to fall on *different* UTC and KST
+# calendar dates, so they fail on the old behavior and pass on the fix
+# regardless of what real time they happen to run at -- unlike the two
+# tests above, which only failed during an actual live UTC/KST divergence
+# window.
+# ---------------------------------------------------------------------------
+
+
+def _utc_at_kst_date(kst_date: date, kst_hour: int) -> datetime:
+    """A UTC instant that falls on `kst_date` at `kst_hour` local KST time."""
+    naive = datetime(kst_date.year, kst_date.month, kst_date.day, kst_hour, 0, 0)
+    return naive.replace(tzinfo=service.KST).astimezone(timezone.utc)
+
+
+async def test_projection_kst_boundary_independent_of_server_local_timezone(db):
+    """00:30 KST is still 15:30 the previous UTC day -- a naive `func.date()`
+    on the raw UTC timestamp would attribute this entry to the wrong
+    calendar day. Chosen deterministically, not tied to the real clock."""
+    family = await _family(db)
+    manager = await _member(db, family.id, "manager")
+    child = await _member(db, family.id, "child")
+    await _grant(db, manager, "point_admin")
+
+    kst_today = date(2026, 3, 11)
+    kst_yesterday = date(2026, 3, 10)
+    early_morning_kst = _utc_at_kst_date(kst_today, 0)  # 2026-03-10 15:00 UTC
+    assert early_morning_kst.date() == kst_yesterday, "sanity: this instant really is the previous UTC calendar day"
+
+    db.add(
+        MarkpointLedgerEntry(
+            family_group_id=family.id,
+            family_membership_id=child.id,
+            amount=15,
+            entry_type="MANUAL_CREDIT",
+            source_type="manual_adjustment",
+            source_identifier="kst-midnight-entry",
+            idempotency_key="manual:kst-midnight",
+            created_by_membership_id=manager.id,
+            occurred_at=early_morning_kst,
+        )
+    )
+    await db.commit()
+
+    proj_kst_today = await service.own_projection(db, family.id, child, anchor=kst_today)
+    assert proj_kst_today["today_earned"] == 15, "the entry belongs to its KST calendar day, not the UTC one"
+
+    proj_kst_yesterday = await service.own_projection(db, family.id, child, anchor=kst_yesterday)
+    assert proj_kst_yesterday["today_earned"] == 0, "the entry must not double-count on the UTC-adjacent day"
+
+
+async def test_projection_different_anchor_dates_isolate_correctly(db):
+    family = await _family(db)
+    manager = await _member(db, family.id, "manager")
+    child = await _member(db, family.id, "child")
+    await _grant(db, manager, "point_admin")
+
+    day1, day2 = date(2026, 5, 4), date(2026, 5, 5)
+    db.add(MarkpointLedgerEntry(
+        family_group_id=family.id, family_membership_id=child.id, amount=20,
+        entry_type="MANUAL_CREDIT", source_type="manual_adjustment", source_identifier="day1",
+        idempotency_key="manual:day1", created_by_membership_id=manager.id,
+        occurred_at=_utc_at_kst_date(day1, 12),
+    ))
+    db.add(MarkpointLedgerEntry(
+        family_group_id=family.id, family_membership_id=child.id, amount=9,
+        entry_type="MANUAL_CREDIT", source_type="manual_adjustment", source_identifier="day2",
+        idempotency_key="manual:day2", created_by_membership_id=manager.id,
+        occurred_at=_utc_at_kst_date(day2, 12),
+    ))
+    await db.commit()
+
+    assert (await service.own_projection(db, family.id, child, anchor=day1))["today_earned"] == 20
+    assert (await service.own_projection(db, family.id, child, anchor=day2))["today_earned"] == 9
+
+
+async def test_projection_repeated_calls_same_db_return_identical_figures(db):
+    """Same ledger, same anchor, called twice in a row -- must not depend on
+    a persisted/cached figure from the first call (RE-QA-F-003's own
+    symptom: correct once, then wrong on a subsequent read)."""
+    family = await _family(db)
+    manager = await _member(db, family.id, "manager")
+    child = await _member(db, family.id, "child")
+    await _grant(db, manager, "point_admin")
+    # `adjust_points` records `occurred_at` as the real current instant (the
+    # model's own `server_default=func.now()`), so the anchor here is left
+    # to its own default (real "today" in KST) rather than a fixed date that
+    # would never match a real ledger write.
+    await service.adjust_points(db, family.id, manager, child.id, 25, "reward", "once")
+
+    first = await service.own_projection(db, family.id, child)
+    second = await service.own_projection(db, family.id, child)
+    assert first == second
+    assert second["today_earned"] == 25
+
+
+async def test_projection_cross_family_isolation_for_today_earned(db):
+    family_a = await _family(db, "family-a")
+    family_b = await _family(db, "family-b")
+    manager_a = await _member(db, family_a.id, "manager-a")
+    child_a = await _member(db, family_a.id, "child-a")
+    manager_b = await _member(db, family_b.id, "manager-b")
+    child_b = await _member(db, family_b.id, "child-b")
+    await _grant(db, manager_a, "point_admin")
+    await _grant(db, manager_b, "point_admin")
+
+    anchor = date(2026, 7, 15)
+    db.add(MarkpointLedgerEntry(
+        family_group_id=family_a.id, family_membership_id=child_a.id, amount=50,
+        entry_type="MANUAL_CREDIT", source_type="manual_adjustment", source_identifier="a",
+        idempotency_key="manual:a", created_by_membership_id=manager_a.id,
+        occurred_at=_utc_at_kst_date(anchor, 12),
+    ))
+    await db.commit()
+
+    proj_a = await service.own_projection(db, family_a.id, child_a, anchor=anchor)
+    proj_b = await service.own_projection(db, family_b.id, child_b, anchor=anchor)
+    assert proj_a["today_earned"] == 50
+    assert proj_b["today_earned"] == 0, "Family B must never see Family A's ledger entries"
+
+
+async def test_projection_empty_ledger_returns_zero_not_error(db):
+    family = await _family(db)
+    child = await _member(db, family.id, "child")
+    proj = await service.own_projection(db, family.id, child, anchor=date(2026, 9, 1))
+    assert proj["today_earned"] == 0
+    assert proj["today_deducted"] == 0
+    assert proj["current_balance"] == 0
+    assert proj["lifetime_earned"] == 0
+    assert proj["lifetime_spent"] == 0
+
+
 # ===========================================================================
 # MP-P03 — deduction correction (append-only)
 # ===========================================================================

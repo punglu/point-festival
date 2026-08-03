@@ -1,6 +1,7 @@
 """Target Markpoint application service.  All write paths commit once."""
 from __future__ import annotations
 from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
@@ -16,6 +17,21 @@ SERVICE_CODE = "markpoint"
 MISSION_MANAGE = "markpoint.missions.manage"
 POINTS_ADJUST = "markpoint.points.adjust"
 OWN_READ = "markpoint.own.read"
+
+# Same convention as app/domains/daily_point/service.py's own `KST` --
+# "today" is a Family-facing business calendar date, not whatever timezone
+# the server process's OS happens to be set to. `date.today()` reads that
+# OS-local clock, which drifts a full calendar day away from the Ledger's
+# UTC-stored `occurred_at` for roughly nine hours out of every KST day
+# (RE-QA-F-003: `today_earned`/`today_deducted` measured 0 instead of their
+# real value whenever the two didn't agree, reproduced deterministically
+# via a live UTC/KST offset, not tied to any DB run count or fixture order).
+KST = ZoneInfo("Asia/Seoul")
+
+
+def _today_kst() -> date:
+    return datetime.now(KST).date()
+
 
 def _now(): return datetime.now(timezone.utc)
 
@@ -186,7 +202,7 @@ async def cancel_mission(db,family_id,actor,mission_id,reason):
     mission.status="cancelled"; mission.cancelled_at=_now(); mission.rejection_reason=reason; _audit(db,family_id,actor.id,"mission.cancelled","mission",mission.id); await db.commit(); await db.refresh(mission); return mission
 
 async def expire_stale_missions(db,family_id,actor,today=None):
-    await require_permission(db,actor,MISSION_MANAGE); today=today or date.today()
+    await require_permission(db,actor,MISSION_MANAGE); today=today or _today_kst()
     rows=list((await db.execute(select(MarkpointMission).where(MarkpointMission.family_group_id==family_id,MarkpointMission.status=="active",MarkpointMission.scheduled_for<today).with_for_update())).scalars())
     for mission in rows: mission.status="expired"; _audit(db,family_id,actor.id,"mission.expired","mission",mission.id)
     await db.commit(); return len(rows)
@@ -234,8 +250,8 @@ async def own_level(db, family_id, membership):
     balance=await own_balance(db, family_id, membership); info=calculate_level(balance.lifetime_earned, await get_tiers_by_job(db)); return balance, info
 
 async def own_summary(db,family_id,membership,anchor=None):
-    await require_access(db,membership); anchor=anchor or date.today(); week_start=anchor-timedelta(days=anchor.weekday()); week_end=week_start+timedelta(days=6)
-    ledger_today=(await db.execute(select(func.coalesce(func.sum(MarkpointLedgerEntry.amount),0)).where(MarkpointLedgerEntry.family_group_id==family_id,MarkpointLedgerEntry.family_membership_id==membership.id,MarkpointLedgerEntry.amount>0,func.date(MarkpointLedgerEntry.occurred_at)==anchor))).scalar_one()
+    await require_access(db,membership); anchor=anchor or _today_kst(); week_start=anchor-timedelta(days=anchor.weekday()); week_end=week_start+timedelta(days=6)
+    ledger_today=(await db.execute(select(func.coalesce(func.sum(MarkpointLedgerEntry.amount),0)).where(MarkpointLedgerEntry.family_group_id==family_id,MarkpointLedgerEntry.family_membership_id==membership.id,MarkpointLedgerEntry.amount>0,func.date(func.timezone("Asia/Seoul",MarkpointLedgerEntry.occurred_at))==anchor))).scalar_one()
     remaining=(await db.execute(select(func.count()).select_from(MarkpointMission).where(MarkpointMission.family_group_id==family_id,MarkpointMission.assignee_membership_id==membership.id,MarkpointMission.scheduled_for.between(week_start,week_end),MarkpointMission.status.in_(("active","pending_approval"))))).scalar_one()
     balance=await _projection(db,family_id,membership.id)
     return {"family_group_id":family_id,"family_membership_id":membership.id,"today_earned":ledger_today,"remaining_missions":remaining,"current_balance":balance.current_balance,"week_start":week_start,"week_end":week_end}
@@ -276,7 +292,7 @@ async def read_family_config(db: AsyncSession, family_id: int, actor: FamilyMemb
     """
     await require_access(db, actor)
     row = await get_family_config(db, family_id)
-    today = date.today()
+    today = _today_kst()
     if row is None:
         start, end = get_cycle_range(DEFAULT_CYCLE, today)
         return {
@@ -362,7 +378,7 @@ async def update_family_config(
     the natural place for a guard to quietly stop meaning anything.
     """
     await require_permission(db, actor, MISSION_MANAGE)
-    today = today or date.today()
+    today = today or _today_kst()
     row = await get_family_config(db, family_id)
 
     changing_cycle = cycle_type is not None and (row is None or cycle_type != row.cycle_type)
@@ -443,7 +459,7 @@ def rolling_window(today: date | None = None) -> tuple[date, date]:
     `mission_template.service.get_rolling_window` computes the same window; the
     two were verified to agree across 400 consecutive start dates.
     """
-    today = today or date.today()
+    today = today or _today_kst()
     this_sunday = today + timedelta(days=6 - today.weekday())
     return today, this_sunday + timedelta(days=7)
 
@@ -578,16 +594,23 @@ async def _sum_ledger(
     separate mutable daily total. Legacy kept a `daily_points` row that could
     disagree with its own history; deriving from the Ledger makes that class of
     divergence impossible rather than merely unlikely.
+
+    `start`/`end` are KST calendar dates (see `_today_kst`), so `occurred_at`
+    (an absolute UTC instant) must be converted to KST wall-clock time before
+    its date is extracted — comparing under the session's plain UTC date
+    (`func.date(occurred_at)` alone) silently disagreed with the KST anchor
+    for roughly nine hours out of every day (RE-QA-F-003).
     """
     condition = MarkpointLedgerEntry.amount > 0 if positive else MarkpointLedgerEntry.amount < 0
+    occurred_date_kst = func.date(func.timezone("Asia/Seoul", MarkpointLedgerEntry.occurred_at))
     total = (
         await db.execute(
             select(func.coalesce(func.sum(MarkpointLedgerEntry.amount), 0)).where(
                 MarkpointLedgerEntry.family_group_id == family_id,
                 MarkpointLedgerEntry.family_membership_id == member_id,
                 condition,
-                func.date(MarkpointLedgerEntry.occurred_at) >= start,
-                func.date(MarkpointLedgerEntry.occurred_at) <= end,
+                occurred_date_kst >= start,
+                occurred_date_kst <= end,
             )
         )
     ).scalar_one()
@@ -606,7 +629,7 @@ async def own_projection(db: AsyncSession, family_id: int, membership: FamilyMem
     actually was so the caller is never guessing.
     """
     await require_access(db, membership)
-    anchor = anchor or date.today()
+    anchor = anchor or _today_kst()
     config = await read_family_config(db, family_id, membership)
     period_start, period_end = _period_for(config["cycle_type"], anchor)
 
@@ -661,7 +684,7 @@ async def own_weekly_detail(db: AsyncSession, family_id: int, membership: Family
     rather than inferred from a gap.
     """
     await require_access(db, membership)
-    anchor = anchor or date.today()
+    anchor = anchor or _today_kst()
     config = await read_family_config(db, family_id, membership)
     period_start, period_end = _period_for(config["cycle_type"], anchor)
 

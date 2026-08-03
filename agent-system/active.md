@@ -3,6 +3,51 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
+## MONGLE-W7-5-MARKPOINT-PROJECTION-STABILITY-REMEDIATION-001
+
+- Task ID: MONGLE-W7-5-MARKPOINT-PROJECTION-STABILITY-REMEDIATION-001
+- Kind: fix the blocking finding from
+  `MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-RE-QA-001` (verdict `FAIL`):
+  `RE-QA-F-003`, `today_earned`/`today_deducted` measuring 0 instead of the
+  real ledger total, deterministically on a repeat backend-suite run. Not
+  new feature work.
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED (PM direction, this session, following the
+  Re-QA's own FAIL verdict)
+- Verification: DEVELOPER_SELF_CHECK_COMPLETE / INDEPENDENT_QA_PENDING —
+  root cause measured via a reproduction matrix (fresh-DB-only failure,
+  fresh-second-DB failure, full-suite-context failure — all ruling out
+  run-count/fixture-order/persisted-state causes) plus a direct DB/clock
+  trace, classified `DATE_TIMEZONE_BOUNDARY_DEFECT`: `own_projection`'s
+  `anchor = date.today()` read the server process's OS-local timezone
+  while `_sum_ledger` compared `occurred_at` under the DB session's own
+  UTC date. Fixed by reusing the codebase's own established KST convention
+  (`daily_point/service.py`'s `KST = ZoneInfo("Asia/Seoul")`) for both the
+  anchor default and the ledger day-boundary SQL. 5 new deterministic
+  regression tests added (don't depend on live wall-clock timing). Focused
+  tests 5/5 consecutive; Markpoint suites 63/63. **Backend full-suite
+  stability gate**: the first reported pair (Run 1 403/404 with one
+  Wagle-domain known-condition failure, Run 2 404/404) was correctly held
+  short of PASS by PM review — the gate requires two *consecutive* clean
+  runs, not eventually-clean. A dedicated closure-only pass on a fresh
+  disposable DB, with zero further code changes, then produced **Run A
+  404/404 and Run B 404/404, both clean, immediately consecutive, no
+  retry needed** — gate now genuinely satisfied. Hardening-lineage smoke
+  (migration 0021 matrix, board-room concurrency, admin bcrypt) 34/34; E2E
+  runner 1x 10/10; static checks clean. Per PM direction, not a
+  self-declared Independent QA PASS.
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-5-MARKPOINT-PROJECTION-STABILITY-REMEDIATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-5-MARKPOINT-PROJECTION-STABILITY-REMEDIATION-001.md
+- Constraints: assertions/expected values never changed (30/7 stayed 30/7);
+  no skip/reorder/retry-only; no commit/push/merge/rebase. W7.4 REOPENED
+  status and its own audit remain untouched, out of scope.
+- Next Action: reported complete; awaiting
+  `MONGLE-W7-5-MARKPOINT-PROJECTION-FOCUSED-INDEPENDENT-RE-QA-001` (or
+  equivalent). W7.5 overall remains `CONDITIONAL`/`HUMAN_GATE`; W7.4
+  remains `REOPENED`; W7.6 remains `BLOCKED`.
+
 ## MONGLE-W7-5-HARDENING-QA-FAIL-REMEDIATION-001
 
 - Task ID: MONGLE-W7-5-HARDENING-QA-FAIL-REMEDIATION-001
