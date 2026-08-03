@@ -6,6 +6,7 @@ Service, and System message actors are structurally distinct.
 from sqlalchemy import BigInteger, Boolean, CheckConstraint, Column, DateTime, ForeignKey, ForeignKeyConstraint, Index, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from app.models.base import Base, SoftDeleteMixin, TimestampMixin
+from app.domains.wagle.board_constants import FAMILY_BOARD_ROOM_TITLE
 
 
 class WagleRoom(Base, SoftDeleteMixin, TimestampMixin):
@@ -65,6 +66,16 @@ class WagleParticipant(Base, TimestampMixin):
     )
 
 
+Index(
+    # Migration 0021. Only the reserved family-board sentinel gets a DB
+    # invariant -- ordinary GROUP rooms may still legitimately share a
+    # display title, so this is deliberately not a bare (family_group_id,
+    # title) unique constraint.
+    "uq_wagle_rooms_family_board_singleton",
+    WagleRoom.family_group_id,
+    unique=True,
+    postgresql_where=(WagleRoom.room_type == "GROUP") & (WagleRoom.title == FAMILY_BOARD_ROOM_TITLE) & WagleRoom.deleted_at.is_(None),
+)
 Index(
     "uq_wagle_active_direct_pair",
     WagleDirectPair.family_group_id,

@@ -22,6 +22,56 @@ coverage status is in
   `PHASE0_API_BASE_URL=http://localhost:18000 python3 tests/api/e2e_scenario_test_v2.py`.
 - No additional test script is defined: `SCRIPT_NOT_YET_DEFINED`.
 
+## W7.5 full permanent spec (`04-w75-data-wiring.spec.ts`), including `2t`
+
+`tests/e2e/scripts/run-w75-full-spec.sh` is a self-contained, no-manual-steps
+runner for the full permanent `specs-mongle/04-w75-data-wiring.spec.ts`, added
+during `MONGLE-W7-5-INDEPENDENT-QA-REMEDIATION-001` because Independent QA had
+no documented way to reproduce the spec's `2t` (admin notification send) case,
+which requires a `MONGLE_W75_ADMIN_PASSWORD` for the seeded legacy admin
+account ("dad") that nothing in the repository previously generated for them.
+
+Run it with no arguments and no environment setup:
+
+```bash
+tests/e2e/scripts/run-w75-full-spec.sh
+```
+
+It brings up a dedicated, disposable `postgres:16.9-alpine` container (never
+the shared `mc_phase0`/`mc_phase1` Compose stacks and never the persistent dev
+stack on `15434`/`18001`/`13001`), runs `alembic upgrade head`, runs the
+repository's own `backend/scripts/phase1_seed_synthetic.py`, generates a
+random password locally and writes only its bcrypt hash into that disposable
+database's `admin_auth` row for `dad` (the plaintext is exported to the
+script's own environment for the one Playwright invocation below and is never
+written to a file, logged, or persisted anywhere), starts a throwaway backend
+and frontend against that database, runs the full spec, and tears everything
+down on exit (`trap cleanup EXIT`) whether the run passed or failed. Exit code
+is Playwright's own exit code.
+
+The throwaway backend/frontend logs for each invocation live at
+`tests/e2e/.runtime/w75-runner/run-<timestamp>-<pid>/` — an ignored,
+in-worktree, per-run directory (`tests/e2e/.runtime/` is gitignored), printed
+by the script itself. This replaces an earlier version that wrote to
+`/tmp/mc_w75_spec_runner_*.log`, which violated the repository-boundary
+policy (`AGENTS.md`/`agent-system/rules.md`) and blocked Independent QA from
+running this script at all (`HARDENING-QA-F-002`,
+`MONGLE-W7-5-HARDENING-QA-FAIL-REMEDIATION-001`). On a passing run the
+per-run directory is removed automatically; on a failing run it is kept
+(path printed) as diagnostic evidence.
+
+Default ports are `15493` (Postgres), `18096` (backend), `5195` (frontend);
+override with `MONGLE_W75_DB_PORT` / `MONGLE_W75_BACKEND_PORT` /
+`MONGLE_W75_FRONTEND_PORT` if those collide with something else already
+running. Expected result: **10 passed, 0 skipped, 0 failed**, including on
+back-to-back consecutive invocations with no manual pause between them
+(`RE-QA-F-2T-RUNNER-FLAKY`, fixed in
+`MONGLE-W7-5-BOARD-ROOM-RACE-AND-AUTH-HARDENING-001`: the script now waits
+for Postgres to accept a real query, not just `pg_isready`, loads
+`database/init.sql` with `ON_ERROR_STOP=1` and no error-swallowing `|| true`,
+asserts `admin_auth` exists afterward, and retries `alembic upgrade head` a
+few times before failing loudly).
+
 ## Environment and data safety
 
 `e2e_tester` is the reserved logical identity for synthetic E2E work. It is

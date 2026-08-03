@@ -92,6 +92,7 @@ export function WagleBoardPage() {
   const [showPopular, setShowPopular] = useState(false);
   const [popularRange, setPopularRange] = useState(popularPostsFixture.activeRange);
   const [popularPosts, setPopularPosts] = useState<Awaited<ReturnType<typeof listPopularPosts>> | null>(null);
+  const [popularLoadError, setPopularLoadError] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -132,7 +133,18 @@ export function WagleBoardPage() {
     if (activeFamilyId === null || !showPopular) return undefined;
     const controller = new AbortController();
     const apiRange = POPULAR_RANGE_TO_API[popularRange] ?? 'week';
-    listPopularPosts(activeFamilyId, apiRange, controller.signal).then(setPopularPosts).catch(() => setPopularPosts([]));
+    setPopularLoadError(null);
+    listPopularPosts(activeFamilyId, apiRange, controller.signal)
+      .then(setPopularPosts)
+      .catch(() => {
+        // A failed fetch must never render as "no popular posts" -- that
+        // says "we checked and there are none", a different, false claim
+        // when the request itself never completed. `popularPosts` is left
+        // as-is (whatever the last real result was, or null if none yet)
+        // rather than reset to `[]`, so a genuine empty result and a
+        // failed one are never visually identical.
+        if (!controller.signal.aborted) setPopularLoadError('인기 게시글을 불러오지 못했어요.');
+      });
     return () => controller.abort();
   }, [activeFamilyId, showPopular, popularRange]);
 
@@ -221,6 +233,7 @@ export function WagleBoardPage() {
             model={{
               ...popularPostsFixture,
               activeRange: popularRange,
+              subtitle: popularLoadError ?? popularPostsFixture.subtitle,
               posts: (popularPosts ?? []).map((p, index) => ({
                 rank: index + 1,
                 title: p.body ?? '(내용 없음)',

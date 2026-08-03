@@ -267,6 +267,20 @@ test.describe('3c/3d/3e — Wagle board reuse, comments, reactions', () => {
     await signIn(page, 'owner.a');
     await page.selectOption('select', { label: 'Synthetic Family Alpha' });
     await page.goto('/wagle/board');
+    // W7.5 Independent QA remediation: `WagleBoardPage.tsx`'s own mount
+    // effect does the identical find-the-board-room-or-create-it sequence
+    // this test's own script does below (`listRooms` -> `createRoom` if
+    // none titled `__family_board__` exists yet). On a brand-new Family
+    // with no board room, both this test's script and the app's own effect
+    // can race to create one, producing two rooms with the same sentinel
+    // title — `list_popular_posts`'s `WHERE title = ... .first()` lookup
+    // then has no way to know which one actually has this test's post,
+    // and can silently rank the wrong (empty) room. Waiting for the app's
+    // own network activity to settle first means its effect's own
+    // `listRooms`/`createRoom` has already run by the time this script
+    // does its own lookup, so the script finds the app's real room instead
+    // of creating a second one.
+    await page.waitForLoadState('networkidle');
 
     const postTitle = `Playwright 게시글 ${Date.now()}`;
     // The board Room and its first post are created directly over the
@@ -319,7 +333,29 @@ test.describe('3c/3d/3e — Wagle board reuse, comments, reactions', () => {
     // rather than page.goBack(), which would navigate the browser away from
     // /wagle/board entirely.
     await page.getByRole('button', { name: '←' }).click();
-    await page.getByRole('button', { name: '인기 게시글 보기' }).click();
-    await expect(page.getByText(postTitle)).toBeVisible({ timeout: 10000 });
+
+    // W7.5 Independent QA remediation (F1 evidence gap): the Popular Posts
+    // panel is an *overlay* rendered on top of the still-mounted board list
+    // (`WagleBoardPage.tsx`'s `showPopular && <div data-testid="wagle-board-
+    // popular-overlay">`) — the board list underneath is never unmounted and
+    // already contains `postTitle` from the assertion at line ~302 above. A
+    // page-wide `page.getByText(postTitle)` after opening this overlay would
+    // therefore pass even if the ranking fetch itself 500s and the page
+    // silently falls back to an empty list (`.catch(() => setPopularPosts
+    // ([]))`) — exactly the false positive that let the interval-binding
+    // 500 (fixed in `wagle/service.py`'s `list_popular_posts`) ship
+    // undetected. Assert the real network response first, then scope every
+    // subsequent assertion to the overlay's own `data-testid`, not the page.
+    const [popularResponse] = await Promise.all([
+      page.waitForResponse((res) => res.url().includes('/wagle/board/popular') && res.request().method() === 'GET'),
+      page.getByRole('button', { name: '인기 게시글 보기' }).click(),
+    ]);
+    expect(popularResponse.status()).toBe(200);
+    const popularPayload = await popularResponse.json();
+    expect(popularPayload.some((p: { message_id: string }) => p.message_id === postId)).toBeTruthy();
+
+    const popularOverlay = page.getByTestId('wagle-board-popular-overlay');
+    await expect(popularOverlay).toBeVisible();
+    await expect(popularOverlay.getByText(postTitle)).toBeVisible({ timeout: 10000 });
   });
 });

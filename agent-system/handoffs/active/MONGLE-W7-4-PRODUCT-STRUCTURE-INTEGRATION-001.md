@@ -1,6 +1,20 @@
 # Handoff — MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001
 
-## Status: PASS
+## REOPENED, 2026-08-03 (PM correction — read before the record below)
+
+This task's own `64/64 PRODUCT_STRUCTURE_INTEGRATED` self-report below
+(original content, unedited) is disputed for exactly three rows: `1b`
+(가족 홈 / `/family`), `1c` (포인트 잔치 / `/markpoint`), `1d` (가족 대화 /
+`/wagle`). Those rows counted "route resolves to *some* page" as
+equivalent to "route resolves to *its own canonical mockup's design*" —
+materially different claims. See `agent-system/active.md`'s own
+`MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001 (REOPENED)` entry for the
+full reopen basis, current authoritative status
+(`SCOPE_AND_EVIDENCE_DEFECT`, `LIVE_CONSUMER_INTEGRATION_COVERAGE:
+UNKNOWN`, `CONFIRMED_CANONICAL_RESKIN_MISSING: 1b, 1c, 1d`), and Next
+Action. The original PASS record below is preserved as-is, not rewritten.
+
+## Status: PASS (original self-report — see REOPENED note above)
 
 ```
 Canonical Screens bound:            64 / 64  PRODUCT_STRUCTURE_INTEGRATED

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLogo from '../../shared/components/MainLogo';
+import BrandCharacter from '../../shared/components/BrandCharacter';
 import { accountLogin } from '../../shared/api/accountAuthApi';
 import { useAuthStore } from '../../shared/stores/useAuthStore';
 import styles from './A1AccountLogin.module.css';
@@ -67,10 +68,14 @@ export default function A1AccountLoginPage() {
   return (
     <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="1a-1">
       <header className={styles.hero}>
-        <MainLogo variant="wordmark" tone="default" size={150} className={styles.logo} />
-        <div className={styles.logoHalo} aria-hidden="true" />
-        <h1 data-canonical-element="service-title">가족 플랫폼</h1>
-        <p data-canonical-element="service-subtitle">아이디로 로그인하고 우리 가족과 연결돼요</p>
+        <BrandCharacter
+          variant="celebration"
+          size="loginHero"
+          decorative
+          className={styles.character}
+        />
+        <MainLogo variant="wordmark" tone="default" size={118} descriptor className={styles.logo} />
+        <p className={styles.catchphrase}>우리 가족의 공간, 함께 연결되는 하루</p>
       </header>
 
       <form className={styles.sheet} onSubmit={handleSubmit}>
@@ -118,7 +123,7 @@ export default function A1AccountLoginPage() {
         </aside>
 
         <footer className={styles.footer} data-canonical-element="footer">
-          <span>v1.0.0 · 가족 플랫폼</span>
+          <span>v1.0.0 · 몽글</span>
           <button type="button" onClick={noOp}>관리자 로그인 <b aria-hidden="true">›</b></button>
         </footer>
       </form>

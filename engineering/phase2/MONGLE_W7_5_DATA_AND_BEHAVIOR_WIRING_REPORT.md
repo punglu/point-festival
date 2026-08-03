@@ -549,3 +549,56 @@ relative to every number this report stated through §13:
   `MONGLE_W7_5_DATA_AND_BEHAVIOR_WIRING_PASS`. The 13 PM/design gates and
   1 infrastructure gate remain genuine, open, PM-owned decisions; every
   currently code-resolvable item has now been resolved and re-verified.
+
+## 15. Phase I — MONGLE-W7-5-INDEPENDENT-QA-REMEDIATION-001
+
+Full detail: QA evidence "Phase I" section. **Disclosure**: the Independent
+QA report this remediation instruction named
+(`agent-system/qa/MONGLE-W7-5-INDEPENDENT-QA-001.md`) does not exist in
+this repository or its git history, and that task ID is registered
+nowhere. This checkpoint independently reproduced and verified every
+technical claim directly against current source and a live disposable
+database rather than trusting an unlocatable report.
+
+- **F1 fixed**: `list_popular_posts`'s `range=week`/`month` genuinely
+  500'd — an `int` bound into `(:days || ' days')::interval`, which
+  PostgreSQL has no operator for. Reproduced exactly (same error text as
+  described), fixed with a 5-line diff (`:days * INTERVAL '1 day'`), and
+  verified functionally correct: date-window filtering, cross-family
+  isolation (403, stronger than an empty-list result), reaction/comment
+  aggregation, and sort order all confirmed against real DB state. 7 new
+  backend tests added, proven to be real regression coverage by reverting
+  the fix and confirming 5 of them fail with the exact original error.
+- **F1 Playwright evidence gap fixed**: the permanent spec's own
+  assertion was a page-wide text search that would pass even if Popular
+  Posts 500'd, because the board's post list stays mounted underneath that
+  overlay. Now asserts the real network response before checking overlay-
+  scoped text. Fixing this surfaced a second, genuinely new, unrelated
+  defect: a board-room-creation race between the app's own mount effect
+  and the test's identical find-or-create logic, producing two rows
+  sharing the same sentinel title on a brand-new Family. Fixed at the test
+  level (`waitForLoadState('networkidle')`) per this checkpoint's own
+  no-new-migration/no-large-refactor constraints; the same race in real
+  concurrent multi-device usage is disclosed to PM, not fixed.
+- **F2 fixed**: `tests/e2e/scripts/run-w75-full-spec.sh` is a new,
+  documented, no-manual-steps runner — disposable DB, migrations, seed,
+  a locally-generated synthetic admin password (hash only ever touches
+  the disposable DB, plaintext never written to a file), throwaway
+  backend/frontend, the full spec, then unconditional teardown. Verified
+  twice consecutively: **10 passed, 0 skipped, 0 failed** both times.
+- **F3**: full backend suite run twice consecutively in the same isolated
+  environment after the F1 fix — see QA evidence for the exact two counts
+  (test count is 382, not the prior 375, since F1 added 7 new tests).
+  `KNOWN-W7-5-WAGLE-CONCURRENCY-001` remains registered; two clean runs
+  narrow but do not retire a condition documented as intermittent across
+  9 earlier runs.
+- **F5 fixed**: `tests/e2e/test-results/.last-run.json` had drifted from
+  its committed HEAD value (a historical failed-run record) to this
+  checkpoint's own most recent Playwright result — every spec run
+  regenerates this file. Restored to HEAD via `git checkout --` on this
+  one tracked file (not a discard of unrelated pre-existing work; verified
+  clean via `git diff` after each restoration).
+- **Verdict**: `REMEDIATION_EVIDENCE_FROZEN` / `READY_FOR_FOCUSED_
+  INDEPENDENT_RE_QA` — not `MONGLE_W7_5_DATA_AND_BEHAVIOR_WIRING_PASS`,
+  not `MONGLE_W7_5_INDEPENDENT_QA_PASS`. The 14 PM/infrastructure decision
+  items are unaffected and remain open.

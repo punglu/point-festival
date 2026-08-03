@@ -179,6 +179,23 @@ async def create_room(db: AsyncSession, user: dict, family_id: int, data):
     ids = set(data.participant_membership_ids); ids.add(membership.id)
     targets = list((await db.execute(select(FamilyMembership).where(FamilyMembership.id.in_(ids), FamilyMembership.family_group_id == family_id, FamilyMembership.status == "active", FamilyMembership.deleted_at.is_(None)))).scalars())
     if len(targets) != len(ids): raise HTTPException(status_code=422, detail="모든 참여자는 활성 같은 가족 구성원이어야 합니다")
+    # The reserved family-board sentinel is the only GROUP title a DB unique
+    # invariant protects (migration 0021) -- ordinary GROUP rooms may still
+    # legitimately share a display title, so only this branch needs the
+    # find-or-create-under-race pattern the DIRECT branch above already uses.
+    if data.title == FAMILY_BOARD_ROOM_TITLE:
+        board_query = select(WagleRoom).where(WagleRoom.family_group_id == family_id, WagleRoom.room_type == "GROUP", WagleRoom.title == FAMILY_BOARD_ROOM_TITLE, WagleRoom.deleted_at.is_(None))
+        existing = (await db.execute(board_query)).scalars().first()
+        if existing: return existing, False
+        try:
+            room = WagleRoom(family_group_id=family_id, room_type="GROUP", title=data.title, status="active", created_by_actor_type="ACCOUNT", created_by_account_id=account.id); db.add(room); await db.flush()
+            db.add_all([WagleParticipant(family_group_id=family_id, room_id=room.id, family_membership_id=item.id, room_role="room_admin" if item.id == membership.id else "member", status="active", joined_sequence=0) for item in targets])
+            await db.commit()
+            return room, True
+        except IntegrityError:
+            await db.rollback()
+            existing = (await db.execute(board_query)).scalars().one()
+            return existing, False
     room = WagleRoom(family_group_id=family_id, room_type="GROUP", title=data.title, status="active", created_by_actor_type="ACCOUNT", created_by_account_id=account.id); db.add(room); await db.flush()
     db.add_all([WagleParticipant(family_group_id=family_id, room_id=room.id, family_membership_id=item.id, room_role="room_admin" if item.id == membership.id else "member", status="active", joined_sequence=0) for item in targets])
     await db.commit()
@@ -390,7 +407,12 @@ async def list_popular_posts(db: AsyncSession, user: dict, family_id: int, time_
     since_clause = ""
     params = {"room_id": board_room.id}
     if days is not None:
-        since_clause = "AND m.created_at >= now() - (:days || ' days')::interval"
+        # `:days` is bound as an integer (asyncpg sends it typed, not as
+        # text), so `(:days || ' days')::interval` fails at the DB level --
+        # `||` has no integer/text overload. Multiplying by a literal
+        # INTERVAL keeps `days` a genuine bound parameter (no string
+        # formatting into the SQL) while staying valid for an int.
+        since_clause = "AND m.created_at >= now() - (:days * INTERVAL '1 day')"
         params["days"] = days
 
     rows = (

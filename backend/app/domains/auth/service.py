@@ -186,7 +186,16 @@ async def authenticate_admin(
             detail="아이디 또는 비밀번호가 올바르지 않습니다.",
         )
 
-    if not bcrypt.checkpw(password.encode("utf-8"), admin.password.encode("utf-8")):
+    try:
+        password_matches = bcrypt.checkpw(password.encode("utf-8"), admin.password.encode("utf-8"))
+    except (ValueError, TypeError):
+        # bcrypt raises ValueError for a >72-byte password (RE-QA-F-ADMIN-
+        # LOGIN-BCRYPT) instead of returning False -- an unauthenticated
+        # caller who knows/guesses a valid admin username could otherwise
+        # trigger a 500 with an oversized password. Same fail-closed pattern
+        # already used by family/auth_service.py::verify_password.
+        password_matches = False
+    if not password_matches:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="아이디 또는 비밀번호가 올바르지 않습니다.",

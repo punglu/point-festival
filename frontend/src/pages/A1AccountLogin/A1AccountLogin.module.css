@@ -13,13 +13,12 @@
   flex-direction: column;
 }
 
-.hero { flex: 0 0 auto; padding: 10px 0 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
-.logo { filter: drop-shadow(0 14px 22px rgba(60, 25, 130, .28)); }
-.logoHalo { width: 120px; height: 7px; margin-top: -5px; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0) 70%); }
-.hero h1 { margin: 8px 0 0; font-size: 31px; font-weight: 900; letter-spacing: -.01em; line-height: 45px; }
-.hero p { margin: 5px 0 0; color: var(--a1-copy); font-size: 14px; font-weight: 500; line-height: normal; }
+.hero { flex: 0 0 auto; padding: 18px 0 0; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px; }
+.character { display: block; }
+.logo { filter: drop-shadow(0 10px 16px rgba(60, 25, 130, .22)); }
+.catchphrase { margin: 0; color: var(--a1-copy); font-size: 15px; font-weight: 500; line-height: normal; }
 
-.sheet { flex: 1 0 auto; min-height: 0; margin: 20px 12px 0; padding: 22px 20px 16px; border-radius: 34px 34px 44px 44px; background: var(--a1-surface); box-shadow: 0 -8px 30px rgba(60, 30, 120, .10); display: flex; flex-direction: column; gap: 14px; }
+.sheet { flex: 0 0 auto; min-height: 0; margin: 20px 12px 0; padding: 22px 20px 16px; border-radius: 34px 34px 44px 44px; background: var(--a1-surface); box-shadow: 0 -8px 30px rgba(60, 30, 120, .10); display: flex; flex-direction: column; gap: 14px; }
 .heading { display: flex; flex-direction: column; gap: 4px; }
 .heading h2 { margin: 0; color: var(--a1-ink); font-size: 19px; font-weight: 900; line-height: normal; }
 .heading p { margin: 0; color: var(--a1-muted); font-size: 13px; line-height: normal; }
@@ -54,7 +53,7 @@
 .noticeCopy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .noticeCopy strong { color: var(--a1-copy); font-size: 12.5px; font-weight: 700; line-height: normal; }
 .noticeCopy span { color: var(--a1-muted); font-size: 12px; line-height: normal; }
-.footer { margin-top: auto; padding: 4px 2px 0; display: flex; align-items: center; justify-content: space-between; color: var(--a1-field-muted); font-size: 12px; line-height: normal; }
+.footer { margin-top: 8px; padding: 4px 2px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; color: var(--a1-field-muted); font-size: 12px; line-height: normal; }
 .footer button { display: inline-flex; align-items: center; gap: 5px; color: var(--a1-brand); font-size: 13px; font-weight: 700; }
 .footer b { font-size: 18px; font-weight: 700; line-height: 12px; }
 

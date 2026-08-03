@@ -498,3 +498,55 @@ No commit/push/merge/rebase performed this checkpoint. All throwaway
 infrastructure used this checkpoint (`mc_bcrypt_verify`, `mc_w75_r3_db`,
 `mc_guide_fix_verify`, and the migration-verify container from an earlier
 checkpoint) torn down; no leftover process on any throwaway port.
+
+## Phase I — MONGLE-W7-5-INDEPENDENT-QA-REMEDIATION-001 (current, authoritative)
+
+Full detail: QA evidence "Phase I" section; Report §15. **Disclosure**:
+`agent-system/qa/MONGLE-W7-5-INDEPENDENT-QA-001.md` — the report this
+remediation instruction named as its own evidence — does not exist in this
+repository, its git history, or any task registry. Every technical claim
+was independently reproduced against current source and a live disposable
+database before being acted on.
+
+```
+F1_ROOT_CAUSE_CONFIRMED: true (int bound into a text-concat interval expr,
+  reproduced with the exact original error text)
+F1_FIXED: true (5-line diff, wagle/service.py, :days * INTERVAL '1 day')
+F1_REGRESSION_TESTS_ADDED: 7 (proven real via revert-and-reconfirm: 5
+  failed with the original error when temporarily reverted)
+F1_PLAYWRIGHT_EVIDENCE_GAP_FIXED: true (network-response assertion +
+  overlay-scoped text, replacing a page-wide text search that could pass
+  even on a 500)
+F1_NEW_DEFECT_FOUND_BY_STRICTER_ASSERTION: board-room creation race
+  (app's own mount effect vs. the test's own identical find-or-create
+  logic) — fixed at test level only (waitForLoadState('networkidle'));
+  the same race in real concurrent multi-device usage is disclosed to PM,
+  not fixed (needs a migration-level unique constraint, out of this
+  checkpoint's stated no-new-migration scope)
+F1_FRONTEND_DEFECT_FOUND_AND_FIXED: WagleBoardPage.tsx's Popular Posts
+  fetch failure was indistinguishable from a genuine empty result — added
+  a distinct error state
+F2_RUNNER_SCRIPT: tests/e2e/scripts/run-w75-full-spec.sh (new, documented
+  in tests/README.md) — disposable DB+backend+frontend, synthetic admin
+  password generated and hashed locally (never written to a file), full
+  spec run, unconditional teardown. Verified 2 consecutive times: 10
+  passed, 0 skipped, 0 failed both times.
+F3_BACKEND_SUITE_RUN_1: 382 passed, 0 failed, 0 errors
+F3_BACKEND_SUITE_RUN_2: see QA evidence for the exact confirmed count
+F5_BASELINE_RESTORED: tests/e2e/test-results/.last-run.json restored to
+  HEAD via `git checkout --` on that one tracked file after this
+  checkpoint's own Playwright runs modified it (drift reproduces on every
+  run; restored each time)
+UNRELATED_CONCURRENT_WORK_OBSERVED: a branding change (BrandCharacter
+  component + aria-hidden fixes across 6 files) already/still in progress
+  in this same worktree, not this checkpoint's own work — recorded, not
+  touched
+VERDICT: REMEDIATION_EVIDENCE_FROZEN / READY_FOR_FOCUSED_INDEPENDENT_RE_QA
+  — never MONGLE_W7_5_DATA_AND_BEHAVIOR_WIRING_PASS or
+  MONGLE_W7_5_INDEPENDENT_QA_PASS while the 14 PM/infrastructure decision
+  items remain open
+```
+
+No commit/push/merge/rebase performed. All throwaway infrastructure used
+this checkpoint torn down and verified via `docker ps -a`/`lsof` after
+every run, not only claimed.

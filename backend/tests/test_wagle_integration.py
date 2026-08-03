@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from sqlalchemy import text
 
+from app.domains.wagle.board_constants import FAMILY_BOARD_ROOM_TITLE
 from tests.conftest import create_actor, create_bare_membership, create_family, run_concurrent, set_subscription
 
 
@@ -127,6 +128,51 @@ async def test_02_direct_canonical_concurrent_creation(family_env):
     counts = await _counts(db, "wagle_rooms", "wagle_direct_pairs")
     assert counts["wagle_rooms"] == 1
     assert counts["wagle_direct_pairs"] == 1
+
+
+# ---------------------------------------------------------------------------
+# 2b. Family-board (reserved GROUP sentinel) concurrent creation --
+# RE-QA-F-BOARD-ROOM-RACE regression (migration 0021 +
+# create_room's GROUP-branch get-or-create). 5 concurrent requests x 10
+# iterations, a fresh Family each iteration so every iteration is a genuine
+# first-creation race (an already-existing board room would only exercise
+# the cheap read path, not the race window this defect lived in).
+# ---------------------------------------------------------------------------
+
+async def test_02b_family_board_concurrent_creation_converges_on_one_room(family_env):
+    client, db = family_env["client"], family_env["db"]
+
+    for i in range(10):
+        family_id = await create_family(db, name=f"Board Race Family {i}")
+        admin = await create_actor(db, family_id, name=f"board-admin-{i}", service_role="room_admin")
+        await set_subscription(db, family_id, "active")
+
+        async def create_board():
+            return await client.post(
+                f"/api/families/{family_id}/wagle/rooms",
+                json={"room_type": "GROUP", "title": FAMILY_BOARD_ROOM_TITLE, "participant_membership_ids": []},
+                headers=admin.headers,
+            )
+
+        results = await run_concurrent([create_board for _ in range(5)])
+
+        assert all(not isinstance(r, Exception) for r in results), results
+        statuses = [r.status_code for r in results]
+        assert all(s == 201 for s in statuses), statuses
+
+        room_ids = {r.json()["id"] for r in results}
+        assert len(room_ids) == 1, f"iteration {i}: concurrent board creation must converge on one room, got {room_ids}"
+
+        count = (
+            await db.execute(
+                text(
+                    "SELECT count(*) FROM wagle_rooms WHERE family_group_id = :fid "
+                    "AND title = :title AND room_type = 'GROUP' AND deleted_at IS NULL"
+                ),
+                {"fid": family_id, "title": FAMILY_BOARD_ROOM_TITLE},
+            )
+        ).scalar_one()
+        assert count == 1, f"iteration {i}: exactly one board room must persist per family, found {count}"
 
 
 # ---------------------------------------------------------------------------

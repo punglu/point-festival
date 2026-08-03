@@ -3,6 +3,126 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
+## MONGLE-W7-5-HARDENING-QA-FAIL-REMEDIATION-001
+
+- Task ID: MONGLE-W7-5-HARDENING-QA-FAIL-REMEDIATION-001
+- Kind: fix the two blocking findings from
+  `MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-QA-001` (verdict `FAIL`)
+  against `MONGLE-W7-5-BOARD-ROOM-RACE-AND-AUTH-HARDENING-001`:
+  `HARDENING-QA-F-001` (migration `0021` active-participant semantics loss,
+  HIGH) and `HARDENING-QA-F-002` (E2E runner `/tmp` repository-boundary
+  policy violation, MEDIUM). Not new feature work.
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED (PM direction, this session, following the
+  Hardening Independent QA's own FAIL verdict and recommended remediation)
+- Verification: DEVELOPER_SELF_CHECK_COMPLETE / INDEPENDENT_QA_PENDING —
+  both findings fixed and regression-tested. `HARDENING-QA-F-001`:
+  migration `0021`'s participant-survivor algorithm rewritten (active
+  precedence across the whole duplicate set); independently confirmed the
+  old code actually produced the QA's exact `{left:2, active:0}` result (a
+  throwaway copy, rolled back); 10-case regression matrix
+  (`test_migration_0021_participant_merge.py`) 10/10; re-verified lossless
+  merge + downgrade/re-upgrade round trip on a fresh disposable DB.
+  `HARDENING-QA-F-002`: E2E runner logs moved to an in-worktree, gitignored,
+  per-run path; this fix's own first verification attempt (relative path)
+  caused all 10 Playwright tests to fail, root-caused and fixed (absolute
+  path + hardened readiness checks); re-verified 4/4 consecutive clean
+  runs, no manual pause, 0 git drift. Full backend suite 399/399 twice
+  consecutively (389 prior + 10 new). Wagle 3x3 viewport regression clean.
+  Static checks (tsc/eslint/vite build/git diff --check) clean.
+  `check_all.py` also surfaced a real governance-format defect in the
+  parent task's own Closeout/QA-evidence records (prose instead of the
+  required `- Field: value` list items) — fixed, see this task's own
+  handoff. Per PM direction, not a self-declared Independent QA PASS.
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-5-HARDENING-QA-FAIL-REMEDIATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-5-HARDENING-QA-FAIL-REMEDIATION-001.md
+  (original Independent QA FAIL preserved verbatim in
+  agent-system/qa/MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-QA-001.md, not
+  overwritten)
+- Scope (fixed order, HUMAN_GATE only on genuine data-semantics ambiguity —
+  none found): 1. Confirm repo state + Independent QA evidence. 2. Redesign
+  migration 0021's participant-survivor algorithm. 3. Preserve read-state
+  through sequence renumbering. 4. 10-case migration regression matrix.
+  5. Re-verify lossless merge + downgrade/re-upgrade round trip. 6. Move
+  E2E runner logs from `/tmp` to an ignored in-worktree runtime path.
+  7. Re-run E2E runner x4 consecutive + concurrency + admin bcrypt +
+  focused tests. 8. Full backend suite x2 + Wagle 3x3 + static checks.
+  9. Refreeze QA evidence/handoff/Coverage Map/active/relay.
+- Constraints: no self-declared Independent QA PASS; no W7.5-overall-PASS or
+  W7.6-readiness declaration. No commit/push/merge/rebase. W7.4 REOPENED
+  status and its own audit remain untouched, out of scope.
+- Next Action: reported complete to the Main Architect; awaiting
+  `MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-RE-QA-001`. W7.4 REOPENED and
+  the 13 PM/design decision gates from
+  `MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001` remain separately open.
+
+## MONGLE-W7-5-BOARD-ROOM-RACE-AND-AUTH-HARDENING-001
+
+- Task ID: MONGLE-W7-5-BOARD-ROOM-RACE-AND-AUTH-HARDENING-001
+- Kind: fix the two `PRODUCT_DEFECT` findings from
+  `MONGLE-W7-5-FOCUSED-INDEPENDENT-RE-QA-001`
+  (`RE-QA-F-BOARD-ROOM-RACE` HIGH, `RE-QA-F-ADMIN-LOGIN-BCRYPT` MEDIUM) plus
+  the `RE-QA-F-2T-RUNNER-FLAKY` LOW test-infrastructure finding, before any
+  W7.6 common-component extraction work starts. Opened directly from PM/
+  architect direction relaying that Re-QA's own FAIL verdict.
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED (PM direction, this session, following the
+  Re-QA FAIL verdict's own recommended next step)
+- Verification: DEVELOPER_SELF_CHECK_COMPLETE / INDEPENDENT_QA_PENDING —
+  all 13 scope steps done: migration `0021` merge verified lossless against
+  synthetic seeded duplicates plus downgrade/re-upgrade round trip; GROUP
+  `create_room` atomic get-or-create regression-tested (5 concurrent x 10
+  fresh Families, always 1 room); admin bcrypt fix regression-tested (6/6);
+  E2E runner fixed and verified 4/4 consecutive clean runs (10/10 each);
+  Wagle 3x3 viewport regression clean; full backend suite 389/389 twice
+  consecutively. No `HUMAN_GATE` triggered — 0 existing duplicate board
+  rooms found in the only observed live environment. Per PM direction, this
+  is explicitly not a self-declared Independent QA PASS — see this task's
+  own QA evidence Final Declaration and handoff Closeout Synchronization.
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-5-BOARD-ROOM-RACE-AND-AUTH-HARDENING-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-5-BOARD-ROOM-RACE-AND-AUTH-HARDENING-001.md
+- Scope (fixed order, no PM check-ins between steps per PM direction):
+  1. Full audit of existing board-room duplicate data + FK fanout.
+  2. Deterministic no-loss merge strategy (HUMAN_GATE stop only if a real
+     unmergeable data ambiguity is found).
+  3. Duplicate-merge migration.
+  4. DB unique invariant on the reserved family-board room.
+  5. Atomic get-or-create for GROUP `create_room`.
+  6. 5x10 concurrency regression test.
+  7. Legacy admin bcrypt 72-byte defense.
+  8. Admin long-password 401 regression test.
+  9. E2E runner Postgres-readiness + init.sql-failure-hiding removal.
+  10. Playwright runtime-artifact/tracked-dirty isolation.
+  11. Migration downgrade/re-upgrade verification.
+  12. Full backend suite x2 consecutively.
+  13. E2E runner x4 back-to-back (no pause) + Wagle 3x3 regression.
+- Investigation finding (2026-08-03, pre-migration): the live persistent dev
+  DB (`mongle-db-1` / `mc_festival_phase0`, observed read-only only, never
+  mutated) currently holds exactly 1 board room per family and 0 duplicate
+  `(family_group_id, title)` GROUP-room rows — the race is real and
+  reproducible under concurrency (per the Re-QA's own load test) but has not
+  yet produced surviving duplicate rows in this environment. The merge
+  migration is still required and is written generically/idempotently (a
+  no-op where no duplicates exist), verified against synthetic seeded
+  duplicates in a disposable DB, not skipped because production happens to
+  be clean today.
+- Constraints carried from PM direction: do not self-declare Independent QA
+  PASS on completion; report Developer completion to Main Architect and wait
+  for a separate focused Independent Re-QA. No commit/push/merge/rebase.
+- Next Action: **superseded by the focused Independent QA result below** —
+  `MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-QA-001` returned `FAIL`
+  (`HARDENING-QA-F-001` active-participant semantics loss in migration
+  `0021`, HIGH; `HARDENING-QA-F-002` E2E runner `/tmp` policy violation,
+  MEDIUM). Remediation is now open as
+  `MONGLE-W7-5-HARDENING-QA-FAIL-REMEDIATION-001` (above). The W7.4 Live
+  Consumer Integration Audit and the 13 PM/design decision gates from
+  `MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001` remain separately open, out of
+  this task's scope.
+
 ## MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001
 
 - Task ID: MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001
@@ -13,14 +133,24 @@ are separate axes.
   decision.
 - Lifecycle: IN_PROGRESS
 - Decision: DESIGN_APPROVED (PM task direction, this prompt)
-- Verification: IMPLEMENTATION_EVIDENCE_FROZEN, READY_FOR_INDEPENDENT_QA
-  (Phase H, current) — backend suite now genuinely PASS: 375/375, 0
-  failed, 0 errors (the prior 374/375 pre-existing `bcrypt` failure was
-  investigated and safely fixed this pass, re-verified twice); permanent
-  E2E spec PASS 10/10, 0 skipped (the prior `2t` skip is resolved, see
-  Phase H below). Independent QA per `.claude/agents/test-agent.md`
-  intentionally still not started — only the 14 PM/infrastructure decision
-  items remain, none of them code-blocked
+- Verification: FAIL
+- Verification detail: Phase J, current, authoritative — Focused
+  Independent Re-QA of Phase I's own remediation — driven by exactly one
+  confirmed `PRODUCT_DEFECT`: the board-room duplicate-creation race,
+  reproduced 10/10 under real concurrency, blocks W7.6 per this task's
+  own governing instruction. Every other Phase I claim independently
+  re-verified clean (F1 fix + 7 tests, Playwright evidence-gap fix, 2
+  more clean backend-suite runs at 382/382, 3×3 Wagle viewport
+  regression). 2 new findings beyond Phase I's scope: the F2 runner is
+  flaky on back-to-back invocation (2/4 attempts failed on DB-readiness
+  timing, not on test content), and the legacy admin login
+  (`auth/service.py::authenticate_admin`) has the same unfixed bcrypt-
+  72-byte defect class Phase H fixed elsewhere. See `agent-system/qa/
+  MONGLE-W7-5-FOCUSED-INDEPENDENT-RE-QA-001.md` for full evidence.
+  **PM correction, same day**: final functional completion of the 3
+  canonical main screens (`1b`/`1c`/`1d`) is additionally unverified —
+  see `MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001 (REOPENED)` below.
+  `W7_6_READINESS: BLOCKED`.
 - Execution: RUNNING
 - Closeout Contract: v1
 - Handoff: agent-system/handoffs/active/MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001.md
@@ -209,6 +339,93 @@ are separate axes.
     `IMPLEMENTATION_EVIDENCE_FROZEN` / `READY_FOR_PM_REVIEW` /
     `READY_FOR_INDEPENDENT_QA`** — never `PASS`, since the 14 decision
     items remain genuinely open. No commit/push/merge/rebase performed.
+  - **Phase I (current, authoritative — MONGLE-W7-5-INDEPENDENT-QA-
+    REMEDIATION-001)**: developer remediation of 4 findings (F1/F2/F3/F5)
+    reported against this task. **Disclosure**: the named Independent QA
+    report (`agent-system/qa/MONGLE-W7-5-INDEPENDENT-QA-001.md`) does not
+    exist in this repository, its git history, or any task registry —
+    every technical claim was independently reproduced against current
+    source and a live disposable database rather than trusted from an
+    unlocatable document. **F1**: `list_popular_posts`'s `range=week`/
+    `month` genuinely 500'd (an `int` bound into a `text || 'days'`
+    interval expression PostgreSQL has no operator for) — reproduced with
+    the exact original error text, fixed with a 5-line diff
+    (`:days * INTERVAL '1 day'`), 7 new regression tests added and proven
+    real via a revert-and-reconfirm round trip. Fixing the permanent
+    Playwright spec's own page-wide-text false-positive assertion (which
+    would pass even on a 500, since the board's post list stays mounted
+    underneath the Popular Posts overlay) surfaced a second, genuinely new,
+    unrelated defect — a board-room-creation race between the app's own
+    mount effect and the test's identical find-or-create logic — fixed at
+    the test level only per this checkpoint's no-new-migration constraint;
+    the same race in real concurrent multi-device usage is disclosed to PM,
+    not fixed. A related frontend defect (Popular Posts fetch failure
+    indistinguishable from a genuine empty result) was also found and
+    fixed. **F2**: `tests/e2e/scripts/run-w75-full-spec.sh` (new,
+    documented in `tests/README.md`) makes the full permanent spec,
+    including `2t`, reproducible with zero manual steps — verified 10/10,
+    0 skipped, twice consecutively. **F3**: full backend suite run twice
+    consecutively post-fix — 382 passed (375 + 7 new tests), 0 failed on
+    run 1; see QA evidence for run 2's confirmed exact count.
+    `KNOWN-W7-5-WAGLE-CONCURRENCY-001` remains registered, unaffected.
+    **F5**: `tests/e2e/test-results/.last-run.json` had drifted from its
+    committed HEAD value (this checkpoint's own Playwright runs
+    regenerate it) — restored via `git checkout --` on that one tracked
+    file each time it drifted. **Verdict: `REMEDIATION_EVIDENCE_FROZEN` /
+    `READY_FOR_FOCUSED_INDEPENDENT_RE_QA`** — never `PASS`. No commit/
+    push/merge/rebase performed.
+  - **Phase J (current, authoritative — `MONGLE-W7-5-FOCUSED-INDEPENDENT-
+    RE-QA-001`)**: independent re-QA of Phase I's own remediation claims.
+    **Verdict: `FAIL`**, driven by exactly one item: the board-room
+    duplicate-creation race Phase I disclosed as a test-level workaround
+    is confirmed, by real concurrency reproduction (5 concurrent requests
+    × 10 iterations, 10/10 iterations produced duplicate rooms, most with
+    all 5 requests each creating a separate room), to be a genuine
+    `PRODUCT_DEFECT` — `wagle_rooms` has no unique constraint on
+    `(family_group_id, title)` and `create_room`'s GROUP-room branch has
+    no existing-room lookup or `IntegrityError` handling at all (unlike
+    its own DIRECT-room branch, which has both). This blocks W7.6 per
+    this task's own governing instruction. Everything else independently
+    re-verified clean: F1's fix and its 7 new tests (15/15, confirmed to
+    assert real DB state, not status-codes-only), the Playwright
+    evidence-gap fix (confirmed structurally incapable of a stale-DOM
+    false positive), 2 more consecutive clean backend-suite runs
+    (382/382 both), and the 3×3 Wagle viewport regression (9/9 checks
+    clean). Two new findings beyond Phase I's own scope: (1) the F2
+    runner (`run-w75-full-spec.sh`) failed 2 of 4 independent back-to-back
+    invocations on disposable-Postgres-readiness timing — reliable only
+    given a short pause between runs, not "zero manual steps" as
+    documented; (2) `backend/app/domains/auth/service.py::
+    authenticate_admin` (legacy admin login, fully unauthenticated) still
+    has the *exact same class* of bcrypt-72-byte defect Phase H fixed in
+    `service_actor.py` — reproduced a real 500 with a 153-byte password
+    against the seeded `dad` account; the modern Account-native login
+    already guards against this (`try/except` in `verify_password`), the
+    legacy admin path does not. Also recovered the missing `agent-system/
+    qa/MONGLE-W7-5-INDEPENDENT-QA-001.md` artifact (labeled
+    `RECOVERED_FROM_REPORTED_INDEPENDENT_QA_RESULT`, distinguishing
+    `REPORTED_PREVIOUSLY` from `INDEPENDENTLY_REPRODUCED_NOW`, since no
+    original file/log ever existed in this repository). Zero product/
+    test/migration/seed code changed by this QA pass (SHA-256-verified
+    against its own start-of-session manifest). Full detail: `agent-
+    system/qa/MONGLE-W7-5-FOCUSED-INDEPENDENT-RE-QA-001.md`.
+  - **PM correction, 2026-08-03 (same day, official status update)**:
+    W7.5's own feature/defect verification performed to date (Phases
+    B–J) remains valid and is not retracted by this correction. However,
+    **final functional completion of the three canonical main screens
+    (`1b`/`1c`/`1d` — `/family`, `/markpoint`, `/wagle`) is NOT verified**
+    — see `MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001 (REOPENED)`
+    above for the reopened W7.4 scope-and-evidence defect this is tied
+    to. W7.5's own data/behavior wiring on top of whichever page
+    currently occupies each of those three routes is unaffected on its
+    own terms (a correctly-wired legacy-design page is not un-wired by
+    a design-reskin gap), but neither W7.4 nor W7.5 currently has
+    evidence that those three routes render their own canonical design.
+    **`W7_6_READINESS: BLOCKED`** — the Board Room race (`PRODUCT_
+    DEFECT`, confirmed above) and the legacy-admin bcrypt defect must be
+    resolved first; this was already true from Phase J's own verdict and
+    is unchanged by this correction, stated here again for a single
+    combined readiness record.
 - Next Action (historical, Phase D checkpoint — see Phase E/F above for
   current state): Phase D's two remaining items (`2b`, `3e`) and the
   6-Screen missing-input-control gap all need PM/design decisions before
@@ -220,6 +437,70 @@ are separate axes.
   `1i`/`1v`/`2y`/`2z`/`3b`/`3j`'s missing input controls, `2b`, `3e`).
   Independent QA per `.claude/agents/test-agent.md` has not started for
   any phase.
+
+## MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001 (REOPENED)
+
+- Task ID: MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001
+- Kind: bind the 64 W7.3-frozen canonical Screens into the real product's
+  Route/Page/Tab/Modal/Drawer/Overlay/Auth-Step structure.
+- Lifecycle: IN_PROGRESS
+- Lifecycle detail: reopened — was `graduated/2026-08.md`, self-reported
+  PASS, 2026-08-03.
+- Decision: HUMAN_GATE
+- Verification: `SCOPE_AND_EVIDENCE_DEFECT`
+  - `LIVE_CONSUMER_INTEGRATION_COVERAGE: UNKNOWN`
+  - `CONFIRMED_CANONICAL_RESKIN_MISSING: 1b, 1c, 1d`
+- Execution: SUSPENDED (no active implementation session; reopened for
+  scope correction only)
+- Closeout Contract: v1
+- Reopen basis (per `rules.md` Invariant 10 — explicit new PM decision):
+  PM directive, 2026-08-03, correcting this task's own self-reported
+  "64/64 `PRODUCT_STRUCTURE_INTEGRATED`" claim. Found during an unrelated
+  W7.5 QA conversation: `frontend/src/App.tsx`'s own code comment (lines
+  ~149-159) already discloses that `/family`, `/markpoint`, and `/wagle`
+  are "existing, backend-integrated, tested route entry points... used
+  as-is, not reskinned to the W7.3 canonical mockups" — i.e., this task's
+  own "64/64 `PRODUCT_STRUCTURE_INTEGRATED`" count treated "a route
+  resolves to *some* page" as equivalent to "a route resolves to *its own
+  canonical mockup's design*" for these three, which are materially
+  different claims. Canonical mockups for all three already exist and are
+  reachable directly: `1b` (가족 홈) at `/__wave6/1b`
+  (`FamilyHomePreview`), `1c` (포인트 잔치) at `/__wave6/1c`
+  (`PointFestivalPreview`), `1d` (가족 대화) at `/__wave6/1d`
+  (`FamilyChatPreview`) — none of the three live consumer pages
+  (`FamilyLandingPage`, `MarkpointUserPage`, `WagleLanding`) render this
+  design; each is a materially different, pre-existing legacy/functional
+  layout kept for its real business logic (subscription gating,
+  balance-vs-EXP distinction, per-family permissions — App.tsx's own
+  stated reason for not reskinning them).
+- What is and is not disputed by this reopen: the routing/structural
+  claim this task made — that 64 canonical Screens each resolve to a real
+  route somewhere in the product — is not itself shown false by this
+  finding. What is unverified is a narrower, more specific claim this
+  task's own "`PRODUCT_STRUCTURE_INTEGRATED`" language could be read to
+  imply for `1b`/`1c`/`1d` specifically: that the resolved route renders
+  *that Screen's own* canonical design. `LIVE_CONSUMER_INTEGRATION_
+  COVERAGE: UNKNOWN` records that this task never separately measured
+  "route exists and resolves" from "route renders the canonical design"
+  for every one of the 64 rows — `1b`/`1c`/`1d` are the 3 *confirmed*
+  instances of the gap, not necessarily the only ones; the other 61 have
+  not been re-audited under this stricter distinction.
+- Not affected by this reopen: `MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001`'s
+  own data/behavior wiring work (real API calls, real auth, real mutation
+  states) on top of whichever page currently occupies each route remains
+  valid on its own terms regardless of which visual design that page
+  uses — a correctly-wired legacy-design page is not un-wired by this
+  finding. See that task's own active.md entry for its own added caveat.
+- Next Action: PM to decide scope (full 64-row re-audit under the
+  route-exists vs. renders-canonical-design distinction, or a bounded
+  audit of only `1b`/`1c`/`1d` plus spot checks) before any implementation
+  session resumes. No code change has been made under this reopen.
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001.md
+- Handoff detail: moved back from `handoffs/archive/2026-08/` to
+  `handoffs/active/` under this reopen (original file, relocated only).
+- QA Evidence: none new under this reopen; original graduated entry
+  (`agent-system/graduated/2026-08.md`) carries a cross-reference to this
+  reopened record.
 
 ## MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001
 

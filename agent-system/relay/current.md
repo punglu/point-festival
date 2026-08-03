@@ -1,5 +1,101 @@
 # Current Relay
 
+## MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-RE-QA-001 (independent QA, current)
+
+- Intended QA artifact: create only
+  `agent-system/qa/MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-RE-QA-001.md`.
+  It records current-HEAD evidence for remediation of migration participant
+  semantics and E2E repository-boundary compliance, plus the reproducible
+  backend-suite gate failure. Product, test, migration, seed, and existing
+  dirty files are protected; no status claim is predeclared.
+
+## MONGLE-W7-5-HARDENING-QA-FAIL-REMEDIATION-001 (implementation writer, current)
+
+- Intended/actual edits: `backend/alembic/versions/0021_board_room_race_hardening.py`
+  (participant-survivor algorithm rewrite + read-state sequence
+  translation, per `HARDENING-QA-F-001`), new
+  `backend/tests/test_migration_0021_participant_merge.py` (10-case
+  regression matrix), `tests/e2e/scripts/run-w75-full-spec.sh` (log path
+  moved off `/tmp` into an in-worktree runtime dir, per `HARDENING-QA-
+  F-002`, plus a readiness-check hardening fix found while verifying that
+  change), `tests/README.md`, root `.gitignore` (+`tests/e2e/.runtime/`),
+  new `agent-system/handoffs/active/MONGLE-W7-5-HARDENING-QA-FAIL-
+  REMEDIATION-001.md` and `agent-system/qa/MONGLE-W7-5-HARDENING-QA-FAIL-
+  REMEDIATION-001.md` (this task's own dedicated records — sharing the
+  parent task's files was not representable in `check_closeout.py`'s
+  one-Task-ID-per-document model), plus a governance-format fix to the
+  parent task's own
+  `agent-system/handoffs/active/MONGLE-W7-5-BOARD-ROOM-RACE-AND-AUTH-HARDENING-001.md`
+  and `agent-system/qa/MONGLE-W7-5-BOARD-ROOM-RACE-AND-AUTH-HARDENING-001.md`
+  (added real `- Task ID:` list items and converted the Closeout
+  Synchronization block to list-item fields — `check_closeout.py` was
+  silently unable to recognize either document under its prior prose/
+  code-fence formatting). `active.md` and this file updated.
+- Scope: fix `HARDENING-QA-F-001` (HIGH) and `HARDENING-QA-F-002` (MEDIUM)
+  from `agent-system/qa/MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-QA-001.md`
+  only. No new feature work, no touching the concurrently-active
+  `MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001 (REOPENED)` scope, no
+  touching the Independent QA session's own report above.
+- Protected: the persistent dev runtime; all other domains' files; the
+  REOPENED W7.4 task's own files/sections; the Independent QA report's own
+  content (read, never edited).
+- Status: all 9 scope steps complete — 10/10 migration regression cases
+  pass, 4/4 consecutive E2E runner runs clean, 399/399 backend suite twice
+  consecutively, Wagle 3x3 clean, static checks clean,
+  `check_all.py` shows 0 warnings for either of this lineage's two Task
+  IDs. No self-declared Independent QA PASS; awaiting
+  `MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-RE-QA-001`. No commit/push/
+  merge/rebase.
+
+## MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-QA-001 (independent QA, current)
+
+- Intended QA artifact: create/update only
+  `agent-system/qa/MONGLE-W7-5-HARDENING-FOCUSED-INDEPENDENT-QA-001.md`
+  with current-HEAD, disposable-environment evidence for migration 0021,
+  board-room concurrency, legacy admin bcrypt, runner repeatability,
+  artifact isolation, backend suite, focused tests, 3x3 regression, and
+  static checks. Product, test, migration, seed, and existing dirty files
+  are protected. `active.md`, this relay, the target hardening handoff, and
+  Coverage Map will be read immediately before any required closeout-only
+  synchronization; no status claim is predeclared.
+- Runtime scope: dedicated disposable Docker/Postgres and temporary local
+  backend/frontend processes only; persistent `mongle-*` runtime is
+  excluded. No commit/push/merge/rebase/reset/clean/stash.
+
+## MONGLE-W7-5-BOARD-ROOM-RACE-AND-AUTH-HARDENING-001 (implementation writer, current)
+
+- Intended/actual edits: `backend/app/domains/wagle/service.py` (GROUP
+  `create_room` atomic get-or-create), `backend/app/domains/wagle/models.py`
+  (mirrored unique-invariant `Index()` declaration), new
+  `backend/alembic/versions/0021_board_room_race_hardening.py` (duplicate
+  merge + unique constraint, real `downgrade()`),
+  `backend/app/domains/auth/service.py` (legacy admin bcrypt 72-byte guard
+  -- `auth/schema.py` was **not** touched; the fix is at the bcrypt call
+  site, not input rejection), `backend/tests/test_wagle_integration.py`
+  (+1 concurrency test), `backend/tests/test_auth_admin_login.py` (new, 6
+  tests), `tests/e2e/scripts/run-w75-full-spec.sh` (Postgres readiness,
+  removed `init.sql ... || true`), `tests/README.md`, root `.gitignore`
+  (+`tests/e2e/test-results/`, and `git rm --cached` on the previously
+  tracked `.last-run.json`, kept on disk), plus this task's own
+  handoff/QA evidence, `agent-system/qa/COVERAGE_MAP.md`, `active.md`, and
+  this file. **Status: all 13 scope steps complete** — see this task's own
+  QA evidence Final Declaration.
+- Scope: fix `RE-QA-F-BOARD-ROOM-RACE` (HIGH), `RE-QA-F-ADMIN-LOGIN-BCRYPT`
+  (MEDIUM), `RE-QA-F-2T-RUNNER-FLAKY` (LOW) from
+  `agent-system/qa/MONGLE-W7-5-FOCUSED-INDEPENDENT-RE-QA-001.md`. No new
+  product feature, no W7.6 common-component work, no touching the
+  concurrently-active `MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001
+  (REOPENED)` scope in `active.md`.
+- Protected: the persistent dev runtime (`mongle-db-1`/`mongle-backend-1`) —
+  observed read-only only (confirmed 0 duplicate board rooms present as of
+  this task's own start), never a test-mutation target; all other domains'
+  files; the REOPENED W7.4 task's own files/sections.
+- PM constraints: fixed step order, no per-step approval pause, except a
+  HUMAN_GATE stop if a genuinely unmergeable duplicate-data conflict is
+  found (none found — see this task's own handoff). Developer completion
+  only; do not self-declare Independent QA PASS. No commit/push/merge/
+  rebase.
+
 ## MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001 (implementation writer, current)
 
 - Intended edits: `engineering/phase2/MONGLE_W7_5_DATA_AND_BEHAVIOR_WIRING_MATRIX.csv`
@@ -171,6 +267,112 @@
   `READY_FOR_INDEPENDENT_QA`** — never `MONGLE_W7_5_DATA_AND_BEHAVIOR_
   WIRING_PASS` or `INDEPENDENT_QA_PASS` while the 14 decision items remain
   genuinely open.
+- Phase I (2026-08-03, current, authoritative —
+  MONGLE-W7-5-INDEPENDENT-QA-REMEDIATION-001): no commit/push/merge/rebase
+  performed. **Disclosure**: `agent-system/qa/MONGLE-W7-5-INDEPENDENT-QA-
+  001.md`, the report this remediation instruction named as its own
+  evidence, does not exist in this repository, its git history, or any
+  task registry — every technical claim below was independently
+  reproduced against current source and a live disposable database, not
+  trusted from that report. Modified: `backend/app/domains/wagle/
+  service.py` (F1: `list_popular_posts`'s `range=week`/`month` 500 fixed,
+  `:days * INTERVAL '1 day'` replacing an int-into-text-concat interval
+  expression PostgreSQL has no operator for), `backend/tests/
+  test_w75_phase_d_board_reactions.py` (+7 regression tests, proven real
+  via revert-and-reconfirm), `tests/e2e/specs-mongle/
+  04-w75-data-wiring.spec.ts` (F1 evidence-gap fix: real network-response
+  assertion + overlay-scoped text replacing a page-wide text search that
+  could pass on a 500; plus a `waitForLoadState('networkidle')` fix for a
+  newly-found board-room creation race the stricter assertion surfaced),
+  `frontend/src/platform/wagle/board/WagleBoardPage.tsx` (Popular Posts
+  fetch-failure/empty-result conflation fixed), new
+  `tests/e2e/scripts/run-w75-full-spec.sh` + `tests/README.md` update (F2:
+  no-manual-steps runner for the full permanent spec including `2t`,
+  verified 10/10 twice consecutively), `tests/e2e/test-results/
+  .last-run.json` (F5: restored to HEAD via `git checkout --` after this
+  checkpoint's own Playwright runs drifted it — recurs on every run,
+  restored each time), plus `engineering/phase2/
+  MONGLE_W7_5_DATA_AND_BEHAVIOR_WIRING_REPORT.md` (§15),
+  `agent-system/qa/MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001.md` (Phase I
+  section), `agent-system/qa/COVERAGE_MAP.md`
+  (`API-W7-5-BOARD-REACTIONS-001` 8/8→15/15, `E2E-W7-5-FULL-SPEC-001`
+  F1/F2 notes), Handoff, and `active.md`. **F3**: full backend suite run
+  twice consecutively post-fix — 382 passed (375 + 7 new tests), 0 failed,
+  0 errors on run 1; see QA evidence for run 2's confirmed exact count.
+  `KNOWN-W7-5-WAGLE-CONCURRENCY-001` remains registered, unaffected by
+  this checkpoint. A genuinely new, unrelated defect (board-room race, see
+  above) was found by this checkpoint's own stricter test assertions, not
+  described in the original 4 findings — disclosed per this checkpoint's
+  own Hallucination/Omission guards, fixed at the test level, with the
+  underlying product-level race (real concurrent multi-device first-visit
+  only) disclosed to PM as out of this checkpoint's no-new-migration
+  scope. Unrelated concurrent work observed in the same worktree
+  (a branding change touching 6 frontend files, `BrandCharacter` component
+  + `aria-hidden` additions) — recorded, not touched. **Verdict:
+  `REMEDIATION_EVIDENCE_FROZEN` / `READY_FOR_FOCUSED_INDEPENDENT_RE_QA`**
+  — never `MONGLE_W7_5_DATA_AND_BEHAVIOR_WIRING_PASS` or
+  `MONGLE_W7_5_INDEPENDENT_QA_PASS`. All throwaway infrastructure used
+  this checkpoint torn down and verified via `docker ps -a`/`lsof` after
+  every run.
+- Phase J (2026-08-03, current, authoritative —
+  `MONGLE-W7-5-FOCUSED-INDEPENDENT-RE-QA-001`, independent QA role, not
+  the implementer): no commit/push/merge/rebase, no product/test/
+  migration/seed code changed (SHA-256-verified against this pass's own
+  start-of-session manifest). New files only: `agent-system/qa/
+  MONGLE-W7-5-INDEPENDENT-QA-001.md` (recovered artifact — the originally
+  cited Independent QA report never existed anywhere in this repository
+  or its git history; recovered and explicitly labeled `RECOVERED_FROM_
+  REPORTED_INDEPENDENT_QA_RESULT`) and `agent-system/qa/
+  MONGLE-W7-5-FOCUSED-INDEPENDENT-RE-QA-001.md` (this pass's own findings).
+  **Verdict: `FAIL`** — the board-room duplicate-creation race Phase I
+  disclosed as a test-level workaround is confirmed a genuine `PRODUCT_
+  DEFECT` by real concurrency reproduction (5 concurrent requests × 10
+  iterations against a fresh disposable DB, 10/10 iterations produced
+  duplicate rooms, most with all 5 requests each creating a separate
+  room — `wagle_rooms` has no unique constraint on `(family_group_id,
+  title)` and `create_room`'s GROUP-room branch has no existing-room
+  lookup or `IntegrityError` handling, unlike its own DIRECT-room branch).
+  Per this task's own governing instruction, this blocks W7.6 until
+  fixed. Independently re-verified clean otherwise: F1's fix (code audit
+  + fresh isolated-stack reproduction of week/month/all/default/invalid/
+  cross-family/period/sort/aggregation, all correct) and its 7 new tests
+  (15/15, audited to assert real DB state not status-codes-only), the
+  Playwright stale-DOM evidence-gap fix (confirmed structurally
+  incapable of a false positive by direct code read), 2 more independent
+  consecutive clean backend-suite runs (382/382 both, test count
+  independently collected not assumed), and a freshly-written 3×3 Wagle
+  viewport regression (9/9 checks clean). 2 new findings beyond Phase
+  I's declared scope: the F2 runner (`run-w75-full-spec.sh`) failed 2 of
+  4 independent back-to-back invocations on disposable-Postgres-
+  readiness timing (root cause: `database/init.sql`'s load result is
+  swallowed by `|| true`); and `backend/app/domains/auth/service.py::
+  authenticate_admin` (legacy admin login, fully unauthenticated) has
+  the same unfixed bcrypt-72-byte-limit defect class Phase H fixed in
+  `service_actor.py` — reproduced a real 500 with a 153-byte password
+  against the seeded `dad` account.
+- PM correction (2026-08-03, same day, official status update — not a
+  Phase J finding, a separate governance decision): `MONGLE-W7-4-
+  PRODUCT-STRUCTURE-INTEGRATION-001` is **`REOPENED`** from `graduated/
+  2026-08.md` with status `SCOPE_AND_EVIDENCE_DEFECT` —
+  `LIVE_CONSUMER_INTEGRATION_COVERAGE: UNKNOWN`,
+  `CONFIRMED_CANONICAL_RESKIN_MISSING: 1b, 1c, 1d`. Found in an unrelated
+  W7.5 QA conversation: `frontend/src/App.tsx`'s own existing code
+  comment already discloses that `/family`, `/markpoint`, `/wagle` are
+  pre-existing functional pages "used as-is, not reskinned to the W7.3
+  canonical mockups" for `1b`/`1c`/`1d` respectively (mockups reachable
+  at `/__wave6/1b`, `/__wave6/1c`, `/__wave6/1d`) — W7.4's own self-
+  reported "64/64 `PRODUCT_STRUCTURE_INTEGRATED`" conflated "route
+  resolves to some page" with "route resolves to that Screen's own
+  canonical design" for these 3. See `agent-system/active.md`'s own
+  `MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001 (REOPENED)` entry and
+  the corresponding correction note appended to `graduated/2026-08.md`'s
+  original W7.4 row (write-once — the original row is kept, not
+  rewritten). W7.5's own feature/defect verification to date is not
+  retracted by this correction, but final functional completion of these
+  3 canonical main screens is now recorded as unverified. Combined
+  `W7_6_READINESS: BLOCKED` (board-room race + legacy-admin bcrypt +
+  this reopened scope question, all pending resolution before any W7.6
+  common-component extraction work begins).
 
 ## MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001 (implementation writer)
 

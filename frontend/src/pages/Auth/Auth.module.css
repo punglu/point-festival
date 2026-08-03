@@ -50,17 +50,14 @@
   text-align: center;
 }
 
-.brandMascot {
-  display: block;
-  margin: 0 auto var(--space-3);
+/* 몽글이 축하형 캐릭터 — MainLogo(워드마크)와 독립된 자산/DOM, 같은 히어로 영역 */
+.brandCharacter {
+  margin: 0 auto var(--space-4);
 }
 
-.brandTitle {
-  font-size: 24px;
-  font-weight: 800;
-  color: #fff;
-  margin: 0 0 var(--space-1);
-  letter-spacing: -0.5px;
+.brandWordmark {
+  display: block;
+  margin: 0 auto var(--space-2);
 }
 
 .brandSubtitle {

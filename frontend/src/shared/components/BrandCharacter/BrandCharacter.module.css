@@ -1,0 +1,6 @@
+.character {
+  display: block;
+  margin: 0 auto;
+  height: auto;
+  object-fit: contain;
+}

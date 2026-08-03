@@ -4,6 +4,7 @@ import PlayerCard from './PlayerCard';
 import { authApi } from '../api/authApi';
 import { SettingsIcon } from '../../../shared/components/icons/outline';
 import MainLogo from '../../../shared/components/MainLogo';
+import BrandCharacter from '../../../shared/components/BrandCharacter';
 
 function calcLevel(totalPoints: number, thresholds: Record<number, number>): number {
   let level = 1;
@@ -60,16 +61,21 @@ export default function PlayerSelectView({ onPlayerSelect, onAdminClick }: Props
 
   return (
     <div className={styles.authView}>
-      {/* 브랜드 헤더 */}
+      {/* 브랜드 헤더: 몽글이 축하형 캐릭터 + 19c 워드마크(for family) — 독립 자산/DOM */}
       <div className={styles.brandHeader}>
+        <BrandCharacter
+          variant="celebration"
+          size="profileHero"
+          decorative
+          className={styles.brandCharacter}
+        />
         <MainLogo
           variant="wordmark"
           tone="onBrand"
-          size={76}
-          className={styles.brandMascot}
-          aria-hidden
+          size={132}
+          descriptor
+          className={styles.brandWordmark}
         />
-        <h1 className={styles.brandTitle}>가족 플랫폼</h1>
         <p className={styles.brandSubtitle}>우리 가족의 공간, 함께 연결되는 하루</p>
       </div>
 

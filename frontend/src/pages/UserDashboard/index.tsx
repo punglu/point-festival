@@ -101,7 +101,7 @@ export default function UserDashboard() {
       <div className={styles.header}>
         <div className={styles.headerTop}>
           <div className={styles.brand}>
-            <MainLogo variant="wordmark" tone="onBrand" size={34} />
+            <MainLogo variant="wordmark" tone="onBrand" size={34} aria-hidden />
             <span className={styles.brandName}>몽글</span>
           </div>
           <div className={styles.headerActions}>
