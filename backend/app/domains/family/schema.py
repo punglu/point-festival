@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
@@ -94,6 +94,7 @@ class AuthorizedFamilySummary(BaseModel):
     name: str
     membership_id: int
     relationship: str
+    joined_at: Optional[datetime] = None
     roles: List[RoleSummary] = []
     permissions: List[str] = []
 
@@ -102,7 +103,27 @@ class MeResponse(BaseModel):
     account_id: int
     display_name: str
     is_password_change_required: bool
+    bio: Optional[str] = None
+    birthday: Optional[date] = None
+    avatar_color: Optional[str] = None
     authorized_families: List[AuthorizedFamilySummary] = []
+
+
+class MeUpdate(BaseModel):
+    """Self-service profile edit (W7.5 2z). `display_name` is intentionally
+    editable here too -- it is the same field auth/family summaries read,
+    kept singular rather than duplicated behind a second write path."""
+    display_name: Optional[str] = Field(default=None, min_length=1, max_length=100)
+    bio: Optional[str] = Field(default=None, max_length=200)
+    birthday: Optional[date] = None
+    avatar_color: Optional[str] = Field(default=None, min_length=4, max_length=7, pattern=r"^#[0-9A-Fa-f]{3,6}$")
+
+
+class MembershipSelfUpdate(BaseModel):
+    """Self-service relationship label edit on one's own Membership only
+    (1f/2z's family-role field). Deliberately excludes `status` -- that stays
+    FamilyAdmin-only via the existing MembershipUpdate/require_permission path."""
+    relationship: str = Field(..., pattern="^(mother|father|child|guardian|grandparent|other|unknown)$")
 
 
 class MemberAccountProvisionRequest(BaseModel):
@@ -123,6 +144,7 @@ class MemberAccountProvisionResponse(BaseModel):
 class MembershipSummary(BaseModel):
     id: int
     account_id: int
+    account_display_name: str
     family_group_id: int
     relationship: str
     status: str

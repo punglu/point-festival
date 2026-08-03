@@ -45,6 +45,10 @@ class ParticipantCreate(BaseModel):
 class MessageCreate(BaseModel):
     client_message_id: str = Field(min_length=1, max_length=64)
     body: str = Field(min_length=1, max_length=4000)
+    # W7.5 Phase C (2g). The column already existed on `wagle_messages`
+    # (unused by any endpoint) -- this is a schema-only exposure, same shape
+    # as MembershipSummary/ParticipantResponse's display-name gap.
+    reply_to_message_id: UUID | None = None
 
 
 class ReadStateUpdate(BaseModel):
@@ -54,6 +58,7 @@ class ReadStateUpdate(BaseModel):
 class ParticipantResponse(BaseModel):
     id: UUID
     family_membership_id: int
+    account_display_name: str
     room_role: str
     status: str
     joined_sequence: int
@@ -114,6 +119,7 @@ class MessageResponse(BaseModel):
     sender_participant_id: UUID | None
     message_type: str
     body: str | None
+    reply_to_message_id: UUID | None = None
     created_at: datetime
     deleted_at: datetime | None
     deleted: bool
@@ -124,6 +130,10 @@ class MessageResponse(BaseModel):
     service_code: str | None = None
     service_payload_version: int | None = None
     service_payload: dict | None = None
+    # W7.5 Phase D SLICE-WAGLE-BOARD-REACTIONS (3e). `reacted_by_me` lets a
+    # client render a filled/outline heart without a second round trip.
+    reaction_count: int = 0
+    reacted_by_me: bool = False
 
 
 class MessageListResponse(BaseModel):
@@ -172,3 +182,19 @@ class ServiceActionPublish(BaseModel):
         if size > SERVICE_ACTION_SNAPSHOT_MAX_BYTES:
             raise ValueError(f"snapshot exceeds {SERVICE_ACTION_SNAPSHOT_MAX_BYTES} byte limit")
         return self
+
+
+class ReactionToggleResponse(BaseModel):
+    """W7.5 Phase D SLICE-WAGLE-BOARD-REACTIONS (3e)."""
+    message_id: UUID
+    reacted_by_me: bool
+    reaction_count: int
+
+
+class PopularPostOut(BaseModel):
+    message_id: UUID
+    body: str | None
+    author_display_name: str
+    created_at: datetime
+    reaction_count: int
+    comment_count: int

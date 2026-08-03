@@ -14,6 +14,21 @@ import styles from './FamilySearchPage.module.css';
  * conflicting ownership exists. A canonical Screen (screens/family/SearchAll)
  * and a `/family/search` trigger link (FamilyLanding feature-search) already
  * existed; this was a resolvable integration, not a genuine functional gap.
+ *
+ * W7.5 Phase D SLICE-SEARCH: `GET /api/families/{family_id}/search?q=`
+ * exists and is real and tested — a cross-entity search over Markpoint
+ * mission titles and the caller's own visible Wagle messages (scoped first
+ * pass, per the Phase D Slice Mapping; Album/Schedule search deliberately
+ * not folded in here to keep this Slice's declared scope from growing
+ * mid-implementation). **Design-contract gap found while wiring, same
+ * shape as `2z`/`3b`**: the frozen canonical Screen's own search box
+ * (`.searchBox`) renders `<span>{model.query}</span>` — a static label, not
+ * an `<input>` — and the entry link from `FamilyLanding` passes no initial
+ * query either. There is nothing on this Screen a real query could come
+ * from, so the real, tested endpoint is not called here; wiring it to a
+ * fabricated query would show fake-looking real data. Needs a PM/design
+ * decision to add a real search input before this Screen's read side can
+ * be used.
  */
 export function FamilySearchPage() {
   const navigate = useNavigate();

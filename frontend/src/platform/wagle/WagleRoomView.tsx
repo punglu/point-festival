@@ -21,9 +21,11 @@ import { Link } from 'react-router-dom';
 
 import {
   listMessages,
+  listParticipants,
   listRoomSummaries,
   sendMessage,
   type WagleMessage,
+  type WagleParticipant,
   type WagleRoomSummary,
 } from '../../shared/api/wagleApi';
 import { useFamilyContextStore } from '../../shared/stores/useFamilyContextStore';
@@ -63,12 +65,19 @@ function buildChatReplyModel(target: WagleMessage, roomTitle: string): ChatReply
   };
 }
 
-// No room-settings or file-listing API exists yet (TRUE_FUNCTIONAL_GAP, W7.5
-// scope) — the real room title is threaded through; member/file lists use the
-// canonical fixture as an explicit pending adapter, per the W7.4 boundary that
-// forbids fabricating data that looks real.
-function buildChatSettingsModel(roomTitle: string): ChatSettingsModel {
-  return { ...chatSettingsFixture, roomName: roomTitle };
+// W7.5: member list now calls the real GET .../participants (required an
+// additive `account_display_name` field on `ParticipantResponse`, same gap
+// shape as `1q`'s `MembershipSummary` fix). No file-listing API exists yet
+// (TRUE_FUNCTIONAL_GAP) — file list still uses the canonical fixture as an
+// explicit pending adapter. Per-room mute/notification toggles remain
+// unwired: D6-P2, a registered PM policy decision, not missing engineering.
+function buildChatSettingsModel(roomTitle: string, members: WagleParticipant[] | null): ChatSettingsModel {
+  return {
+    ...chatSettingsFixture,
+    roomName: roomTitle,
+    memberSummary: members ? `${members.length}명` : chatSettingsFixture.memberSummary,
+    members: members ? members.map((m) => ({ name: m.account_display_name })) : chatSettingsFixture.members,
+  };
 }
 
 function buildFileViewerModel(roomTitle: string): FileViewerModel {
@@ -79,10 +88,16 @@ function MessageRow({
   message,
   ownParticipantId,
   onReply,
+  replyPreview,
 }: {
   message: WagleMessage;
   ownParticipantId: string | null;
   onReply: (message: WagleMessage) => void;
+  /** The quoted body this message replies to, if any -- looked up client-side
+   *  from the already-loaded message page (`reply_to_message_id`, W7.5 Phase
+   *  C). `undefined` when this message is not a reply, or its parent has
+   *  scrolled out of the currently loaded page. */
+  replyPreview?: string;
 }) {
   const isService = message.message_type === 'SERVICE_ACTION';
   const isOwn = !isService && message.sender_participant_id === ownParticipantId;
@@ -109,6 +124,11 @@ function MessageRow({
       data-actor={isOwn ? 'self' : 'other'}
     >
       <div className={styles.bubble}>
+        {replyPreview && !message.deleted && (
+          <span className={styles.replyQuote} data-testid={`wagle-reply-quote-${message.id}`}>
+            ↩ {replyPreview}
+          </span>
+        )}
         {message.deleted ? (
           <span className={styles.tombstone}>{message.tombstone ?? '삭제된 메시지'}</span>
         ) : (
@@ -140,13 +160,30 @@ export function WagleRoomView() {
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
   const [replyTarget, setReplyTarget] = useState<WagleMessage | null>(null);
+  const [showReplyOverlay, setShowReplyOverlay] = useState(false);
   const [activeOverlay, setActiveOverlay] = useState<'none' | 'settings' | 'files'>('none');
+  const [settingsMembers, setSettingsMembers] = useState<WagleParticipant[] | null>(null);
   const listEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (activeOverlay !== 'settings' || activeFamilyId === null || !selectedRoomId) return undefined;
+    const controller = new AbortController();
+    listParticipants(activeFamilyId, selectedRoomId, controller.signal)
+      .then(setSettingsMembers)
+      .catch(() => setSettingsMembers([]));
+    return () => controller.abort();
+  }, [activeOverlay, activeFamilyId, selectedRoomId]);
 
   const selectedRoom = useMemo(
     () => rooms.find((r) => String(r.id) === selectedRoomId) ?? null,
     [rooms, selectedRoomId],
   );
+
+  const messageBodyById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const m of messages) if (!m.deleted && m.body) map.set(String(m.id), m.body);
+    return map;
+  }, [messages]);
 
   const loadRooms = useCallback(async (familyId: number, signal?: AbortSignal) => {
     setState('loading');
@@ -239,8 +276,18 @@ export function WagleRoomView() {
           typeof crypto !== 'undefined' && 'randomUUID' in crypto
             ? crypto.randomUUID()
             : `msg-${Date.now()}`,
+        // canonical 2g (채팅 답장, W7.5 Phase C): the backend's
+        // `reply_to_message_id` column already existed and was simply never
+        // exposed. The frozen 2g overlay itself has no editable text input
+        // (its `.inputText` renders a static fixture string, not a real
+        // `<input>`) -- so the quote-and-reply gesture is real (tap ↩ on a
+        // message, see it quoted, confirm), but the actual typing happens in
+        // this always-real composer, which now carries the pending reply
+        // target through to the request.
+        reply_to_message_id: replyTarget ? String(replyTarget.id) : undefined,
       });
       setDraft('');
+      setReplyTarget(null);
       await loadMessages(activeFamilyId, selectedRoomId);
     } catch (error: unknown) {
       const detail = (error as { response?: { data?: { detail?: string } } }).response?.data?.detail;
@@ -376,13 +423,31 @@ export function WagleRoomView() {
                     key={String(message.id)}
                     message={message}
                     ownParticipantId={null}
-                    onReply={setReplyTarget}
+                    replyPreview={
+                      message.reply_to_message_id
+                        ? messageBodyById.get(String(message.reply_to_message_id))
+                        : undefined
+                    }
+                    onReply={(m) => { setReplyTarget(m); setShowReplyOverlay(true); }}
                   />
                 ))}
               </ol>
             )}
             <div ref={listEndRef} />
 
+            {replyTarget && !showReplyOverlay && (
+              <div className={styles.replyBanner} data-testid="wagle-reply-banner">
+                <span className={styles.replyBannerText}>답장: {replyTarget.body ?? ''}</span>
+                <button
+                  type="button"
+                  onClick={() => setReplyTarget(null)}
+                  aria-label="답장 취소"
+                  data-testid="wagle-reply-cancel"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
             <div className={styles.composer}>
               <label className={styles.srOnly} htmlFor="wagle-draft">
                 메시지 입력
@@ -423,15 +488,25 @@ export function WagleRoomView() {
         )}
       </div>
 
-      {replyTarget && (
+      {replyTarget && showReplyOverlay && (
         <div className={styles.replyOverlay} data-testid="wagle-reply-overlay">
-          <ChatReplyScreen model={buildChatReplyModel(replyTarget, selectedRoom?.title ?? '가족 대화')} onCancelQuote={() => setReplyTarget(null)} onSend={() => setReplyTarget(null)} />
+          {/* canonical 2g (채팅 답장) -- quote is real (`replyTarget.body`).
+              `onSend` closes this overlay back to the room, keeping
+              `replyTarget` so the always-real composer below carries the
+              reply through; `onCancelQuote` is the only path that actually
+              drops the pending reply. See `handleSend`'s own comment for why
+              typing happens there and not in this overlay. */}
+          <ChatReplyScreen
+            model={buildChatReplyModel(replyTarget, selectedRoom?.title ?? '가족 대화')}
+            onCancelQuote={() => { setReplyTarget(null); setShowReplyOverlay(false); }}
+            onSend={() => setShowReplyOverlay(false)}
+          />
         </div>
       )}
       {activeOverlay === 'settings' && (
         <div className={styles.replyOverlay} data-testid="wagle-settings-overlay">
           <ChatSettingsScreen
-            model={buildChatSettingsModel(selectedRoom?.title ?? '가족 대화')}
+            model={buildChatSettingsModel(selectedRoom?.title ?? '가족 대화', settingsMembers)}
             onBack={() => setActiveOverlay('none')}
           />
         </div>

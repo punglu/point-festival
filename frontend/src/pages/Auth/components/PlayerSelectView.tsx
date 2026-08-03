@@ -3,7 +3,7 @@ import styles from '../Auth.module.css';
 import PlayerCard from './PlayerCard';
 import { authApi } from '../api/authApi';
 import { SettingsIcon } from '../../../shared/components/icons/outline';
-import mascotSrc from '../../../assets/logos/family-platform-mascot.png';
+import MainLogo from '../../../shared/components/MainLogo';
 
 function calcLevel(totalPoints: number, thresholds: Record<number, number>): number {
   let level = 1;
@@ -62,7 +62,13 @@ export default function PlayerSelectView({ onPlayerSelect, onAdminClick }: Props
     <div className={styles.authView}>
       {/* 브랜드 헤더 */}
       <div className={styles.brandHeader}>
-        <img src={mascotSrc} alt="" className={styles.brandMascot} aria-hidden="true" />
+        <MainLogo
+          variant="wordmark"
+          tone="onBrand"
+          size={76}
+          className={styles.brandMascot}
+          aria-hidden
+        />
         <h1 className={styles.brandTitle}>가족 플랫폼</h1>
         <p className={styles.brandSubtitle}>우리 가족의 공간, 함께 연결되는 하루</p>
       </div>

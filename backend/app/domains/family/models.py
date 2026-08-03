@@ -1,5 +1,5 @@
 """Target Foundation persistence models; legacy MarkPoint tables remain intact."""
-from sqlalchemy import Boolean, CheckConstraint, Column, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import Boolean, CheckConstraint, Column, Date, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
 from app.models.base import Base, SoftDeleteMixin, TimestampMixin
 
 
@@ -8,6 +8,10 @@ class Account(Base, SoftDeleteMixin, TimestampMixin):
     id = Column(Integer, primary_key=True)
     display_name = Column(String(100), nullable=False)
     status = Column(String(20), nullable=False, default="active", server_default="active")
+    # W7.5 Phase C (2z profile edit) -- self-declared, optional, no policy weight.
+    bio = Column(String(200), nullable=True)
+    birthday = Column(Date(), nullable=True)
+    avatar_color = Column(String(7), nullable=True)
     __table_args__ = (CheckConstraint("status IN ('active', 'suspended', 'deleted')", name="ck_accounts_status"),)
 
 

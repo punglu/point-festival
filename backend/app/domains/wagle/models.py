@@ -188,6 +188,22 @@ class WagleServiceAuditLog(Base):
     )
 
 
+class WagleMessageReaction(Base):
+    """W7.5 Phase D SLICE-WAGLE-BOARD-REACTIONS (3e). A single boolean-style
+    reaction (toggle on/off) per (message, reactor) -- matches exactly what
+    the frozen 3c/3e canonical Screens render (one heart icon, no
+    reaction-type picker), so no multi-emoji taxonomy is invented here."""
+    __tablename__ = "wagle_message_reactions"
+    id = Column(BigInteger, primary_key=True)
+    message_id = Column(UUID(as_uuid=True), ForeignKey("wagle_messages.id", ondelete="CASCADE"), nullable=False)
+    family_group_id = Column(Integer, ForeignKey("family_groups.id", ondelete="RESTRICT"), nullable=False)
+    reactor_membership_id = Column(Integer, nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    __table_args__ = (
+        UniqueConstraint("message_id", "reactor_membership_id", name="uq_wagle_message_reaction_actor"),
+    )
+
+
 Index("ix_wagle_messages_room_sequence", WagleMessage.room_id, WagleMessage.sequence)
 Index(
     "uq_wagle_messages_service_idempotency",

@@ -9,7 +9,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.domains.family import service as family_service
 from app.domains.family.models import FamilyGroup, FamilyMembership, MembershipRoleAssignment, Permission, Role, RolePermission, ServiceSubscription
-from app.domains.wagle.models import WagleDirectPair, WagleMessage, WagleParticipant, WagleParticipantReadState, WagleRoom, WagleServiceAuditLog, WagleServiceBinding, ServicePrincipal
+from app.domains.wagle.board_constants import FAMILY_BOARD_ROOM_TITLE
+from app.domains.wagle.models import WagleDirectPair, WagleMessage, WagleMessageReaction, WagleParticipant, WagleParticipantReadState, WagleRoom, WagleServiceAuditLog, WagleServiceBinding, ServicePrincipal
 from app.domains.wagle.rules import canonical_direct_pair, visible_range
 from app.domains.wagle.service_actor import issue_credential
 # Imported as a module and called through a dotted reference per the Backend
@@ -44,6 +45,18 @@ async def _participant(db: AsyncSession, room: WagleRoom, membership: FamilyMemb
     participant = (await db.execute(select(WagleParticipant).where(WagleParticipant.room_id == room.id, WagleParticipant.family_membership_id == membership.id).order_by(WagleParticipant.created_at.desc()))).scalars().first()
     if participant is None or participant.status == "removed": raise denied("Room 참여자 권한이 필요합니다")
     return participant
+
+
+async def participant_display_name(db: AsyncSession, family_membership_id: int) -> str:
+    """Resolve a Wagle participant's human-readable name via the owning
+    Family Membership -> Account, through the family domain's own public
+    service function rather than a raw cross-domain query (this file already
+    imports `family_service`/`FamilyMembership` for the same reason)."""
+    membership = await db.get(FamilyMembership, family_membership_id)
+    if membership is None:
+        return ""
+    account = await family_service.get_account(db, membership.account_id)
+    return account.display_name if account else ""
 
 
 async def _require_permission(db: AsyncSession, membership: FamilyMembership, code: str) -> None:
@@ -249,9 +262,19 @@ async def send_message(db, user, family_id, room_id, data):
     if existing:
         if existing.body != data.body: raise HTTPException(status_code=409, detail="client_message_id payload conflict")
         return existing
+    reply_to_message_id = None
+    if data.reply_to_message_id is not None:
+        # Same-room enforcement, same shape as every other cross-entity check
+        # in this file: a client-supplied id must never be trusted to belong
+        # to this Room without a server-side lookup, or a reply could quietly
+        # forge a link to another Room's (even another Family's) Message.
+        parent = (await db.execute(select(WagleMessage).where(WagleMessage.id == data.reply_to_message_id, WagleMessage.room_id == room_pk))).scalars().first()
+        if parent is None:
+            raise HTTPException(status_code=404, detail="답장 대상 Message를 찾을 수 없습니다")
+        reply_to_message_id = parent.id
     try:
         sequence = (await db.execute(update(WagleRoom).where(WagleRoom.id == room_pk, WagleRoom.family_group_id == family_id).values(next_message_sequence=WagleRoom.next_message_sequence + 1).returning(WagleRoom.next_message_sequence))).scalar_one()
-        message = WagleMessage(family_group_id=family_id, room_id=room_pk, sequence=sequence, sender_participant_id=participant_pk, message_type="TEXT", client_message_id=data.client_message_id, body=data.body)
+        message = WagleMessage(family_group_id=family_id, room_id=room_pk, sequence=sequence, sender_participant_id=participant_pk, message_type="TEXT", client_message_id=data.client_message_id, body=data.body, reply_to_message_id=reply_to_message_id)
         db.add(message); await db.flush()
         # [Intent] D6 durability: the message row, the room's sequence
         # advance, and the delivery event all commit together or not at all.
@@ -281,6 +304,168 @@ async def delete_message(db, user, family_id, room_id, message_id):
     if message.deleted_at is None:
         message.deleted_at = datetime.now(timezone.utc); message.deleted_by_account_id = account.id; await db.commit()
     return message
+
+
+async def reaction_counts_for(db: AsyncSession, message_ids: list, viewer_membership_id: int) -> dict:
+    """Batch reaction count + the viewer's own reacted state, keyed by
+    message id. W7.5 Phase D SLICE-WAGLE-BOARD-REACTIONS (3e)."""
+    if not message_ids:
+        return {}
+    rows = (
+        await db.execute(
+            select(WagleMessageReaction.message_id, WagleMessageReaction.reactor_membership_id)
+            .where(WagleMessageReaction.message_id.in_(message_ids))
+        )
+    ).all()
+    counts: dict = {}
+    mine: dict = {}
+    for message_id, reactor_id in rows:
+        counts[message_id] = counts.get(message_id, 0) + 1
+        if reactor_id == viewer_membership_id:
+            mine[message_id] = True
+    return {mid: (counts.get(mid, 0), mine.get(mid, False)) for mid in message_ids}
+
+
+async def react_to_message(db: AsyncSession, user: dict, family_id: int, room_id: UUID, message_id: UUID) -> tuple[int, bool]:
+    """Toggle: reacting again removes the reaction. Matches a single heart
+    icon with no reaction-type picker on the frozen 3c/3e Screens -- see
+    the migration's own docstring for why this is not a multi-reaction
+    taxonomy. Requires `SEND` (an active-interaction permission), the same
+    boundary a comment (reply) already uses."""
+    _, membership = await context(db, user, family_id)
+    await _require_permission(db, membership, SEND)
+    room = await _room(db, family_id, room_id)
+    participant = await _participant(db, room, membership)
+    if participant.status != "active" or not await subscription_active(db, family_id):
+        raise denied("Wagle subscription 또는 Room이 read-only입니다")
+    message = (await db.execute(select(WagleMessage).where(WagleMessage.id == message_id, WagleMessage.room_id == room.id, WagleMessage.deleted_at.is_(None)))).scalars().first()
+    if message is None:
+        raise HTTPException(status_code=404, detail="Message를 찾을 수 없습니다")
+
+    existing = (
+        await db.execute(
+            select(WagleMessageReaction).where(
+                WagleMessageReaction.message_id == message_id,
+                WagleMessageReaction.reactor_membership_id == membership.id,
+            )
+        )
+    ).scalars().first()
+    if existing is not None:
+        await db.delete(existing)
+        reacted = False
+    else:
+        db.add(WagleMessageReaction(message_id=message_id, family_group_id=family_id, reactor_membership_id=membership.id))
+        reacted = True
+    await db.commit()
+
+    count = (
+        await db.execute(select(func.count()).select_from(WagleMessageReaction).where(WagleMessageReaction.message_id == message_id))
+    ).scalar_one()
+    return count, reacted
+
+
+_POPULAR_RANGE_DAYS = {"week": 7, "month": 30, "all": None}
+
+
+async def list_popular_posts(db: AsyncSession, user: dict, family_id: int, time_range: str) -> list[dict]:
+    """3e (인기 게시글) -- ranks the family board's top-level posts
+    (REUSE-WAGLE-ROOMS-AS-BOARD's own sentinel-titled Room) by
+    reaction_count + comment_count within the selected window. `time_range`
+    is one of 'week'/'month'/'all', matching the Screen's own
+    이번 주/이번 달/전체 labels exactly -- no ranking algorithm is invented
+    beyond what those labels already imply."""
+    _, membership = await context(db, user, family_id)
+    await _require_permission(db, membership, READ)
+
+    board_room = (
+        await db.execute(
+            select(WagleRoom).where(WagleRoom.family_group_id == family_id, WagleRoom.title == FAMILY_BOARD_ROOM_TITLE, WagleRoom.deleted_at.is_(None))
+        )
+    ).scalars().first()
+    if board_room is None:
+        return []
+    await _participant(db, board_room, membership)  # 404s if the viewer never joined the board
+
+    days = _POPULAR_RANGE_DAYS.get(time_range)
+    since_clause = ""
+    params = {"room_id": board_room.id}
+    if days is not None:
+        since_clause = "AND m.created_at >= now() - (:days || ' days')::interval"
+        params["days"] = days
+
+    rows = (
+        await db.execute(
+            text(
+                f"""
+                SELECT m.id, m.body, m.created_at, m.sender_participant_id,
+                       COALESCE(r.reaction_count, 0) AS reaction_count,
+                       COALESCE(c.comment_count, 0) AS comment_count
+                  FROM wagle_messages m
+                  LEFT JOIN LATERAL (
+                        SELECT count(*) AS reaction_count FROM wagle_message_reactions wr WHERE wr.message_id = m.id
+                  ) r ON TRUE
+                  LEFT JOIN LATERAL (
+                        SELECT count(*) AS comment_count FROM wagle_messages cm WHERE cm.reply_to_message_id = m.id AND cm.deleted_at IS NULL
+                  ) c ON TRUE
+                 WHERE m.room_id = :room_id
+                   AND m.reply_to_message_id IS NULL
+                   AND m.deleted_at IS NULL
+                   {since_clause}
+                 ORDER BY (COALESCE(r.reaction_count, 0) + COALESCE(c.comment_count, 0)) DESC, m.created_at DESC
+                 LIMIT 20
+                """
+            ),
+            params,
+        )
+    ).all()
+
+    results = []
+    for message_id, body, created_at, sender_participant_id, reaction_count, comment_count in rows:
+        author = await participant_display_name_by_participant_id(db, sender_participant_id) if sender_participant_id else "가족"
+        results.append({
+            "message_id": message_id, "body": body, "author_display_name": author,
+            "created_at": created_at, "reaction_count": reaction_count, "comment_count": comment_count,
+        })
+    return results
+
+
+async def participant_display_name_by_participant_id(db: AsyncSession, participant_id) -> str:
+    participant = await db.get(WagleParticipant, participant_id)
+    if participant is None:
+        return "가족"
+    return await participant_display_name(db, participant.family_membership_id)
+
+
+async def search_visible_messages(db: AsyncSession, actor_membership_id: int, family_id: int, query: str) -> list:
+    """Read-only, for `family_search`'s own Slice (3j) -- moved here from
+    that domain's own service so it reaches these tables through this
+    module's dotted reference rather than raw-SQL-querying them directly,
+    per the Backend Guide's no-direct-cross-domain-DB-access rule. Only
+    rooms the actor participates in, only the actor's own visible sequence
+    range within each -- same rule `list_rooms_with_preview`/
+    `list_messages` already use."""
+    rows = (
+        await db.execute(
+            text(
+                """
+                SELECT m.body, m.created_at
+                  FROM wagle_messages m
+                  JOIN wagle_participants p
+                    ON p.room_id = m.room_id
+                   AND p.family_membership_id = :actor_id
+                   AND p.status IN ('active', 'left')
+                 WHERE m.family_group_id = :family_id
+                   AND m.deleted_at IS NULL
+                   AND m.body ILIKE :pattern
+                   AND m.sequence >= p.joined_sequence
+                   AND (p.left_sequence IS NULL OR m.sequence <= p.left_sequence)
+                 ORDER BY m.created_at DESC
+                """
+            ),
+            {"actor_id": actor_membership_id, "family_id": family_id, "pattern": f"%{query}%"},
+        )
+    ).all()
+    return list(rows)
 
 
 async def read_state(db, user, family_id, room_id, requested: int | None = None):

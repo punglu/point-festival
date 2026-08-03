@@ -59,14 +59,22 @@ async def get_current_service_principal(
     if credentials is None or "." not in credentials.credentials:
         raise invalid
     credential_id, _, secret = credentials.credentials.partition(".")
-    if not credential_id or not secret:
+    secret_bytes = secret.encode("utf-8")
+    # bcrypt itself only ever consults the first 72 bytes of a password, and
+    # a real issued secret (`secrets.token_urlsafe(32)`, ~43 bytes) never
+    # comes close - a legacy user JWT presented here instead partitions into
+    # a `secret` that is its payload+signature, routinely well over 72 bytes,
+    # which this bcrypt version raises ValueError on rather than truncating.
+    # Rejecting oversized input before calling bcrypt keeps this a plain 401
+    # for every non-credential shape, including a JWT, instead of a 500.
+    if not credential_id or not secret or len(secret_bytes) > 72:
         raise invalid
     principal = (
         await db.execute(select(ServicePrincipal).where(ServicePrincipal.credential_id == credential_id))
     ).scalars().first()
     if principal is None or principal.status != "active":
-        bcrypt.checkpw(secret.encode("utf-8"), _DUMMY_CREDENTIAL_HASH.encode("utf-8"))
+        bcrypt.checkpw(secret_bytes, _DUMMY_CREDENTIAL_HASH.encode("utf-8"))
         raise invalid
-    if not bcrypt.checkpw(secret.encode("utf-8"), principal.credential_hash.encode("utf-8")):
+    if not bcrypt.checkpw(secret_bytes, principal.credential_hash.encode("utf-8")):
         raise invalid
     return principal

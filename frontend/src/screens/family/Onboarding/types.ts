@@ -1,5 +1,7 @@
 export type OnboardingModel = {
   familyName: string;
+  isSubmitting?: boolean;
+  errorMessage?: string | null;
 };
 
 export type OnboardingProps = {

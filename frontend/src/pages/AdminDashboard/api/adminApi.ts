@@ -88,6 +88,9 @@ export const adminApi = {
   getNotifications: (signal?: AbortSignal) =>
     httpClient.get<Notification[]>('/api/admin/notifications', { signal }),
 
+  createNotification: (data: { player_id?: number; title: string; body?: string; type?: string }, signal?: AbortSignal) =>
+    httpClient.post<Notification>('/api/admin/notifications', { type: 'admin', ...data }, { signal }),
+
   markAsRead: (id: number, signal?: AbortSignal) =>
     httpClient.patch(`/api/admin/notifications/${id}/read`, {}, { signal }),
 

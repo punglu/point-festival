@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.domains.wagle import service
-from app.domains.wagle.schemas import MessageCreate, MessageListResponse, MessageResponse, ParticipantCreate, ParticipantResponse, ReadStateResponse, ReadStateUpdate, RoomCreate, RoomLastMessagePreview, RoomResponse, RoomSummaryResponse, RoomUpdate, ServiceActionPublish, ServiceRoomOnboardResponse
+from typing import Literal
+from app.domains.wagle.schemas import MessageCreate, MessageListResponse, MessageResponse, ParticipantCreate, ParticipantResponse, PopularPostOut, ReactionToggleResponse, ReadStateResponse, ReadStateUpdate, RoomCreate, RoomLastMessagePreview, RoomResponse, RoomSummaryResponse, RoomUpdate, ServiceActionPublish, ServiceRoomOnboardResponse
 from app.domains.wagle.service_actor import get_current_service_principal
 from app.domains.wagle.models import ServicePrincipal
 from app.domains.wagle.ingress_limits import enforce_service_body_limit
@@ -35,15 +36,29 @@ def room_summary_out(row):
         last_read_sequence=row["last_read_sequence"], unread_count=row["unread_count"],
         last_message=last,
     )
-def participant_out(item): return ParticipantResponse.model_validate(item)
-def message_out(item):
+async def participant_out(db, item):
+    name = await service.participant_display_name(db, item.family_membership_id)
+    return ParticipantResponse(
+        id=item.id,
+        family_membership_id=item.family_membership_id,
+        account_display_name=name,
+        room_role=item.room_role,
+        status=item.status,
+        joined_sequence=item.joined_sequence,
+        left_sequence=item.left_sequence,
+        joined_at=item.joined_at,
+        left_at=item.left_at,
+    )
+def message_out(item, reaction_count: int = 0, reacted_by_me: bool = False):
     payload = item.service_payload or {}
     return MessageResponse(
         id=item.id, room_id=item.room_id, sequence=item.sequence, sender_participant_id=item.sender_participant_id,
-        message_type=item.message_type, body=None if item.deleted_at else item.body, created_at=item.created_at,
+        message_type=item.message_type, body=None if item.deleted_at else item.body,
+        reply_to_message_id=item.reply_to_message_id, created_at=item.created_at,
         deleted_at=item.deleted_at, deleted=item.deleted_at is not None, tombstone="Message deleted" if item.deleted_at else None,
         service_code=item.service_code, service_payload_version=item.service_payload_version,
         service_payload=payload if item.message_type == "SERVICE_ACTION" else None,
+        reaction_count=reaction_count, reacted_by_me=reacted_by_me,
     )
 
 @router.get("/rooms", response_model=list[RoomResponse])
@@ -82,25 +97,50 @@ async def participants(family_id: int, room_id: UUID, user: dict = Depends(get_c
     room = await service._room(db, family_id, room_id); _, membership = await service.context(db, user, family_id); await service._require_permission(db, membership, service.READ); await service._participant(db, room, membership)
     from sqlalchemy import select
     from app.domains.wagle.models import WagleParticipant
-    return [participant_out(x) for x in (await db.execute(select(WagleParticipant).where(WagleParticipant.room_id == room_id))).scalars()]
+    return [await participant_out(db, x) for x in (await db.execute(select(WagleParticipant).where(WagleParticipant.room_id == room_id))).scalars()]
 
 @router.post("/rooms/{room_id}/participants", response_model=ParticipantResponse, status_code=201)
 async def add_participant(family_id: int, room_id: UUID, data: ParticipantCreate, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    return participant_out(await service.add_participant(db, user, family_id, room_id, data.family_membership_id, data.room_role))
+    return await participant_out(db, await service.add_participant(db, user, family_id, room_id, data.family_membership_id, data.room_role))
 
 @router.delete("/rooms/{room_id}/participants/{participant_id}", response_model=ParticipantResponse)
 async def remove_participant(family_id: int, room_id: UUID, participant_id: UUID, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    return participant_out(await service.remove_participant(db, user, family_id, room_id, participant_id))
+    return await participant_out(db, await service.remove_participant(db, user, family_id, room_id, participant_id))
 
 @router.post("/rooms/{room_id}/leave", response_model=ParticipantResponse)
 async def leave(family_id: int, room_id: UUID, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     room = await service._room(db, family_id, room_id); _, membership = await service.context(db, user, family_id); participant = await service._participant(db, room, membership)
-    return participant_out(await service.remove_participant(db, user, family_id, room_id, participant.id, voluntary=True))
+    return await participant_out(db, await service.remove_participant(db, user, family_id, room_id, participant.id, voluntary=True))
 
 @router.get("/rooms/{room_id}/messages", response_model=MessageListResponse)
 async def messages(family_id: int, room_id: UUID, after_sequence: int | None = Query(None, ge=0), before_sequence: int | None = Query(None, ge=1), limit: int = Query(50, ge=1, le=100), user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     items, cursor = await service.list_messages(db, user, family_id, room_id, after_sequence, before_sequence, limit)
-    return MessageListResponse(items=[message_out(x) for x in items], cursor=cursor)
+    _, viewer_membership = await service.context(db, user, family_id)
+    reaction_map = await service.reaction_counts_for(db, [x.id for x in items], viewer_membership.id)
+    return MessageListResponse(
+        items=[message_out(x, *reaction_map.get(x.id, (0, False))) for x in items],
+        cursor=cursor,
+    )
+
+@router.post("/rooms/{room_id}/messages/{message_id}/reactions", response_model=ReactionToggleResponse)
+async def toggle_reaction(family_id: int, room_id: UUID, message_id: UUID, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """W7.5 Phase D SLICE-WAGLE-BOARD-REACTIONS (3e). Toggling twice removes
+    the reaction -- see `service.react_to_message`'s own docstring."""
+    count, reacted = await service.react_to_message(db, user, family_id, room_id, message_id)
+    return ReactionToggleResponse(message_id=message_id, reacted_by_me=reacted, reaction_count=count)
+
+@router.get("/board/popular", response_model=list[PopularPostOut])
+async def popular_posts(family_id: int, range: Literal["week", "month", "all"] = Query("week"), user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """3e (인기 게시글). Ranked by reaction_count + comment_count within the
+    selected window, over the family board Room (REUSE-WAGLE-ROOMS-AS-BOARD)."""
+    rows = await service.list_popular_posts(db, user, family_id, range)
+    return [
+        PopularPostOut(
+            message_id=row["message_id"], body=row["body"], author_display_name=row["author_display_name"],
+            created_at=row["created_at"], reaction_count=row["reaction_count"], comment_count=row["comment_count"],
+        )
+        for row in rows
+    ]
 
 @router.post("/rooms/{room_id}/messages", response_model=MessageResponse, status_code=201)
 async def send(family_id: int, room_id: UUID, data: MessageCreate, user: dict = Depends(get_current_user), db: AsyncSession = Depends(get_db)):

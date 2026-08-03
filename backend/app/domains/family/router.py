@@ -13,8 +13,8 @@ from app.domains.family.models import Account, FamilyMembership, MembershipRoleA
 from app.domains.family.schema import (
     AccountContextResponse, AccountLoginRequest, AccountLoginResponse,
     AuthorizedFamilySummary, FamilyCreate, FamilyResponse, FamilySummary,
-    FamilyUpdate, MeResponse, MemberAccountProvisionRequest,
-    MemberAccountProvisionResponse, MembershipCreate, MembershipSummary,
+    FamilyUpdate, MeResponse, MeUpdate, MemberAccountProvisionRequest,
+    MemberAccountProvisionResponse, MembershipCreate, MembershipSelfUpdate, MembershipSummary,
     MembershipUpdate, PasswordChangeRequest, RefreshRequest, RefreshResponse,
     RoleAssignmentCreate, RoleAssignmentResponse, RoleSummary, SessionSummary,
     ServiceSubscriptionCreate, ServiceSubscriptionSummary, ServiceSubscriptionUpdate,
@@ -74,6 +74,7 @@ async def read_me(
                 name=family.name,
                 membership_id=membership.id,
                 relationship=membership.relationship,
+                joined_at=membership.joined_at,
                 roles=[_role_summary(role) for role in roles],
                 permissions=sorted(permissions),
             )
@@ -82,8 +83,43 @@ async def read_me(
         account_id=account.id,
         display_name=account.display_name,
         is_password_change_required=bool(credential and credential.is_password_change_required),
+        bio=account.bio,
+        birthday=account.birthday,
+        avatar_color=account.avatar_color,
         authorized_families=families,
     )
+
+
+@router.patch("/api/me", response_model=MeResponse)
+async def update_me(
+    req: MeUpdate,
+    account: Account = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+):
+    """Self-service profile edit (W7.5 2z) -- own Account only, no permission
+    beyond authentication (same self-service shape as `/api/me/password`)."""
+    await service.update_account_profile(
+        db, account,
+        display_name=req.display_name, bio=req.bio, birthday=req.birthday, avatar_color=req.avatar_color,
+    )
+    return await read_me(account=account, db=db)
+
+
+@router.patch("/api/families/{family_id}/members/me", response_model=MembershipSummary)
+async def update_my_membership(
+    family_id: int,
+    data: MembershipSelfUpdate,
+    account: Account = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+):
+    """Self-service family-role label edit on one's own Membership (1f/2z).
+    Deliberately bypasses `FAMILY_MEMBERS_MANAGE` -- a member declaring their
+    own relationship is not the same authority as a FamilyAdmin managing
+    someone else's, and `MembershipSelfUpdate` has no `status` field so this
+    can never be used to activate/suspend/remove a Membership."""
+    membership = await service.get_active_membership(db, account.id, family_id)
+    membership = await service.update_own_membership_relationship(db, membership, data.relationship)
+    return await _membership_summary(db, membership)
 
 
 @router.post("/api/me/password", status_code=status.HTTP_204_NO_CONTENT)
@@ -162,9 +198,11 @@ async def provision_member_account(
 
 
 async def _membership_summary(db: AsyncSession, membership: FamilyMembership) -> MembershipSummary:
+    account = await service.get_account(db, membership.account_id)
     return MembershipSummary(
         id=membership.id,
         account_id=membership.account_id,
+        account_display_name=account.display_name if account else "",
         family_group_id=membership.family_group_id,
         relationship=membership.relationship,
         status=membership.status,

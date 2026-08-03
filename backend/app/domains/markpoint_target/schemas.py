@@ -1,14 +1,24 @@
 from datetime import date, datetime
 from pydantic import BaseModel, Field
 
+class ChecklistItem(BaseModel):
+    label: str = Field(min_length=1, max_length=200)
+    done: bool = False
+
 class MissionCreate(BaseModel):
     assignee_membership_id: int
     title: str = Field(min_length=1, max_length=200)
+    description: str | None = Field(default=None, max_length=2000)
     scheduled_for: date
     reward_amount: int = Field(ge=0)
+    # Optional subtask labels, set once at creation; each starts not-done.
+    checklist: list[str] | None = Field(default=None, max_length=30)
 
 class MissionDecision(BaseModel):
     reason: str | None = Field(default=None, max_length=300)
+
+class ChecklistUpdate(BaseModel):
+    items: list[ChecklistItem] = Field(min_length=1, max_length=30)
 
 class PointAdjustment(BaseModel):
     beneficiary_membership_id: int
@@ -28,6 +38,14 @@ class TemplateOut(BaseModel):
 
 class MissionOut(BaseModel):
     id: int; family_group_id: int; assignee_membership_id: int; title: str; scheduled_for: date; reward_amount: int; status: str
+    description: str | None = None
+    checklist: list[ChecklistItem] | None = None
+    rejection_reason: str | None = None
+    # Set only when a reviewer has acted (approved/rejected); resolved via a
+    # cross-domain lookup, not a stored denormalized name -- same "list
+    # endpoint has an id but no display name" shape as MembershipSummary and
+    # ParticipantResponse before this fix.
+    reviewer_display_name: str | None = None
     model_config = {"from_attributes": True}
 
 class LedgerOut(BaseModel):

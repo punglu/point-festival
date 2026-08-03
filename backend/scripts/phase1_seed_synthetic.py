@@ -22,7 +22,9 @@ from app.domains.family import auth_service
 from app.domains.markpoint_target.models import (
     MarkpointMission, MarkpointMissionTemplate,
 )
-from app.domains.wagle.models import WagleParticipant, WagleRoom
+from app.domains.wagle.models import (
+    WagleMessage, WagleParticipant, WagleParticipantReadState, WagleRoom,
+)
 
 # Synthetic only, and only ever loaded into an isolated database. Kept beside
 # the seed rather than in the tests so both browsers in the two-context
@@ -44,7 +46,9 @@ async def main() -> None:
     async with AsyncSessionLocal() as db:
         for model in (
             MarkpointMission, MarkpointMissionTemplate,
-            WagleParticipant, WagleRoom,
+            # WagleMessage cascades WagleMessageReaction (ondelete=CASCADE);
+            # read-states and participants must go before their FK targets.
+            WagleMessage, WagleParticipantReadState, WagleParticipant, WagleRoom,
             AccountSession, AccountCredential,
             MembershipRoleAssignment, LegacyIdentityMapping, ServiceSubscription,
             FamilyMembership, FamilyGroup, Account,

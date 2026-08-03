@@ -81,6 +81,10 @@ export interface MarkpointWeeklyDay {
     status: MissionStatus;
     reward_amount: number;
     template_id: number | null;
+    description: string | null;
+    checklist: { label: string; done: boolean }[] | null;
+    rejection_reason: string | null;
+    reviewer_display_name: string | null;
   }[];
   remaining: number;
   completed: number;
@@ -194,11 +198,31 @@ export async function cancelMission(familyId: number, missionId: number, reason:
 
 export async function createMission(
   familyId: number,
-  body: { assignee_membership_id: number; title: string; scheduled_for: string; reward_amount: number },
+  body: {
+    assignee_membership_id: number;
+    title: string;
+    scheduled_for: string;
+    reward_amount: number;
+    description?: string | null;
+    checklist?: string[] | null;
+  },
 ) {
   const { data } = await httpClient.post<MarkpointMission>(
     `/api/families/${familyId}/markpoint/missions`,
     body,
+  );
+  return data;
+}
+
+/** Assignee toggles their own checklist before submitting (1k). */
+export async function updateMissionChecklist(
+  familyId: number,
+  missionId: number,
+  items: { label: string; done: boolean }[],
+) {
+  const { data } = await httpClient.patch<MarkpointMission>(
+    `/api/families/${familyId}/markpoint/missions/${missionId}/checklist`,
+    { items },
   );
   return data;
 }

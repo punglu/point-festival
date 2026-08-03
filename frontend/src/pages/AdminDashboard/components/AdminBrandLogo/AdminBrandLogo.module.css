@@ -6,20 +6,10 @@
 }
 
 .logo {
-  object-fit: contain;
+  /* width/height come from MainLogo's `size` prop (34px sm / 42px md) */
   flex-shrink: 0;
   filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.3));
   margin-top: -5px;
-}
-
-.sm .logo {
-  width: 34px;
-  height: 34px;
-}
-
-.md .logo {
-  width: 42px;
-  height: 42px;
 }
 
 .textGroup {

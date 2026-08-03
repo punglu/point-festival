@@ -15,4 +15,7 @@ export type MissionDetailProps = {
   onBack?: () => void;
   onMenu?: () => void;
   onSubmit?: () => void;
+  /** Toggles one checklist item by its index in `model.checklist`. Omitted
+   *  (no-op) when the mission has no checklist to toggle. */
+  onToggleItem?: (index: number) => void;
 };

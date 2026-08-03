@@ -23,6 +23,7 @@ export type WagleRoomSummary = Schemas['RoomSummaryResponse'];
 export type WagleMessage = Schemas['MessageResponse'];
 export type WagleMessageList = Schemas['MessageListResponse'];
 export type WagleReadState = Schemas['ReadStateResponse'];
+export type WagleParticipant = Schemas['ParticipantResponse'];
 
 /**
  * Message types the server emits. `SERVICE_ACTION` is a Markpoint system
@@ -40,10 +41,26 @@ export async function listRoomSummaries(familyId: number, signal?: AbortSignal) 
   return data;
 }
 
+export async function listParticipants(familyId: number, roomId: string, signal?: AbortSignal) {
+  const { data } = await httpClient.get<WagleParticipant[]>(
+    `/api/families/${familyId}/wagle/rooms/${roomId}/participants`,
+    { signal },
+  );
+  return data;
+}
+
 export async function listRooms(familyId: number, signal?: AbortSignal) {
   const { data } = await httpClient.get<WagleRoom[]>(`/api/families/${familyId}/wagle/rooms`, {
     signal,
   });
+  return data;
+}
+
+export async function createRoom(
+  familyId: number,
+  body: { room_type: 'GROUP'; title: string; participant_membership_ids?: number[] },
+) {
+  const { data } = await httpClient.post<WagleRoom>(`/api/families/${familyId}/wagle/rooms`, body);
   return data;
 }
 
@@ -79,7 +96,7 @@ export async function listMessages(
 export async function sendMessage(
   familyId: number,
   roomId: string,
-  body: { body: string; client_message_id: string },
+  body: { body: string; client_message_id: string; reply_to_message_id?: string },
 ) {
   const { data } = await httpClient.post<WagleMessage>(
     `/api/families/${familyId}/wagle/rooms/${roomId}/messages`,
@@ -138,5 +155,30 @@ export async function resumeRoom(
     `/api/families/${familyId}/wagle/rooms/${roomId}/resume`,
     { params: { after_sequence: afterSequence }, signal },
   );
+  return data;
+}
+
+/** W7.5 Phase D SLICE-WAGLE-BOARD-REACTIONS (3e). Toggle a reaction on a
+ *  message; reacting again removes it. No canonical Screen has a click
+ *  target wired to this yet (see WagleBoardPage's own comment) -- exported
+ *  for completeness and for a future UI trigger, not currently called. */
+export type ReactionToggleResult = Schemas['ReactionToggleResponse'];
+export async function toggleReaction(familyId: number, roomId: string, messageId: string) {
+  const { data } = await httpClient.post<ReactionToggleResult>(
+    `/api/families/${familyId}/wagle/rooms/${roomId}/messages/${messageId}/reactions`,
+  );
+  return data;
+}
+
+export type PopularPost = Schemas['PopularPostOut'];
+export async function listPopularPosts(
+  familyId: number,
+  range: 'week' | 'month' | 'all',
+  signal?: AbortSignal,
+) {
+  const { data } = await httpClient.get<PopularPost[]>(`/api/families/${familyId}/wagle/board/popular`, {
+    params: { range },
+    signal,
+  });
   return data;
 }

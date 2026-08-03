@@ -18,7 +18,7 @@ import BottomNav from './components/BottomNav';
 import StatDetailModal from './components/StatDetailModal';
 import ConfettiEffect from './components/ConfettiEffect';
 import WeeklyMissionModal from './components/WeeklyMissionModal';
-import clusterLogo from '../../assets/logos/brand-icon.png';
+import MainLogo from '../../shared/components/MainLogo';
 
 type StatType = 'earned' | 'balance' | 'pending';
 
@@ -101,8 +101,8 @@ export default function UserDashboard() {
       <div className={styles.header}>
         <div className={styles.headerTop}>
           <div className={styles.brand}>
-            <img src={clusterLogo} alt="로고" style={{ width: 34, height: 34, objectFit: 'contain', marginTop: -5 }} />
-            <span className={styles.brandName}>포인트 잔치</span>
+            <MainLogo variant="wordmark" tone="onBrand" size={34} />
+            <span className={styles.brandName}>몽글</span>
           </div>
           <div className={styles.headerActions}>
             <button className={styles.chatBtn} onClick={() => setChatOpen(true)} aria-label="대화하기">

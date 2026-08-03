@@ -7,7 +7,7 @@ from app.domains.family.models import Account, FamilyMembership
 from app.domains.family import service as family_service
 from . import service
 from .schemas import (
-    BalanceOut, BulkApproval, CycleConfigOut, CycleConfigUpdate, DeductionCorrection,
+    BalanceOut, BulkApproval, ChecklistUpdate, CycleConfigOut, CycleConfigUpdate, DeductionCorrection,
     LedgerOut, LevelOut, MissionCreate, MissionDecision, MissionOut, PointAdjustment,
     TemplateCreate, TemplateOut, TemplateUpdate,
 )
@@ -19,27 +19,38 @@ async def _me(family_id:int, account:Account=Depends(get_current_account), db:As
 
 @router.post("/api/families/{family_id}/markpoint/missions", response_model=MissionOut, status_code=status.HTTP_201_CREATED)
 async def create(family_id:int, body:MissionCreate, actor:FamilyMembership=Depends(get_family_membership), db:AsyncSession=Depends(get_db)):
-    return await service.create_mission(db, family_id, actor, assignee_id=body.assignee_membership_id, title=body.title, scheduled_for=body.scheduled_for, reward_amount=body.reward_amount)
+    mission = await service.create_mission(db, family_id, actor, assignee_id=body.assignee_membership_id, title=body.title, scheduled_for=body.scheduled_for, reward_amount=body.reward_amount, description=body.description, checklist=body.checklist)
+    return await service.mission_out(db, mission)
 
 @router.post("/api/families/{family_id}/markpoint/missions/{mission_id}/submit", response_model=MissionOut)
 async def submit(family_id:int, mission_id:int, actor:FamilyMembership=Depends(get_family_membership), db:AsyncSession=Depends(get_db)):
-    return await service.submit_mission(db, family_id, actor, mission_id)
+    mission = await service.submit_mission(db, family_id, actor, mission_id)
+    return await service.mission_out(db, mission)
+
+@router.patch("/api/families/{family_id}/markpoint/missions/{mission_id}/checklist", response_model=MissionOut)
+async def update_checklist(family_id:int, mission_id:int, body:ChecklistUpdate, actor:FamilyMembership=Depends(get_family_membership), db:AsyncSession=Depends(get_db)):
+    mission = await service.update_mission_checklist(db, family_id, actor, mission_id, [item.model_dump() for item in body.items])
+    return await service.mission_out(db, mission)
 
 @router.post("/api/families/{family_id}/markpoint/missions/{mission_id}/approve", response_model=MissionOut)
 async def approve(family_id:int, mission_id:int, actor:FamilyMembership=Depends(get_family_membership), db:AsyncSession=Depends(get_db)):
-    return await service.approve_mission(db, family_id, actor, mission_id)
+    mission = await service.approve_mission(db, family_id, actor, mission_id)
+    return await service.mission_out(db, mission)
 
 @router.post("/api/families/{family_id}/markpoint/missions/{mission_id}/reverse", response_model=MissionOut)
 async def reverse(family_id:int, mission_id:int, body:MissionDecision, actor:FamilyMembership=Depends(get_family_membership), db:AsyncSession=Depends(get_db)):
-    return await service.reverse_mission_reward(db, family_id, actor, mission_id, body.reason or "reversed")
+    mission = await service.reverse_mission_reward(db, family_id, actor, mission_id, body.reason or "reversed")
+    return await service.mission_out(db, mission)
 
 @router.post("/api/families/{family_id}/markpoint/missions/{mission_id}/reject", response_model=MissionOut)
 async def reject(family_id:int, mission_id:int, body:MissionDecision, actor:FamilyMembership=Depends(get_family_membership), db:AsyncSession=Depends(get_db)):
-    return await service.reject_mission(db,family_id,actor,mission_id,body.reason)
+    mission = await service.reject_mission(db,family_id,actor,mission_id,body.reason)
+    return await service.mission_out(db, mission)
 
 @router.post("/api/families/{family_id}/markpoint/missions/{mission_id}/cancel", response_model=MissionOut)
 async def cancel(family_id:int, mission_id:int, body:MissionDecision, actor:FamilyMembership=Depends(get_family_membership), db:AsyncSession=Depends(get_db)):
-    return await service.cancel_mission(db,family_id,actor,mission_id,body.reason or "cancelled")
+    mission = await service.cancel_mission(db,family_id,actor,mission_id,body.reason or "cancelled")
+    return await service.mission_out(db, mission)
 
 @router.post("/api/families/{family_id}/markpoint/missions/expire")
 async def expire(family_id:int, actor:FamilyMembership=Depends(get_family_membership), db:AsyncSession=Depends(get_db)):
@@ -54,7 +65,9 @@ async def template_patch(family_id:int,template_id:int,body:TemplateUpdate,actor
 @router.delete("/api/families/{family_id}/markpoint/templates/{template_id}",response_model=TemplateOut)
 async def template_deactivate(family_id:int,template_id:int,actor:FamilyMembership=Depends(get_family_membership),db:AsyncSession=Depends(get_db)): return await service.deactivate_template(db,family_id,actor,template_id)
 @router.post("/api/families/{family_id}/markpoint/templates/{template_id}/materialize",response_model=MissionOut)
-async def materialize(family_id:int,template_id:int,scheduled_for:__import__('datetime').date=__import__('fastapi').Query(...),actor:FamilyMembership=Depends(get_family_membership),db:AsyncSession=Depends(get_db)): return await service.materialize_template(db,family_id,actor,template_id,scheduled_for)
+async def materialize(family_id:int,template_id:int,scheduled_for:__import__('datetime').date=__import__('fastapi').Query(...),actor:FamilyMembership=Depends(get_family_membership),db:AsyncSession=Depends(get_db)):
+    mission = await service.materialize_template(db,family_id,actor,template_id,scheduled_for)
+    return await service.mission_out(db, mission)
 
 @router.post("/api/families/{family_id}/markpoint/ledger/adjustments", response_model=LedgerOut, status_code=status.HTTP_201_CREATED)
 async def adjustment(family_id:int, body:PointAdjustment, actor:FamilyMembership=Depends(get_family_membership), db:AsyncSession=Depends(get_db)):
@@ -62,7 +75,8 @@ async def adjustment(family_id:int, body:PointAdjustment, actor:FamilyMembership
 
 @router.get("/api/me/markpoint/missions", response_model=list[MissionOut])
 async def my_missions(family_id:int, membership:FamilyMembership=Depends(_me), db:AsyncSession=Depends(get_db)):
-    return await service.own_missions(db, family_id, membership)
+    missions = await service.own_missions(db, family_id, membership)
+    return [await service.mission_out(db, mission) for mission in missions]
 
 @router.get("/api/me/markpoint/ledger", response_model=list[LedgerOut])
 async def my_ledger(family_id:int, membership:FamilyMembership=Depends(_me), db:AsyncSession=Depends(get_db)):
@@ -200,7 +214,7 @@ async def admin_missions(
     actor: FamilyMembership = Depends(get_family_membership),
     db: AsyncSession = Depends(get_db),
 ):
-    return await service.admin_list_missions(
+    missions = await service.admin_list_missions(
         db,
         family_id,
         actor,
@@ -211,6 +225,7 @@ async def admin_missions(
         date_to=date_to,
         limit=limit,
     )
+    return [await service.mission_out(db, mission) for mission in missions]
 
 
 @router.post("/api/families/{family_id}/markpoint/missions/bulk-approve")

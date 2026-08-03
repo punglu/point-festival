@@ -1,17 +1,19 @@
 import styles from './AdminBrandLogo.module.css';
-import clusterLogo from '../../../../assets/logos/brand-icon.png';
+import MainLogo from '../../../../shared/components/MainLogo';
 
 interface Props {
   size?: 'sm' | 'md';
   showSub?: boolean;
 }
 
+const LOGO_PX: Record<'sm' | 'md', number> = { sm: 34, md: 42 };
+
 export default function AdminBrandLogo({ size = 'sm', showSub = false }: Props) {
   return (
     <div className={`${styles.wrap} ${styles[size]}`}>
-      <img src={clusterLogo} alt="포인트 잔치" className={styles.logo} />
+      <MainLogo variant="wordmark" tone="onDark" size={LOGO_PX[size]} className={styles.logo} />
       <div className={styles.textGroup}>
-        <span className={styles.brandText}>포인트 잔치</span>
+        <span className={styles.brandText}>몽글</span>
         {showSub && <span className={styles.brandSub}>관리자 패널</span>}
       </div>
     </div>

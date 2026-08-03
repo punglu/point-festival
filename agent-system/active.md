@@ -3,6 +3,224 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
+## MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001
+
+- Task ID: MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001
+- Kind: wire the 64 W7.4-bound canonical Screens to real data, mutations,
+  auth/permission, and error states — reuse existing Backend/API where
+  possible, extend minimally where partial, build new vertical Slices only
+  where genuinely missing; no policy-undecided feature built ahead of a PM
+  decision.
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED (PM task direction, this prompt)
+- Verification: IMPLEMENTATION_EVIDENCE_FROZEN, READY_FOR_INDEPENDENT_QA
+  (Phase H, current) — backend suite now genuinely PASS: 375/375, 0
+  failed, 0 errors (the prior 374/375 pre-existing `bcrypt` failure was
+  investigated and safely fixed this pass, re-verified twice); permanent
+  E2E spec PASS 10/10, 0 skipped (the prior `2t` skip is resolved, see
+  Phase H below). Independent QA per `.claude/agents/test-agent.md`
+  intentionally still not started — only the 14 PM/infrastructure decision
+  items remain, none of them code-blocked
+- Execution: RUNNING
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001.md
+- Registration note: opened directly from this session's own W7.4 continuation
+  (same conversation, same worktree) after confirming per rules.md Invariant 9
+  that no existing `active.md`/`graduated/` entry, alias, or git history
+  already covers this scope. **Discovered while registering**: W7.3 and W7.4
+  (below) had real completed code, reports, handoffs, and QA-evidence files
+  but were never added to `active.md`, `graduated/`, or `relay/current.md` —
+  the same registration-gap failure shape `PHASE0-AGENT-SYSTEM-RECORD-
+  INTEGRITY-AUDIT-002` exists to catch. Fixed as a bounded LOCAL-FIX
+  registration alongside opening this task, not left for a future audit to
+  find again.
+- Registration note (corrected): W7.3 and W7.4 were briefly added here as
+  `IMPLEMENTED_AWAITING_INDEPENDENT_QA` active entries in an earlier edit this
+  same session. Per PM direction and the real graduation precedent already in
+  this repository (`graduated/2026-08.md`'s `MONGLE-FE-ROUTE-NAMESPACE-
+  MIGRATION-001` / `MONGLE-TECHNICAL-NAMESPACE-ALIGNMENT-001` rows, both
+  graduated explicitly labeled "Self-reported only, never independently
+  QA'd"), completed self-check-only work belongs in `graduated/`, not
+  `active.md` — `active.md` is for open work. W7.3 and W7.4 are now graduated
+  below in `agent-system/graduated/2026-08.md` with the same disclosed,
+  not-independently-QA'd status. `relay/current.md` now points at this task.
+- Progress (checkpoint): Phase 0 COMPLETE (64/64).
+  **`PHASE_B_PROCESSING_COMPLETE = 6/6`** — a throughput count, not a
+  functionality count. Split explicitly per PM direction so it is never
+  read as "6 screens work":
+  - **`PHASE_B_FUNCTIONALLY_WIRED = 4/6`** — `1a-1`, `1r`, `1q`, `2t` call
+    real backend endpoints, verified end-to-end.
+  - **`PHASE_B_HUMAN_GATE = 2/6`** — `1u`, `2s`, correctly found blocked on
+    a real 4-digit-Screen-vs-6-digit-backend PIN mismatch and reclassified
+    (`DESIGN_CONTRACT_MISMATCH`/`HUMAN_GATE`) rather than forced through.
+  **Phase C: COMPLETE — 11/11 rows processed** (`1t`, `1f`, `1k`, `1s`,
+  `2c`, `2g`, `2o`, `2p`, `2z`, `3b`, `3i`). Row-count-complete is not the
+  same as functionally-wired: 3 fully wired (`1t`'s member-list half,
+  `1s`, `2g`), 3 capability-split `SCREEN_PARTIALLY_COMPLETE` (`1f`, `1k`,
+  `2z` — the Matrix now carries `CAPABILITY_ID`/`CAPABILITY_STATUS`/
+  `POLICY_DEPENDENCY` columns so a screen-level status can never hide a
+  per-capability gap again), 1 reclassified to `NO_CHANGE_REQUIRED` (`2c`
+  — no level-up bonus mechanic exists anywhere, disclosed 0 not
+  fabricated), 2 new `DESIGN_CONTRACT_MISMATCH`/`DESIGN_CONTRACT_GAP` rows
+  found by attempting the wiring (`2o` — legacy admin/family-scope
+  authorization bridge; `3b` — backend ready, frozen Screen has no input
+  controls), and `2p` reclassified `POLICY_BLOCKED` (its `Invitation` type
+  is keyed on `email`, which D2 already excludes from the Account-native
+  model entirely — folded into the same invitation-model gate as `2f`/
+  `2w`/`3i`). Verified end-to-end via the same **permanent** Playwright
+  spec (4 new cases: `1f`/`1k`/`2g`) plus 15 new backend tests
+  (`test_w75_phase_c_extensions.py`), against a fresh isolated disposable
+  Postgres + throwaway backend, zero residue after teardown. One additive
+  migration this phase (`0012_profile_mission_fields`): `accounts.bio`/
+  `birthday`/`avatar_color`, `markpoint_missions.description`/`.checklist`
+  (all nullable, no backfill). Full backend suite: 332/333 — the 1
+  non-matching test (`test_wagle_service_binding.py::
+  test_01_user_jwt_blocked_from_service_ingress`) confirmed pre-existing
+  and unrelated via `git stash` against clean HEAD, not fixed here (out of
+  scope). Backend-suite `KNOWN_CONDITION` (non-deterministic Wagle-
+  concurrency-test contention across 4 Phase B/C runs) is now formally
+  registered in `agent-system/qa/COVERAGE_MAP.md`
+  (`KNOWN-W7-5-WAGLE-CONCURRENCY-001`) — stabilizing the actual contention
+  remains separate, not-yet-scheduled work. Full detail in this task's
+  Report §9/Handoff/QA evidence.
+- **Phase D: 10 of 11 backend Slices built, all 19 candidate screens
+  processed** (`engineering/phase2/MONGLE_W7_5_PHASE_D_SLICE_MAPPING.md`
+  built first, per PM direction, so a Slice shared by several screens was
+  built once — `SLICE-SCHEDULE` for 4 screens, `SLICE-ALBUM-METADATA` for
+  4, `SLICE-REWARD-CATALOG` for 3). 7 new additive migrations
+  (`0013`→`0019`: Todo, Family Rules, Notification Preferences, Schedule,
+  Album metadata, Reward Catalog, Account-native Notification list); 2
+  Slices needed no migration at all (`SLICE-FAMILY-ACTIVITY-LOG` reads the
+  existing `MarkpointAuditEvent`; `SLICE-SEARCH` reads Missions + Wagle
+  messages) plus `REUSE-WAGLE-ROOMS-AS-BOARD` (`3c`/`3d`) reuses
+  `WagleRoom`/`WagleMessage` with a body-encoding convention, zero schema
+  change. New `markpoint_target.service.self_spend` gives Reward
+  redemption a self-service point-debit path (`require_access` only,
+  never the admin-only `POINTS_ADJUST` `adjust_points` needs — a real
+  child cannot hold that permission). **Recurring finding across 6 rows**
+  (`1i`, `1v`, `2y`, plus Phase C's `2z`/`3b`, and Phase D's own `3j`):
+  backend built and tested, but the frozen canonical Screen has no input
+  control to drive it from at all — needs a PM/design decision, not more
+  backend work. `SLICE-WAGLE-ATTACHMENTS` (`2b`) correctly not built —
+  `POLICY_REQUIRED`, same storage-infra gate as `2v`/`1p`/`2z`.
+  `SLICE-WAGLE-BOARD-REACTIONS` (`3e`) correctly not built —
+  `NEW_SLICE_REQUIRED`, no reaction concept exists in Wagle even after
+  `3c`/`3d` landed. 34 new backend tests
+  (`test_w75_phase_d_slices.py`), full backend suite re-run twice (a
+  concurrent synthetic-seed-script run on the first pass triggered 2
+  additional `KNOWN_CONDITION` errors, both confirmed clean on isolated
+  and clean-re-run verification — added as further evidence to
+  `KNOWN-W7-5-WAGLE-CONCURRENCY-001`, not a new defect).
+  `3c`/`3d` additionally live-verified in a real Chromium session via an
+  ad hoc Playwright script (not committed): a real HTTP-created post
+  rendered and opened, a real comment sent through the Screen's own input
+  rendered in the thread. Full detail in this task's Report §10-11/
+  Handoff/QA evidence.
+- **Phase E/F (this checkpoint) — scope reconciliation, `3e` build,
+  closeout-readiness.** Supersedes the "Next Action" paragraph immediately
+  below, which is kept for its own historical detail but is now stale on
+  `3e`'s status and the gate count. Full detail:
+  `engineering/phase2/MONGLE_W7_5_PM_DECISION_PACKAGE.md` (new document)
+  and this task's QA evidence "Phase E"/"Phase F" sections.
+  - **`3e` (`SLICE-WAGLE-BOARD-REACTIONS`) resolved and built**, not left
+    `NEW_SLICE_REQUIRED`: both `3c`/`3e`'s own frozen Screens already
+    render `♥ likes · 💬 comments`, so this was `IMPLEMENTATION_REQUIRED`.
+    Migration `0020_wagle_message_reactions`, toggle service/router
+    endpoints, 8 new backend tests (all pass), real counts wired into both
+    Screens. The reaction toggle's own click target is still missing from
+    both frozen type contracts — tracked as a canonical PM gate, not
+    silently done.
+  - **Phase C recounted 11/11** (a prior tally line above summed to 10 by
+    arithmetic slip, not a missing row). Phase D's 21-screen/11-Slice scope
+    confirmed as the true original scope, not a phantom expansion.
+  - **Real defects found and fixed this checkpoint**: a Matrix
+    `API_READINESS` field-overwrite (`1q`/`1u`/`2s`, now preserved via a
+    new `ORIGINAL_API_READINESS` column); two taxonomy mislabels (`1f`
+    streak/badge → `POLICY_REQUIRED`, `2b`'s stale `FINAL_W7_5_STATUS` →
+    `POLICY_BLOCKED`); 6 frontend fixture-fallback-on-error defects
+    (`FamilyMembersPage`/`FamilyTodoPage`/`FamilyRulesPage`/
+    `FamilySchedulePage`/`FamilyAlbumPage`/`ProfilePage` all fell back to
+    fake fixture data on a real load failure — fixed to show a real empty
+    state); and, while actually running the permanent `3c/3d/3e`
+    Playwright spec for the first time, a test-navigation defect
+    (`page.goBack()` doesn't return to `WagleBoardPage.tsx`'s
+    component-state board view — fixed to use the composer's own back
+    control) plus a seed-script FK delete-order defect
+    (`phase1_seed_synthetic.py`, fixed). Spec now passes 1/1 for real.
+  - **"14 total" gate count below was a miscount**: 17 raw screen-level
+    flags actually named, consolidating to **13 canonical PM/design
+    gates** once true duplicates merge (family-invitation model:
+    `2f`/`2w`/`2p`/`3i` → 1 gate; PIN-digit mismatch: `1u`/`2s` → 1 gate).
+    Full per-gate table (question, evidence, recommended option,
+    alternatives, default-if-deferred, W7.5-PASS-blocking status) plus
+    `2b`'s own 16-field/4-option storage Decision Package are in the PM
+    Decision Package document.
+  - Full backend suite, cleanest run of the task: 374 passed, 1 failed
+    (pre-existing, unrelated, confirmed via `git blame`), 0 errors.
+    `KNOWN-W7-5-WAGLE-CONCURRENCY-001` remains registered and unresolved
+    (separate, not-yet-scheduled work).
+  - **Verdict for this checkpoint: `CONDITIONAL`/`HUMAN_GATE`** — never
+    plain `PASS` while the 13 canonical gates remain genuinely open. All
+    resolvable implementation is complete; nothing further is
+    code-blocked. Independent QA per `.claude/agents/test-agent.md` is
+    intentionally still not started — that is the correct next step once
+    PM reviews the Decision Package, not a gap in this checkpoint.
+  - **Phase G addendum (same checkpoint)**: full `0012`→`0020` migration
+    downgrade chain verified for real against a dedicated throwaway DB
+    (every downgrade is a real inverse, full round trip clean, 3
+    representative schema changes confirmed via direct inspection). A
+    broader frontend functional-state audit found and fixed 6 more real
+    defects, and — most significantly — found `NotificationsPage.tsx`
+    (`1n`) had never actually been wired to its own already-built,
+    already-tested backend, directly contradicting this task's own Phase D
+    "fully real end-to-end" claim for `1n`. Fixed now, real end to end.
+    This is a correctness correction, not a scope change — `1n` was
+    already counted as wired in the Matrix.
+  - **Phase H (current, authoritative — Final Pre-Independent-QA
+    Reconciliation and Evidence Freeze)**: the "13 canonical gates" figure
+    itself had a defect — `GATE-2B` (Wagle storage, an infrastructure
+    question, not a product-policy question) had been folded into that
+    13. Corrected: **13 PM/design gates + 1 separate infrastructure gate
+    (`GATE-2B`) = 14 total decision items**; the reaction-toggle
+    click-target gap (`3c`/`3e`) is now its own canonical gate,
+    `GATE-3E-REACTION-TOGGLE`, filling the 13th slot without `2b`. Phase
+    D's own denominator corrected to a non-contradictory split:
+    `PHASE_D_TOTAL_SLICES_ORIGINAL_SCOPE=11` (2b is inside this 11, never
+    a 12th), `CODE-IMPLEMENTABLE_SLICES_COMPLETE=10/10`,
+    `INFRASTRUCTURE-BLOCKED_SLICE=1`. The pre-existing `bcrypt`
+    backend-suite failure was investigated and safely fixed (3-line
+    length guard in `wagle/service_actor.py`, verified against all 6
+    required safety conditions) — **backend suite is now genuinely
+    375/375, 0 failed, 0 errors**, re-verified twice. The Playwright `2t`
+    skip is resolved — **10/10 passed, 0 skipped** — using a synthetic,
+    disposable-only credential in a throwaway DB, same precedent as this
+    task's own Phase B `2t` API-level check. A genuine Backend Guide
+    boundary gap (`family_activity_log`/`family_search` querying another
+    domain's ORM model directly) was found and fixed via 3 new
+    dotted-reference functions, 0 behavior change, 0 regressions. One more
+    real fixture-fallback defect found and fixed:
+    `ProfilePage.tsx`'s 4 secondary stat fetches silently swallowed
+    failures, letting fake fixture numbers render as if real — fixed to
+    show a real "unavailable" state. All 9 migrations cross-checked
+    against their models column-by-column, zero drift. Full verification
+    suite re-run clean (backend 375/375, E2E 10/10, `tsc`/`eslint`/`vite
+    build` clean, `check_all.py` shows no W7.5-specific warning). **Verdict:
+    `IMPLEMENTATION_EVIDENCE_FROZEN` / `READY_FOR_PM_REVIEW` /
+    `READY_FOR_INDEPENDENT_QA`** — never `PASS`, since the 14 decision
+    items remain genuinely open. No commit/push/merge/rebase performed.
+- Next Action (historical, Phase D checkpoint — see Phase E/F above for
+  current state): Phase D's two remaining items (`2b`, `3e`) and the
+  6-Screen missing-input-control gap all need PM/design decisions before
+  further code — none of it blocks calling W7.5's implementation phases
+  complete for PM review. 14 total `POLICY_REQUIRED`/`POLICY_BLOCKED`/
+  `DESIGN_CONTRACT_MISMATCH`/`DESIGN_CONTRACT_GAP`/`NEW_SLICE_REQUIRED`
+  rows now stand across the whole task (`3h`, `2f`/`2w`/`2p`/`3i`, `1t`'s
+  D6-P2 mute setting, `1u`/`2s`'s PIN-digit mismatch, `2o`'s auth bridge,
+  `1i`/`1v`/`2y`/`2z`/`3b`/`3j`'s missing input controls, `2b`, `3e`).
+  Independent QA per `.claude/agents/test-agent.md` has not started for
+  any phase.
+
 ## MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001
 
 - Task ID: MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001

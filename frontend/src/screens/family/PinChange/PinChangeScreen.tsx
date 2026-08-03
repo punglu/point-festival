@@ -6,6 +6,19 @@ export type PinChangeProps = {
   onComplete?: () => void;
 };
 
+/**
+ * canonical 1u. W7.5 attempted to wire this to the real Wagle device-PIN
+ * endpoints (`verifyDevicePin`/`resetDevicePin`) and found a genuine
+ * contract mismatch, not just missing wiring: the backend requires
+ * `PIN은 숫자 6자리여야 합니다` (a 6-digit PIN), while this frozen W7.3
+ * canonical Screen has a 4-dot/4-key design. Extending the UI to 6 digits
+ * would be a W7.3 visual-baseline redesign, explicitly out of scope for
+ * W7.5. Reverted to local-only flow state; reclassified
+ * `DESIGN_CONTRACT_MISMATCH` / `HUMAN_GATE` in the W7.5 Matrix — this needs
+ * a PM decision (redesign the Screen to 6 digits, or relax the backend's
+ * PIN-length requirement for this UX) before it can be wired, not more
+ * engineering effort against the current 4-digit design.
+ */
 export function PinChangeScreen({ onBack, onComplete }: PinChangeProps) {
   const [step, setStep] = useState(0);
   const [value, setValue] = useState('');
@@ -16,8 +29,9 @@ export function PinChangeScreen({ onBack, onComplete }: PinChangeProps) {
     if (value.length !== 4) return;
     const timer = setTimeout(() => {
       if (step === 2) {
-        // Real PIN-change API does not exist yet — completion callback only
-        // advances the local flow, per the W7.4 data-wiring boundary.
+        // Real PIN-change API requires a 6-digit PIN; this Screen's frozen
+        // W7.3 design is 4-digit (DESIGN_CONTRACT_MISMATCH, W7.5 Matrix) —
+        // completion callback only advances the local flow.
         onComplete?.();
         return;
       }

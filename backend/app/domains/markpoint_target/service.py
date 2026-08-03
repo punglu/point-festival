@@ -29,6 +29,27 @@ async def require_permission(db: AsyncSession, membership: FamilyMembership, per
     if permission not in await family_service.effective_permissions(db, membership):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="권한이 없습니다")
 
+async def reviewer_display_name(db: AsyncSession, membership_id: int) -> str:
+    """Resolve a reviewer Membership's human-readable name, same cross-domain
+    shape as wagle's `participant_display_name` -- through the family
+    domain's own public service function, not a raw cross-domain query."""
+    membership = await db.get(FamilyMembership, membership_id)
+    if membership is None:
+        return ""
+    account = await family_service.get_account(db, membership.account_id)
+    return account.display_name if account else ""
+
+async def mission_out(db: AsyncSession, mission: MarkpointMission) -> "MissionOut":
+    from .schemas import MissionOut, ChecklistItem
+    reviewer_name = await reviewer_display_name(db, mission.approved_by_membership_id) if mission.approved_by_membership_id else None
+    return MissionOut(
+        id=mission.id, family_group_id=mission.family_group_id, assignee_membership_id=mission.assignee_membership_id,
+        title=mission.title, description=mission.description, scheduled_for=mission.scheduled_for,
+        reward_amount=mission.reward_amount, status=mission.status,
+        checklist=[ChecklistItem(**item) for item in mission.checklist] if mission.checklist else None,
+        rejection_reason=mission.rejection_reason, reviewer_display_name=reviewer_name or None,
+    )
+
 async def _member(db, family_id: int, membership_id: int) -> FamilyMembership:
     row = await db.get(FamilyMembership, membership_id)
     if row is None or row.family_group_id != family_id or row.status != "active" or row.deleted_at is not None:
@@ -39,11 +60,26 @@ async def _member(db, family_id: int, membership_id: int) -> FamilyMembership:
 def _audit(db, family_id, actor_id, action, aggregate_type, aggregate_id, payload=None):
     db.add(MarkpointAuditEvent(family_group_id=family_id, actor_membership_id=actor_id, action=action, aggregate_type=aggregate_type, aggregate_id=str(aggregate_id), payload=payload or {}))
 
-async def create_mission(db: AsyncSession, family_id: int, actor: FamilyMembership, *, assignee_id: int, title: str, scheduled_for: date, reward_amount: int) -> MarkpointMission:
+async def create_mission(db: AsyncSession, family_id: int, actor: FamilyMembership, *, assignee_id: int, title: str, scheduled_for: date, reward_amount: int, description: str | None = None, checklist: list[str] | None = None) -> MarkpointMission:
     await require_permission(db, actor, MISSION_MANAGE)
     await _member(db, family_id, assignee_id)
-    mission = MarkpointMission(family_group_id=family_id, assignee_membership_id=assignee_id, created_by_membership_id=actor.id, title=title, scheduled_for=scheduled_for, reward_amount=reward_amount, status="active")
+    initial_checklist = [{"label": label, "done": False} for label in checklist] if checklist else None
+    mission = MarkpointMission(family_group_id=family_id, assignee_membership_id=assignee_id, created_by_membership_id=actor.id, title=title, description=description, scheduled_for=scheduled_for, reward_amount=reward_amount, checklist=initial_checklist, status="active")
     db.add(mission); await db.flush(); _audit(db, family_id, actor.id, "mission.created", "mission", mission.id, {"assignee_membership_id": assignee_id}); await db.commit(); await db.refresh(mission); return mission
+
+async def update_mission_checklist(db: AsyncSession, family_id: int, actor: FamilyMembership, mission_id: int, items: list[dict]) -> MarkpointMission:
+    """Assignee toggles their own checklist before submitting. Not a MISSION_MANAGE action --
+    this is the assignee marking their own progress, the same ownership shape as `submit_mission`."""
+    await require_access(db, actor)
+    mission = await db.get(MarkpointMission, mission_id)
+    if mission is None or mission.family_group_id != family_id or mission.assignee_membership_id != actor.id:
+        raise HTTPException(status_code=404, detail="미션을 찾을 수 없습니다")
+    if mission.status not in ("active",):
+        raise HTTPException(status_code=409, detail="체크리스트를 수정할 수 없는 미션 상태입니다")
+    if not mission.checklist or len(items) != len(mission.checklist):
+        raise HTTPException(status_code=422, detail="체크리스트 항목 수가 일치하지 않습니다")
+    mission.checklist = [{"label": mission.checklist[i]["label"], "done": bool(item["done"])} for i, item in enumerate(items)]
+    await db.commit(); await db.refresh(mission); return mission
 
 async def create_template(db, family_id, actor, *, assignee_id, title, reward_amount, cycle_type, start_date, end_date, day_of_week):
     await require_permission(db, actor, MISSION_MANAGE); await _member(db, family_id, assignee_id)
@@ -163,6 +199,30 @@ async def adjust_points(db: AsyncSession, family_id: int, actor: FamilyMembershi
     if inserted:
         await outbox_service.enqueue_event(db, owner_service=SERVICE_CODE, event_type="points.adjusted", event_version=1, aggregate_type="ledger_entry", aggregate_id=str(entry.id), source_event_id=f"manual:{idempotency_key}", family_id=family_id, payload={"family_group_id":family_id,"ledger_entry_id":entry.id,"amount":amount})
     _audit(db, family_id, actor.id, "points.adjusted", "ledger_entry", entry.id, {"amount": amount}); await db.commit(); await db.refresh(entry); return entry
+
+async def self_spend(db: AsyncSession, family_id: int, membership: FamilyMembership, amount: int, reason: str, source_type: str, source_identifier: str, idempotency_key: str):
+    """A member spending their own points (e.g. Reward redemption, W7.5
+    SLICE-REWARD-CATALOG). Deliberately **not** `adjust_points`: that
+    requires `POINTS_ADJUST`, an admin-only permission code no ordinary
+    member (especially a child) holds -- this only ever debits the
+    caller's own balance, gated by `require_access` alone, the same
+    boundary every other `own_*` read already uses. `amount` must be
+    negative; a positive self-credit is not this function's job."""
+    await require_access(db, membership)
+    if amount >= 0:
+        raise HTTPException(status_code=422, detail="차감 금액은 음수여야 합니다")
+    balance = await _projection(db, family_id, membership.id)
+    if balance.current_balance + amount < 0:
+        raise HTTPException(status_code=409, detail="포인트가 부족합니다")
+    entry, inserted = await _entry(
+        db, family_id=family_id, member_id=membership.id, amount=amount, entry_type="MANUAL_DEBIT",
+        source_type=source_type, source_identifier=source_identifier, idempotency_key=idempotency_key,
+        actor_id=membership.id, reason=reason,
+    )
+    _audit(db, family_id, membership.id, "points.self_spent", "ledger_entry", entry.id, {"amount": amount, "source_type": source_type})
+    await db.commit()
+    await db.refresh(entry)
+    return entry
 
 async def own_balance(db, family_id, membership):
     await require_access(db, membership); return await _projection(db, family_id, membership.id)
@@ -623,6 +683,13 @@ async def own_weekly_detail(db: AsyncSession, family_id: int, membership: Family
     for mission in missions:
         by_date.setdefault(mission.scheduled_for, []).append(mission)
 
+    # 1k/1s (W7.5 Phase C) need description/checklist/rejection_reason and a
+    # resolved reviewer name per Mission. Resolved once per distinct reviewer
+    # Membership, not once per Mission, so a period with many completed/
+    # rejected Missions from the same admin does not repeat the same lookup.
+    reviewer_ids = {m.approved_by_membership_id for m in missions if m.approved_by_membership_id}
+    reviewer_names = {mid: await reviewer_display_name(db, mid) for mid in reviewer_ids}
+
     days = []
     cursor = period_start
     while cursor <= period_end:
@@ -637,6 +704,10 @@ async def own_weekly_detail(db: AsyncSession, family_id: int, membership: Family
                         "status": m.status,
                         "reward_amount": m.reward_amount,
                         "template_id": m.template_id,
+                        "description": m.description,
+                        "checklist": m.checklist,
+                        "rejection_reason": m.rejection_reason,
+                        "reviewer_display_name": reviewer_names.get(m.approved_by_membership_id) or None,
                     }
                     for m in items
                 ],
@@ -954,3 +1025,26 @@ async def bulk_approve_missions(
         "approved": approved,
         "skipped_already_completed": skipped,
     }
+
+async def list_audit_events(db: AsyncSession, family_id: int, limit: int = 100) -> list[MarkpointAuditEvent]:
+    """Read-only, for `family_activity_log`'s own Slice (2r) -- moved here
+    from that domain's own service so it reaches this table through this
+    module's dotted reference rather than importing `MarkpointAuditEvent`
+    directly, per the Backend Guide's no-direct-cross-domain-DB-access rule."""
+    stmt = (
+        select(MarkpointAuditEvent)
+        .where(MarkpointAuditEvent.family_group_id == family_id)
+        .order_by(MarkpointAuditEvent.created_at.desc())
+        .limit(limit)
+    )
+    return list((await db.execute(stmt)).scalars())
+
+async def search_missions_by_title(db: AsyncSession, family_id: int, query: str) -> list[MarkpointMission]:
+    """Read-only, for `family_search`'s own Slice (3j) -- same
+    dotted-reference reasoning as `list_audit_events` above."""
+    stmt = (
+        select(MarkpointMission)
+        .where(MarkpointMission.family_group_id == family_id, MarkpointMission.title.ilike(f"%{query}%"))
+        .order_by(MarkpointMission.scheduled_for.desc())
+    )
+    return list((await db.execute(stmt)).scalars())

@@ -42,9 +42,13 @@ class MarkpointMission(Base, TimestampMixin):
     template_id = Column(BigInteger, ForeignKey("markpoint_mission_templates.id", ondelete="RESTRICT"), nullable=True)
     scheduled_for = Column(Date, nullable=False)
     title = Column(String(200), nullable=False)
+    description = Column(Text, nullable=True)
     reward_amount = Column(Integer, nullable=False)
     status = Column(String(24), nullable=False, server_default="active")
     rejection_reason = Column(Text, nullable=True)
+    # List of {"label": str, "done": bool}, order-preserving. Absent/None means
+    # this Mission has no checklist (most Missions -- optional, not required).
+    checklist = Column(JSONB, nullable=True)
     submitted_at = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
     cancelled_at = Column(DateTime(timezone=True), nullable=True)

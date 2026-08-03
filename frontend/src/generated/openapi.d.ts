@@ -1457,7 +1457,36 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update Me
+         * @description Self-service profile edit (W7.5 2z) -- own Account only, no permission
+         *     beyond authentication (same self-service shape as `/api/me/password`).
+         */
+        patch: operations["update_me_api_me_patch"];
+        trace?: never;
+    };
+    "/api/families/{family_id}/members/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update My Membership
+         * @description Self-service family-role label edit on one's own Membership (1f/2z).
+         *     Deliberately bypasses `FAMILY_MEMBERS_MANAGE` -- a member declaring their
+         *     own relationship is not the same authority as a FamilyAdmin managing
+         *     someone else's, and `MembershipSelfUpdate` has no `status` field so this
+         *     can never be used to activate/suspend/remove a Membership.
+         */
+        patch: operations["update_my_membership_api_families__family_id__members_me_patch"];
         trace?: never;
     };
     "/api/me/password": {
@@ -1822,6 +1851,48 @@ export interface paths {
         put?: never;
         /** Send */
         post: operations["send_api_families__family_id__wagle_rooms__room_id__messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/wagle/rooms/{room_id}/messages/{message_id}/reactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Toggle Reaction
+         * @description W7.5 Phase D SLICE-WAGLE-BOARD-REACTIONS (3e). Toggling twice removes
+         *     the reaction -- see `service.react_to_message`'s own docstring.
+         */
+        post: operations["toggle_reaction_api_families__family_id__wagle_rooms__room_id__messages__message_id__reactions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/wagle/board/popular": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Popular Posts
+         * @description 3e (인기 게시글). Ranked by reaction_count + comment_count within the
+         *     selected window, over the family board Room (REUSE-WAGLE-ROOMS-AS-BOARD).
+         */
+        get: operations["popular_posts_api_families__family_id__wagle_board_popular_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2292,6 +2363,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/families/{family_id}/markpoint/missions/{mission_id}/checklist": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Checklist */
+        patch: operations["update_checklist_api_families__family_id__markpoint_missions__mission_id__checklist_patch"];
+        trace?: never;
+    };
     "/api/families/{family_id}/markpoint/missions/{mission_id}/approve": {
         parameters: {
             query?: never;
@@ -2681,6 +2769,323 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/families/{family_id}/todos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Todos */
+        get: operations["list_todos_api_families__family_id__todos_get"];
+        put?: never;
+        /** Create Todo */
+        post: operations["create_todo_api_families__family_id__todos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/todos/{todo_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Todo */
+        delete: operations["delete_todo_api_families__family_id__todos__todo_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Todo */
+        patch: operations["update_todo_api_families__family_id__todos__todo_id__patch"];
+        trace?: never;
+    };
+    "/api/families/{family_id}/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Rules */
+        get: operations["list_rules_api_families__family_id__rules_get"];
+        /** Replace Rules */
+        put: operations["replace_rules_api_families__family_id__rules_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/notification-preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Preferences */
+        get: operations["read_preferences_api_me_notification_preferences_get"];
+        /** Update Preferences */
+        put: operations["update_preferences_api_me_notification_preferences_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/schedule-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Events */
+        get: operations["list_events_api_families__family_id__schedule_events_get"];
+        put?: never;
+        /** Create Event */
+        post: operations["create_event_api_families__family_id__schedule_events_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/schedule-events/{event_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Event */
+        get: operations["get_event_api_families__family_id__schedule_events__event_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Event */
+        delete: operations["delete_event_api_families__family_id__schedule_events__event_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Event */
+        patch: operations["update_event_api_families__family_id__schedule_events__event_id__patch"];
+        trace?: never;
+    };
+    "/api/families/{family_id}/albums": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Albums */
+        get: operations["list_albums_api_families__family_id__albums_get"];
+        put?: never;
+        /** Create Album */
+        post: operations["create_album_api_families__family_id__albums_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/albums/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search Photos */
+        get: operations["search_photos_api_families__family_id__albums_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/albums/{album_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Album */
+        get: operations["get_album_api_families__family_id__albums__album_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Album */
+        patch: operations["update_album_api_families__family_id__albums__album_id__patch"];
+        trace?: never;
+    };
+    "/api/families/{family_id}/albums/{album_id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Photos */
+        get: operations["list_photos_api_families__family_id__albums__album_id__photos_get"];
+        put?: never;
+        /** Add Photo */
+        post: operations["add_photo_api_families__family_id__albums__album_id__photos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/rewards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Rewards */
+        get: operations["list_rewards_api_families__family_id__rewards_get"];
+        put?: never;
+        /** Create Reward */
+        post: operations["create_reward_api_families__family_id__rewards_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/rewards/{reward_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Reward */
+        patch: operations["update_reward_api_families__family_id__rewards__reward_id__patch"];
+        trace?: never;
+    };
+    "/api/families/{family_id}/rewards/{reward_id}/redeem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Redeem Reward */
+        post: operations["redeem_reward_api_families__family_id__rewards__reward_id__redeem_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Notifications */
+        get: operations["list_notifications_api_me_notifications_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/notifications/{notification_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark Read */
+        post: operations["mark_read_api_me_notifications__notification_id__read_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark All Read */
+        post: operations["mark_all_read_api_me_notifications_read_all_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/activity-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Activity */
+        get: operations["list_activity_api_families__family_id__activity_log_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/families/{family_id}/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search */
+        get: operations["search_api_families__family_id__search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -2769,6 +3174,24 @@ export interface components {
             /** Decision Note */
             decision_note?: string | null;
         };
+        /** ActivityLogEntryOut */
+        ActivityLogEntryOut: {
+            /** Actor Membership Id */
+            actor_membership_id: number | null;
+            /** Actor Display Name */
+            actor_display_name: string | null;
+            /** Action */
+            action: string;
+            /** Aggregate Type */
+            aggregate_type: string;
+            /** Payload */
+            payload: Record<string, never>;
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+        };
         /** AdminLoginRequest */
         AdminLoginRequest: {
             /** Username */
@@ -2795,6 +3218,33 @@ export interface components {
              */
             is_admin: boolean;
         };
+        /** AlbumCreate */
+        AlbumCreate: {
+            /** Title */
+            title: string;
+        };
+        /** AlbumOut */
+        AlbumOut: {
+            /** Id */
+            id: number;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Created By Membership Id */
+            created_by_membership_id: number;
+            /** Title */
+            title: string;
+            /** Shared With Membership Ids */
+            shared_with_membership_ids: number[] | null;
+            /** Photo Count */
+            photo_count: number;
+        };
+        /** AlbumUpdate */
+        AlbumUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Shared With Membership Ids */
+            shared_with_membership_ids?: number[] | null;
+        };
         /**
          * AuthorizedFamilySummary
          * @description One entry of the server-derived AuthorizedFamilySet.
@@ -2808,6 +3258,8 @@ export interface components {
             membership_id: number;
             /** Relationship */
             relationship: string;
+            /** Joined At */
+            joined_at?: string | null;
             /**
              * Roles
              * @default []
@@ -2896,6 +3348,21 @@ export interface components {
             last_message_at: string | null;
             /** Unread Count */
             unread_count: number;
+        };
+        /** ChecklistItem */
+        ChecklistItem: {
+            /** Label */
+            label: string;
+            /**
+             * Done
+             * @default false
+             */
+            done: boolean;
+        };
+        /** ChecklistUpdate */
+        ChecklistUpdate: {
+            /** Items */
+            items: components["schemas"]["ChecklistItem"][];
         };
         /** CheerCreate */
         CheerCreate: {
@@ -3090,6 +3557,35 @@ export interface components {
             name: string;
             /** Status */
             status: string;
+        };
+        /** FamilyRuleEntry */
+        FamilyRuleEntry: {
+            /** Category */
+            category: string;
+            /** Label */
+            label: string;
+            /** Value Text */
+            value_text: string;
+        };
+        /** FamilyRuleOut */
+        FamilyRuleOut: {
+            /** Id */
+            id: number;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Category */
+            category: string;
+            /** Label */
+            label: string;
+            /** Value Text */
+            value_text: string;
+            /** Sort Order */
+            sort_order: number;
+        };
+        /** FamilyRulesReplace */
+        FamilyRulesReplace: {
+            /** Rules */
+            rules: components["schemas"]["FamilyRuleEntry"][];
         };
         /** FamilySummary */
         FamilySummary: {
@@ -3391,11 +3887,33 @@ export interface components {
             display_name: string;
             /** Is Password Change Required */
             is_password_change_required: boolean;
+            /** Bio */
+            bio?: string | null;
+            /** Birthday */
+            birthday?: string | null;
+            /** Avatar Color */
+            avatar_color?: string | null;
             /**
              * Authorized Families
              * @default []
              */
             authorized_families: components["schemas"]["AuthorizedFamilySummary"][];
+        };
+        /**
+         * MeUpdate
+         * @description Self-service profile edit (W7.5 2z). `display_name` is intentionally
+         *     editable here too -- it is the same field auth/family summaries read,
+         *     kept singular rather than duplicated behind a second write path.
+         */
+        MeUpdate: {
+            /** Display Name */
+            display_name?: string | null;
+            /** Bio */
+            bio?: string | null;
+            /** Birthday */
+            birthday?: string | null;
+            /** Avatar Color */
+            avatar_color?: string | null;
         };
         /** MemberAccountProvisionRequest */
         MemberAccountProvisionRequest: {
@@ -3437,12 +3955,24 @@ export interface components {
              */
             status: string;
         };
+        /**
+         * MembershipSelfUpdate
+         * @description Self-service relationship label edit on one's own Membership only
+         *     (1f/2z's family-role field). Deliberately excludes `status` -- that stays
+         *     FamilyAdmin-only via the existing MembershipUpdate/require_permission path.
+         */
+        MembershipSelfUpdate: {
+            /** Relationship */
+            relationship: string;
+        };
         /** MembershipSummary */
         MembershipSummary: {
             /** Id */
             id: number;
             /** Account Id */
             account_id: number;
+            /** Account Display Name */
+            account_display_name: string;
             /** Family Group Id */
             family_group_id: number;
             /** Relationship */
@@ -3468,6 +3998,8 @@ export interface components {
             client_message_id: string;
             /** Body */
             body: string;
+            /** Reply To Message Id */
+            reply_to_message_id?: string | null;
         };
         /** MessageListResponse */
         MessageListResponse: {
@@ -3498,6 +4030,8 @@ export interface components {
             message_type: string;
             /** Body */
             body: string | null;
+            /** Reply To Message Id */
+            reply_to_message_id?: string | null;
             /**
              * Created At
              * Format: date-time
@@ -3515,6 +4049,16 @@ export interface components {
             service_payload_version?: number | null;
             /** Service Payload */
             service_payload?: Record<string, never> | null;
+            /**
+             * Reaction Count
+             * @default 0
+             */
+            reaction_count: number;
+            /**
+             * Reacted By Me
+             * @default false
+             */
+            reacted_by_me: boolean;
         };
         /** MissionCloneRequest */
         MissionCloneRequest: {
@@ -3590,6 +4134,14 @@ export interface components {
             reward_amount: number;
             /** Status */
             status: string;
+            /** Description */
+            description?: string | null;
+            /** Checklist */
+            checklist?: components["schemas"]["ChecklistItem"][] | null;
+            /** Rejection Reason */
+            rejection_reason?: string | null;
+            /** Reviewer Display Name */
+            reviewer_display_name?: string | null;
         };
         /** MissionPropose */
         MissionPropose: {
@@ -3720,6 +4272,24 @@ export interface components {
             /** Body */
             body?: string | null;
         };
+        /** NotificationOut */
+        NotificationOut: {
+            /** Id */
+            id: number;
+            /** Category */
+            category: string;
+            /** Title */
+            title: string;
+            /** Body */
+            body: string | null;
+            /** Read At */
+            read_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /** NotificationResponse */
         NotificationResponse: {
             /** Id */
@@ -3760,6 +4330,8 @@ export interface components {
             id: string;
             /** Family Membership Id */
             family_membership_id: number;
+            /** Account Display Name */
+            account_display_name: string;
             /** Room Role */
             room_role: string;
             /** Status */
@@ -3782,6 +4354,26 @@ export interface components {
             current_password: string;
             /** New Password */
             new_password: string;
+        };
+        /** PhotoCreate */
+        PhotoCreate: {
+            /** Caption */
+            caption?: string | null;
+            /** Taken At */
+            taken_at?: string | null;
+        };
+        /** PhotoOut */
+        PhotoOut: {
+            /** Id */
+            id: number;
+            /** Album Id */
+            album_id: number;
+            /** Uploaded By Membership Id */
+            uploaded_by_membership_id: number;
+            /** Caption */
+            caption: string | null;
+            /** Taken At */
+            taken_at: string | null;
         };
         /** PlayerCreate */
         PlayerCreate: {
@@ -3915,6 +4507,46 @@ export interface components {
             /** Label */
             label: string;
         };
+        /** PopularPostOut */
+        PopularPostOut: {
+            /**
+             * Message Id
+             * Format: uuid
+             */
+            message_id: string;
+            /** Body */
+            body: string | null;
+            /** Author Display Name */
+            author_display_name: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Reaction Count */
+            reaction_count: number;
+            /** Comment Count */
+            comment_count: number;
+        };
+        /** PreferenceEntry */
+        PreferenceEntry: {
+            /** Pref Key */
+            pref_key: string;
+            /** Enabled */
+            enabled: boolean;
+        };
+        /** PreferenceOut */
+        PreferenceOut: {
+            /** Pref Key */
+            pref_key: string;
+            /** Enabled */
+            enabled: boolean;
+        };
+        /** PreferencesReplace */
+        PreferencesReplace: {
+            /** Preferences */
+            preferences: components["schemas"]["PreferenceEntry"][];
+        };
         /** PushSubscriptionCreate */
         PushSubscriptionCreate: {
             /** Device Id */
@@ -3942,6 +4574,21 @@ export interface components {
             /** Status */
             status: string;
         };
+        /**
+         * ReactionToggleResponse
+         * @description W7.5 Phase D SLICE-WAGLE-BOARD-REACTIONS (3e).
+         */
+        ReactionToggleResponse: {
+            /**
+             * Message Id
+             * Format: uuid
+             */
+            message_id: string;
+            /** Reacted By Me */
+            reacted_by_me: boolean;
+            /** Reaction Count */
+            reaction_count: number;
+        };
         /** ReadStateResponse */
         ReadStateResponse: {
             /**
@@ -3963,6 +4610,29 @@ export interface components {
         ReadStateUpdate: {
             /** Last Read Sequence */
             last_read_sequence: number;
+        };
+        /** RedemptionOut */
+        RedemptionOut: {
+            /** Id */
+            id: number;
+            /** Reward Item Id */
+            reward_item_id: number;
+            /** Redeemed By Membership Id */
+            redeemed_by_membership_id: number;
+            /** Cost At Redemption */
+            cost_at_redemption: number;
+            /** Ledger Entry Id */
+            ledger_entry_id: number;
+            /**
+             * Redeemed At
+             * Format: date-time
+             */
+            redeemed_at: string;
+        };
+        /** RedemptionRequest */
+        RedemptionRequest: {
+            /** Idempotency Key */
+            idempotency_key: string;
         };
         /** RefreshRequest */
         RefreshRequest: {
@@ -4015,6 +4685,35 @@ export interface components {
             restored_by_membership_id?: number | null;
             /** Restored At */
             restored_at?: string | null;
+        };
+        /** RewardCreate */
+        RewardCreate: {
+            /** Name */
+            name: string;
+            /** Cost */
+            cost: number;
+        };
+        /** RewardOut */
+        RewardOut: {
+            /** Id */
+            id: number;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Name */
+            name: string;
+            /** Cost */
+            cost: number;
+            /** Is Available */
+            is_available: boolean;
+        };
+        /** RewardUpdate */
+        RewardUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Cost */
+            cost?: number | null;
+            /** Is Available */
+            is_available?: boolean | null;
         };
         /** RoleAssignmentCreate */
         RoleAssignmentCreate: {
@@ -4154,6 +4853,80 @@ export interface components {
             title?: string | null;
             /** Status */
             status?: ("active" | "read_only" | "closed") | null;
+        };
+        /** ScheduleEventCreate */
+        ScheduleEventCreate: {
+            /** Title */
+            title: string;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+            /** Location */
+            location?: string | null;
+            /** Memo */
+            memo?: string | null;
+            /** Attendee Membership Ids */
+            attendee_membership_ids?: number[] | null;
+            /**
+             * Visibility
+             * @default family
+             */
+            visibility: string;
+        };
+        /** ScheduleEventOut */
+        ScheduleEventOut: {
+            /** Id */
+            id: number;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Created By Membership Id */
+            created_by_membership_id: number;
+            /** Title */
+            title: string;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+            /** Location */
+            location: string | null;
+            /** Memo */
+            memo: string | null;
+            /** Attendee Membership Ids */
+            attendee_membership_ids: number[] | null;
+            /** Visibility */
+            visibility: string;
+        };
+        /** ScheduleEventUpdate */
+        ScheduleEventUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Starts At */
+            starts_at?: string | null;
+            /** Location */
+            location?: string | null;
+            /** Memo */
+            memo?: string | null;
+            /** Attendee Membership Ids */
+            attendee_membership_ids?: number[] | null;
+            /** Visibility */
+            visibility?: string | null;
+        };
+        /** SearchResultItem */
+        SearchResultItem: {
+            /** Source */
+            source: string;
+            /** Title */
+            title: string;
+            /** Meta */
+            meta: string;
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
         };
         /**
          * ServiceActionPublish
@@ -4345,6 +5118,45 @@ export interface components {
             /** Day Of Week */
             day_of_week?: number | null;
         };
+        /** TodoCreate */
+        TodoCreate: {
+            /** Title */
+            title: string;
+            /** Assignee Membership Id */
+            assignee_membership_id?: number | null;
+            /** Due At */
+            due_at?: string | null;
+        };
+        /** TodoOut */
+        TodoOut: {
+            /** Id */
+            id: number;
+            /** Family Group Id */
+            family_group_id: number;
+            /** Assignee Membership Id */
+            assignee_membership_id: number | null;
+            /** Created By Membership Id */
+            created_by_membership_id: number;
+            /** Title */
+            title: string;
+            /** Status */
+            status: string;
+            /** Due At */
+            due_at: string | null;
+            /** Completed At */
+            completed_at: string | null;
+        };
+        /** TodoUpdate */
+        TodoUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Assignee Membership Id */
+            assignee_membership_id?: number | null;
+            /** Due At */
+            due_at?: string | null;
+            /** Status */
+            status?: string | null;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -4360,6 +5172,8 @@ export interface components {
             assignee_membership_id: number;
             /** Title */
             title: string;
+            /** Description */
+            description?: string | null;
             /**
              * Scheduled For
              * Format: date
@@ -4367,6 +5181,8 @@ export interface components {
             scheduled_for: string;
             /** Reward Amount */
             reward_amount: number;
+            /** Checklist */
+            checklist?: string[] | null;
         };
         /** MissionCreate */
         app__domains__mission__schema__MissionCreate: {
@@ -7268,6 +8084,74 @@ export interface operations {
             };
         };
     };
+    update_me_api_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MeUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_my_membership_api_families__family_id__members_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MembershipSelfUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     change_my_password_api_me_password_post: {
         parameters: {
             query?: never;
@@ -8183,6 +9067,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    toggle_reaction_api_families__family_id__wagle_rooms__room_id__messages__message_id__reactions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+                room_id: string;
+                message_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReactionToggleResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    popular_posts_api_families__family_id__wagle_board_popular_get: {
+        parameters: {
+            query?: {
+                range?: "week" | "month" | "all";
+            };
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PopularPostOut"][];
                 };
             };
             /** @description Validation Error */
@@ -9133,6 +10083,43 @@ export interface operations {
             };
         };
     };
+    update_checklist_api_families__family_id__markpoint_missions__mission_id__checklist_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                mission_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChecklistUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     approve_api_families__family_id__markpoint_missions__mission_id__approve_post: {
         parameters: {
             query?: never;
@@ -9959,6 +10946,951 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_todos_api_families__family_id__todos_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TodoOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_todo_api_families__family_id__todos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TodoCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TodoOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_todo_api_families__family_id__todos__todo_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                todo_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_todo_api_families__family_id__todos__todo_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                todo_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TodoUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TodoOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_rules_api_families__family_id__rules_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyRuleOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    replace_rules_api_families__family_id__rules_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FamilyRulesReplace"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FamilyRuleOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_preferences_api_me_notification_preferences_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreferenceOut"][];
+                };
+            };
+        };
+    };
+    update_preferences_api_me_notification_preferences_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreferencesReplace"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreferenceOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_events_api_families__family_id__schedule_events_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleEventOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_event_api_families__family_id__schedule_events_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleEventCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleEventOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_event_api_families__family_id__schedule_events__event_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                event_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleEventOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_event_api_families__family_id__schedule_events__event_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                event_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_event_api_families__family_id__schedule_events__event_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                event_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleEventUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleEventOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_albums_api_families__family_id__albums_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlbumOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_album_api_families__family_id__albums_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlbumCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlbumOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_photos_api_families__family_id__albums_search_get: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhotoOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_album_api_families__family_id__albums__album_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                album_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlbumOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_album_api_families__family_id__albums__album_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                album_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlbumUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlbumOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_photos_api_families__family_id__albums__album_id__photos_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                album_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhotoOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_photo_api_families__family_id__albums__album_id__photos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                album_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhotoCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhotoOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_rewards_api_families__family_id__rewards_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RewardOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_reward_api_families__family_id__rewards_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RewardCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RewardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_reward_api_families__family_id__rewards__reward_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                reward_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RewardUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RewardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    redeem_reward_api_families__family_id__rewards__reward_id__redeem_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+                reward_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RedemptionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RedemptionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_notifications_api_me_notifications_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationOut"][];
+                };
+            };
+        };
+    };
+    mark_read_api_me_notifications__notification_id__read_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notification_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_all_read_api_me_notifications_read_all_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_activity_api_families__family_id__activity_log_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityLogEntryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_api_families__family_id__search_get: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path: {
+                /** @description FamilyGroup id from the route path */
+                family_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResultItem"][];
                 };
             };
             /** @description Validation Error */

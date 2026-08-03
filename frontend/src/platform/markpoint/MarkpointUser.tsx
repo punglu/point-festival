@@ -24,6 +24,7 @@ import {
   getProjection,
   getWeekly,
   submitMission,
+  updateMissionChecklist,
   MISSION_STATUS_LABEL,
   type MarkpointDeduction,
   type MarkpointLevel,
@@ -40,10 +41,12 @@ import { MissionDetailScreen, missionDetailFixture } from '../../screens/markpoi
 import { MissionRejectScreen, missionRejectFixture } from '../../screens/markpoint/MissionReject';
 import { LevelUpScreen } from '../../screens/markpoint/LevelUp';
 import { ExchangeConfirmScreen } from '../../screens/markpoint/ExchangeConfirm';
-import type { RewardShopItem } from '../../screens/markpoint/RewardShop';
 import { RewardShopScreen, rewardShopFixture } from '../../screens/markpoint/RewardShop';
 import { RewardExchangeScreen, rewardExchangeFixture } from '../../screens/markpoint/RewardExchange';
+import { listRewards, redeemReward, type RewardCatalogItem } from '../../shared/api/rewardCatalogApi';
 import styles from './MarkpointUser.module.css';
+
+const REWARD_ICON = '🎁';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error' | 'forbidden';
 
@@ -72,7 +75,10 @@ export function MarkpointUser() {
   const [showRejection, setShowRejection] = useState(false);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [rewardOverlay, setRewardOverlay] = useState<'none' | 'shop' | 'exchange'>('none');
-  const [selectedReward, setSelectedReward] = useState<RewardShopItem | { name: string; cost: number } | null>(null);
+  const [selectedReward, setSelectedReward] = useState<{ id: number; name: string; cost: number } | null>(null);
+  const [rewards, setRewards] = useState<RewardCatalogItem[] | null>(null);
+  const [redeemedRewardId, setRedeemedRewardId] = useState<number | null>(null);
+  const [redeemError, setRedeemError] = useState<string | null>(null);
 
   const load = useCallback(
     async (familyId: number, signal?: AbortSignal) => {
@@ -110,6 +116,42 @@ export function MarkpointUser() {
     void load(activeFamilyId, controller.signal);
     return () => controller.abort();
   }, [activeFamilyId, load]);
+
+  const handleToggleChecklistItem = async (index: number) => {
+    if (activeFamilyId === null || !selectedMission || !selectedMission.checklist) return;
+    const updated = selectedMission.checklist.map((item, i) => (i === index ? { ...item, done: !item.done } : item));
+    setSelectedMission({ ...selectedMission, checklist: updated });
+    try {
+      await updateMissionChecklist(activeFamilyId, selectedMission.id, updated);
+      await load(activeFamilyId);
+    } catch (error: unknown) {
+      const detail = (error as { response?: { data?: { detail?: string } } }).response?.data?.detail;
+      setActionError(detail ?? '체크리스트를 저장하지 못했어요. 잠시 후 다시 시도해주세요.');
+      await load(activeFamilyId);
+    }
+  };
+
+  useEffect(() => {
+    if (activeFamilyId === null || rewardOverlay === 'none') return undefined;
+    const controller = new AbortController();
+    listRewards(activeFamilyId, controller.signal).then(setRewards).catch(() => setRewards([]));
+    return () => controller.abort();
+  }, [activeFamilyId, rewardOverlay]);
+
+  const handleRedeem = async (rewardId: number) => {
+    if (activeFamilyId === null) return;
+    setRedeemError(null);
+    try {
+      await redeemReward(activeFamilyId, rewardId, `${rewardId}-${Date.now()}`);
+      setRedeemedRewardId(rewardId);
+      setSelectedReward(null);
+      await load(activeFamilyId);
+    } catch (error: unknown) {
+      const detail = (error as { response?: { data?: { detail?: string } } }).response?.data?.detail;
+      setRedeemError(detail ?? '포인트가 부족하거나 교환할 수 없는 보상이에요.');
+      setSelectedReward(null);
+    }
+  };
 
   const handleSubmit = async (missionId: number) => {
     if (activeFamilyId === null) return;
@@ -347,13 +389,27 @@ export function MarkpointUser() {
 
       {selectedMission && !showRejection && (
         <div className={styles.overlay} data-testid="markpoint-mission-detail-overlay">
+          {/* canonical 1k (미션 상세) — title/reward/description/checklist are
+              all real (own_weekly_detail, W7.5 Phase C). Photo evidence stays
+              the static `photoNotice` copy: no file-storage abstraction exists
+              anywhere in the backend (same POLICY_REQUIRED gate as Album/
+              avatar upload, 2v/2z), so no upload control is wired. */}
           <MissionDetailScreen
             model={{
-              ...missionDetailFixture,
               title: selectedMission.title,
+              description: selectedMission.description ?? '',
               reward: `+${selectedMission.reward_amount}P`,
+              progressPercent: selectedMission.checklist && selectedMission.checklist.length > 0
+                ? Math.round((selectedMission.checklist.filter((item) => item.done).length / selectedMission.checklist.length) * 100)
+                : 0,
+              completedCount: selectedMission.checklist?.filter((item) => item.done).length ?? 0,
+              totalCount: selectedMission.checklist?.length ?? 0,
+              checklist: selectedMission.checklist ?? [],
+              photoNotice: missionDetailFixture.photoNotice,
+              submitNotice: missionDetailFixture.submitNotice,
             }}
             onBack={() => setSelectedMission(null)}
+            onToggleItem={(index) => void handleToggleChecklistItem(index)}
             onSubmit={
               selectedMission.status === 'rejected'
                 ? () => setShowRejection(true)
@@ -365,12 +421,17 @@ export function MarkpointUser() {
 
       {selectedMission && showRejection && (
         <div className={styles.overlay} data-testid="markpoint-mission-reject-overlay">
-          {/* canonical 1s (미션 반려) — reached from a rejected mission's
-              detail overlay. No reviewer-note API is wired yet
-              (DATA_AND_BEHAVIOR_WIRING_PENDING); real mission title flows
-              through. */}
+          {/* canonical 1s (미션 반려) — title/summary/reviewer/reason are all
+              real (own_weekly_detail's rejection_reason + reviewer_display_name,
+              W7.5 Phase C). missionIcon stays static UI decoration, not data. */}
           <MissionRejectScreen
-            model={{ ...missionRejectFixture, missionTitle: selectedMission.title }}
+            model={{
+              missionIcon: missionRejectFixture.missionIcon,
+              missionTitle: selectedMission.title,
+              missionSummary: `+${selectedMission.reward_amount}P`,
+              reviewerName: selectedMission.reviewer_display_name ?? '보호자',
+              reason: selectedMission.rejection_reason ?? '반려 사유가 기록되지 않았습니다.',
+            }}
             onBack={() => setShowRejection(false)}
             onRetry={() => { setShowRejection(false); setSelectedMission(null); }}
           />
@@ -382,7 +443,15 @@ export function MarkpointUser() {
           {/* canonical 2c (레벨업 축하) — manually triggered here for
               structural verification; a real product trigger would be an
               automatic event on level-up, which requires backend push
-              support that does not exist yet (W7.5 scope). */}
+              support that does not exist yet (W7.5 scope). level/levelTitle
+              are real (GET /api/me/markpoint/level). `bonusPoints: 0` is a
+              disclosed absence, not a placeholder awaiting a field: no
+              level-up bonus mechanic exists anywhere in the Ledger/mission
+              pipeline (grep-confirmed, W7.5 Phase C) -- awarding one would be
+              a real economy-affecting business-rule decision (amount, when
+              triggered, every level vs. milestones only), not a response
+              field to add. Reclassified accordingly in the Matrix; not
+              treated as PARTIAL_WIRING_PENDING. */}
           <LevelUpScreen
             model={{
               playerInitial: (level?.title ?? '나').charAt(0),
@@ -398,9 +467,20 @@ export function MarkpointUser() {
 
       {rewardOverlay === 'shop' && (
         <div className={styles.overlay} data-testid="markpoint-reward-shop-overlay">
+          {/* canonical 2j (리워드샵) — rewards/cost/availability are real
+              (W7.5 Phase D SLICE-REWARD-CATALOG); balance is real (W7.4). */}
           <RewardShopScreen
-            model={{ ...rewardShopFixture, balance: projection?.current_balance ?? rewardShopFixture.balance }}
-            onSelectReward={(reward) => setSelectedReward(reward)}
+            model={{
+              ...rewardShopFixture,
+              balance: projection?.current_balance ?? rewardShopFixture.balance,
+              rewards: rewards === null
+                ? rewardShopFixture.rewards
+                : rewards.map((r) => ({ name: r.name, icon: REWARD_ICON, cost: r.cost, available: r.is_available })),
+            }}
+            onSelectReward={(reward) => {
+              const real = (rewards ?? []).find((r) => r.name === reward.name);
+              if (real) setSelectedReward({ id: real.id, name: real.name, cost: real.cost });
+            }}
           />
           <button type="button" className={styles.overlayClose} onClick={() => setRewardOverlay('none')} aria-label="닫기">✕ 닫기</button>
         </div>
@@ -408,10 +488,19 @@ export function MarkpointUser() {
 
       {rewardOverlay === 'exchange' && (
         <div className={styles.overlay} data-testid="markpoint-reward-exchange-overlay">
+          {/* canonical 1l (보상 교환) — same real catalog as 2j. */}
           <RewardExchangeScreen
-            model={{ ...rewardExchangeFixture, balance: projection?.current_balance ?? rewardExchangeFixture.balance }}
-            onBack={() => setRewardOverlay('none')}
-            onSelectReward={(reward) => setSelectedReward({ name: reward.name, cost: 0 })}
+            model={{
+              ...rewardExchangeFixture,
+              balance: projection?.current_balance ?? rewardExchangeFixture.balance,
+              rewards: rewards === null
+                ? rewardExchangeFixture.rewards
+                : rewards.map((r) => ({ name: r.name, meta: '', action: `${r.cost}P 교환`, icon: REWARD_ICON, unavailable: !r.is_available })),
+            }}
+            onSelectReward={(reward) => {
+              const real = (rewards ?? []).find((r) => r.name === reward.name);
+              if (real) setSelectedReward({ id: real.id, name: real.name, cost: real.cost });
+            }}
           />
         </div>
       )}
@@ -419,11 +508,13 @@ export function MarkpointUser() {
       {selectedReward && (
         <div className={styles.overlay} data-testid="markpoint-exchange-confirm-overlay">
           {/* canonical 2h (교환 확인) — reached by selecting a reward in
-              either 리워드샵 (2j) or 보상 교환 (1l). No exchange-mutation
-              API is wired yet (MUTATION_WIRING_PENDING). */}
+              either 리워드샵 (2j) or 보상 교환 (1l). onConfirm calls the real
+              redemption endpoint (self-service Ledger debit); a failure
+              (insufficient balance, no longer available) surfaces via
+              redeemError rather than silently closing. */}
           <ExchangeConfirmScreen
             model={{
-              icon: '🎁',
+              icon: REWARD_ICON,
               rewardName: selectedReward.name,
               note: '',
               currentBalance: projection?.current_balance ?? 0,
@@ -431,9 +522,18 @@ export function MarkpointUser() {
               cost: selectedReward.cost,
             }}
             onCancel={() => setSelectedReward(null)}
-            onConfirm={() => { setSelectedReward(null); setRewardOverlay('none'); }}
+            onConfirm={() => { void handleRedeem(selectedReward.id); }}
           />
         </div>
+      )}
+      {redeemedRewardId !== null && !selectedReward && (
+        <div className={styles.overlay} data-testid="markpoint-reward-redeemed-toast" role="status">
+          <p>교환이 완료됐어요!</p>
+          <button type="button" onClick={() => { setRedeemedRewardId(null); setRewardOverlay('none'); }}>확인</button>
+        </div>
+      )}
+      {redeemError && (
+        <p className={styles.error} role="alert">{redeemError}</p>
       )}
     </section>
   );

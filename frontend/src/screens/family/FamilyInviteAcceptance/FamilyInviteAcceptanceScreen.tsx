@@ -1,11 +1,12 @@
 import mascot from '../../../assets/logos/family-platform-mascot.png';
+import MainLogo from '../../../shared/components/MainLogo';
 import styles from './FamilyInviteAcceptanceScreen.module.css';
 import type { FamilyInviteAcceptanceProps } from './types';
 export function FamilyInviteAcceptanceScreen({ model, onAccept, onDecline }: FamilyInviteAcceptanceProps) {
   return (
     <main className={styles.screen} data-canonical-screen-id="2w" data-canonical-screen-label="가족 초대 수락" data-canonical-source="wave7-full-authority">
       <div className={styles.hero}>
-        <img className={styles.logo} src={mascot} alt="브랜드 핀 로고" />
+        <MainLogo variant="smile" tone="default" size="welcome" className={styles.logo} />
         <h1 className={styles.title}>우리 가족이 초대했어요</h1>
         <p>{model.inviter}님이 초대 코드를 보냈어요</p>
       </div>

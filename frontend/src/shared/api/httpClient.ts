@@ -14,8 +14,17 @@ httpClient.interceptors.request.use((config) => {
   return config;
 });
 
-/** 로그인 API 경로 — 이 경로의 401은 전역 리다이렉트하지 않음 */
-const AUTH_ENDPOINTS = ['/api/auth/login', '/api/auth/admin/login'];
+/**
+ * 로그인 API 경로 — 이 경로의 401은 전역 리다이렉트하지 않음.
+ *
+ * `/api/auth/account/login` was missing here (W7.5): a wrong Account
+ * username/password returned a real 401, which the global handler read as
+ * "session expired" and force-redirected to `/`, discarding the login
+ * screen's own error state before it could render — found via real
+ * end-to-end Playwright verification of the wrong-password path, not by
+ * inspection.
+ */
+const AUTH_ENDPOINTS = ['/api/auth/login', '/api/auth/admin/login', '/api/auth/account/login'];
 
 /**
  * MONGLE-W3-WAGLE-REALTIME-PUSH-RECOVERY-PIN-001.

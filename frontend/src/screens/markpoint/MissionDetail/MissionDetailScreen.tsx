@@ -1,7 +1,7 @@
 import styles from './MissionDetailScreen.module.css';
 import type { MissionDetailProps } from './types';
 
-export function MissionDetailScreen({ model, onBack, onMenu, onSubmit }: MissionDetailProps) {
+export function MissionDetailScreen({ model, onBack, onMenu, onSubmit, onToggleItem }: MissionDetailProps) {
   return (
     <main className={styles.page} data-canonical-screen-id="1k">
       <header>
@@ -24,8 +24,13 @@ export function MissionDetailScreen({ model, onBack, onMenu, onSubmit }: Mission
         </article>
         <section className={styles.card}>
           <h3>체크리스트</h3>
-          {model.checklist.map((item) => (
-            <div className={styles.check} key={item.label}>
+          {model.checklist.map((item, index) => (
+            <div
+              className={styles.check}
+              key={item.label}
+              onClick={onToggleItem ? () => onToggleItem(index) : undefined}
+              role={onToggleItem ? 'button' : undefined}
+            >
               <i className={item.done ? styles.checked : ''}>{item.done ? '✓' : ''}</i>
               <span className={item.done ? styles.complete : ''}>{item.label}</span>
             </div>

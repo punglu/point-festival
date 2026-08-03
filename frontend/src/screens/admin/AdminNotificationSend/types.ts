@@ -1,2 +1,2 @@
-export type AdminNotificationSendModel={title:string;recipients:string;subject:string;message:string};
-export type AdminNotificationSendProps={model:AdminNotificationSendModel;onSend?:()=>void;onCancel?:()=>void};
+export type AdminNotificationSendModel={title:string;recipients:string;subject:string;message:string;isSending?:boolean;errorMessage?:string|null};
+export type AdminNotificationSendProps={model:AdminNotificationSendModel;onSend?:(payload:{subject:string;message:string})=>void;onCancel?:()=>void};

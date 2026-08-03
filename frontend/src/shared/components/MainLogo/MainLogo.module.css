@@ -1,41 +1,37 @@
+/*
+ * Brand-asset-only colors, from 몽글 브랜드 가이드 v1.0's own literal palette
+ * (#4B3591 / #FFFFFF / #B8A9EF via MainLogo.tsx's TONE_STROKE). Deliberately
+ * separate from the app UI's frozen --color-brand-600 / --color-ink-900
+ * tokens in styles/global.css — reconciling the two palettes is a separate
+ * PM-approved task, not part of this logo-asset introduction.
+ */
+
 .logo {
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  animation: fadeFloat 0.6s ease-out;
 }
 
-@keyframes fadeFloat {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+.mark {
+  display: block;
+  flex-shrink: 0;
+}
+
+.welcomeSize {
+  width: 110px;
+  height: 110px;
+}
+
+@media (min-width: 700px) {
+  .welcomeSize {
+    width: 140px;
+    height: 140px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
-.cluster {
-  object-fit: contain;
+.descriptor {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
-
-.title {
-  font-family: 'Black Han Sans', sans-serif;
-  color: white;
-  margin-top: 4px;
-}
-
-/* sm: 사이드바, 헤더 */
-.sm .cluster { width: 36px; height: 36px; }
-.sm .title { display: none; }
-
-/* md: 로그인 페이지 */
-.md .cluster { width: 144px; height: 144px; margin-bottom: -18px; }
-.md .title { font-size: 1.7rem; }
-.md { gap: 2px; }
-
-/* lg: 스플래시 등 */
-.lg .cluster { width: 120px; height: 120px; }
-.lg .title { font-size: 1.6rem; }

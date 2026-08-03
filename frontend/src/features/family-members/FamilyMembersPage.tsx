@@ -1,24 +1,129 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { FamilyMembersScreen, familyMembersFixture } from '../../screens/family/FamilyMembers';
+import type { FamilyMember } from '../../screens/family/FamilyMembers';
 import { InvitationListScreen, invitationListFixture } from '../../screens/family/InvitationList';
 import { FamilyActivityLogScreen, familyActivityLogFixture } from '../../screens/family/FamilyActivityLog';
 import { FamilyInviteCancelScreen, familyInviteCancelFixture } from '../../screens/family/FamilyInviteCancel';
 import { ChildInviteScreen, childInviteFixture } from '../../screens/family/ChildInvite';
+import { listFamilyMembers, type FamilyMembershipSummary } from '../../shared/api/familyApi';
+import { listActivityLog, type ActivityLogEntry } from '../../shared/api/familyActivityLogApi';
+import { useFamilyContextStore } from '../../shared/stores/useFamilyContextStore';
 import styles from './FamilyMembersPage.module.css';
+import type { ActivityLogDay, ActivityLogEvent } from '../../screens/family/FamilyActivityLog';
 
 type View = 'main' | 'invitations' | 'cancel-invite' | 'activity' | 'child-invite';
 
+const ACTION_LABEL: Record<string, string> = {
+  'mission.created': '미션 등록',
+  'mission.submitted': '미션 제출',
+  'mission.approved': '미션 승인',
+  'mission.rejected': '미션 반려',
+  'mission.reversed': '미션 승인 취소',
+  'mission.cancelled': '미션 취소',
+  'mission.expired': '미션 기간 만료',
+  'points.adjusted': '포인트 조정',
+  'points.self_spent': '포인트 사용',
+};
+
+const ACTION_TONE: Record<string, ActivityLogEvent['tone']> = {
+  'mission.approved': 'green',
+  'mission.rejected': 'red',
+  'mission.reversed': 'red',
+  'points.adjusted': 'blue',
+  'points.self_spent': 'purple',
+};
+
+function toActivityEvent(entry: ActivityLogEntry): ActivityLogEvent {
+  // `payload` is a free-form dict on the backend (MarkpointAuditEvent.payload);
+  // openapi-typescript cannot infer its shape, so it types the field as
+  // `Record<string, never>`. Read it defensively rather than trusting a type
+  // the generator itself could not actually derive.
+  const payload = entry.payload as Record<string, unknown>;
+  const amount = typeof payload?.amount === 'number' ? payload.amount : null;
+  return {
+    initial: entry.actor_display_name?.slice(0, 1) ?? '?',
+    tone: ACTION_TONE[entry.action] ?? 'purple',
+    title: `${entry.actor_display_name ?? '알 수 없음'} · ${ACTION_LABEL[entry.action] ?? entry.action}`,
+    detail: amount !== null ? `${amount > 0 ? '+' : ''}${amount}P` : undefined,
+    time: new Date(entry.occurred_at).toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' }),
+  };
+}
+
+function dayLabel(iso: string): string {
+  const date = new Date(iso);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  if (date.toDateString() === today.toDateString()) return '오늘';
+  if (date.toDateString() === yesterday.toDateString()) return '어제';
+  return date.toLocaleDateString('ko-KR');
+}
+
+function toActivityDays(entries: ActivityLogEntry[]): ActivityLogDay[] {
+  const byDay = new Map<string, ActivityLogEvent[]>();
+  for (const entry of entries) {
+    const label = dayLabel(entry.occurred_at);
+    const list = byDay.get(label) ?? [];
+    list.push(toActivityEvent(entry));
+    byDay.set(label, list);
+  }
+  return Array.from(byDay.entries()).map(([label, events]) => ({ label, events }));
+}
+
+function toFamilyMember(membership: FamilyMembershipSummary): FamilyMember {
+  const isGuardian = membership.roles.some((r) => r.scope_type === 'FAMILY' && (r.code === 'owner' || r.code === 'admin'));
+  const roleLabel = membership.roles.find((r) => r.scope_type === 'FAMILY')?.code === 'owner' ? '가족 관리자'
+    : isGuardian ? '보호자' : '구성원';
+  return {
+    name: membership.account_display_name,
+    role: roleLabel,
+    letter: membership.account_display_name.slice(0, 2),
+    isGuardian,
+  };
+}
+
 /**
  * `/family/members` — canonical 1q (가족 구성원, CHILD_OF 1b) with 2f/2p/2r/3i
- * as nested views/overlays per the W7.4 Ownership Matrix.
+ * as nested views/overlays per the W7.4 Ownership Matrix. W7.5: `1q`'s member
+ * list now calls the real `GET /api/families/{family_id}/members` (W7.5
+ * Matrix, EXTEND_EXISTING_API — required an additive `account_display_name`
+ * field on `MembershipSummary`, since the response otherwise only carried
+ * `account_id`). Family name/tagline/description remain fixture-sourced
+ * (static presentational copy, not user data). 2f/2p/2r/3i remain fixture —
+ * see the Matrix for their own status.
  */
 export function FamilyMembersPage() {
   const navigate = useNavigate();
+  const activeFamilyId = useFamilyContextStore((state) => state.activeFamilyId);
   const [view, setView] = useState<View>('main');
   const [activeFilter, setActiveFilter] = useState(familyActivityLogFixture.activeFilter);
   const [cancelInvite, setCancelInvite] = useState<string | null>(null);
+  const [members, setMembers] = useState<FamilyMember[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [activityLog, setActivityLog] = useState<ActivityLogEntry[] | null>(null);
+  const [activityError, setActivityError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (activeFamilyId === null) return;
+    const controller = new AbortController();
+    setLoadError(null);
+    listFamilyMembers(activeFamilyId, controller.signal)
+      .then((data) => setMembers(data.map(toFamilyMember)))
+      .catch(() => { if (!controller.signal.aborted) setLoadError('가족 구성원을 불러오지 못했어요.'); });
+    return () => controller.abort();
+  }, [activeFamilyId]);
+
+  useEffect(() => {
+    if (activeFamilyId === null || view !== 'activity') return undefined;
+    const controller = new AbortController();
+    setActivityError(null);
+    listActivityLog(activeFamilyId, controller.signal)
+      .then(setActivityLog)
+      .catch(() => { if (!controller.signal.aborted) setActivityError('활동 로그를 불러오지 못했어요.'); });
+    return () => controller.abort();
+  }, [activeFamilyId, view]);
 
   if (view === 'invitations') {
     return (
@@ -46,13 +151,28 @@ export function FamilyMembersPage() {
   }
 
   if (view === 'activity') {
+    // 2r — reads the existing MarkpointAuditEvent table (no new log table,
+    // W7.5 Phase D SLICE-FAMILY-ACTIVITY-LOG). Filter dropdown stays the
+    // fixture's own filter labels (전체/이름별/부모): filtering by a
+    // specific member's name is real (matches actor_display_name), but
+    // '부모' has no real role-based concept to filter by here and is left
+    // as a no-op rather than fabricating a guardian/child split.
+    const days = activityLog === null ? [] : toActivityDays(activityLog);
+    const filteredDays = activeFilter === '전체' || activeFilter === '부모'
+      ? days
+      : days.map((d) => ({ ...d, events: d.events.filter((e) => e.title.startsWith(activeFilter)) })).filter((d) => d.events.length > 0);
     return (
       <div className={styles.wrap}>
         <FamilyActivityLogScreen
-          model={{ ...familyActivityLogFixture, activeFilter }}
+          model={{
+            ...familyActivityLogFixture,
+            activeFilter,
+            days: activityLog === null ? [] : filteredDays,
+          }}
           onBack={() => setView('main')}
           onFilter={setActiveFilter}
         />
+        {activityError && <p className={styles.error} role="alert">{activityError}</p>}
       </div>
     );
   }
@@ -69,10 +189,17 @@ export function FamilyMembersPage() {
     );
   }
 
+  // Load failure must never fall back to the fixture's fake member list --
+  // a real empty list plus the real error message only.
+  const resolvedMembers = members ?? [];
   return (
     <div className={styles.wrap}>
       <FamilyMembersScreen
-        model={familyMembersFixture}
+        model={{
+          ...familyMembersFixture,
+          members: resolvedMembers,
+          memberSummary: loadError ?? `우리 가족 ${resolvedMembers.length}명`,
+        }}
         onBack={() => navigate('/family')}
         onEdit={() => undefined}
         onSelectMember={() => { setActiveFilter(familyActivityLogFixture.activeFilter); setView('activity'); }}

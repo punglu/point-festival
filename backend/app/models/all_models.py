@@ -30,3 +30,10 @@ from app.domains.markpoint_target.models import (  # noqa: F401
     MarkpointMissionTemplate, MarkpointMission, MarkpointLedgerEntry,
     MarkpointBalanceProjection, MarkpointAuditEvent, MarkpointFamilyConfig,
 )
+from app.domains.family_todo.models import FamilyTodo  # noqa: F401
+from app.domains.family_rules.models import FamilyRule  # noqa: F401
+from app.domains.notification_preferences.models import AccountNotificationPreference  # noqa: F401
+from app.domains.family_schedule.models import FamilyScheduleEvent  # noqa: F401
+from app.domains.family_album.models import FamilyAlbum, FamilyAlbumPhoto  # noqa: F401
+from app.domains.reward_catalog.models import RewardCatalogItem, RewardRedemption  # noqa: F401
+from app.domains.account_notification.models import AccountNotification  # noqa: F401

@@ -51,9 +51,6 @@
 }
 
 .brandMascot {
-  width: 76px;
-  height: 76px;
-  object-fit: contain;
   display: block;
   margin: 0 auto var(--space-3);
 }

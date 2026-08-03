@@ -40,6 +40,62 @@
     run and are `0`/`NULL` at the end of this pass (verified by direct
     query).
 
+## `HISTORICAL_POLICY_DEVIATION` (added 2026-08-03, PM direction, disclosed not retroactively justified)
+
+This task's own verification (the "Test-data / environment notes" section
+above) violated two real policy requirements this repository already had at
+the time, confirmed by re-reading `tests/README.md` and `agent-system/
+rules.md`/`AGENTS.md` while opening the successor task
+(`MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001`):
+
+1. **Project-artifact location.** Verification scripts
+   (`verify-w74-entry.mjs`, `final-regression-checkpoint.mjs`, etc.) were
+   written to `/tmp/mongle-w7-3-visual-closeout/scripts/`, outside the Git
+   worktree. `tests/README.md` states this `/tmp` path is "historical only"
+   and prohibits creating new external project artifacts; `agent-system/
+   rules.md`'s Prohibited actions list forbids project material outside the
+   worktree outright, with "historical external artifacts do not create an
+   exception."
+2. **Test-data isolation.** Verification logged into and temporarily mutated
+   rows in the **persistent** dev-runtime database (`mongle-db-1`/
+   `mongle-backend-1`, container port 18001) rather than the isolated,
+   disposable `mc_phase0`/`mc_phase1` Compose stacks that `tests/README.md`
+   requires for both E2E and any destructive-adjacent test action ("do not
+   run either against an operating DB… Without an isolated environment and
+   that fixture discipline, classify destructive automation as
+   `UNSAFE_ON_SHARED_DB`").
+
+**What was and was not affected:** every mutated row was the repository's
+own pre-existing seeded synthetic data (`phase1_seed_synthetic.py`
+accounts), not real user/operating data, and every temporary mutation
+(mission status, `player_auth` attempt counters) was reverted after use and
+independently re-queried as reverted (see notes above). The one
+non-reverted change (`admin_auth` password hash for `dad`) is also
+synthetic seed data, disclosed rather than hidden. No production or
+real-user-facing data was read, created, or altered.
+
+**Why this is recorded as a deviation rather than excused:** the 64/64
+product-entry, 192/192 responsive-shell, and 64/64 detached-preview-
+regression counts in this file are real browser observations against real
+running code — they are not being retracted. But because the evidence was
+produced against a stateful, persistent environment and scripts that no
+longer live in the worktree (deleted along with `/tmp`, not archived),
+**none of it is independently reproducible from a disposable, from-scratch
+environment** the way Wave 1/2/3/5's backend evidence is (see
+`API-W1-ACCOUNT-AUTH-001` etc. in `COVERAGE_MAP.md`, all reproduced from a
+freshly created disposable Postgres container). An independent QA pass of
+this task should treat these specific counts as **self-reported, not
+independently reproducible as-is**, and should re-derive its own evidence
+from an isolated `mc_phase0`/`mc_phase1` stack rather than assume this
+task's scripts or dev-DB state are still present or authoritative. This
+does not by itself flip the task's self-reported `PASS` to `FAIL` — see
+`agent-system/graduated/2026-08.md`'s entry for this task for the accepted
+disposition.
+
+`MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001` (successor task) commits to the
+isolated-stack, synthetic-data, in-worktree-evidence discipline required by
+`TEST_POLICY.md`/`tests/README.md` from its own Start Gate forward.
+
 ## Genuine gap found and fixed during verification (not just flagged)
 
 `2m`'s prior classification (`KEEP_EXISTING_AS_CANONICAL`, pointing at

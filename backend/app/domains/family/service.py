@@ -128,6 +128,45 @@ async def get_active_membership(db: AsyncSession, account_id: int, family_id: in
     return membership
 
 
+async def get_account(db: AsyncSession, account_id: int) -> Optional[Account]:
+    return await db.get(Account, account_id)
+
+
+async def update_account_profile(
+    db: AsyncSession,
+    account: Account,
+    *,
+    display_name: Optional[str] = None,
+    bio: Optional[str] = None,
+    birthday=None,
+    avatar_color: Optional[str] = None,
+) -> Account:
+    """Self-service profile edit (W7.5 2z). Every field is the caller's own
+    Account -- no permission check beyond being authenticated as that Account,
+    same self-service shape as `auth_service.change_password`."""
+    if display_name is not None:
+        account.display_name = display_name
+    if bio is not None:
+        account.bio = bio
+    if birthday is not None:
+        account.birthday = birthday
+    if avatar_color is not None:
+        account.avatar_color = avatar_color
+    await db.commit()
+    await db.refresh(account)
+    return account
+
+
+async def update_own_membership_relationship(
+    db: AsyncSession, membership: FamilyMembership, relationship: str
+) -> FamilyMembership:
+    """Self-service family-role edit on one's own Membership (1f/2z). Reuses
+    `update_membership`'s field-assignment path with `membership_status=None`
+    so the owner-termination guard there never runs for a self-edit, which
+    can only ever change `relationship`."""
+    return await update_membership(db, membership, relationship, None)
+
+
 async def effective_permissions(db: AsyncSession, membership: FamilyMembership) -> Set[str]:
     family = await db.get(FamilyGroup, membership.family_group_id)
     if family is None or family.status != "active" or family.deleted_at is not None:

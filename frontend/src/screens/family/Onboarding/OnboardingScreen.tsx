@@ -1,4 +1,4 @@
-import mascot from '../../../assets/logos/family-platform-mascot.png';
+import MainLogo from '../../../shared/components/MainLogo';
 import styles from './OnboardingScreen.module.css';
 import type { OnboardingProps } from './types';
 
@@ -6,7 +6,7 @@ export function OnboardingScreen({ model, onFamilyNameChange, onNext, onHaveInvi
   return (
     <main className={styles.page} data-canonical-screen-id="1r">
       <div className={styles.hero}>
-        <img className={styles.logo} src={mascot} alt="브랜드 핀 로고" />
+        <MainLogo variant="smile" tone="default" size="welcome" className={styles.logo} />
         <h1>
           우리 가족만의
           <br />
@@ -40,8 +40,9 @@ export function OnboardingScreen({ model, onFamilyNameChange, onNext, onHaveInvi
           <i>🛡</i>
           <span>다음 단계에서 가족 구성원을 초대할 수 있어요.</span>
         </div>
-        <button type="button" className={styles.next} onClick={onNext}>
-          다음 <b>›</b>
+        {model.errorMessage && <div className={styles.error}>{model.errorMessage}</div>}
+        <button type="button" className={styles.next} onClick={onNext} disabled={model.isSubmitting}>
+          {model.isSubmitting ? '만드는 중…' : <>다음 <b>›</b></>}
         </button>
         <button type="button" className={styles.secondary} onClick={onHaveInviteCode}>
           이미 초대 코드가 있어요

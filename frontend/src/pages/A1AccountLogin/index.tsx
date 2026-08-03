@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import mascot from '../../assets/logos/family-platform-mascot.png';
+import { useNavigate } from 'react-router-dom';
+import MainLogo from '../../shared/components/MainLogo';
+import { accountLogin } from '../../shared/api/accountAuthApi';
+import { useAuthStore } from '../../shared/stores/useAuthStore';
 import styles from './A1AccountLogin.module.css';
 
 function PersonIcon() {
@@ -22,24 +25,55 @@ function ShieldIcon() {
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M12 3.6 19 6v6.2c0 4.2-2.8 6.9-7 8.2-4.2-1.3-7-4-7-8.2V6z" /><path d="M9.3 12.1l1.9 1.9 3.5-3.6" /></svg>;
 }
 
+/**
+ * canonical 1a-1. W7.5: this form's submit was intentionally parked at A1
+ * (`event.preventDefault()` only, no real login call) — now wired to the
+ * real `POST /api/auth/account/login` via the already-built-but-orphaned
+ * `shared/api/accountAuthApi.ts` (built in Wave 6 Target UI, never actually
+ * called from any component before this). W7.5 Matrix `1a-1`:
+ * FRONTEND_ADAPTER_REQUIRED -> WIRED_AND_VERIFIED.
+ */
 export default function A1AccountLoginPage() {
-  const [accountId, setAccountId] = useState('seoyeon@ourfamily.com');
-  const [password, setPassword] = useState('family12');
+  const navigate = useNavigate();
+  const setAccountLogin = useAuthStore((state) => state.accountLogin);
+  const [accountId, setAccountId] = useState('');
+  const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [rememberLogin, setRememberLogin] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const noOp = () => undefined;
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!accountId.trim() || !password) {
+      setErrorMessage('아이디와 비밀번호를 입력해주세요.');
+      return;
+    }
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    try {
+      const result = await accountLogin(accountId.trim(), password);
+      setAccountLogin(result);
+      navigate('/family');
+    } catch {
+      setErrorMessage('아이디 또는 비밀번호가 일치하지 않아요.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="1a-1">
       <header className={styles.hero}>
-        <img src={mascot} className={styles.logo} alt="브랜드 핀 로고" />
+        <MainLogo variant="wordmark" tone="default" size={150} className={styles.logo} />
         <div className={styles.logoHalo} aria-hidden="true" />
         <h1 data-canonical-element="service-title">가족 플랫폼</h1>
         <p data-canonical-element="service-subtitle">아이디로 로그인하고 우리 가족과 연결돼요</p>
       </header>
 
-      <form className={styles.sheet} onSubmit={(event) => event.preventDefault()}>
+      <form className={styles.sheet} onSubmit={handleSubmit}>
         <div className={styles.heading}>
           <h2 data-canonical-element="form-title">로그인</h2>
           <p>가족 계정 아이디와 비밀번호를 입력해 주세요.</p>
@@ -60,7 +94,9 @@ export default function A1AccountLoginPage() {
             <input data-testid="account-password" value={password} onChange={(event) => setPassword(event.target.value)} type={passwordVisible ? 'text' : 'password'} autoComplete="current-password" aria-label="비밀번호" />
             <button className={styles.visibilityButton} type="button" onClick={() => setPasswordVisible((visible) => !visible)} aria-label={passwordVisible ? '비밀번호 숨기기' : '비밀번호 보기'}><EyeIcon /></button>
           </span>
-          <span className={styles.error} data-canonical-element="error-text" role="status"><i aria-hidden="true">!</i>비밀번호가 일치하지 않아요. 5회 실패 시 5분간 잠깁니다. (2/5)</span>
+          {errorMessage && (
+            <span className={styles.error} data-canonical-element="error-text" role="status"><i aria-hidden="true">!</i>{errorMessage}</span>
+          )}
         </label>
 
         <div className={styles.options}>
@@ -70,7 +106,7 @@ export default function A1AccountLoginPage() {
           <button className={styles.textAction} type="button" onClick={noOp}>비밀번호 찾기</button>
         </div>
 
-        <button className={styles.submit} data-canonical-element="primary-button" data-testid="account-login-submit" type="submit">로그인</button>
+        <button className={styles.submit} data-canonical-element="primary-button" data-testid="account-login-submit" type="submit" disabled={isSubmitting}>{isSubmitting ? '로그인 중…' : '로그인'}</button>
 
         <div className={styles.divider} aria-hidden="true"><span /><em>또는</em><span /></div>
 

@@ -23,6 +23,15 @@ from app.domains.wagle.router import router as wagle_router
 from app.domains.wagle.realtime_router import router as wagle_realtime_router
 from app.domains.markpoint_access.router import router as markpoint_access_router
 from app.domains.markpoint_target.router import router as markpoint_target_router
+from app.domains.family_todo.router import router as family_todo_router
+from app.domains.family_rules.router import router as family_rules_router
+from app.domains.notification_preferences.router import router as notification_preferences_router
+from app.domains.family_schedule.router import router as family_schedule_router
+from app.domains.family_album.router import router as family_album_router
+from app.domains.reward_catalog.router import router as reward_catalog_router
+from app.domains.account_notification.router import router as account_notification_router
+from app.domains.family_activity_log.router import router as family_activity_log_router
+from app.domains.family_search.router import router as family_search_router
 
 
 async def _wagle_realtime_pump(stop: "asyncio.Event", port) -> None:
@@ -139,6 +148,15 @@ app.include_router(wagle_router)
 app.include_router(wagle_realtime_router)
 app.include_router(markpoint_access_router)
 app.include_router(markpoint_target_router)
+app.include_router(family_todo_router)
+app.include_router(family_rules_router)
+app.include_router(notification_preferences_router)
+app.include_router(family_schedule_router)
+app.include_router(family_album_router)
+app.include_router(reward_catalog_router)
+app.include_router(account_notification_router)
+app.include_router(family_activity_log_router)
+app.include_router(family_search_router)
 
 
 @app.get("/api/health")

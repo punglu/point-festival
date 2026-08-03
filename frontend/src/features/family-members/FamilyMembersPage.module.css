@@ -5,3 +5,7 @@
   gap: var(--space-3);
   padding: var(--space-4) 0;
 }
+.error {
+  color: var(--color-danger);
+  font-size: 13px;
+}
