@@ -3,6 +3,473 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
+## MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-AUDIT-001
+
+- Task ID: MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-AUDIT-001
+- Kind: read-only audit of the 64 canonical Screens' actual live-product
+  consumption status (Route/Page/Tab/Modal/Overlay/Auth Step), classifying
+  each into exactly one Primary Classification. Not implementation; no
+  product/test/migration/seed code touched.
+- Lifecycle: IN_PROGRESS
+- Decision: NOT_REVIEWED
+- Verification: CONDITIONAL — canonical denominator (64) independently
+  re-derived from `frontend/src/App.tsx`'s own current route table (63
+  distinct `/__wave6/*` preview IDs + `1a-1`, which has no preview route
+  of its own, only the real `/login` route; `2d` confirmed absent, a
+  numbering gap not a missing screen) — not carried forward from the
+  disputed W7.4 self-report or from either pre-existing `engineering/
+  phase2/` CSV matrix (neither of which is 64 rows on its own). Full
+  64/64 matrix built, 0 unclassified, 0 duplicate, classification sum = 64:
+  `LIVE_CANONICAL_INTEGRATED` 22, `PARTIALLY_INTEGRATED` 20,
+  `LEGACY_LIVE_UI_ACTIVE` 4, `CANONICAL_PREVIEW_ONLY` 10, `POLICY_BLOCKED`
+  4, `INFRASTRUCTURE_BLOCKED` 3, `NO_LIVE_CONSUMER_REQUIRED` 1. Confidence:
+  HIGH 39 / MEDIUM 14 / LOW 11. `/family`, `/markpoint`, `/wagle`
+  independently re-confirmed `LEGACY_LIVE_UI_ACTIVE` for their own
+  canonical ID (1b/1c/1d) — exactly matching the W7.4 reopen's own finding
+  — while several *other* canonical Screens were found genuinely live as
+  real modals nested inside those same three legacy-shaped pages (e.g.
+  `1k`/`1l`/`1s`/`2c`/`2h`/`2j` inside `/markpoint`; `1t`/`2g` inside
+  `/wagle`; `3c`/`3d`/`3e` at `/wagle/board`), a finer-grained picture than
+  the reopen's own whole-route framing captured. `CONDITIONAL` rather than
+  `PASS` because 11 of 64 rows carry `LOW` confidence (nested Screens
+  present in a real render chain whose own write/create backend wiring
+  could not be confirmed from docblock evidence alone this pass) and 5
+  `CANONICAL_PREVIEW_ONLY` rows have a plausible-but-unconfirmed
+  AdminDashboard overlap — per this task's own rule, unresolved items are
+  not rounded up to `PASS`. 8 Gap Groups (GAP-A through GAP-H) identified
+  and detailed with per-screen membership and required PM/design/
+  infrastructure decisions. Full detail: `engineering/phase2/MONGLE_W7_4_
+  LIVE_CONSUMER_INTEGRATION_AUDIT_REPORT.md` and its companion matrix CSV.
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-AUDIT-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-AUDIT-001.md
+- Constraints: no product/test/migration/seed edit; no route/component
+  add/remove/rename; no CSS/token change; no package manifest change; no
+  existing test weakened; no commit/push/merge/rebase; this task does not
+  declare W7.5-overall-PASS or W7.6-READY.
+- Next Action: superseded by
+  `MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-AUDIT-CONDITIONAL-CLOSEOUT-
+  REMEDIATION-001` below, which resolved all 11 `LOW`-confidence rows and
+  built the PM Decision Docket this Next Action originally called for. See
+  that entry for the current Next Action. W7.5 overall remains
+  `CONDITIONAL`/`HUMAN_GATE`; W7.6 remains `BLOCKED`.
+
+## MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-AUDIT-CONDITIONAL-CLOSEOUT-REMEDIATION-001
+
+- Task ID: MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-AUDIT-CONDITIONAL-CLOSEOUT-REMEDIATION-001
+- Kind: remediation of the `CONDITIONAL` verdict above. Resolves all 11
+  `LOW`-confidence rows via fresh source-code evidence, verifies
+  `POLICY_BLOCKED`/`INFRASTRUCTURE_BLOCKED` grounds, sub-classifies frozen-
+  design actionability, builds a PM Decision Docket and an Implementation
+  Readiness axis, proposes a non-started Wave A–F grouping. Not
+  implementation; no product/test/migration/seed code touched; no route
+  wiring, canonical migration, legacy removal, CSS/design-asset edit,
+  API/store wiring, common-component extraction, or W7.6 start.
+- Lifecycle: IN_PROGRESS (pending PM review / independent QA)
+- Decision: NOT_REVIEWED
+- Verification: CONDITIONAL — LOW confidence resolved 11 -> 0 via direct
+  source reads (`ProfilePage.tsx`, `FamilyMembersPage.tsx`,
+  `AdminDashboard/views/{MissionView,PlayerView,DashboardView}`,
+  `BasicModalPreview/index.tsx`). 6 rows reclassified
+  `CANONICAL_PREVIEW_ONLY` -> `LEGACY_LIVE_UI_ACTIVE` (`1m`, `2a`, `2e`,
+  `2i`, `2l`, `2x` — AdminDashboard's own real, bespoke hooks). 5 rows
+  confidence-only upgraded to HIGH (`1u`, `1z`, `2f`, `2p`, `3i`). 2 rows
+  reclassified `POLICY_BLOCKED` -> `INFRASTRUCTURE_BLOCKED` (`2b`, `2v` —
+  no storage abstraction exists in the backend at all). Final:
+  `LIVE_CANONICAL_INTEGRATED` 22, `PARTIALLY_INTEGRATED` 20,
+  `LEGACY_LIVE_UI_ACTIVE` 10, `CANONICAL_PREVIEW_ONLY` 4, `POLICY_BLOCKED`
+  2, `INFRASTRUCTURE_BLOCKED` 5, `NO_LIVE_CONSUMER_REQUIRED` 1 (sum 64).
+  Confidence: HIGH 51 / MEDIUM 13 / LOW 0. New Implementation Readiness
+  axis: `ALREADY_COMPLETE` 14, `READY_FOR_LEGACY_REPLACEMENT` 10,
+  `READY_FOR_PARTIAL_INTEGRATION_COMPLETION` 7, `READY_FOR_WIRING` 8,
+  `DESIGN_DECISION_REQUIRED` 9, `POLICY_DECISION_REQUIRED` 6,
+  `INFRASTRUCTURE_PREREQUISITE_REQUIRED` 8, `NO_IMPLEMENTATION_REQUIRED`
+  2 (sum 64). PM Decision Docket: 12 decisions, each with concrete
+  Option A/B/C, none pre-resolved by this task. `CONDITIONAL` retained
+  (not `PASS`) because the underlying product/design/policy/infrastructure
+  decisions this task surfaces remain genuinely open — this task closes
+  the measurement gap, not the decisions themselves. Full detail:
+  `engineering/phase2/MONGLE_W7_4_LIVE_CONSUMER_INTEGRATION_AUDIT_REPORT.md`
+  Remediation Addendum section and the matrix CSV's new columns.
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-AUDIT-CONDITIONAL-CLOSEOUT-REMEDIATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-AUDIT-CONDITIONAL-CLOSEOUT-REMEDIATION-001.md
+- Constraints: no product/test/migration/seed edit; no route wiring;
+  no canonical-screen migration; no legacy removal; no CSS/design-asset
+  edit; no API/store wiring; no common-component extraction; no W7.6
+  start; no test skip/disable; no commit/push/merge/rebase; original
+  parent audit's own Primary_Classification/Confidence columns and
+  handoff/QA-evidence files preserved unmodified (write-once).
+- Next Action: PM review of the 12-item Decision Docket and the proposed
+  Wave A–F grouping. No Wave may start before its own named decision (see
+  Docket) lands and PM approves. W7.5 overall remains
+  `CONDITIONAL`/`HUMAN_GATE`; W7.6 remains `BLOCKED`.
+
+## NON-BLOCKING TEST INFRASTRUCTURE DEBT
+
+### NATIVE-E2E-FIXED-RESOURCE-CONTENTION-GAP-001
+
+- Task ID: NATIVE-E2E-FIXED-RESOURCE-CONTENTION-GAP-001
+- Status: OPEN
+- Priority: MEDIUM
+- Blocking: NO — `NON_BLOCKING_FOR_W7_5_CODE_DEFECT_CLOSEOUT`
+- Category: `TEST_INFRASTRUCTURE` / `PARALLEL_EXECUTION_ISOLATION`
+- Discovered-By: `MONGLE-W7-5-NATIVE-E2E-LAUNCHER-FOCUSED-INDEPENDENT-QA-001`
+- Scope: `tests/e2e/scripts/run-w75-full-spec-native.sh` (native full-stack
+  E2E launcher) only. Not `E2E-RUNTIME-F-001` (that finding's own lifecycle
+  scope is `CLOSED` — see `MONGLE-W7-5-CODE-DEFECT-HARDENING-CLOSEOUT-001`
+  below; this is a separate, newly-found gap, not a reopening of that one).
+- Fixed resources observed: database `mc_w75_native_runner`; backend port
+  `18096`; Vite port `5195` (all launcher-default, override-able only via
+  env vars, not collision-detected).
+- Observed evidence: two independent Claude Code QA sessions ran this exact
+  launcher concurrently against the same worktree, both using the same
+  default DB name and ports. A direct collision was captured
+  (`database "mc_w75_native_runner" is being accessed by other users... 6
+  other sessions` / `already exists`) mid-sequence. During the same overlap
+  window, one session's own first Playwright run recorded 8 browser-
+  executable-level failures (`Executable doesn't exist`, `spawn ETXTBSY`,
+  GPU/V8 init failures — not connection-refused, not product-assertion
+  failures). After the collision window ended, the identical launcher
+  passed 10/10 across 4 further consecutive runs (two separate pairs, one
+  session each). **Precise causal claim**: concurrent fixed-resource
+  contention (the DB/port collision) is directly verified by evidence; its
+  exact contribution to every individual browser-runtime error above is the
+  most likely explanation given the timing, but is not proven test-by-test
+  — recorded as `NOT_FULLY_PROVEN_PER_FAILURE`, not asserted as certain.
+- Impact if unaddressed: concurrent invocations of this same native launcher
+  (by two agent sessions, or a session plus a leftover/orphaned prior
+  invocation) can race on `CREATE DATABASE`/`DROP DATABASE`, collide on
+  Backend/Vite port binding, risk one session's cleanup tearing down
+  another session's still-in-use resources, and produce browser-runtime
+  flakiness that could be misread as a product or lifecycle defect rather
+  than an environment-contention artifact.
+- Current operating rule (until a structural fix lands): **do not run this
+  native launcher concurrently with another invocation of itself.** Before
+  starting it, check: (1) is `mc_w75_native_runner` already present/in use;
+  (2) is port `18096` occupied; (3) is port `5195` occupied; (4) does a
+  `run-w75-full-spec-native.sh` process already exist. If any check finds
+  an occupied resource, do not proceed — treat as `RESOURCE_BUSY` and stop,
+  rather than force through or kill another session's process/DB/port.
+- Future remediation direction (not yet implemented): run-ID-based unique
+  DB naming; dynamically allocated or reserved-and-locked unique Backend/
+  Vite ports; a per-run runtime directory (already present for logs, not
+  yet for DB/port allocation); launcher-written ownership metadata (PID, DB
+  name, ports, run ID, start time) that `cleanup()` checks before acting,
+  so it can never touch a resource it did not itself create; a regression
+  test that runs two launcher instances in parallel and asserts both
+  complete cleanly with 0 cross-contamination.
+- Closure criteria: two or more native launcher invocations run genuinely
+  in parallel, each with its own independent DB/backend-port/Vite-port,
+  each reaching 10 passed / 0 failed / 0 skipped, with 0 cross-cleanup, 0
+  cross-session contamination, 0 Git dirty, and 0 QA resource residue from
+  either run.
+- Next Action: unscheduled — MEDIUM priority, non-blocking. PM to decide
+  when to schedule the structural fix; the interim operating rule above is
+  sufficient to keep single-session use safe in the meantime.
+
+## MONGLE-W7-5-NATIVE-E2E-LAUNCHER-FOCUSED-INDEPENDENT-QA-001
+
+- Task ID: MONGLE-W7-5-NATIVE-E2E-LAUNCHER-FOCUSED-INDEPENDENT-QA-001
+- Kind: independent QA of `MONGLE-W7-5-NATIVE-E2E-LAUNCHER-LIFECYCLE-
+  REMEDIATION-001`'s own native launcher, verifying `E2E-RUNTIME-F-001`'s
+  own lifecycle contract (Backend/Vite held until Playwright completes,
+  cleanup only afterward, exit code preserved) across 2 independently
+  executed consecutive runs. Read-only/verification role.
+- Lifecycle: IN_PROGRESS
+- Decision: NOT_REVIEWED
+- Verification: CONDITIONAL — launcher static audit clean (top-level
+  `( ) & PID=$!` pattern, single top-level `trap cleanup EXIT`, foreground
+  Playwright, pre/post `kill -0` liveness checks, exit-code preservation,
+  no prohibited pattern found); lifecycle smoke PASS (24s hold, 3/3
+  liveness+HTTP checks); **Run 1: 8 failed / 2 passed (37.2s)**, all 8
+  failures browser-executable-launch-level (`Executable doesn't exist`,
+  `spawn ETXTBSY`, GPU/V8 init failures) — **not** connection-refused, both
+  service PIDs confirmed alive before AND after Playwright regardless;
+  **Run 2: 10 passed / 0 failed / 0 skipped (72s)**, both PIDs alive
+  before/after. Investigation found a genuine confound: a **separate,
+  concurrently-running Claude Code session on this same machine**
+  independently invoked the identical launcher with the same fixed DB name
+  (`mc_w75_native_runner`) and ports (`18096`/`5195`) during this exact test
+  window (confirmed via live process-tree inspection — a distinct `claude
+  --dangerously-skip-permissions` process unrelated to this session's own
+  ancestry — and a captured mid-sequence `database ... being accessed by 6
+  other sessions` collision), most plausibly contributing to Run 1's
+  browser-launch flakiness under resource contention. `E2E-RUNTIME-F-001`'s
+  own specific defect shape (services dying, connection-refused) did **not**
+  recur in either run — the actual object of this task's verification holds.
+  The literal "10/10 twice consecutively" gate was not achieved this pass,
+  per this repository's own established precedent (a mixed fail-then-pass
+  pair does not satisfy a two-consecutive-clean-runs gate). Cleanup verified
+  correct in both the passing and failing run; final state confirmed fully
+  clean (0 QA residue, persistent dev stack unaffected); static checks and
+  `git diff --check` clean; 0 runner-induced Git delta.
+- Execution: SUCCEEDED
+- QA Evidence: agent-system/qa/MONGLE-W7-5-NATIVE-E2E-LAUNCHER-FOCUSED-INDEPENDENT-QA-001.md
+  (this QA evidence file serves as its own handoff, same lightweight
+  convention as `MONGLE-W1-INDEPENDENT-QA-001` / `MONGLE-W7-5-MARKPOINT-
+  PROJECTION-FOCUSED-INDEPENDENT-QA-001` — no `Closeout Contract: v1`
+  declared, no separate Handoff file)
+- Environment: Node 20.20.2 (nvm-managed) / Playwright 1.58.2 / Chromium
+  v1208, native local PostgreSQL 16, this session's own separate persistent
+  dev.sh stack (8000/5174) confirmed untouched throughout.
+- Constraints: no product/test/migration/seed/Playwright-spec/assertion
+  edit (confirmed byte-identical to HEAD, start and end); no commit/push/
+  merge/rebase.
+- Next Action: a follow-up re-run of the same two-consecutive-invocation
+  protocol at a time with no other concurrent session using the same
+  launcher/fixed resource names (or after adding collision-safe resource
+  naming to the launcher itself) is expected, on this evidence, to produce
+  a genuinely clean consecutive pair — Run 2 already demonstrated a full
+  clean 10/10 once uncontended. This QA does not perform that follow-up
+  itself (avoiding retry-until-pass within one QA session). W7.5 overall
+  remains `CONDITIONAL`/`HUMAN_GATE`; W7.4 remains `REOPENED`; W7.6 remains
+  `BLOCKED`.
+- **Correction (append-only, same day)**: the "separate, concurrently-
+  running Claude Code session" this entry's own investigation found was a
+  second Independent QA session running this exact Task ID against the
+  same worktree — that session's own corroborating pass (appended to this
+  task's own QA Evidence file) independently re-ran the same
+  two-consecutive-invocation protocol twice, after confirming no contention
+  remained: **first pair 10/10 + 10/10, second (fully uncontended) pair
+  also 10/10 + 10/10** — 4/4 runs clean once outside the collision window.
+  The one gap this entry's own verdict was waiting on (an uncontended
+  re-run) is now independently supplied. Revised verification:
+  `E2E-RUNTIME-F-001`'s own lifecycle contract and the two-consecutive-
+  clean-runs gate are both independently satisfied.
+- Execution (revised): **SUCCEEDED, code-defect-hardening scope CLOSED**
+  (per Section 17-equivalent restriction — this does not extend to
+  `MONGLE_W7_5_DATA_AND_BEHAVIOR_WIRING_PASS`, W7.4, or W7.6 readiness).
+  W7.5 overall remains `CONDITIONAL`/`HUMAN_GATE`; W7.4 remains `REOPENED`;
+  W7.6 remains `BLOCKED`.
+
+## MONGLE-W7-5-NATIVE-E2E-LAUNCHER-LIFECYCLE-REMEDIATION-001
+
+- Task ID: MONGLE-W7-5-NATIVE-E2E-LAUNCHER-LIFECYCLE-REMEDIATION-001
+- Kind: fix `E2E-RUNTIME-F-001` (native launcher released Backend/Vite
+  immediately after readiness instead of holding them until Playwright
+  finished) with a lifecycle-safe native full-stack E2E runner. Not product
+  feature work.
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED (PM task direction, this session)
+- Verification: DEVELOPER_SELF_CHECK_COMPLETE / INDEPENDENT_QA_PENDING —
+  root cause reconstructed (original launcher script no longer exists;
+  most plausible mechanism is a foreground multi-minute invocation hitting
+  this environment's own ~120s tool execution timeout right as Playwright
+  started, killing the whole process tree including its own backgrounded
+  Backend/Vite). New `tests/e2e/scripts/run-w75-full-spec-native.sh` reuses
+  `run-w75-full-spec.sh`'s own already-proven `( cd dir && exec ... ) &
+  PID=$!` top-level-scope pattern verbatim, adds `kill -0` liveness
+  re-checks inside readiness polling and immediately before Playwright
+  starts, and was itself invoked as a background command (not foreground)
+  to avoid the same timeout trap. Lifecycle smoke (standalone
+  backend+frontend, no Playwright): held 24s, 3/3 liveness+HTTP checks
+  clean. Full run: both PIDs confirmed alive immediately before Playwright
+  start, **10 passed, 0 failed, 0 skipped (53.9s)**, both PIDs still alive
+  immediately after Playwright finished. Cleanup confirmed: QA DB removed,
+  both PIDs killed, QA ports free, runtime log auto-removed, persistent
+  dev stack (`dev.sh`, this session's own separate stack) confirmed
+  unaffected. Static checks (frontend lint/build, `bash -n`, `git diff
+  --check`, `check_all.py`) all clean.
+- Execution: SUCCEEDED
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-5-NATIVE-E2E-LAUNCHER-LIFECYCLE-REMEDIATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-5-NATIVE-E2E-LAUNCHER-LIFECYCLE-REMEDIATION-001.md
+- Parent: MONGLE-W7-5-E2E-PLAYWRIGHT-RUNTIME-REPRODUCIBILITY-CLOSEOUT-001
+  (below), whose own `E2E-RUNTIME-F-001` finding this task closes.
+- Constraints: no product/backend/migration/seed/Playwright-spec/assertion
+  change; no retry/timeout/skip change; no commit/push/merge/rebase; this
+  Developer session does not self-declare Independent QA PASS.
+- Next Action: a follow-up focused Independent Re-QA should independently
+  re-run `tests/e2e/scripts/run-w75-full-spec-native.sh` (ideally more than
+  once, since this task's own 10/10 is a single run, not a repeat-run
+  stability check) before `E2E-RUNTIME-F-001` is treated as unconditionally
+  closed. `MONGLE_W7_5_MARKPOINT_CONDITIONAL_CLOSEOUT_FOCUSED_INDEPENDENT_
+  RE_QA_001` (above) can then resume its own remaining Docker/native E2E
+  smoke requirement using this runner. W7.5 overall remains
+  `CONDITIONAL`/`HUMAN_GATE`; W7.4 remains `REOPENED`; W7.6 remains
+  `BLOCKED`.
+
+## MONGLE-W7-5-E2E-PLAYWRIGHT-RUNTIME-REPRODUCIBILITY-CLOSEOUT-001
+
+- Task ID: MONGLE-W7-5-E2E-PLAYWRIGHT-RUNTIME-REPRODUCIBILITY-CLOSEOUT-001
+- Kind: developer remediation of the fixed local Playwright/Chromium runtime
+  reproducibility gap discovered by the parent focused Independent Re-QA.
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED (PM task direction, 2026-08-04)
+- Verification: FAIL (own runtime-reproducibility scope) — Node 20 fixed
+  local Playwright 1.58.2 and Chromium launch passed, but the unchanged spec
+  recorded 10 failed / 0 passed / 0 skipped because the task-owned native
+  launcher did not retain Backend/Vite through execution (`E2E-RUNTIME-F-001`).
+  **`E2E-RUNTIME-F-001` itself is now remediated by
+  `MONGLE-W7-5-NATIVE-E2E-LAUNCHER-LIFECYCLE-REMEDIATION-001` (above,
+  Developer self-check: 10/10 passed) — this task's own `FAIL` line is kept
+  as its own historical record, not rewritten, per Invariant 5; the finding
+  it names is closed pending Independent Re-QA of the remediation.**
+- Execution: FAILED (own scope; superseded by the remediation task above)
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-5-E2E-PLAYWRIGHT-RUNTIME-REPRODUCIBILITY-CLOSEOUT-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-5-E2E-PLAYWRIGHT-RUNTIME-REPRODUCIBILITY-CLOSEOUT-001.md
+- Parent: MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-FOCUSED-INDEPENDENT-RE-QA-001
+- Constraints: no product/test/migration/seed change; no latest/dlx/npx
+  install; preserve the persistent dev stack and all existing dirty work; this
+  developer task cannot award Independent QA PASS.
+- Next Action: superseded — see
+  `MONGLE-W7-5-NATIVE-E2E-LAUNCHER-LIFECYCLE-REMEDIATION-001` above.
+
+## MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-FOCUSED-INDEPENDENT-RE-QA-001
+
+- Task ID: MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-FOCUSED-INDEPENDENT-RE-QA-001
+- Kind: narrowly scoped independent re-QA of
+  `MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-REMEDIATION-001`: verify its
+  commit-governance correction, Markpoint test hardening, backend stability,
+  and one Docker E2E smoke. No feature implementation.
+- Lifecycle: SUSPENDED
+- Decision: DESIGN_APPROVED (PM direction, 2026-08-04)
+- Verification: CONDITIONAL / ENVIRONMENT_REQUIRED — independent static
+  lineage audit passed; deducted-side regression passed; the two KST-anchor
+  tests passed under Asia/Seoul, UTC, and America/New_York; Markpoint suite
+  and backend suite both passed; backend full suite passed **405/405 twice**
+  consecutively on the same fresh disposable PostgreSQL DB. Docker is absent
+  in this measured WSL environment, so the required E2E 10/10 smoke was not
+  runnable and no PASS declaration is valid. A 2026-08-04 native equivalent
+  reached isolated DB + current-worktree Backend + pnpm/Vite readiness, but
+  the identical Playwright spec could not start because `tests/e2e` lacks its
+  fixed local Playwright runtime and `npx` proposed unpinned latest install;
+  declined. `ENVIRONMENT_REQUIRED` remains.
+- Execution: BLOCKED (only Docker E2E smoke remains)
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-FOCUSED-INDEPENDENT-RE-QA-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-FOCUSED-INDEPENDENT-RE-QA-001.md
+- Constraints: independent verification only; no product/test/migration/seed
+  edits; no commit/push/merge/rebase/reset/clean/stash; do not reopen migration
+  0021, board-room 5×10, or four-run E2E evidence unless the measured diff
+  reaches those files. W7.5 overall remains `CONDITIONAL`/`HUMAN_GATE` until
+  this task has actual E2E evidence.
+- Next Action: on a Docker-capable Mac, execute exactly
+  `tests/e2e/scripts/run-w75-full-spec.sh` once at this HEAD; require 10
+  passed / 0 failed / 0 skipped and no runner-induced Git delta before
+  changing this task's verdict. Do not re-open excluded lineage without a
+  diff-triggering reason.
+
+## MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-REMEDIATION-001
+
+- Task ID: MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-REMEDIATION-001
+- Kind: dispose of the 3 non-blocking findings (`QA-F-001`/`QA-F-002`/
+  `QA-F-003`) from `MONGLE-W7-5-MARKPOINT-PROJECTION-FOCUSED-INDEPENDENT-
+  QA-001` (verdict `CONDITIONAL`), plus attempt the E2E smoke that
+  verdict's own remaining gap named. Opened directly by PM from that QA
+  task's own findings; not new feature work.
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED (PM direction, this session, 6-item scope list
+  given verbatim)
+- Verification: DEVELOPER_SELF_CHECK_COMPLETE / INDEPENDENT_QA_PENDING —
+  commit `328d877` scope re-audited fresh (7 files, no scope creep);
+  `QA-F-001` corrected via an appended `## Correction` section in both the
+  Developer task's QA Evidence and Handoff (original stale claim preserved,
+  not rewritten, per Invariant 5); `QA-F-002` closed with a new permanent
+  deterministic test
+  (`test_projection_kst_boundary_independent_of_server_local_timezone_deducted_side`,
+  3/3 consecutive PASS); `QA-F-003` closed by replacing the two
+  originally-failing tests' own `date.today()` anchor with
+  `datetime.now(service.KST).date()` — zero assertion value changed
+  (diff-confirmed against HEAD), re-verified passing under `TZ=Asia/Seoul`/
+  `TZ=UTC`/`TZ=America/New_York` (previously 1/3 under
+  `America/New_York`). Backend full suite run twice, back-to-back, same
+  disposable DB, no reset, no code change between runs: **405/405 both
+  runs** (404 + 1 new test), 0 task-owned failure,
+  `KNOWN-W7-5-WAGLE-CONCURRENCY-001` did not recur. **E2E runner smoke NOT
+  performed** — this session has no Docker either (same WSL constraint);
+  recorded `ENVIRONMENT_REQUIRED`, genuinely still open, not treated as
+  PASS. Per PM's own explicit instruction, the WSL constraint is not
+  grounds to declare this item done.
+- Execution: SUCCEEDED (for scopes 1-4 and 6; scope 5/E2E smoke NOT
+  executed — see Verification above)
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-REMEDIATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-REMEDIATION-001.md
+- Environment: native local PostgreSQL 16, disposable database
+  (`mc_qa_markpoint_verify`, created fresh this task, dropped after use; no
+  Docker in this WSL environment). Persistent local dev stack (`mc_festival`,
+  this session's own separate `dev.sh`) untouched.
+- Constraints: no product code change (out of scope — the fix itself was
+  already independently verified correct); test-file assertion values never
+  changed; no skip/reorder/retry-only; no commit/push/merge/rebase.
+- Next Action: an E2E runner smoke pass (`tests/e2e/scripts/run-
+  w75-full-spec.sh`, expect 10/10) in a Docker-capable environment is the
+  one genuinely outstanding item before this finding's own hardening scope
+  can be treated as unconditionally closed. A separate focused Independent
+  Re-QA of this closeout task's own 4 completed scopes is the correct next
+  step to actually change the parent QA task's `CONDITIONAL` verdict — this
+  task does not self-declare that change. W7.5 overall remains
+  `CONDITIONAL`/`HUMAN_GATE`; W7.4 remains `REOPENED`; W7.6 remains
+  `BLOCKED`.
+
+## MONGLE-W7-5-MARKPOINT-PROJECTION-FOCUSED-INDEPENDENT-QA-001
+
+- Task ID: MONGLE-W7-5-MARKPOINT-PROJECTION-FOCUSED-INDEPENDENT-QA-001
+- Kind: independent QA of `MONGLE-W7-5-MARKPOINT-PROJECTION-STABILITY-
+  REMEDIATION-001`'s own remediation of `RE-QA-F-003` (KST/UTC date-boundary
+  defect in Markpoint Target projection). Read-only/verification role; no
+  product, test, or migration code change.
+- Lifecycle: IN_PROGRESS
+- Decision: NOT_REVIEWED
+- Verification: CONDITIONAL — root cause independently re-derived via a
+  live raw-SQL session-timezone experiment (not by re-reading the
+  Developer's own deleted diagnostic); both originally-failing tests 5/5
+  consecutive; 5 new deterministic timezone tests 5/5; combined
+  Markpoint-adjacent suite 124/124 (broader than the Developer's own
+  63-test scope); OS-process-timezone cross-check (Asia/Seoul/UTC/
+  America-New_York) and DB-session-timezone cross-check (forced UTC) both
+  confirm the product fix itself is timezone-invariant; Hardening backend
+  smoke (migration 0021 + board-room + admin bcrypt) 34/34; full backend
+  suite run independently twice, back-to-back, same disposable DB, no
+  reset: **404/404 both runs**, 0 task-owned failure, the
+  `KNOWN-W7-5-WAGLE-CONCURRENCY-001` condition did not recur in either
+  run. `CONDITIONAL` rather than `PASS` because of 3 disclosed findings
+  (QA-F-001: the Developer's own records say "no commit performed" while
+  the fix is actually already committed and pushed at current HEAD,
+  `328d877` — governance staleness, not a product defect; QA-F-002: none
+  of the 5 committed deterministic tests exercises `today_deducted` at an
+  explicit KST/UTC boundary, independently closed as correct-but-untested
+  via a QA-only throwaway diagnostic, not a permanent test; QA-F-003: the
+  two pre-existing originally-failing tests use their own naive
+  `date.today()` as anchor and fail under `TZ=America/New_York`, a
+  pre-existing test-fragility unrelated to this fix) and because the E2E
+  Playwright runner could not be executed in this QA session's own
+  Docker-less WSL environment (`ENVIRONMENT_REQUIRED`, diff-audited as
+  unaffected by this remediation regardless). Full detail: `agent-system/
+  qa/MONGLE-W7-5-MARKPOINT-PROJECTION-FOCUSED-INDEPENDENT-QA-001.md`.
+- Execution: SUCCEEDED
+- QA Evidence: agent-system/qa/MONGLE-W7-5-MARKPOINT-PROJECTION-FOCUSED-INDEPENDENT-QA-001.md
+  (this QA evidence file serves as its own handoff, same convention as
+  `MONGLE-W1-INDEPENDENT-QA-001` — no `Closeout Contract: v1` declared for
+  this lightweight, read-only QA pass, so no separate Handoff file was
+  created)
+- Environment: native local PostgreSQL 16 on a disposable database
+  (`mc_qa_markpoint_verify`, created and dropped this session; no Docker
+  available in this WSL environment), not the Docker-based disposable
+  Postgres prior QA passes on this task family used. Persistent local
+  dev stack (`mc_festival`, this session's own separate `dev.sh`) and any
+  NAS/production system were untouched.
+- Constraints: no product/test/migration/seed edit (confirmed byte-identical
+  to HEAD at both start and end of this QA session); no commit/push/merge/
+  rebase.
+- Next Action: superseded by
+  `MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-REMEDIATION-001` (below), which
+  PM opened directly from this QA task's own 3 findings (QA-F-001/002/003)
+  and disposed of them: QA-F-001 corrected in place (append-only, see the
+  Developer task's own QA Evidence/Handoff), QA-F-002 closed with a new
+  permanent deterministic test, QA-F-003 closed by removing the two
+  pre-existing tests' own `date.today()` dependence. The E2E runner smoke
+  in a Docker-capable environment remains genuinely outstanding — still not
+  performed, this WSL session has no Docker either. `RE_QA_F_003`
+  code-defect correctness itself was already independently verified by this
+  task and is not reopened. W7.5 overall remains `CONDITIONAL`/`HUMAN_GATE`;
+  W7.4 remains `REOPENED`; W7.6 remains `BLOCKED`.
+
 ## MONGLE-W7-5-MARKPOINT-PROJECTION-STABILITY-REMEDIATION-001
 
 - Task ID: MONGLE-W7-5-MARKPOINT-PROJECTION-STABILITY-REMEDIATION-001
@@ -536,10 +1003,17 @@ are separate axes.
   valid on its own terms regardless of which visual design that page
   uses — a correctly-wired legacy-design page is not un-wired by this
   finding. See that task's own active.md entry for its own added caveat.
-- Next Action: PM to decide scope (full 64-row re-audit under the
-  route-exists vs. renders-canonical-design distinction, or a bounded
-  audit of only `1b`/`1c`/`1d` plus spot checks) before any implementation
-  session resumes. No code change has been made under this reopen.
+- Next Action: **superseded by `MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-
+  AUDIT-001` (above)**, which performed exactly the full 64-row re-audit
+  this Next Action called for — `LIVE_CONSUMER_INTEGRATION_COVERAGE` is no
+  longer `UNKNOWN`: full matrix built, `1b`/`1c`/`1d` re-confirmed
+  `LEGACY_LIVE_UI_ACTIVE` (this reopen's own finding independently
+  verified, not disputed), 8 Gap Groups identified for the other 61 rows.
+  That audit's own verdict is `CONDITIONAL` (11 LOW-confidence rows), so
+  this reopen's own `SCOPE_AND_EVIDENCE_DEFECT` verification is now
+  measured rather than unknown, but not yet fully closed. PM review of
+  that audit's Gap Groups is the current Next Action; no code change has
+  been made under this reopen or the audit that measured it.
 - Handoff: agent-system/handoffs/active/MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001.md
 - Handoff detail: moved back from `handoffs/archive/2026-08/` to
   `handoffs/active/` under this reopen (original file, relocated only).
@@ -560,34 +1034,6 @@ are separate axes.
 - HANDOFF Path: agent-system/handoffs/active/MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001.md
 - QA Evidence: agent-system/qa/MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001.md
 - QA Evidence Path: agent-system/qa/MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001.md
-
-## MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001
-
-- Task ID: MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001
-- Kind: read-only product screen ownership and topology design freeze using Wave 7.0 authority evidence.
-- Lifecycle: IMPLEMENTED_AWAITING_INDEPENDENT_QA
-- Decision: NOT_REVIEWED
-- Verification: SELF_CHECK_PASS / INDEPENDENT_QA_PENDING
-- Execution: SUCCEEDED
-- Closeout Contract: v1
-- Handoff: agent-system/handoffs/active/MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001.md
-- HANDOFF Path: agent-system/handoffs/active/MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001.md
-- QA Evidence: agent-system/qa/MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001.md
-- QA Evidence Path: agent-system/qa/MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001.md
-
-## MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001
-
-- Task ID: MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001
-- Kind: repository-wide screen-authority and React-coverage evidence audit; no product implementation.
-- Lifecycle: IMPLEMENTED_AWAITING_INDEPENDENT_QA
-- Decision: NOT_REVIEWED
-- Verification: SELF_CHECK_PASS / INDEPENDENT_QA_PENDING
-- Execution: SUCCEEDED
-- Closeout Contract: v1
-- Handoff: agent-system/handoffs/active/MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001.md
-- HANDOFF Path: agent-system/handoffs/active/MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001.md
-- QA Evidence: agent-system/qa/MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001.md
-- QA Evidence Path: agent-system/qa/MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001.md
 
 ## MONGLE-W6-R2-1C-POINT-FESTIVAL-MOBILE-VISUAL-001
 

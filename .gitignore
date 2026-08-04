@@ -45,3 +45,8 @@ tests/e2e/test-results/
 # prohibits. Now an ignored, in-worktree, timestamped-per-run directory
 # instead of a fixed path.
 tests/e2e/.runtime/
+
+# dev.sh's own runtime output (PIDs/logs for the locally-started backend/
+# frontend dev processes) -- in-worktree per repository-boundary policy,
+# never committed.
+/.dev-runtime/

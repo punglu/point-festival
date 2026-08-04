@@ -185,7 +185,7 @@ fi
 echo "--- running the full permanent W7.5 spec ---"
 set +e
 (cd tests/e2e && MONGLE_PLAYWRIGHT_BASE_URL="http://localhost:$FRONTEND_PORT" \
-  npx playwright test --config playwright.mongle-manual.config.ts \
+  ./node_modules/.bin/playwright test --config playwright.mongle-manual.config.ts \
   specs-mongle/04-w75-data-wiring.spec.ts)
 PLAYWRIGHT_EXIT=$?
 set -e

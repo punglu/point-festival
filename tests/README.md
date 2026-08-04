@@ -37,6 +37,22 @@ Run it with no arguments and no environment setup:
 tests/e2e/scripts/run-w75-full-spec.sh
 ```
 
+## Fixed local Playwright runtime
+
+`tests/e2e` is an npm project, not a pnpm workspace. Its committed
+`package-lock.json` pins `@playwright/test`, `playwright`, and
+`playwright-core` to `1.58.2`. Install exactly that locked runtime with:
+
+```bash
+cd tests/e2e && npm ci
+cd tests/e2e && PLAYWRIGHT_BROWSERS_PATH=0 ./node_modules/.bin/playwright install chromium
+```
+
+`PLAYWRIGHT_BROWSERS_PATH=0` keeps the matching Chromium beside the local
+package under ignored `node_modules`, not in a user-home cache. Invoke the
+local binary (or the package's `npm test` script); do not use an interactive
+`npx`/latest install path.
+
 It brings up a dedicated, disposable `postgres:16.9-alpine` container (never
 the shared `mc_phase0`/`mc_phase1` Compose stacks and never the persistent dev
 stack on `15434`/`18001`/`13001`), runs `alembic upgrade head`, runs the
@@ -71,6 +87,45 @@ for Postgres to accept a real query, not just `pg_isready`, loads
 `database/init.sql` with `ON_ERROR_STOP=1` and no error-swallowing `|| true`,
 asserts `admin_auth` exists afterward, and retries `alembic upgrade head` a
 few times before failing loudly).
+
+### Native (no-Docker) equivalent
+
+`tests/e2e/scripts/run-w75-full-spec-native.sh`, added by
+`MONGLE-W7-5-NATIVE-E2E-LAUNCHER-LIFECYCLE-REMEDIATION-001`, is the same
+runner for environments with no Docker: it provisions a disposable database
+on an already-running **native** local PostgreSQL cluster instead of a
+`postgres:16.9-alpine` container (`CREATE DATABASE`/`DROP DATABASE` against
+`127.0.0.1:5432`, same role the environment's own local dev setup already
+uses), then follows the identical `init.sql` → `alembic stamp
+0000_legacy_schema_baseline` → `alembic upgrade head` → seed → synthetic
+admin password → backend → frontend → Playwright → cleanup sequence.
+Requires the fixed local Playwright runtime above already installed, and
+`backend/.venv` (not `python3.11`) as its Python interpreter. Same
+`MONGLE_W75_BACKEND_PORT`/`MONGLE_W75_FRONTEND_PORT` overrides; Postgres
+port is fixed at the local cluster's own `5432` (`MONGLE_W75_NATIVE_DB_PASSWORD`
+overrides the DB role password if it differs from the environment's default).
+Expected result: **10 passed, 0 skipped, 0 failed** — independently confirmed
+once, 53.9s, both backend and frontend PIDs alive immediately before
+Playwright started and immediately after it finished.
+
+This script exists because a task-owned temporary native launcher used
+earlier released the backend/frontend processes immediately after readiness
+instead of holding them until Playwright finished, so every test failed with
+`net::ERR_CONNECTION_REFUSED` before reaching any product assertion
+(`E2E-RUNTIME-F-001`) — most plausibly because that earlier attempt ran its
+entire multi-minute lifecycle as a single foreground command inside a tool
+with a default ~120s execution timeout, which would kill the whole process
+tree (including its own backgrounded services) right around when Playwright
+was starting. `run-w75-full-spec-native.sh` reuses `run-w75-full-spec.sh`'s
+own already-proven `( cd dir && exec ... ) & PID=$!` pattern verbatim for
+starting each service (top-level scope, never inside a `$(...)` command
+substitution or a function whose return would end the backgrounding
+subshell), adds a `kill -0 "$PID"` liveness re-check immediately before
+Playwright starts (not just an HTTP readiness check, which alone cannot
+distinguish "ready" from "ready, then already dying"), and must itself be
+invoked as a **background** shell command (not a single foreground call
+subject to a short execution timeout) in any environment where the launcher
+is driven by a tool with its own command timeout.
 
 ## Environment and data safety
 

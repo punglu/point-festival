@@ -42,5 +42,8 @@ Repository-wide evidence audit to freeze the full mockup authority and current R
 
 ## Record paths
 
-- HANDOFF Path: agent-system/handoffs/active/MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001.md
+- HANDOFF Path: agent-system/handoffs/archive/2026-08/MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001.md
+  (updated by `PHASE0-ACTIVE-TO-GRADUATED-SWEEP-001`, 2026-08-04 — file
+  moved from `handoffs/active/` on graduation; this self-reference is
+  corrected to match, no other content changed)
 - QA Evidence Path: agent-system/qa/MONGLE-W7-0-FULL-SCREEN-AUTHORITY-COVERAGE-FREEZE-001.md

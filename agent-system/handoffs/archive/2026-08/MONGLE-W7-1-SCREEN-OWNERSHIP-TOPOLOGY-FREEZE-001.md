@@ -41,5 +41,8 @@ Read-only ownership/topology freeze for the 69 live labels and 66 live IDs in th
 
 ## Record paths
 
-- HANDOFF Path: agent-system/handoffs/active/MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001.md
+- HANDOFF Path: agent-system/handoffs/archive/2026-08/MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001.md
+  (updated by `PHASE0-ACTIVE-TO-GRADUATED-SWEEP-001`, 2026-08-04 — file
+  moved from `handoffs/active/` on graduation; this self-reference is
+  corrected to match, no other content changed)
 - QA Evidence Path: agent-system/qa/MONGLE-W7-1-SCREEN-OWNERSHIP-TOPOLOGY-FREEZE-001.md

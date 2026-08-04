@@ -213,3 +213,22 @@ listed) — 0 new dirty, 0 damage to pre-existing dirty state, 0 commits.
 - `agent-system/tools/check_all.py` was run after this task's own document
   registration; any warning for a Task ID other than this one belongs to
   a different task and is not addressed here.
+
+## Correction (MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-REMEDIATION-001, discovered during Independent QA)
+
+Every `No commit/push/merge/rebase performed` claim in this Handoff (Closeout
+Synchronization section and Closure verification section) is **STALE /
+INCORRECT** as a current-state description — true when written, no longer
+true now:
+
+```text
+Commit: 328d877c162e300ffafbbc566a70d36bba4f3a2d
+Push:   confirmed reachable from origin/dev-newmarkp
+Discovery: MONGLE-W7-5-MARKPOINT-PROJECTION-FOCUSED-INDEPENDENT-QA-001
+History rewrite: none -- original text above preserved, not edited
+  (agent-system/rules.md Invariant 5)
+```
+
+Commit `328d877`'s file scope was independently re-audited and confirmed to
+match exactly the file set this Handoff already describes (see the matching
+correction in this task's own QA Evidence file for the full file list).

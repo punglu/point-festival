@@ -162,3 +162,33 @@ Not declared: `MONGLE_W7_5_HARDENING_FOCUSED_INDEPENDENT_RE_QA_PASS`,
 `READY_FOR_W7_6_COMMON_COMPONENT_EXTRACTION`. W7.5 overall remains
 `CONDITIONAL`/`HUMAN_GATE`; W7.4 remains `REOPENED`/audit pending; W7.6
 remains `BLOCKED`. Commit/push/merge/rebase were not performed.
+
+## Correction (MONGLE-W7-5-MARKPOINT-CONDITIONAL-CLOSEOUT-REMEDIATION-001, discovered during Independent QA)
+
+The `Commit/push/merge/rebase were not performed` line above (and the same
+claim in this task's own Handoff) is **STALE / INCORRECT** as a description
+of current repository state. It was accurate at the moment this document
+was written, but the work it describes is now committed:
+
+```text
+Commit: 328d877c162e300ffafbbc566a70d36bba4f3a2d
+        "fix(markpoint): correct KST/UTC date-boundary defect in Target
+        projection"
+Push:   confirmed reachable from origin/dev-newmarkp
+        (git branch -r --contains 328d877)
+Discovery: MONGLE-W7-5-MARKPOINT-PROJECTION-FOCUSED-INDEPENDENT-QA-001,
+        independent QA, while establishing its own baseline
+Previous "no commit/push" declaration above: STALE / INCORRECT as a
+        current-state description, not a fabrication -- it was true when
+        written and became stale once the commit/push happened afterward
+History rewrite: none. The original text above is left in place, not
+        edited, per this repository's own write-once evidence convention
+        (agent-system/rules.md Invariant 5).
+```
+
+Commit `328d877`'s own file scope was independently re-audited (`git show
+--stat 328d877`) and confirmed to contain exactly the 7 files this task's
+own report above already describes touching (`backend/app/domains/
+markpoint_target/service.py`, `backend/tests/test_markpoint_core_gap_
+wave5.py`, and 5 `agent-system/` governance files) — no scope creep beyond
+what this document already claims.

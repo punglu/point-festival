@@ -442,7 +442,12 @@ async def test_projection_derives_every_figure_from_the_ledger(db):
     child = await _member(db, family.id, "child")
     await _grant(db, manager, "mission_manager")
     await _grant(db, manager, "point_admin")
-    anchor = date.today()
+    # KST, not `date.today()`'s OS-local date: the ledger entries below get a
+    # real KST-anchored `occurred_at` (RE-QA-F-003's own fix), so the anchor
+    # this test compares against must be computed the same way, or this test
+    # itself becomes OS-timezone-fragile independent of product correctness
+    # (QA-F-003, MONGLE-W7-5-MARKPOINT-PROJECTION-FOCUSED-INDEPENDENT-QA-001).
+    anchor = datetime.now(service.KST).date()
 
     mission = await service.create_mission(
         db, family.id, manager, assignee_id=child.id, title="m", scheduled_for=anchor, reward_amount=30
@@ -499,7 +504,10 @@ async def test_projection_isolates_date_boundaries(db):
     manager = await _member(db, family.id, "manager")
     child = await _member(db, family.id, "child")
     await _grant(db, manager, "point_admin")
-    today = date.today()
+    # KST, not `date.today()`'s OS-local date -- see the same note in
+    # test_projection_derives_every_figure_from_the_ledger above
+    # (QA-F-003, MONGLE-W7-5-MARKPOINT-PROJECTION-FOCUSED-INDEPENDENT-QA-001).
+    today = datetime.now(service.KST).date()
     # A yesterday-dated entry, inserted directly with its own `occurred_at`.
     #
     # An earlier draft created it via the service and then backdated it with an
@@ -585,6 +593,48 @@ async def test_projection_kst_boundary_independent_of_server_local_timezone(db):
 
     proj_kst_yesterday = await service.own_projection(db, family.id, child, anchor=kst_yesterday)
     assert proj_kst_yesterday["today_earned"] == 0, "the entry must not double-count on the UTC-adjacent day"
+
+
+async def test_projection_kst_boundary_independent_of_server_local_timezone_deducted_side(db):
+    """Mirrors test_projection_kst_boundary_independent_of_server_local_timezone
+    for the deducted (negative-amount) side. `_sum_ledger` shares one
+    `occurred_date_kst` expression for both the `positive=True` and
+    `positive=False` branches, so this is expected to behave identically --
+    but MONGLE-W7-5-MARKPOINT-PROJECTION-FOCUSED-INDEPENDENT-QA-001 (QA-F-002)
+    found no committed deterministic test actually exercised the deducted
+    side at a KST/UTC boundary; only the non-deterministic, real-clock-timed
+    test_projection_derives_every_figure_from_the_ledger did. This closes
+    that gap with a permanent, deterministic regression test."""
+    family = await _family(db)
+    manager = await _member(db, family.id, "manager")
+    child = await _member(db, family.id, "child")
+    await _grant(db, manager, "point_admin")
+
+    kst_today = date(2026, 6, 15)
+    kst_yesterday = date(2026, 6, 14)
+    early_morning_kst = _utc_at_kst_date(kst_today, 0)  # 2026-06-14 15:00 UTC
+    assert early_morning_kst.date() == kst_yesterday, "sanity: this instant really is the previous UTC calendar day"
+
+    db.add(
+        MarkpointLedgerEntry(
+            family_group_id=family.id,
+            family_membership_id=child.id,
+            amount=-18,
+            entry_type="MANUAL_DEBIT",
+            source_type="manual_adjustment",
+            source_identifier="kst-midnight-deduction",
+            idempotency_key="manual:kst-midnight-deduction",
+            created_by_membership_id=manager.id,
+            occurred_at=early_morning_kst,
+        )
+    )
+    await db.commit()
+
+    proj_kst_today = await service.own_projection(db, family.id, child, anchor=kst_today)
+    assert proj_kst_today["today_deducted"] == 18, "the deduction belongs to its KST calendar day, not the UTC one"
+
+    proj_kst_yesterday = await service.own_projection(db, family.id, child, anchor=kst_yesterday)
+    assert proj_kst_yesterday["today_deducted"] == 0, "the deduction must not double-count on the UTC-adjacent day"
 
 
 async def test_projection_different_anchor_dates_isolate_correctly(db):
