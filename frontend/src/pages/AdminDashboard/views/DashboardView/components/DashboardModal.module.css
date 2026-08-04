@@ -58,6 +58,36 @@
   border-bottom: 1px solid #F9FAFB;
 }
 
+/* Button-reset layer for consumers that turn a .missionRow into a clickable
+   row (canonical 2m drill-down) without affecting the plain <div> usages of
+   .missionRow elsewhere in this shared module. */
+.missionRowButton {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.missionRowButton:hover {
+  background: #F9FAFB;
+}
+
+/* ── canonical 2m embedded overlay ── */
+.detailOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(23, 16, 58, .35);
+  padding: 16px;
+  overflow-y: auto;
+}
+
 .missionText {
   flex: 1;
   font-size: 13px;

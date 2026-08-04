@@ -1,5 +1,130 @@
 # Current Relay
 
+## MONGLE-W7-4-ADMIN-CANONICAL-CONTRACT-EXPANSION-001 (developer, current)
+
+- Intended edits: `frontend/src/screens/admin/MissionManagement/**` (new
+  canonical Screen + Screen-local `AdminDataGrid` common component);
+  `frontend/src/screens/admin/ParentDashboard/**` (new canonical Screen,
+  6-section slot composition); `frontend/src/screens/admin/
+  MissionCreateForm/**` (expanded prop contract: multi-assignee/quick-
+  point/date-mode/payload-carrying onCreate); `frontend/src/pages/
+  AdminDashboard/views/MissionView/MissionView.tsx` (rewritten Product
+  Container) + `.module.css` (deleted, unused) + `components/
+  NewMissionModal.tsx` (rewritten) + `.module.css` (deleted, unused);
+  `frontend/src/pages/AdminDashboard/views/DashboardView/DashboardView.tsx`
+  (rewritten outer shell, all 6 real sections + 4 prior overlays passed
+  through as slots unchanged); `frontend/src/pages/
+  {MissionManagementPreview,ParentDashboardPreview}/index.tsx` (rewritten,
+  duplicate CSS modules deleted); `MONGLE_W7_4_LIVE_CONSUMER_INTEGRATION_
+  AUDIT_MATRIX.csv` (12 new additive columns for the 3 rows, chained
+  alongside — not overwriting — the prior task's own 12 columns for the
+  same rows); this task's own new report/handoff/QA evidence; `active.md`
+  (new entry + a cross-reference update on `MONGLE-W7-4-PRODUCT-
+  STRUCTURE-INTEGRATION-001 (REOPENED)`'s own entry); this relay.
+- Scope: PM Decision Option 1 — expand the canonical contracts for `2e`
+  (미션 관리), `2i` (보호자 대시보드), `2l` (미션 생성 폼) to losslessly
+  absorb real product functionality the prior task found conflicting with
+  each frozen mockup, then product-integrate all 3. No backend/migration/
+  Auth/Markpoint/Family/Wagle edit, no W7.6 start, no commit/push.
+- Protected: every already-real, already-tested component this task
+  composes via slot/renderRow instead of reimplementing — `WeeklyGrid.tsx`,
+  `MissionCard.tsx`, `MissionCardEdit.tsx`, `ProposedMissionSection.tsx`,
+  `PlayerStatusCard.tsx`, `BalanceSection.tsx`, `RecentAlerts.tsx`,
+  `WeeklyActivityChart.tsx`, `TemplateManager.tsx`, `TemplateModal.tsx`,
+  `ImportMissionModal.tsx` (all confirmed 0 diff); `PointView.tsx`/
+  `NotificationView.tsx`/`FeedbackView.tsx`/`ConfigView.tsx` (untouched
+  Admin sub-domains); every other product domain; the prior two lineage
+  tasks' own uncommitted output (this session's only pre-existing dirty
+  state, left exactly as written).
+- Status: all 3 screens implemented and product-integrated. Static
+  validation clean (`pnpm run lint`/`build`, `git diff --check` clean on
+  first attempt, `check_all.py`). A mid-task design flaw (2e's proposed-
+  mission list initially reimplemented inline, orphaning the real
+  `ProposedMissionSection.tsx`) was self-caught via `grep` before
+  finalizing and corrected to slot composition. Browser/E2E runtime NOT
+  executed this session — same disclosed gap as both prior lineage tasks.
+  Verdict: CONDITIONAL. Full detail: `agent-system/handoffs/active/
+  MONGLE-W7-4-ADMIN-CANONICAL-CONTRACT-EXPANSION-001.md`.
+
+## MONGLE-W7-4-ADMIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001 (developer, current)
+
+- Intended edits: `frontend/src/screens/admin/{MissionApproval,
+  UserManagementDetail}/**` (new canonical Screens, embedded-prop
+  pattern); `frontend/src/screens/admin/{MissionDetailForm,
+  MissionStatisticsDashboard,MissionStatisticsFilter}/**` (widened prop
+  contracts: embedded/value/players/payload-carrying onApply — pre-
+  existing extractions from a prior session, not re-created);
+  `frontend/src/pages/{MissionApprovalPreview,UserManagementDetailPreview}/
+  index.tsx` (rewritten to consume the new Screens, duplicate CSS modules
+  deleted); `frontend/src/pages/AdminDashboard/views/{DashboardView,
+  PlayerView}/**` (Product Container wiring — additive overlays/triggers
+  only); `MONGLE_W7_4_LIVE_CONSUMER_INTEGRATION_AUDIT_MATRIX.csv` (same 12
+  additive columns the Wagle task introduced, now populated for the 10
+  Admin rows); this task's own new report/handoff/QA evidence; `active.md`
+  (new entry + a cross-reference note on `MONGLE-W7-4-PRODUCT-STRUCTURE-
+  INTEGRATION-001 (REOPENED)`'s own entry); this relay.
+- Scope: implement every implementation-ready Admin canonical Screen with
+  no real blocker (5/8: `1m,2a,2m,2x,3b`), single-source with the Detached
+  Preview, preserving all existing real functionality. Regression-review
+  (not modify) `2t` (already complete). Leave `2o`'s pre-existing infra
+  blocker untouched. Defer `2e`/`2i`/`2l` with full code evidence after
+  finding their frozen canonical contracts cannot carry the real, richer
+  functionality already relied upon without either deleting capability or
+  redesigning the frozen visual — neither performed. No backend/migration/
+  Auth/Markpoint/Family/Wagle edit, no W7.6 start, no commit/push.
+- Protected: `MissionView.tsx`, `NewMissionModal.tsx`, and
+  `DashboardView.tsx`'s pre-existing 6 real sections (not modified for the
+  2e/2i/2l conflict — only additive overlays for 1m/2m/2x/3b were added to
+  DashboardView, which is a different, non-conflicting kind of edit);
+  `PointView.tsx`, `NotificationView.tsx`, `FeedbackView.tsx`,
+  `ConfigView.tsx` (untouched Admin sub-domains); every other product
+  domain; the prior Wagle task's own uncommitted output (this session's
+  only pre-existing dirty state, left exactly as written).
+- Status: implementation complete for the 5/5 blocker-free implementation-
+  ready targets. Static validation clean (`pnpm run lint`/`build`, `git
+  diff --check` clean on first attempt this time, `check_all.py`).
+  Browser/E2E runtime NOT executed this session — same disclosed gap as
+  the Wagle predecessor. Verdict: CONDITIONAL. Full detail:
+  `agent-system/handoffs/active/MONGLE-W7-4-ADMIN-SINGLE-SOURCE-PRODUCT-
+  INTEGRATION-001.md`.
+
+## MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-INTEGRATION-001 (developer, current)
+
+- Intended edits: `frontend/src/screens/wagle/FamilyChat/**` (new
+  canonical Screen); `frontend/src/pages/FamilyChatPreview/index.tsx`
+  (rewritten to consume it, duplicate CSS module deleted);
+  `frontend/src/platform/wagle/WagleRoomView.{tsx,module.css}` (Product
+  Container now consumes the canonical Screen for its room pane;
+  room-list/realtime/overlays unchanged); `MONGLE_W7_4_LIVE_CONSUMER_
+  INTEGRATION_AUDIT_MATRIX.csv` (12 new additive columns, 7 Wagle rows
+  populated, all write-once historical columns untouched); this task's
+  own new report/handoff/QA evidence; `active.md` (new entry + a
+  cross-reference note on `MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001
+  (REOPENED)`'s own entry); this relay.
+- Scope: implement the one Wagle canonical Screen (`1d`) the current
+  Matrix marks implementation-ready into the real product, single-source
+  with the Detached Preview, preserving all existing real functionality
+  (room list/selection, realtime, send/retry, reply/settings/files
+  overlay triggers, board link). Regression-review (not modify) the 3
+  already-complete Wagle screens (`1t`/`2g`/`3d`). Defer the 3 genuinely
+  blocked ones (`2b` infra, `3c`/`3e` design decision) untouched. No
+  backend/migration/Admin/Auth/Markpoint/Family edit, no W7.6 start, no
+  commit/push.
+- Protected: `frontend/src/platform/**` outside `wagle/WagleRoomView.*`
+  (not touched); `backend/app/domains/family/**` (not touched, confirmed
+  by diff); the `minecraft_points_festivals` repository (a separate `.git`
+  clone, not this worktree — confirmed, not assumed, after a mid-task
+  "SCOPE CORRECTION" instruction incorrectly claimed otherwise); every
+  other product domain; pre-existing dirty work (there was none — this
+  session's own Start Gate found a clean tree).
+- Status: implementation complete for the 1/1 implementation-ready Wagle
+  target. Static validation clean (`pnpm run lint`/`build`, `git diff
+  --check`, `check_all.py`). Browser/E2E runtime NOT executed this
+  session — no local `backend/.venv`/PostgreSQL available; disclosed as a
+  measurement gap, not claimed PASS. Verdict: CONDITIONAL. Full detail:
+  `agent-system/handoffs/active/MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-
+  INTEGRATION-001.md`.
+
 ## MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-AUDIT-CONDITIONAL-CLOSEOUT-REMEDIATION-001 (remediation writer, current)
 
 - Intended edits: `engineering/phase2/MONGLE_W7_4_LIVE_CONSUMER_

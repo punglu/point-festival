@@ -950,6 +950,149 @@ are separate axes.
   Independent QA per `.claude/agents/test-agent.md` has not started for
   any phase.
 
+## MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-INTEGRATION-001
+
+- Task ID: MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-INTEGRATION-001
+- Kind: Developer Agent implementation task — bind the Wagle-owned
+  canonical Screens the latest Matrix/remediation marked
+  implementation-ready into the real product, single-source with the
+  Detached Preview. Not an audit; the first code-level follow-through on
+  `MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001 (REOPENED)`'s own
+  `CONFIRMED_CANONICAL_RESKIN_MISSING: 1b, 1c, 1d` finding, for the `1d`
+  third of that finding specifically (Wagle scope only; `1b`/`1c` are
+  Family/Markpoint domains, out of this task's charter).
+- Lifecycle: IN_PROGRESS
+- Decision: NOT_REVIEWED (developer self-check only; no Independent QA yet)
+- Verification: CONDITIONAL — Wagle target set re-derived from the current
+  Matrix (7 rows, not the stale 6-item prior candidate list — `1d` was
+  missing from that list). Of 7: `1d` implemented
+  (`READY_FOR_LEGACY_REPLACEMENT` → product-integrated, single canonical
+  source with `FamilyChatPreview`); `1t`/`2g`/`3d` already complete,
+  regression-reviewed, unmodified; `2b`/`3c`/`3e` deferred on pre-existing,
+  genuine infrastructure/design blockers this task's charter forbids
+  resolving unilaterally. Static validation clean (lint/build/typecheck/
+  `git diff --check`/`check_all.py`), but no browser/E2E runtime was
+  available in this environment (no local `backend/.venv`, no local
+  PostgreSQL) — disclosed as NOT_EXECUTED rather than assumed PASS.
+- Execution: DEVELOPER_SELF_CHECK_COMPLETE (implementation done; runtime
+  verification pending a session with a usable backend/Postgres runtime)
+- Closeout Contract: v1
+- Mid-task note: a "SCOPE CORRECTION" instruction arrived claiming
+  `frontend/src/platform/**` (this task's edit target) was unapproved
+  "Doran" draft work from a supposedly-shared worktree with
+  `minecraft_points_festivals`. Independently verified false (separate
+  `.git` clones, not a shared worktree; no `DoranLanding.tsx` anywhere in
+  this repository) before any protected-path edit occurred; PM confirmed
+  and cancelled it; no rollback needed. Full detail in this task's own
+  handoff/QA evidence.
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- HANDOFF Path: agent-system/handoffs/active/MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- QA Evidence Path: agent-system/qa/MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- Next Action: focused runtime/E2E re-verification
+  (`tests/e2e/specs-mongle/03-target-ui.spec.ts` Journey 4,
+  `04-w75-data-wiring.spec.ts`) once a Postgres/backend runtime is
+  available in-session; then the same single-source pattern for `1b`
+  (Family) and `1c` (Markpoint) to close out
+  `MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001`'s full 3-screen finding;
+  or `MONGLE-W7-4-ADMIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001` per this
+  task's own report.
+
+## MONGLE-W7-4-ADMIN-CANONICAL-CONTRACT-EXPANSION-001
+
+- Task ID: MONGLE-W7-4-ADMIN-CANONICAL-CONTRACT-EXPANSION-001
+- Kind: Developer Agent implementation task, resolving the 3 screens
+  (`2e`, `2i`, `2l`) `MONGLE-W7-4-ADMIN-SINGLE-SOURCE-PRODUCT-
+  INTEGRATION-001` (below) deferred. PM decision Option 1: expand each
+  canonical Screen's data/input/behavior contract to losslessly absorb
+  the real product's own richer functionality, rather than deleting real
+  features or keeping legacy/custom screens permanently parallel.
+- Lifecycle: IN_PROGRESS
+- Decision: NOT_REVIEWED (developer self-check only; no Independent QA yet)
+- Verification: CONDITIONAL — all 3 screens implemented and
+  product-integrated with 0 loss of existing real functionality (verified
+  via `git diff --name-only` showing 0 changes to every already-real
+  component composed via slot/renderRow: `WeeklyGrid.tsx`,
+  `MissionCard.tsx`, `MissionCardEdit.tsx`, `ProposedMissionSection.tsx`,
+  `PlayerStatusCard.tsx`, `BalanceSection.tsx`, `RecentAlerts.tsx`,
+  `WeeklyActivityChart.tsx`). `2e`: canonical Screen now composes the real
+  WeeklyGrid/ProposedMissionSection as slots, a new Screen-local
+  `AdminDataGrid` common component (assembled from this repo's own
+  existing table/card-grid conventions, not invented) hosts the mission
+  row list, plus newly-real client-side status-filter/search. `2i`: 6 real
+  dashboard sections composed as named slots — the charter's own
+  explicitly-listed strategy for a "real structure differs from frozen
+  mockup" shape, same pattern already open for `1b`/`1c`/`1d` (cross-
+  referenced below). `2l`: canonical form gained real multi-assignee/
+  quick-point/date-mode fields and a payload-carrying `onCreate`, wired
+  into `NewMissionModal.tsx`'s existing real `Promise.all` fan-out. Static
+  validation clean (lint/build/typecheck/`git diff --check`/
+  `check_all.py`); no browser/E2E runtime available in this environment,
+  the same disclosed gap carried by both prior tasks in this lineage.
+- Execution: DEVELOPER_SELF_CHECK_COMPLETE (all 3 screens implemented;
+  runtime verification pending a session with a usable backend/Postgres
+  runtime)
+- Closeout Contract: v1
+- Mid-task self-correction: an initial `2e` design typed the proposed-
+  mission list directly into the canonical model and reimplemented its
+  card rendering, which would have silently orphaned the real
+  `ProposedMissionSection.tsx` — caught by this task's own
+  `grep -rl "ProposedMissionSection"` check before the report was
+  written, corrected to a `proposedSlot` composition prop. Disclosed in
+  the QA evidence.
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-ADMIN-CANONICAL-CONTRACT-EXPANSION-001.md
+- HANDOFF Path: agent-system/handoffs/active/MONGLE-W7-4-ADMIN-CANONICAL-CONTRACT-EXPANSION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-ADMIN-CANONICAL-CONTRACT-EXPANSION-001.md
+- QA Evidence Path: agent-system/qa/MONGLE-W7-4-ADMIN-CANONICAL-CONTRACT-EXPANSION-001.md
+- Next Action: focused runtime/E2E re-verification across the whole W7.4
+  lineage (Wagle + Admin Wave 1 + this expansion) once a Postgres/backend
+  runtime is available in-session; `2o` remains its own separate,
+  unresolved infrastructure blocker (no policy API exists); then
+  re-derive the Matrix for the next domain (Auth is an unverified guess).
+
+## MONGLE-W7-4-ADMIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001
+
+- Task ID: MONGLE-W7-4-ADMIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001
+- Kind: Developer Agent implementation task, following the same pattern as
+  `MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-INTEGRATION-001` — bind
+  Admin-owned implementation-ready canonical Screens into the real
+  product, single-source with the Detached Preview, extracting only
+  genuinely-repeated common components.
+- Lifecycle: IN_PROGRESS
+- Decision: NOT_REVIEWED (developer self-check only; no Independent QA yet)
+- Verification: CONDITIONAL — Admin target set re-derived from the current
+  Matrix (10 rows: `1m, 2a, 2e, 2i, 2l, 2m, 2o, 2t, 2x, 3b`). Of 8
+  implementation-ready rows, 5 implemented (`1m, 2a, 2m, 2x, 3b`); `2t`
+  already complete, unmodified; `2o` remains its pre-existing
+  infrastructure blocker, unmodified. 3 rows (`2e, 2i, 2l`) — all
+  `READY_FOR_LEGACY_REPLACEMENT` in the Matrix — were found during actual
+  implementation to have a real structural conflict: their frozen
+  canonical mockup's own no-payload callback contract cannot carry the
+  materially richer real functionality already relied upon in
+  `MissionView.tsx`/`DashboardView.tsx`/`NewMissionModal.tsx` (multi-
+  assign creation, WeeklyGrid/template/import machinery, a 6-section real
+  dashboard) without either deleting real capability or redesigning the
+  frozen visual — both outside this task's authority. Deferred with full
+  evidence rather than forced either way; `2i`'s conflict is the same
+  shape already open for `1b`/`1c`/`1d` under the REOPENED entry below.
+  Static validation clean (lint/build/typecheck/`git diff --check`/
+  `check_all.py`); no browser/E2E runtime available in this environment,
+  same disclosed gap as the Wagle predecessor.
+- Execution: DEVELOPER_SELF_CHECK_COMPLETE (implementation done for the
+  blocker-free set; runtime verification and the 3 deferred screens'
+  PM/design decision both pending)
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-ADMIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- HANDOFF Path: agent-system/handoffs/active/MONGLE-W7-4-ADMIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-ADMIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- QA Evidence Path: agent-system/qa/MONGLE-W7-4-ADMIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- Next Action: PM decision on `2e`/`2i`/`2l`'s newly-discovered structural
+  conflicts (recommend folding into the same reconciliation the REOPENED
+  entry below already owns for `1b`/`1c`/`1d`); focused runtime/E2E
+  re-verification for both this task and the Wagle predecessor once a
+  Postgres/backend runtime is available in-session; then re-derive the
+  Matrix for the next domain (Auth is an unverified guess, not confirmed).
+
 ## MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001 (REOPENED)
 
 - Task ID: MONGLE-W7-4-PRODUCT-STRUCTURE-INTEGRATION-001
@@ -1020,6 +1163,26 @@ are separate axes.
 - QA Evidence: none new under this reopen; original graduated entry
   (`agent-system/graduated/2026-08.md`) carries a cross-reference to this
   reopened record.
+- Cross-reference (2026-08-04): `MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-
+  INTEGRATION-001` (above) implemented the `1d` third of this entry's own
+  `CONFIRMED_CANONICAL_RESKIN_MISSING: 1b, 1c, 1d` finding — `WagleLanding`
+  → `WagleRoomView` now renders the canonical `FamilyChatScreen` (1d),
+  single-sourced with `FamilyChatPreview`, code-review-verified (runtime
+  E2E pending). `1b` (Family) and `1c` (Markpoint) remain unaddressed —
+  this reopen's finding is not fully closed until both are done.
+- Cross-reference (2026-08-05): `MONGLE-W7-4-ADMIN-SINGLE-SOURCE-PRODUCT-
+  INTEGRATION-001` found the identical "real page richer than frozen
+  mockup" shape for `2i` (보호자 대시보드) — `DashboardView.tsx` already
+  exceeds 2i's simple mockup with 6 real sections. Recommends folding
+  `2i`'s reconciliation into this same open finding rather than treating
+  it as a separate question; not yet actioned by PM.
+- Cross-reference (2026-08-05, update): `MONGLE-W7-4-ADMIN-CANONICAL-
+  CONTRACT-EXPANSION-001` resolved `2i` via PM-approved contract
+  expansion (children/slot composition for the 6 real sections) rather
+  than a `1b`/`1c`/`1d`-style reskin decision — `2i` is now IMPLEMENTED,
+  single-sourced, all 6 real sections preserved unchanged. This does NOT
+  resolve `1b`/`1c`/`1d`'s own still-open reskin-vs-real-page question;
+  those three remain unaddressed under this reopen's own finding.
 
 ## MONGLE-W7-2-REMAINING-REACT-CANONICAL-PORT-001
 

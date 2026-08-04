@@ -15,9 +15,17 @@
  * The client deduplicates on message id and detects sequence gaps; when it
  * reports one, this screen refetches that room's history rather than leaving a
  * hole the user would read as missing messages.
+ *
+ * MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-INTEGRATION-001: the room pane
+ * (header/thread/composer) now renders the canonical `FamilyChatScreen` (1d)
+ * instead of ad hoc JSX — this file is now the Product Container/adapter, the
+ * Screen is the single presentational source shared with `FamilyChatPreview`.
+ * The room-list sidebar and every overlay stay exactly as they were: they are
+ * real Product Container concerns (navigation, real API/hooks), not part of
+ * the 1d canonical contract.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 
 import {
   listMessages,
@@ -37,6 +45,8 @@ import { ChatSettingsScreen, chatSettingsFixture } from '../../screens/wagle/Cha
 import type { ChatSettingsModel } from '../../screens/wagle/ChatSettings';
 import { FileViewerScreen, fileViewerFixture } from '../../screens/wagle/FileViewer';
 import type { FileViewerModel } from '../../screens/wagle/FileViewer';
+import { FamilyChatScreen } from '../../screens/wagle/FamilyChat';
+import type { FamilyChatMessage, FamilyChatModel } from '../../screens/wagle/FamilyChat';
 import styles from './WagleRoomView.module.css';
 
 const CONNECTION_LABEL: Record<WagleConnectionState, string> = {
@@ -84,73 +94,60 @@ function buildFileViewerModel(roomTitle: string): FileViewerModel {
   return { ...fileViewerFixture, subtitle: roomTitle };
 }
 
-function MessageRow({
-  message,
-  ownParticipantId,
-  onReply,
-  replyPreview,
-}: {
-  message: WagleMessage;
-  ownParticipantId: string | null;
-  onReply: (message: WagleMessage) => void;
-  /** The quoted body this message replies to, if any -- looked up client-side
-   *  from the already-loaded message page (`reply_to_message_id`, W7.5 Phase
-   *  C). `undefined` when this message is not a reply, or its parent has
-   *  scrolled out of the currently loaded page. */
-  replyPreview?: string;
-}) {
-  const isService = message.message_type === 'SERVICE_ACTION';
-  const isOwn = !isService && message.sender_participant_id === ownParticipantId;
+// Real-data adapter for the 1d canonical Screen (product integration,
+// W7.4-WAGLE-SINGLE-SOURCE-001). `ownParticipantId` is resolved from the
+// signed-in account's own `family_membership_id` against this room's real
+// participants (see `ownParticipantId` below) — previously this was a
+// disclosed `null` gap ("no participant lookup wired yet") on the 2g
+// adapter; participants are now loaded whenever a room is selected (not only
+// when the settings overlay opens), so both the header avatar stack and this
+// own/other split use the same real fetch.
+function toFamilyChatMessages(
+  messages: WagleMessage[],
+  ownParticipantId: string | null,
+  participantNameById: Map<string, string>,
+): FamilyChatMessage[] {
+  const messageBodyById = new Map<string, string>();
+  for (const m of messages) if (!m.deleted && m.body) messageBodyById.set(String(m.id), m.body);
 
-  if (isService) {
-    // A ServicePrincipal message must never look like a person's. It gets its
-    // own presentation and an explicit service label rather than a name.
-    return (
-      <li className={styles.serviceRow} data-message-id={message.id} data-actor="service">
-        <div className={styles.serviceCard}>
-          <span className={styles.serviceBadge}>{message.service_code ?? '서비스'}</span>
-          <span className={styles.serviceBody}>
-            {message.deleted ? message.tombstone : message.body ?? '서비스 알림'}
-          </span>
-        </div>
-      </li>
-    );
-  }
+  return messages.map((message) => {
+    const time = new Date(message.created_at).toLocaleTimeString('ko-KR', {
+      hour: 'numeric',
+      minute: '2-digit',
+    });
 
-  return (
-    <li
-      className={`${styles.messageRow} ${isOwn ? styles.own : styles.other}`}
-      data-message-id={message.id}
-      data-actor={isOwn ? 'self' : 'other'}
-    >
-      <div className={styles.bubble}>
-        {replyPreview && !message.deleted && (
-          <span className={styles.replyQuote} data-testid={`wagle-reply-quote-${message.id}`}>
-            ↩ {replyPreview}
-          </span>
-        )}
-        {message.deleted ? (
-          <span className={styles.tombstone}>{message.tombstone ?? '삭제된 메시지'}</span>
-        ) : (
-          <span className={styles.body}>{message.body}</span>
-        )}
-      </div>
-      {!message.deleted && !isService && (
-        <button
-          type="button"
-          className={styles.replyTrigger}
-          onClick={() => onReply(message)}
-          aria-label="답장하기"
-          data-testid={`wagle-reply-${message.id}`}
-        >
-          ↩
-        </button>
-      )}
-    </li>
-  );
+    if (message.message_type === 'SERVICE_ACTION') {
+      return {
+        id: String(message.id),
+        kind: 'service',
+        body: message.body,
+        deleted: message.deleted,
+        tombstone: message.tombstone,
+        time,
+        serviceBadge: message.service_code ?? '서비스',
+      };
+    }
+
+    const isOwn = message.sender_participant_id !== null && message.sender_participant_id === ownParticipantId;
+    return {
+      id: String(message.id),
+      kind: isOwn ? 'own' : 'other',
+      authorName: isOwn
+        ? undefined
+        : (message.sender_participant_id && participantNameById.get(message.sender_participant_id)) || '가족',
+      body: message.body,
+      deleted: message.deleted,
+      tombstone: message.tombstone,
+      time,
+      replyPreview: message.reply_to_message_id
+        ? messageBodyById.get(String(message.reply_to_message_id))
+        : undefined,
+    };
+  });
 }
 
 export function WagleRoomView() {
+  const context = useFamilyContextStore((s) => s.context);
   const activeFamilyId = useFamilyContextStore((s) => s.activeFamilyId);
   const [state, setState] = useState<ScreenState>('loading');
   const [rooms, setRooms] = useState<WagleRoomSummary[]>([]);
@@ -162,28 +159,59 @@ export function WagleRoomView() {
   const [replyTarget, setReplyTarget] = useState<WagleMessage | null>(null);
   const [showReplyOverlay, setShowReplyOverlay] = useState(false);
   const [activeOverlay, setActiveOverlay] = useState<'none' | 'settings' | 'files'>('none');
-  const [settingsMembers, setSettingsMembers] = useState<WagleParticipant[] | null>(null);
-  const listEndRef = useRef<HTMLDivElement | null>(null);
+  const [roomParticipants, setRoomParticipants] = useState<WagleParticipant[] | null>(null);
+  const [, setSearchParams] = useSearchParams();
 
+  // MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-INTEGRATION-001: participants now
+  // load whenever a room is selected, not only when the settings overlay
+  // opens — the canonical 1d header's avatar stack and own/other bubble split
+  // need this same real list. `MongleAppShell`'s `isWagleConversationMobile`
+  // mobile-header-hiding switch (Wave 6.0B §6.1) reads this room id back out
+  // of the URL, which is why `selectedRoomId` is mirrored into `?room=` below.
   useEffect(() => {
-    if (activeOverlay !== 'settings' || activeFamilyId === null || !selectedRoomId) return undefined;
+    if (activeFamilyId === null || !selectedRoomId) {
+      setRoomParticipants(null);
+      return undefined;
+    }
     const controller = new AbortController();
     listParticipants(activeFamilyId, selectedRoomId, controller.signal)
-      .then(setSettingsMembers)
-      .catch(() => setSettingsMembers([]));
+      .then(setRoomParticipants)
+      .catch(() => setRoomParticipants([]));
     return () => controller.abort();
-  }, [activeOverlay, activeFamilyId, selectedRoomId]);
+  }, [activeFamilyId, selectedRoomId]);
+
+  useEffect(() => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (selectedRoomId) next.set('room', selectedRoomId);
+        else next.delete('room');
+        return next;
+      },
+      { replace: true },
+    );
+  }, [selectedRoomId, setSearchParams]);
 
   const selectedRoom = useMemo(
     () => rooms.find((r) => String(r.id) === selectedRoomId) ?? null,
     [rooms, selectedRoomId],
   );
 
-  const messageBodyById = useMemo(() => {
+  const participantNameById = useMemo(() => {
     const map = new Map<string, string>();
-    for (const m of messages) if (!m.deleted && m.body) map.set(String(m.id), m.body);
+    for (const p of roomParticipants ?? []) map.set(p.id, p.account_display_name);
     return map;
-  }, [messages]);
+  }, [roomParticipants]);
+
+  const myMembershipId = useMemo(
+    () => context?.families.find((f) => f.id === activeFamilyId)?.membership.id ?? null,
+    [context, activeFamilyId],
+  );
+
+  const ownParticipantId = useMemo(
+    () => roomParticipants?.find((p) => p.family_membership_id === myMembershipId)?.id ?? null,
+    [roomParticipants, myMembershipId],
+  );
 
   const loadRooms = useCallback(async (familyId: number, signal?: AbortSignal) => {
     setState('loading');
@@ -259,10 +287,6 @@ export function WagleRoomView() {
     return () => controller.abort();
   }, [activeFamilyId, selectedRoomId, loadMessages, primeCursor]);
 
-  useEffect(() => {
-    listEndRef.current?.scrollIntoView({ block: 'end' });
-  }, [messages]);
-
   const handleSend = async () => {
     if (activeFamilyId === null || !selectedRoomId || draft.trim() === '') return;
     setSending(true);
@@ -296,6 +320,33 @@ export function WagleRoomView() {
       setSending(false);
     }
   };
+
+  const familyChatModel: FamilyChatModel | null = useMemo(() => {
+    if (!selectedRoom) return null;
+    return {
+      roomTitle: selectedRoom.title ?? '가족 대화',
+      participants: (roomParticipants ?? []).map((p) => ({ id: p.id, name: p.account_display_name })),
+      connectionState,
+      connectionLabel: CONNECTION_LABEL[connectionState],
+      messages: toFamilyChatMessages(messages, ownParticipantId, participantNameById),
+      draft,
+      sending,
+      sendError,
+      replyBannerText: replyTarget && !showReplyOverlay ? (replyTarget.body ?? '') : null,
+    };
+  }, [
+    selectedRoom,
+    roomParticipants,
+    connectionState,
+    messages,
+    ownParticipantId,
+    participantNameById,
+    draft,
+    sending,
+    sendError,
+    replyTarget,
+    showReplyOverlay,
+  ]);
 
   if (activeFamilyId === null) {
     return (
@@ -373,116 +424,23 @@ export function WagleRoomView() {
       </aside>
 
       <div className={styles.roomPane}>
-        {selectedRoom ? (
-          <>
-            <header className={styles.roomHeader}>
-              <button
-                type="button"
-                className={styles.backButton}
-                onClick={() => setSelectedRoomId(null)}
-                aria-label="대화방 목록으로"
-              >
-                ←
-              </button>
-              <h2 className={styles.roomHeaderTitle}>{selectedRoom.title ?? '가족 대화'}</h2>
-              <span
-                className={styles.connection}
-                data-testid="wagle-connection-state"
-                data-state={connectionState}
-              >
-                {CONNECTION_LABEL[connectionState]}
-              </span>
-              <button
-                type="button"
-                className={styles.headerAction}
-                onClick={() => setActiveOverlay('files')}
-                aria-label="사진/파일"
-                data-testid="wagle-open-files"
-              >
-                🖼
-              </button>
-              <button
-                type="button"
-                className={styles.headerAction}
-                onClick={() => setActiveOverlay('settings')}
-                aria-label="채팅방 설정"
-                data-testid="wagle-open-settings"
-              >
-                ⚙
-              </button>
-            </header>
-
-            {messages.length === 0 ? (
-              <p className={styles.empty} data-testid="wagle-messages-empty">
-                아직 메시지가 없어요.
-              </p>
-            ) : (
-              <ol className={styles.messages} data-testid="wagle-messages">
-                {messages.map((message) => (
-                  <MessageRow
-                    key={String(message.id)}
-                    message={message}
-                    ownParticipantId={null}
-                    replyPreview={
-                      message.reply_to_message_id
-                        ? messageBodyById.get(String(message.reply_to_message_id))
-                        : undefined
-                    }
-                    onReply={(m) => { setReplyTarget(m); setShowReplyOverlay(true); }}
-                  />
-                ))}
-              </ol>
-            )}
-            <div ref={listEndRef} />
-
-            {replyTarget && !showReplyOverlay && (
-              <div className={styles.replyBanner} data-testid="wagle-reply-banner">
-                <span className={styles.replyBannerText}>답장: {replyTarget.body ?? ''}</span>
-                <button
-                  type="button"
-                  onClick={() => setReplyTarget(null)}
-                  aria-label="답장 취소"
-                  data-testid="wagle-reply-cancel"
-                >
-                  ✕
-                </button>
-              </div>
-            )}
-            <div className={styles.composer}>
-              <label className={styles.srOnly} htmlFor="wagle-draft">
-                메시지 입력
-              </label>
-              <input
-                id="wagle-draft"
-                className={styles.input}
-                value={draft}
-                disabled={sending}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    void handleSend();
-                  }
-                }}
-                placeholder="메시지를 입력하세요"
-                data-testid="wagle-composer-input"
-              />
-              <button
-                type="button"
-                className={styles.primary}
-                disabled={sending || draft.trim() === ''}
-                onClick={() => void handleSend()}
-                data-testid="wagle-send"
-              >
-                {sending ? '전송 중…' : '보내기'}
-              </button>
-            </div>
-            {sendError && (
-              <p className={styles.error} role="alert">
-                {sendError}
-              </p>
-            )}
-          </>
+        {selectedRoom && familyChatModel ? (
+          <FamilyChatScreen
+            model={familyChatModel}
+            onBack={() => setSelectedRoomId(null)}
+            onDraftChange={setDraft}
+            onSend={() => void handleSend()}
+            onReplyMessage={(messageId) => {
+              const target = messages.find((m) => String(m.id) === messageId);
+              if (target) {
+                setReplyTarget(target);
+                setShowReplyOverlay(true);
+              }
+            }}
+            onCancelReply={() => setReplyTarget(null)}
+            onOpenSettings={() => setActiveOverlay('settings')}
+            onOpenFiles={() => setActiveOverlay('files')}
+          />
         ) : (
           <p className={styles.empty}>대화방을 선택해주세요.</p>
         )}
@@ -506,7 +464,7 @@ export function WagleRoomView() {
       {activeOverlay === 'settings' && (
         <div className={styles.replyOverlay} data-testid="wagle-settings-overlay">
           <ChatSettingsScreen
-            model={buildChatSettingsModel(selectedRoom?.title ?? '가족 대화', settingsMembers)}
+            model={buildChatSettingsModel(selectedRoom?.title ?? '가족 대화', roomParticipants)}
             onBack={() => setActiveOverlay('none')}
           />
         </div>

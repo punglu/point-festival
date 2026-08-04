@@ -12,12 +12,13 @@ interface Props {
   onToggleLock:                 () => void;
   onToggleDashboardVisibility:  () => void;
   onDelete:                     () => void;
+  onOpenDetail?:                () => void;
 }
 
 export default function PlayerProfileCard({
   player, index, achievementRate, totalMissions,
   onChangePin, onChangePhoto, onToggleLock,
-  onToggleDashboardVisibility, onDelete,
+  onToggleDashboardVisibility, onDelete, onOpenDetail,
 }: Props) {
   const color = PLAYER_COLORS[index % PLAYER_COLORS.length];
 
@@ -55,6 +56,8 @@ export default function PlayerProfileCard({
       </div>
 
       <div className={styles.actions}>
+        {/* canonical 2a (사용자 관리 상세) 진입점 */}
+        <button className={styles.btnAction} onClick={onOpenDetail}>상세보기</button>
         <button className={styles.btnAction} onClick={onChangePin}>PIN 변경</button>
         <button className={styles.btnAction} onClick={onChangePhoto}>사진 변경</button>
         <button className={player.is_locked ? styles.btnDanger : styles.btnAction} onClick={onToggleLock}>

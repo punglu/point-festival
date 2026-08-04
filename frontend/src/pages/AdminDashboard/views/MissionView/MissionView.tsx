@@ -1,15 +1,16 @@
-import { useState } from 'react';
-import styles from './MissionView.module.css';
+import { useMemo, useState } from 'react';
 import { useMissionView } from './hooks/useMissionView';
 import { httpClient } from '../../../../shared/api/httpClient';
 import MissionCard from './components/MissionCard';
 import MissionCardEdit from './components/MissionCardEdit';
-import ProposedMissionSection from './components/ProposedMissionSection';
 import NewMissionModal from './components/NewMissionModal';
 import WeeklyGrid from './components/WeeklyGrid';
+import ProposedMissionSection from './components/ProposedMissionSection';
 import TemplateModal from './components/TemplateModal';
 import TemplateManager from './components/TemplateManager';
 import ImportMissionModal from './components/ImportMissionModal';
+import { MissionManagementScreen } from '../../../../screens/admin/MissionManagement';
+import type { MissionManagementFilterStatus, MissionManagementModel } from '../../../../screens/admin/MissionManagement';
 import type { Mission } from '../../types/admin.types';
 
 interface Template {
@@ -22,6 +23,13 @@ interface Template {
   group_id: string | null;
 }
 
+// canonical 2e (미션 관리) -- W7.4-ADMIN-CANONICAL-CONTRACT-EXPANSION-001:
+// this Product Container now renders the expanded canonical Screen.
+// WeeklyGrid keeps fetching/rendering itself unchanged and is composed as
+// a slot (a Canonical Screen must never fetch directly). Every row's real
+// content is still MissionCard/MissionCardEdit exactly as before -- the
+// Screen's own AdminDataGrid only supplies the grid chrome, it does not
+// reimplement per-status conditional actions or inline-edit logic.
 export default function MissionView() {
   const {
     players, selectedPlayer, setSelectedPlayer,
@@ -37,6 +45,11 @@ export default function MissionView() {
   const [templateManagerOpen,  setTemplateManagerOpen]  = useState(false);
   const [importModalOpen,      setImportModalOpen]      = useState(false);
   const [editingTemplate,      setEditingTemplate]      = useState<Template | null>(null);
+  // 실제 canonical 2e mockup에 존재했지만 실제 제품에는 없던 상태 필터/검색 --
+  // 이미 로드된 regularMissions에 대한 순수 클라이언트 필터이므로 새 API 없이
+  // 실제로 동작하게 만든다 (신규 backend 요청 없음).
+  const [filterStatus,         setFilterStatus]         = useState<MissionManagementFilterStatus>('all');
+  const [searchQuery,          setSearchQuery]          = useState('');
 
   const handleGridCellSelect = (playerId: number, date: string) => {
     setSelectedDate(date);
@@ -71,112 +84,83 @@ export default function MissionView() {
     setTemplateModalOpen(true);
   };
 
+  const filteredMissions = useMemo(() => {
+    return regularMissions.filter((m) => {
+      if (filterStatus === 'active' && m.status !== 'active') return false;
+      if (filterStatus === 'completed' && m.status !== 'completed') return false;
+      if (searchQuery.trim() && !m.text.toLowerCase().includes(searchQuery.trim().toLowerCase())) return false;
+      return true;
+    });
+  }, [regularMissions, filterStatus, searchQuery]);
+
+  const model: MissionManagementModel = useMemo(() => {
+    const pendingCount = regularMissions.filter((m) => m.status === 'pending_approval').length + proposedMissions.length;
+    return {
+      stats: [
+        { label: '전체 미션', value: `${regularMissions.length + proposedMissions.length}개` },
+        { label: '진행 중', value: `${regularMissions.filter((m) => m.status === 'active').length}개` },
+        { label: '승인 대기', value: `${pendingCount}개` },
+      ],
+      playerOptions: players.map((p) => ({ id: p.id, name: p.name })),
+      selectedPlayerId: selectedPlayer,
+      selectedDate,
+      filterStatus,
+      searchQuery,
+      rows: filteredMissions.map((m) => ({
+        id: m.id,
+        content: editingId === m.id ? (
+          <MissionCardEdit
+            mission={m}
+            onSave={(data) => { updateMission(m.id, data); setEditingId(null); }}
+            onCancel={() => setEditingId(null)}
+          />
+        ) : (
+          <MissionCard
+            mission={m}
+            players={players}
+            onApprove={approve}
+            onReject={(id) => reject(id)}
+            onDelete={deleteMission}
+            onEdit={() => setEditingId(m.id)}
+            onEditTemplate={handleEditTemplate}
+            onUndoComplete={undoComplete}
+          />
+        ),
+      })),
+      canBulkApprove: selectedPlayer !== null && regularMissions.some((m) => m.status === 'pending_approval'),
+      loading,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    players, selectedPlayer, selectedDate, filterStatus, searchQuery,
+    proposedMissions, regularMissions, filteredMissions, editingId, loading,
+  ]);
+
   return (
-    <div className={styles.view}>
-      {/* 상단 타이틀 */}
-      <div className={styles.header}>
-        <h1 className={styles.title}>미션 관리</h1>
-      </div>
-
-      {/* 주간 그리드 */}
-      <WeeklyGrid
-        onSelectCell={handleGridCellSelect}
-        onBulkApprove={handleBulkApprove}
-      />
-
-      {/* 액션 바 */}
-      <div className={styles.actionBar}>
-        {/* 플레이어 필터 */}
-        <select
-          value={selectedPlayer ?? 'all'}
-          onChange={(e) => setSelectedPlayer(e.target.value === 'all' ? null : Number(e.target.value))}
-          className={styles.actionBtn}
-        >
-          <option value="all">전체</option>
-          {players.map(p => (
-            <option key={p.id} value={p.id}>{p.name}</option>
-          ))}
-        </select>
-
-        {/* 날짜 선택 */}
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          className={styles.actionBtn}
-        />
-
-        {/* 과거 미션 가져오기 */}
-        <button className={styles.actionBtn} onClick={() => setImportModalOpen(true)}>
-          📥 과거 미션 가져오기
-        </button>
-
-        {/* 일반 미션 추가 */}
-        <button className={styles.actionBtn} onClick={() => setAddMissionOpen(true)}>
-          ➕ 일반 미션 추가
-        </button>
-
-        {/* 반복미션 관리 */}
-        <button className={styles.actionBtn} onClick={() => setTemplateManagerOpen(true)}>
-          🔄 반복미션 관리
-        </button>
-      </div>
-
-      {/* 제안 미션 섹션 */}
-      {proposedMissions.length > 0 && (
-        <div className={styles.sectionGap}>
+    <>
+      <MissionManagementScreen
+        model={model}
+        embedded
+        weekGridSlot={<WeeklyGrid onSelectCell={handleGridCellSelect} onBulkApprove={handleBulkApprove} />}
+        proposedSlot={proposedMissions.length > 0 && (
           <ProposedMissionSection
             missions={proposedMissions}
             players={players}
             onApprove={approve}
             onReject={(id) => reject(id)}
           />
-        </div>
-      )}
+        )}
+        onSelectPlayer={setSelectedPlayer}
+        onSelectDate={setSelectedDate}
+        onFilterStatus={setFilterStatus}
+        onSearch={setSearchQuery}
+        onOpenImport={() => setImportModalOpen(true)}
+        onOpenAdd={() => setAddMissionOpen(true)}
+        onOpenTemplates={() => setTemplateManagerOpen(true)}
+        onBulkApprove={() => { if (selectedPlayer !== null) void handleBulkApprove(selectedPlayer, selectedDate); }}
+      />
 
-      {/* 전체 승인 버튼 */}
-      {regularMissions.some(m => m.status === 'pending_approval') && selectedPlayer !== null && (
-        <button
-          className={styles.bulkApproveBtn}
-          onClick={() => handleBulkApprove(selectedPlayer, selectedDate)}
-        >
-          전체 승인
-        </button>
-      )}
-
-      {/* 미션 카드 목록 */}
-      {loading ? (
-        <div className={styles.loading}>로딩 중...</div>
-      ) : regularMissions.length === 0 ? (
-        <div className={styles.empty}>이 날짜에 미션이 없습니다</div>
-      ) : (
-        <div className={styles.grid}>
-          {regularMissions.map((m: Mission) =>
-            editingId === m.id ? (
-              <MissionCardEdit
-                key={m.id}
-                mission={m}
-                onSave={(data) => { updateMission(m.id, data); setEditingId(null); }}
-                onCancel={() => setEditingId(null)}
-              />
-            ) : (
-              <MissionCard
-                key={m.id}
-                mission={m}
-                players={players}
-                onApprove={approve}
-                onReject={(id) => reject(id)}
-                onDelete={deleteMission}
-                onEdit={() => setEditingId(m.id)}
-                onEditTemplate={handleEditTemplate}
-                onUndoComplete={undoComplete}
-              />
-            )
-          )}
-        </div>
-      )}
-
-      {/* 일반 미션 추가 모달 */}
+      {/* 일반 미션 추가 모달 (canonical 2l 내장) */}
       <NewMissionModal
         open={addMissionOpen}
         onClose={() => setAddMissionOpen(false)}
@@ -219,6 +203,6 @@ export default function MissionView() {
         players={players}
         targetDate={selectedDate}
       />
-    </div>
+    </>
   );
 }

@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import styles from './DashboardModal.module.css';
 import { getLocalToday } from '../../../../../shared/utils/dateUtils';
+import { adminApi } from '../../../api/adminApi';
 import AdminModal from '../../../components/AdminModal/AdminModal';
 import PlayerTab from '../../../components/PlayerTab/PlayerTab';
+import { MissionDetailFormScreen } from '../../../../../screens/admin/MissionDetailForm';
+import type { MissionDetailFormModel } from '../../../../../screens/admin/MissionDetailForm';
 import type { Mission, Player } from '../../../types/admin.types';
 import type { CycleInfo } from '../../../hooks/useCycle';
 
@@ -12,6 +15,7 @@ interface Props {
   missions: Mission[];
   players:  Player[];
   cycle:    Pick<CycleInfo, 'startDate' | 'endDate'>;
+  onChanged?: () => void;
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -23,8 +27,30 @@ const STATUS_COLOR: Record<string, string> = {
   failed: '#DC2626', rejected: '#DC2626', proposed: '#6366F1',
 };
 
-export default function ActiveMissionDetailModal({ open, onClose, missions, players, cycle }: Props) {
+// canonical 2m (미션 상세 폼) 실데이터 adapter. 프로젝트 Mission에는 다건
+// 승인/반려 이력 API가 없다 (TRUE_FUNCTIONAL_GAP, 신규 API 없이 억지로 만들지
+// 않음) -- 이 미션 행 자신이 실제로 겪은 상태 1건만 history에 매핑한다.
+function toMissionDetailFormModel(mission: Mission, player: Player | undefined): MissionDetailFormModel {
+  const history: MissionDetailFormModel['history'] =
+    mission.status === 'completed' || mission.status === 'rejected'
+      ? [{
+          name: player?.name ?? '?',
+          time: mission.updated_at,
+          status: mission.status === 'completed' ? '승인' : '반려',
+        }]
+      : [];
+  return {
+    title: mission.text,
+    description: mission.proposal_reason ?? mission.rejection_reason ?? '',
+    assignees: player?.name ?? '?',
+    points: mission.point,
+    history,
+  };
+}
+
+export default function ActiveMissionDetailModal({ open, onClose, missions, players, cycle, onChanged }: Props) {
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
+  const [detailMissionId, setDetailMissionId] = useState<number | null>(null);
   const today = getLocalToday();
 
   const filtered = missions.filter((m) =>
@@ -42,6 +68,18 @@ export default function ActiveMissionDetailModal({ open, onClose, missions, play
   });
   const sortedDates = Object.keys(grouped).sort((a, b) => a.localeCompare(b));
 
+  const detailMission = detailMissionId !== null ? missions.find((m) => m.id === detailMissionId) ?? null : null;
+  const detailPlayer = detailMission ? players.find((p) => p.id === detailMission.player_id) : undefined;
+
+  const handleDelete = async () => {
+    if (!detailMission) return;
+    try {
+      await adminApi.deleteMission(detailMission.id);
+      setDetailMissionId(null);
+      onChanged?.();
+    } catch { /* ignore -- surfaced via existing admin toast conventions elsewhere */ }
+  };
+
   return (
     <AdminModal open={open} onClose={onClose} title="활성 미션 상세" width={520}>
       <PlayerTab players={players} selected={selectedPlayer} onSelect={setSelectedPlayer} />
@@ -55,7 +93,12 @@ export default function ActiveMissionDetailModal({ open, onClose, missions, play
               {grouped[date].map((m) => {
                 const player = players.find((p) => p.id === m.player_id);
                 return (
-                  <div key={m.id} className={styles.missionRow}>
+                  <button
+                    type="button"
+                    key={m.id}
+                    className={`${styles.missionRow} ${styles.missionRowButton}`}
+                    onClick={() => setDetailMissionId(m.id)}
+                  >
                     <span className={styles.missionText}>{m.text}</span>
                     <span className={styles.playerBadge}>{player?.name ?? '?'}</span>
                     <span className={styles.pointBadge}>{m.point}pt</span>
@@ -65,13 +108,25 @@ export default function ActiveMissionDetailModal({ open, onClose, missions, play
                     >
                       {STATUS_LABEL[m.status] ?? m.status}
                     </span>
-                  </div>
+                  </button>
                 );
               })}
             </div>
           ))
         )}
       </div>
+
+      {detailMission && (
+        <div className={styles.detailOverlay} data-testid="admin-mission-detail-overlay">
+          <MissionDetailFormScreen
+            embedded
+            model={toMissionDetailFormModel(detailMission, detailPlayer)}
+            onClose={() => setDetailMissionId(null)}
+            onSave={() => setDetailMissionId(null)}
+            onDelete={() => void handleDelete()}
+          />
+        </div>
+      )}
     </AdminModal>
   );
 }

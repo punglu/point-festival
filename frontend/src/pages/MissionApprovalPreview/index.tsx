@@ -1,3 +1,5 @@
-import styles from './MissionApprovalPreview.module.css';
-const rows=[['서연','방 청소하기','오늘 17:10 제출 · +40P'],['민준','동생과 사이좋게 지내기','오늘 16:40 제출 · +40P'],['서연','숙제 다 하기 · 독서록','오늘 15:52 제출 · +40P'],['민준','재활용 분리배출','오늘 8:05 제출 · +30P']];
-export function MissionApprovalPreview(){const noOp=()=>undefined;return <main className={styles.page} data-implementation-mode="ui-only" data-canonical-screen-id="1m"><aside><div className={styles.brand}>몽글<b>우리 가족</b><span>관리자 모드</span></div>{['대시보드','미션 관리','포인트 관리','사용자 관리','알림 관리','설정'].map((name,index)=><button type="button" key={name} className={index===1?styles.active:''} onClick={noOp}>○ <span>{name}</span></button>)}<footer><i>관</i><div><b>관리자</b><span>admin@ourfamily.com</span></div></footer></aside><section className={styles.main}><header><div><h1>미션 승인 대기함</h1><p>아이들이 제출한 완료 인증을 확인하고 승인해 주세요.</p></div><strong>◷ 승인 대기 4건</strong></header><div className={styles.stats}>{[['승인 대기','4건'],['오늘 승인','6건'],['오늘 반려','1건'],['지급 예정 포인트','150P']].map(([label,value])=><div key={label}><span>{label}</span><b>{value}</b></div>)}</div><section className={styles.list}><h2>승인 대기 미션</h2>{rows.map(([person,title,meta])=><article key={title}><i>{person}</i><div className={styles.photo}>인증사진</div><div><h3>{title}</h3><p>{person} · {meta}</p></div><button type="button" onClick={noOp}>반려</button><button type="button" className={styles.approve} onClick={noOp}>승인</button></article>)}</section></section></main>}
+import { MissionApprovalScreen, missionApprovalFixture } from '../../screens/admin/MissionApproval';
+
+export function MissionApprovalPreview() {
+  return <MissionApprovalScreen model={missionApprovalFixture} />;
+}

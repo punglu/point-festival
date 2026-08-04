@@ -9,6 +9,10 @@ interface Props {
   ranking: MissionRankItem[];
   players: Player[];
   cycle: CycleInfo;
+  /** Controlled player filter (shared with the canonical 3b filter overlay).
+   *  Falls back to this component's own local selection when omitted. */
+  selectedPlayer?: number | null;
+  onSelectPlayer?: (id: number | null) => void;
 }
 
 const RANK_STYLES: Record<number, { bg: string; color: string; label: string }> = {
@@ -17,8 +21,10 @@ const RANK_STYLES: Record<number, { bg: string; color: string; label: string }> 
   3: { bg: '#FFF7ED', color: '#C2673E', label: '🥉' },
 };
 
-export default function MissionRanking({ ranking, players, cycle }: Props) {
-  const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
+export default function MissionRanking({ ranking, players, cycle, selectedPlayer: controlledSelected, onSelectPlayer }: Props) {
+  const [localSelected, setLocalSelected] = useState<number | null>(null);
+  const selectedPlayer = controlledSelected !== undefined ? controlledSelected : localSelected;
+  const setSelectedPlayer = onSelectPlayer ?? setLocalSelected;
 
   const selectedName = selectedPlayer
     ? players.find((p) => p.id === selectedPlayer)?.name ?? null

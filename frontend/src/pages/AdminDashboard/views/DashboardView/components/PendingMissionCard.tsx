@@ -1,10 +1,10 @@
-import { useNavigate } from 'react-router-dom';
 import styles from './PendingMissionCard.module.css';
 import type { Mission, Player } from '../../../types/admin.types';
 
 interface Props {
   missions: Mission[];
   players: Player[];
+  onViewAll?: () => void;
 }
 
 function timeAgo(isoStr: string): string {
@@ -17,8 +17,7 @@ function timeAgo(isoStr: string): string {
   return `${Math.floor(hr / 24)}일 전`;
 }
 
-export default function PendingMissionCard({ missions, players }: Props) {
-  const navigate  = useNavigate();
+export default function PendingMissionCard({ missions, players, onViewAll }: Props) {
   const pending   = missions.filter((m) => m.status === 'pending_approval').slice(0, 4);
 
   return (
@@ -28,7 +27,11 @@ export default function PendingMissionCard({ missions, players }: Props) {
         {pending.length > 0 && (
           <span className={styles.countBadge}>{pending.length}</span>
         )}
-        <button className={styles.viewAll} onClick={() => navigate('/admin/missions')}>
+        {/* canonical 1m (미션 승인 대기함) -- W7.4-ADMIN-SINGLE-SOURCE-001:
+            previously navigated away to /admin/missions (a plain filtered
+            grid, no dedicated actionable queue); now opens the real
+            approval queue in place. */}
+        <button className={styles.viewAll} onClick={onViewAll}>
           전체 보기 →
         </button>
       </div>

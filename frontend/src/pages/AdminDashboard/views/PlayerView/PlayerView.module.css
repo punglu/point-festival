@@ -48,3 +48,16 @@
   .view { padding: 16px; }
   .grid { grid-template-columns: 1fr; }
 }
+
+/* ── canonical 2a embedded overlay ── */
+.detailOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(23, 16, 58, .35);
+  padding: 16px;
+  overflow-y: auto;
+}
