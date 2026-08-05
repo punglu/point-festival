@@ -2571,3 +2571,60 @@ that anything implementing it exists.
 - Next Action: PM review + commit/push decision on the still-uncommitted
   2-file diff on dev-newmarkp. Suggested next Task ID:
   MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-BRANCH-INTEGRATION-001.
+
+## MONGLE-W7-4-AUTH-FAMILY-MARKPOINT-COMBINED-FOCUSED-INDEPENDENT-QA-001
+
+- Task ID: MONGLE-W7-4-AUTH-FAMILY-MARKPOINT-COMBINED-FOCUSED-INDEPENDENT-QA-001
+- Lifecycle: COMPLETED
+- Decision: NOT_REVIEWED
+- Verification: CONDITIONAL (Auth PASS, Family PASS, Markpoint FAIL, Cross-domain FAIL)
+- Execution: SUCCEEDED
+- Phase Note: Fresh, independent session (did not author the W7.4 Auth/
+  Family/Markpoint integration, 281d45a). Built its own disposable isolated
+  stack (own Postgres + backend containers, distinct ports/project name from
+  the pre-existing persistent mongle-backend-1/mongle-db-1, which it
+  confirmed running unmodified before and after) and served the frontend
+  natively via pnpm/Vite against the current source tree, per
+  playwright.mongle-manual.config.ts's own documented "already running its
+  own isolated backend+frontend" scenario. Auth axis PASS: real profile-
+  select/PIN flow, locked-profile guard enforced independently at both UI
+  and API layers (direct POST /api/auth/login for the locked player -> 423,
+  no bypass), empty-list and unauthenticated-direct-nav handled cleanly, all
+  3 viewports. Family axis PASS: real authorization matrix via direct API
+  (member/no-membership/cross-family/unauthenticated all return the correct
+  403/403/403/401 with zero data leakage) plus matching real-data UI
+  corroboration across all 7 /family/* sub-routes and 3 viewports. Markpoint
+  axis FAIL: ran both committed specs (03-target-ui.spec.ts,
+  04-w75-data-wiring.spec.ts) for real against the isolated stack; root-
+  caused all 11 failures in the first spec to two causes -- 7 SPEC_STALE
+  (a renamed canonical heading "포인트 잔치" vs the spec's own outdated
+  "마크포인트" assertion, and a family-switch locator shape the UI no longer
+  uses) and a confirmed live PRODUCT_DEFECT: frontend/src/App.tsx registers
+  no <Route path="/markpoint/admin"> despite MongleAppShell's own nav
+  linking to it and MarkpointAdmin.tsx being fully built with every expected
+  data-testid -- direct navigation 404s for mission_manager, point_admin,
+  and a plain member alike, even though the backend's own authorization for
+  the same capability is independently confirmed correct (403 for a plain
+  member via direct API). Cross-domain axis FAIL: reproduced 3 times that a
+  legacy-PIN-bridged session selecting a family on a multi-family account
+  triggers GET /api/me/notifications -> 401 (confirmed specific to this one
+  route via direct curl contrast with a real Account-native token, which
+  gets 200 on the same endpoint), and httpClient.ts's global 401 interceptor
+  -- which already has two prior, structurally identical fixes for
+  /api/me/wagle/* and /api/chat/unread in its own OPTIONAL_ACCOUNT_ENDPOINTS
+  allow-list -- does not exempt this endpoint, so the entire session is
+  force-cleared and the user is bounced to the unauthenticated
+  profile-select screen. Backend Auth/Family/Markpoint-relevant pytest
+  subset (12 files): 213/213 passed. Frontend lint/build: clean. Zero
+  product/test changes; zero commits/pushes. All disposable containers,
+  scratch files, and fixtures torn down; pre-existing persistent stack
+  confirmed untouched.
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-AUTH-FAMILY-MARKPOINT-COMBINED-FOCUSED-INDEPENDENT-QA-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-AUTH-FAMILY-MARKPOINT-COMBINED-FOCUSED-INDEPENDENT-QA-001.md
+- Independent QA: this task IS the independent QA (independent from implementer: true)
+- Next Action: a future implementation task registers the missing
+  /markpoint/admin route and adds /api/me/notifications to
+  OPTIONAL_ACCOUNT_ENDPOINTS (or fixes its backend dependency, a PM
+  decision); a separate future Independent QA session re-verifies both
+  before either axis is claimed PASS again; a Branch Integration task
+  commits this evidence/handoff pair.

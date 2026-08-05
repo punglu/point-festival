@@ -1406,3 +1406,24 @@ re-verified against this session's own pre-insert baseline. Verdict: PASS.
 All scratch containers/worktrees torn down. No commit/push. No further
 occupancy — task complete, nothing left running or held open by this
 session.
+
+## MONGLE-W7-4-AUTH-FAMILY-MARKPOINT-COMBINED-FOCUSED-INDEPENDENT-QA-001 (2026-08-06)
+
+Independent QA (fresh session, not the implementer) of the W7.4 Auth/
+Family/Markpoint single-source integration (281d45a). Built its own
+disposable isolated stack (own Postgres + backend containers on distinct
+ports/project name, native pnpm/Vite frontend) rather than touching the
+pre-existing persistent mongle-backend-1/mongle-db-1 (confirmed running
+unmodified before and after). Auth: PASS. Family: PASS. Markpoint: FAIL —
+confirmed a live, currently-unregistered /markpoint/admin route (component
+fully built, nav already links to it, backend authorization already
+correct) via both spec runs and direct DOM/API evidence. Cross-domain:
+FAIL — confirmed a legacy-PIN-bridged session on a multi-family Family
+selection triggers an unrelated GET /api/me/notifications 401 that the
+existing global 401-interceptor allow-list (OPTIONAL_ACCOUNT_ENDPOINTS)
+does not cover, forcibly clearing the entire session. Both findings
+independently root-caused, not merely observed. Backend
+Auth/Family/Markpoint pytest subset 213/213. Frontend lint/build clean.
+Zero product/test changes, zero commits/pushes. All scratch
+containers/files torn down; pre-existing runtime confirmed untouched. No
+further occupancy held by this session.
