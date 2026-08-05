@@ -64,7 +64,17 @@ async def _require_permission(db: AsyncSession, membership: FamilyMembership, co
     # Retained read access deliberately does not disappear merely because the
     # Wagle subscription became suspended/cancelled.
     if code == READ:
-        retained = (await db.execute(select(Permission.id).join(RolePermission, RolePermission.permission_id == Permission.id).join(Role, Role.id == RolePermission.role_id).join(MembershipRoleAssignment, MembershipRoleAssignment.role_id == Role.id).where(MembershipRoleAssignment.membership_id == membership.id, MembershipRoleAssignment.revoked_at.is_(None), Role.is_active.is_(True), Permission.code == READ))).scalar_one_or_none()
+        # MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-REMEDIATION-001: this is an
+        # existence check ("does any currently-active role grant READ"), not a
+        # lookup of a specific row -- a membership legitimately holding 2+
+        # roles that each grant `wagle.messages.read` (e.g. `participant` and
+        # `room_admin` both do, per migration 0002) made this query return
+        # more than one row, and `scalar_one_or_none()` raised
+        # `MultipleResultsFound` (uncaught -> HTTP 500) instead of the
+        # intended "yes, retained" answer. `.limit(1)` makes the cardinality
+        # match what `scalar_one_or_none()` actually promises to handle,
+        # without changing which memberships are granted retained access.
+        retained = (await db.execute(select(Permission.id).join(RolePermission, RolePermission.permission_id == Permission.id).join(Role, Role.id == RolePermission.role_id).join(MembershipRoleAssignment, MembershipRoleAssignment.role_id == Role.id).where(MembershipRoleAssignment.membership_id == membership.id, MembershipRoleAssignment.revoked_at.is_(None), Role.is_active.is_(True), Permission.code == READ).limit(1))).scalar_one_or_none()
         if retained is not None:
             return
     if code not in await family_service.effective_permissions(db, membership): raise denied()
