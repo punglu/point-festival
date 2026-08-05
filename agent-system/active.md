@@ -2470,3 +2470,46 @@ that anything implementing it exists.
 - QA Evidence: agent-system/qa/MONGLE-W6-CANONICAL-UI-RECOVERY-BASELINE-001.md
 - Result: canonical archive remeasured; noncanonical connected UI routes detached;
   API, session, authorization, and realtime code parked pending R8 integration.
+
+## MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-REMEDIATION-001
+
+- Task ID: MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-REMEDIATION-001
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED
+- Verification: DEVELOPER_SELF_CHECK_COMPLETE
+- Execution: SUCCEEDED
+- Phase Note: Fixes the `/api/daily-points/range` 403-for-every-Admin gap
+  disclosed by MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-FOCUSED-
+  INDEPENDENT-QA-RUNTIME-COMPLETION-001. New `GET /api/admin/daily-points/range`
+  reuses the unchanged `get_daily_points_range` service function under
+  `get_current_admin`; existing player-only route untouched. Applied directly
+  onto this branch's working tree (uncommitted) — confirmed byte-identical
+  for both touched files between local HEAD `97bc09d` and `281d45a`.
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-REMEDIATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-REMEDIATION-001.md
+- Independent QA: complete, PASS — see MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-FOCUSED-INDEPENDENT-QA-001
+- Next Action: PM review; commit the uncommitted diff on `dev-newmarkp` (Independent QA PASS obtained, no code changes required by that QA pass)
+
+## MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-FOCUSED-INDEPENDENT-QA-001
+
+- Task ID: MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-FOCUSED-INDEPENDENT-QA-001
+- Lifecycle: COMPLETED
+- Decision: DESIGN_APPROVED
+- Verification: PASS
+- Execution: SUCCEEDED
+- Phase Note: Independent QA of the REMEDIATION-001 2-file diff. Fresh session,
+  did not author the change. Reconstructed `281d45a` + the real repo's current
+  2-file diff in a detached scratch worktree (real local HEAD `97bc09d` does
+  not yet contain `281d45a`'s DEFECT-001/002 admin-auth bridge, so this was
+  required, not optional). Independent isolated stack (ports 15444/18011/15445,
+  project names `mongleqa`/`mongleqapytest`, distinct from the developer's own
+  leftover `mongle` stack on 18001/15434, left untouched). Full 6-identity
+  authorization matrix on the new route, 5-point regression matrix, real-login
+  AdminDashboard UI check (both credential systems, 3 viewports), full backend
+  pytest 405/405 clean (stronger than the developer's own 404/1). All scratch
+  containers, images, and the git worktree torn down after use; DB baseline
+  confirmed restored.
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-FOCUSED-INDEPENDENT-QA-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-FOCUSED-INDEPENDENT-QA-001.md
+- Independent QA: this task IS the independent QA (independent from implementer: true)
+- Next Action: PM review + commit decision on the still-uncommitted 2-file diff on `dev-newmarkp`

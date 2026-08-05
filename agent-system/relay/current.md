@@ -1325,3 +1325,44 @@ belonging to another task was reset, restored, cleaned or stashed. All QA
 Docker containers/volumes/networks (disposable Postgres, cross-process
 fan-out harness, `--workers 2` runtime check, `mc_phase1` Playwright stack)
 were torn down at their own teardown — zero residue confirmed after each.
+
+## MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-REMEDIATION-001 (2026-08-05)
+
+Fixed the `/api/daily-points/range` 403-for-every-Admin gap (disclosed, not
+fixed, by the prior runtime-completion Independent QA). Added
+`GET /api/admin/daily-points/range` (Admin-scoped, reuses the existing
+`get_daily_points_range` query, `get_current_admin`-gated); updated
+`AdminDashboard/api/adminApi.ts` to call it. Existing player-only route
+untouched — self 200 / other-player 403 unchanged. Verified live: all 5
+identity types on the new route, AdminDashboard now shows real balancing
+points (`15pt` via a real `/api/admin/daily-points/adjust` credit, previously
+always `0pt`) across 3 viewports, reload-stable. Full backend pytest:
+404/405, the 1 failure is the already-registered `KNOWN-W7-5-WAGLE-
+CONCURRENCY-001` condition, confirmed present identically on unmodified
+`281d45a` and not worsened by this change (2 clean repeat runs). Applied
+directly onto `dev-newmarkp`'s working tree (uncommitted; both touched
+files are byte-identical between local HEAD `97bc09d` and `281d45a`, so no
+merge was needed to place it here). No commit/push. Next: Independent QA
+(`MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-FOCUSED-INDEPENDENT-QA-001`).
+
+## MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-FOCUSED-INDEPENDENT-QA-001 (independent QA, closed, 2026-08-05)
+
+Independent QA of the above task's 2-file diff. No product file touched (`backend/`,
+`frontend/src/` read-only to this task); only this file, `active.md`, and
+`agent-system/qa/COVERAGE_MAP.md` edited (append-only), plus this task's own
+new handoff/QA-evidence documents. All verification ran against a
+self-built, self-torn-down isolated stack (Docker projects `mongleqa` /
+`mongleqapytest`, ports 15444/18011/15445, native `pnpm run dev` frontend on
+:5174) — never against the developer's own leftover `mongle` stack
+(18001/15434), which was left running untouched. Real repo `dev-newmarkp`
+local HEAD stayed at `97bc09d` throughout; no commit/push/merge/rebase.
+Result: PASS — full 6-identity authorization matrix on the new route,
+5-point regression matrix, real-login-flow AdminDashboard UI check (both
+Account-native and legacy Admin, 3 viewports, reload-stable `15pt`), full
+backend pytest 405/405 clean (0 failures — stronger than the developer's own
+404/1; the registered `KNOWN-W7-5-WAGLE-CONCURRENCY-001` condition did not
+manifest this run). Full detail: `agent-system/qa/MONGLE-W7-4-ADMIN-DAILY-
+POINTS-RANGE-ACCESS-CONTRACT-FOCUSED-INDEPENDENT-QA-001.md`. This closes the
+Independent QA pending item the REMEDIATION-001 task's own entry named. No
+further occupancy — task complete, nothing left running or held open by
+this session.
