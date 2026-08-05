@@ -79,7 +79,7 @@ export const adminApi = {
     httpClient.get<DailyPoint[]>('/api/admin/daily-points', { params, signal }),
 
   getDailyPointsRange: (playerId: number, start: string, end: string, signal?: AbortSignal) =>
-    httpClient.get<DailyPoint[]>('/api/daily-points/range', { params: { player_id: playerId, start, end }, signal }),
+    httpClient.get<DailyPoint[]>('/api/admin/daily-points/range', { params: { player_id: playerId, start, end }, signal }),
 
   adjustDailyPoint: (data: { player_id: number; date: string; delta: number }, signal?: AbortSignal) =>
     httpClient.post<DailyPoint>('/api/admin/daily-points/adjust', data, { signal }),

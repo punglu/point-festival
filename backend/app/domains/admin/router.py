@@ -47,7 +47,7 @@ from app.domains.deduction.service import (
 )
 
 from app.domains.daily_point.schema import DailyPointAdjust, DailyPointResponse
-from app.domains.daily_point.service import adjust_daily_point, get_daily_points_admin
+from app.domains.daily_point.service import adjust_daily_point, get_daily_points_admin, get_daily_points_range
 
 from app.domains.cheer.schema import CheerCreate, CheerResponse
 from app.domains.cheer.service import upsert_cheer
@@ -241,6 +241,27 @@ async def admin_list_daily_points(
     _: dict = Depends(get_current_admin),
 ):
     return await get_daily_points_admin(db, player_id, target_date)
+
+
+# MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-REMEDIATION-001: the
+# player-facing `/api/daily-points/range` requires `get_current_player` and
+# self-scopes to the caller's own player_id, so it 403s for every Admin
+# session (Account-native or legacy alike) regardless of which player_id is
+# requested — Admin's balancing view needs an arbitrary player's range, not
+# its own. Rather than widen the player route's authorization (which would
+# let any Admin token bypass the self-only guarantee that route documents
+# for its real audience), this is a separate Admin-scoped route reusing the
+# same `get_daily_points_range` query unchanged: same data, same shape,
+# authorized by `get_current_admin` instead.
+@router.get("/daily-points/range", response_model=list[DailyPointResponse])
+async def admin_list_daily_points_range(
+    player_id: int = Query(...),
+    start_date: date = Query(..., alias="start"),
+    end_date: date = Query(..., alias="end"),
+    db: AsyncSession = Depends(get_db),
+    _: dict = Depends(get_current_admin),
+):
+    return await get_daily_points_range(db, player_id, start_date, end_date)
 
 
 @router.post("/daily-points/adjust", response_model=DailyPointResponse)
