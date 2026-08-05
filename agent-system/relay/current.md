@@ -1366,3 +1366,43 @@ POINTS-RANGE-ACCESS-CONTRACT-FOCUSED-INDEPENDENT-QA-001.md`. This closes the
 Independent QA pending item the REMEDIATION-001 task's own entry named. No
 further occupancy — task complete, nothing left running or held open by
 this session.
+
+## MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-REMEDIATION-001 (2026-08-05)
+
+Fixed a MultipleResultsFound -> HTTP 500 in Wagle's own READ permission
+check: a membership holding 2+ roles that each grant wagle.messages.read
+(participant + room_admin, both seeded by migration 0002) made a
+scalar_one_or_none() query return more than one row. Fixed with a single
+.limit(1) -- the check is existence-only ("does any active role grant
+READ"), not a specific-row lookup, so this changes no authorization
+outcome. Reproduced first (function call and real HTTP request both raised
+the exact exception), then A/B-confirmed the fix by reverting it and
+re-running the new tests (fail identically) before restoring. Discovered a
+real pre-existing invariant while building the 3-role test case:
+uq_active_membership_role (migration 0001) is a partial unique index that
+blocks assigning the same role twice to one membership while active --
+only 2 real wagle roles grant this permission, so the 3-role test inserts
+one test-scoped synthetic role and deletes it in a finally (roles/
+role_permissions are not truncated between tests). 6 new pytest cases,
+full backend suite 411/411 (405 baseline + 6 new, 0 failed -- the
+registered KNOWN-W7-5-WAGLE-CONCURRENCY-001 flaky did not manifest this
+run). Live curl + live Playwright smoke against the shared mongle-backend-1
+stack with a real dual-role DB row (inserted, deleted after). No commit/
+push; product code sits uncommitted on dev-newmarkp. Next: Independent QA
+(MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-FOCUSED-INDEPENDENT-QA-001).
+
+## MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-FOCUSED-INDEPENDENT-QA-001 (2026-08-05)
+
+Independent QA (fresh session, not the implementer) of the above. Built an
+isolated Target Revision in a detached scratch worktree (own Postgres, port
+15447), independently reproduced pre-fix MultipleResultsFound via a
+temporary revert (own scratch copy only, never the real repo), restored,
+confirmed byte-identical to the real diff. Own 6/6 new-test run, own
+411/411 full-suite run (KNOWN-W7-5-WAGLE-CONCURRENCY-001 clean, both
+in-suite and standalone), own real-login curl matrix against the shared
+stack (200 dual-role/401 unauthenticated/403 cross-family) using a
+disposable Account-native fixture, fully deleted, row counts independently
+re-verified against this session's own pre-insert baseline. Verdict: PASS.
+All scratch containers/worktrees torn down. No commit/push. No further
+occupancy — task complete, nothing left running or held open by this
+session.

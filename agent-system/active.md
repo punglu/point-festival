@@ -2513,3 +2513,61 @@ that anything implementing it exists.
 - QA Evidence: agent-system/qa/MONGLE-W7-4-ADMIN-DAILY-POINTS-RANGE-ACCESS-CONTRACT-FOCUSED-INDEPENDENT-QA-001.md
 - Independent QA: this task IS the independent QA (independent from implementer: true)
 - Next Action: PM review + commit decision on the still-uncommitted 2-file diff on `dev-newmarkp`
+
+## MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-REMEDIATION-001
+
+- Task ID: MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-REMEDIATION-001
+- Lifecycle: IN_PROGRESS
+- Decision: DESIGN_APPROVED
+- Verification: DEVELOPER_SELF_CHECK_COMPLETE
+- Execution: SUCCEEDED
+- Phase Note: Fixes a MultipleResultsFound -> HTTP 500 in
+  wagle/service.py::_require_permission's READ retained-access check.
+  Migration 0002 seeds both wagle roles (participant, room_admin) to grant
+  wagle.messages.read; a membership holding both made the check's
+  scalar_one_or_none() query return 2 rows. Fixed with .limit(1) (existence
+  check, not a specific-row lookup) -- 1 line. Reproduced before fixing
+  (function + real HTTP level), A/B-verified against unmodified code, 6 new
+  pytest cases (2/3-role allow, no-permission/no-membership/cross-family
+  deny), full backend suite 411/411, live curl + live Playwright smoke on
+  the shared stack. Uncommitted on dev-newmarkp's working tree.
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-REMEDIATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-REMEDIATION-001.md
+- Independent QA: required — see MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-FOCUSED-INDEPENDENT-QA-001
+- Next Action: PM review + Independent QA of the uncommitted diff on dev-newmarkp
+
+## MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-FOCUSED-INDEPENDENT-QA-001
+
+- Task ID: MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-FOCUSED-INDEPENDENT-QA-001
+- Lifecycle: COMPLETED
+- Decision: DESIGN_APPROVED
+- Verification: PASS
+- Execution: SUCCEEDED
+- Phase Note: Independent QA of the REMEDIATION-001 2-file diff. Fresh
+  session, did not author the change. Reconstructed the Target Revision in a
+  detached scratch worktree at real HEAD 0a1bde1 (byte-identical diff
+  confirmed against the real repo's own working tree). Own isolated Postgres
+  (port 15447, distinct from the developer's own leftover 15446/15435, both
+  already gone). Independently reproduced MultipleResultsFound pre-fix via a
+  temporary revert in the scratch copy only (2/6 new tests fail with the
+  identical exception), then independently confirmed the fix's absence of
+  the defect (6/6 pass) and restored the scratch copy to byte-identical with
+  the real diff. Full backend suite independently run: 411/411, 0 failed,
+  including a clean standalone pass of the KNOWN-W7-5-WAGLE-CONCURRENCY-001
+  test (did not manifest). Real-login curl matrix against the shared stack
+  (confirmed serving the byte-identical Target Revision source): dual-role
+  Account-native login -> 200 on wagle/rooms, unauthenticated -> 401,
+  cross-family -> 403, using a disposable insert-only fixture fully deleted
+  after, row counts independently re-verified back to the pre-task baseline.
+  Code-level review confirmed the fix is existence-check-only (no ORDER BY,
+  no downstream attribute use of the matched row), preserves
+  revoked_at/is_active filtering and family scoping exactly, and that
+  SEND/CREATE/MANAGE_ROOM/MANAGE_PARTICIPANTS never enter the fixed branch
+  at all. All scratch containers/worktrees torn down; DB baselines
+  (isolated and shared) confirmed restored.
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-FOCUSED-INDEPENDENT-QA-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-FOCUSED-INDEPENDENT-QA-001.md
+- Independent QA: this task IS the independent QA (independent from implementer: true)
+- Next Action: PM review + commit/push decision on the still-uncommitted
+  2-file diff on dev-newmarkp. Suggested next Task ID:
+  MONGLE-W7-4-WAGLE-MULTI-ROLE-CARDINALITY-BRANCH-INTEGRATION-001.
