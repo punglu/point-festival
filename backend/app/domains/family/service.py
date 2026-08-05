@@ -27,12 +27,21 @@ FAMILY_SERVICES_MANAGE = "family.services.manage"
 
 
 def _legacy_identity(user: dict) -> tuple[str, str, str]:
-    # The legacy dependency exposes player_id/is_admin.  Keep the Foundation
+    # The legacy dependency exposes player_id/is_admin. Keep the Foundation
     # adapter compatible while never trusting a client supplied Account id.
-    if "player_id" in user:
-        return "markpoint", "player_auth", str(user["player_id"])
+    #
+    # DEFECT-002 (MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-
+    # REMEDIATION-001): an admin JWT always carries a `player_id` key too
+    # (`authenticate_admin` sets it unconditionally, `None` when the admin
+    # has no linked player -- the normal case for a pure admin account), so
+    # checking key *presence* here misrouted every such admin token into
+    # the player-identity branch and crashed `int(str(None))`. The role
+    # check must come first: an admin token is never a player token, no
+    # matter what its own `player_id` claim holds.
     if user.get("role") == "admin":
         return "markpoint", "admin_auth", str(user["sub"])
+    if "player_id" in user:
+        return "markpoint", "player_auth", str(user["player_id"])
     return "markpoint", "player_auth", str(user["sub"])
 
 
@@ -107,6 +116,62 @@ async def resolve_current_account(db: AsyncSession, user: dict) -> Account:
     if account is None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="계정 매핑이 필요합니다")
     return account
+
+
+async def resolve_linked_admin_auth(db: AsyncSession, user: dict) -> Optional[AdminAuth]:
+    """The real, non-deleted legacy `admin_auth` row an Account-native
+    session's own Account is linked to, via the same `LegacyIdentityMapping`
+    bridge `resolve_current_account` already uses -- `None` when the token
+    is not an Account-native token, or the Account has no such mapping.
+
+    DEFECT-001 (MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-
+    REMEDIATION-001): `/admin`'s own backend surface recognizes no
+    authority other than the legacy `admin_auth` identity (confirmed: every
+    `/api/admin/*` route and every `require_admin`-gated route checks only
+    `role == "admin"`, with no family-scoped permission involved at all).
+    This is therefore not a new authority source or a new role — it lets
+    the *same* real person who already holds a legacy admin identity reach
+    `/admin` through the newer Account-native credential instead of only
+    the legacy login form, the same "one identity, two credential systems"
+    bridge already relied on for `/api/account-context` and every Wagle
+    route. An Account with no such mapping resolves to `None`, never a
+    fabricated or best-guess admin identity.
+    """
+    if user.get("role") != ACCOUNT_TOKEN_ROLE:
+        return None
+    try:
+        account = await auth_service.resolve_account_from_session_claim(db, user)
+    except HTTPException:
+        return None
+
+    mapped_admin_id = (
+        await db.execute(
+            select(LegacyIdentityMapping.legacy_identity_id).where(
+                LegacyIdentityMapping.account_id == account.id,
+                LegacyIdentityMapping.legacy_system == "markpoint",
+                LegacyIdentityMapping.legacy_identity_type == "admin_auth",
+                LegacyIdentityMapping.mapping_status == "linked",
+            )
+        )
+    ).scalar_one_or_none()
+    if mapped_admin_id is None:
+        return None
+    try:
+        legacy_id = int(mapped_admin_id)
+    except (TypeError, ValueError):
+        return None
+
+    return (
+        await db.execute(
+            select(AdminAuth).where(AdminAuth.id == legacy_id, AdminAuth.deleted_at.is_(None))
+        )
+    ).scalars().one_or_none()
+
+
+async def is_account_linked_to_admin(db: AsyncSession, user: dict) -> bool:
+    """Boolean form of `resolve_linked_admin_auth`, for callers that only
+    need the yes/no decision (e.g. `app.dependencies.require_admin`)."""
+    return await resolve_linked_admin_auth(db, user) is not None
 
 
 async def get_active_membership(db: AsyncSession, account_id: int, family_id: int) -> FamilyMembership:

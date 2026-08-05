@@ -3,6 +3,7 @@ import AuthPage from './pages/Auth';
 import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import { useAuthStore } from './shared/stores/useAuthStore';
+import { useFamilyContextStore } from './shared/stores/useFamilyContextStore';
 import ToastContainer from './shared/components/Toast/ToastContainer';
 import { FamilyContextLoader } from './shared/family/FamilyContextLoader';
 import { MongleAppShell } from './platform/shell/MongleAppShell';
@@ -103,10 +104,39 @@ function NotFoundPage() {
   );
 }
 
+// DEFECT-001 (MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-REMEDIATION-001):
+// a legacy admin token (`isAdmin`) is resolved instantly and unconditionally
+// allowed, as before. An Account-native session's own admin authority is
+// real but async (it comes from `/api/account-context`'s `is_admin`, itself
+// backed by the same `LegacyIdentityMapping` bridge the backend now checks
+// for `/api/admin/*` too) -- so this waits for that context to resolve
+// rather than either flashing admin content before it loads or redirecting
+// away before a real answer exists. A legacy *player* session (not admin,
+// not account) keeps its own already-correct `/dashboard` redirect
+// unchanged; an Account-native session denied admin access goes to the
+// real Account-native home (`/family`) instead of the legacy, player-only
+// `/dashboard` it used to be sent to, which 404s for an Account session.
 function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isLoggedIn, isAdmin } = useAuthStore();
-  if (!isLoggedIn || !isAdmin) return <Navigate to="/" replace />;
-  return <>{children}</>;
+  const { isLoggedIn, isAdmin, isAccountSession } = useAuthStore();
+  const contextStatus = useFamilyContextStore((s) => s.status);
+  const contextIsAdmin = useFamilyContextStore((s) => s.context?.is_admin ?? false);
+
+  if (!isLoggedIn) return <Navigate to="/" replace />;
+  if (isAdmin) return <>{children}</>;
+
+  if (isAccountSession) {
+    if (contextStatus === 'idle' || contextStatus === 'loading') {
+      return (
+        <section className={pageStyles.page} aria-busy="true">
+          <p>불러오는 중…</p>
+        </section>
+      );
+    }
+    if (contextIsAdmin) return <>{children}</>;
+    return <Navigate to="/family" replace />;
+  }
+
+  return <Navigate to="/dashboard" replace />;
 }
 
 function ProductContext({ children }: { children: React.ReactNode }) {

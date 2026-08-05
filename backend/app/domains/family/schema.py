@@ -164,6 +164,13 @@ class AccountContextResponse(BaseModel):
     account_id: int
     display_name: str
     families: List[FamilySummary]
+    # DEFECT-001 (MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-
+    # REMEDIATION-001): whether this Account is linked (via the existing
+    # LegacyIdentityMapping bridge) to a real legacy admin_auth identity --
+    # not a new authority, the same "one identity, two credential systems"
+    # bridge /api/account-context already resolves through. Additive field;
+    # every existing consumer that ignores it is unaffected.
+    is_admin: bool = False
 
 
 class FamilyResponse(BaseModel):

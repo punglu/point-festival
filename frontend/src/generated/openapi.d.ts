@@ -3115,6 +3115,11 @@ export interface components {
             display_name: string;
             /** Families */
             families: components["schemas"]["FamilySummary"][];
+            /**
+             * Is Admin
+             * @default false
+             */
+            is_admin: boolean;
         };
         /** AccountLoginRequest */
         AccountLoginRequest: {

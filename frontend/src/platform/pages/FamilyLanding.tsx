@@ -21,6 +21,7 @@ import { Link } from 'react-router-dom';
 
 import { useFamilyContextStore } from '../../shared/stores/useFamilyContextStore';
 import { AccessBoundary } from '../access/AccessBoundary';
+import { FamilyHomeContainer } from './FamilyHomeContainer';
 import styles from './FamilyLanding.module.css';
 
 const RELATIONSHIP_LABEL: Record<string, string> = {
@@ -132,6 +133,8 @@ export function FamilyLanding() {
 
   return (
     <section className={styles.page} aria-labelledby="family-title">
+      <FamilyHomeContainer familyId={family.id} familyName={family.name} />
+
       <header className={styles.header}>
         <p className={styles.eyebrow}>몽글 가족</p>
         <h1 id="family-title" data-testid="family-name">

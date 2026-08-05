@@ -1,0 +1,151 @@
+/* MONGLE-W6-PARALLEL-A2-FAMILY-HOME-MOBILE-VISUAL-001
+ * Canonical screen 1b (가족 홈), zones 1-4 (profile/hero/activity/services).
+ * Every value below is a literal from the canonical `1b` block — see
+ * MONGLE_W6_A2_FAMILY_HOME_MEASUREMENT.md §5/§6, carried over verbatim from
+ * the original FamilyHomePreview.module.css this Screen was extracted from.
+ * Zone 5 (bottom dock) is deliberately not part of this Screen: the real
+ * product route already renders MongleAppShell's own real nav in that
+ * position, and duplicating it here would be a second, dead nav bar. The
+ * dock is DEVICE_CHROME-equivalent, owned by whichever context renders this
+ * Screen standalone (the Preview), same reasoning this file already applied
+ * to the OS status bar/home indicator.
+ */
+
+.screen,
+.screen *,
+.screen *::before,
+.screen *::after { box-sizing: content-box; }
+
+.screen button { text-align: start; }
+
+.screen {
+  --fh-brand: #5a35df;
+  --fh-ink: #17103a;
+  --fh-tertiary: #8a83a8;
+  --fh-disabled: #a8a5b6;
+  --fh-hairline: #f0eef7;
+  --fh-canvas: #f7f6fc;
+
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+  padding: 10px 18px 6px;
+  background: linear-gradient(180deg, #f7f5fc 0%, #f8f7fc 38%, #faf9fd 74%, #fdfdfe 100%);
+  background-attachment: local;
+  color: var(--fh-ink);
+  font-family: "Noto Sans KR", system-ui, sans-serif;
+  text-rendering: auto;
+}
+
+/* ---------- Zone 1 — family identity / profile ---------- */
+.profile { display: flex; align-items: center; gap: 10px; }
+.avatarWrap { position: relative; width: 46px; height: 46px; flex: none; }
+.avatar {
+  width: 46px; height: 46px; display: block; object-fit: cover;
+  border: 2px solid #fff; border-radius: 50%;
+  box-shadow: 0 3px 10px rgba(60, 30, 120, .14);
+}
+.presence {
+  position: absolute; right: 0; bottom: 0; width: 13px; height: 13px;
+  border: 2.5px solid #fff; border-radius: 50%; background: #22c55e;
+}
+.greeting { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.greetingTitle { color: var(--fh-ink); font-size: 17px; font-weight: 900; line-height: normal; white-space: nowrap; }
+.greetingSub { color: var(--fh-tertiary); font-size: 12px; line-height: normal; }
+.bell {
+  position: relative; width: 28px; height: 28px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+}
+.bellIcon { width: 24.5px; height: 26px; display: block; object-fit: contain; }
+.bellDot {
+  position: absolute; right: 0; top: 1px; width: 9px; height: 9px;
+  border: 2px solid var(--fh-canvas); border-radius: 50%; background: var(--fh-brand);
+}
+
+/* ---------- Zone 2 — hero 가족 대화 ---------- */
+.hero {
+  position: relative; display: flex; overflow: hidden;
+  min-height: 178px; padding: 15px 20px; border-radius: 28px;
+  background: linear-gradient(135deg, #d9cbf8 0%, #c3aaf3 55%, #b79af0 100%);
+}
+.heroCopy { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 8px; }
+.heroTitle { color: var(--fh-ink); font-size: 28px; font-weight: 900; line-height: normal; }
+.heroBody { color: #3a3060; font-size: 13px; font-weight: 500; line-height: 1.5; }
+.heroCta {
+  margin-top: 4px; align-self: flex-start;
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 22px; border: 0; border-radius: 999px;
+  background: var(--fh-brand); box-shadow: 0 8px 18px rgba(70, 35, 180, .30);
+  color: #fff; font-family: inherit; font-size: 14px; font-weight: 700; line-height: normal;
+}
+.heroMascot {
+  position: absolute; right: -16px; bottom: -18px;
+  width: 200px; height: 200px; object-fit: contain; opacity: .95;
+}
+.typing {
+  position: absolute; right: 22px; top: 26px; display: flex; gap: 3px;
+  padding: 7px 14px; border-radius: 20px 20px 6px 20px; background: #fff;
+  box-shadow: 0 6px 14px rgba(50, 25, 110, .16);
+}
+.typing i { display: block; width: 7px; height: 7px; border-radius: 50%; background: var(--fh-tertiary); }
+
+/* ---------- Zone 3 — recent activity ---------- */
+.activity {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 12px; border-radius: 26px; background: #fff;
+  box-shadow: 0 6px 18px rgba(60, 30, 120, .06);
+}
+.activityHead { display: flex; align-items: center; justify-content: space-between; }
+.activityTitle { color: var(--fh-ink); font-size: 16px; font-weight: 700; line-height: normal; }
+.activityMore {
+  padding: 0; border: 0; background: transparent;
+  color: var(--fh-tertiary); font-family: inherit; font-size: 12px; font-weight: 400; line-height: normal;
+}
+.activityEmpty { color: var(--fh-tertiary); font-size: 12px; padding: 6px 0; }
+.activityRow { display: flex; align-items: center; gap: 10px; }
+.activityDivider { padding-bottom: 8px; border-bottom: 1px solid var(--fh-hairline); }
+.activityIcon {
+  width: 44px; height: 44px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; color: #fff; line-height: normal;
+}
+.star { background: linear-gradient(160deg, #ffe9a8, #f7cd5c); font-size: 17px; }
+.level { background: linear-gradient(160deg, #8b63f3, #5a35df); font-size: 15px; }
+.gift { background: linear-gradient(160deg, #ff9dbb, #ef4665); font-size: 15px; }
+.activityCopy { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.activityName { color: var(--fh-ink); font-size: 13px; font-weight: 700; line-height: normal; }
+.activityPoint { color: var(--fh-brand); font-size: 12px; font-weight: 700; line-height: normal; }
+.activityMeta { color: var(--fh-tertiary); font-size: 12px; line-height: normal; }
+.activityTime { flex: none; color: var(--fh-disabled); font-size: 11px; line-height: normal; }
+
+/* ---------- Zone 4 — service tiles ---------- */
+.services {
+  margin-top: 15px;
+  display: flex; flex-direction: column; gap: 5px;
+  padding: 5px 7px 3px; border-radius: 26px; background: #fff;
+  box-shadow: 0 6px 18px rgba(60, 30, 120, .06);
+}
+.servicesTitle { color: var(--fh-ink); font-size: 16px; font-weight: 700; line-height: normal; }
+.tileGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+.tile {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 14px 8px 8px; border: 1px solid #efecf8; border-radius: 20px;
+  background: #fff; font-family: inherit;
+}
+.tileActive { border: 2px solid var(--fh-brand); }
+.tileBadge {
+  position: absolute; top: 7px; right: 7px;
+  padding: 2px 6px; border-radius: 999px;
+  background: #eee8ff; color: #7c5aef; font-size: 9px; font-weight: 700; line-height: normal;
+}
+.tileImage { width: 52px; height: 52px; object-fit: contain; }
+.tileGlyph {
+  width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+  border-radius: 14px; background: #ede7fb;
+}
+.tileGlyph svg {
+  width: 22px; height: 22px; fill: none; stroke: #7c5aef;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.tileLabel { color: var(--fh-ink); font-size: 11px; font-weight: 700; line-height: normal; }
+.tileSub { color: var(--fh-tertiary); font-size: 9px; font-weight: 400; line-height: normal; }

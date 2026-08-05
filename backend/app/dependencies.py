@@ -4,8 +4,10 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.database import get_db
 
 security = HTTPBearer(auto_error=False)
 
@@ -55,14 +57,31 @@ async def get_current_user(
         )
 
 
-async def require_admin(user: dict = Depends(get_current_user)) -> dict:
-    """관리자 권한 필수 (role != 'admin'이면 403)"""
-    if user.get("role") != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="관리자 권한이 필요합니다",
-        )
-    return user
+async def require_admin(
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """관리자 권한 필수.
+
+    Legacy admin 토큰(`role == "admin"`)은 그대로 통과한다. Account-native
+    토큰(`role == "account"`)은 기존 `LegacyIdentityMapping` 브릿지를 통해
+    실제 admin_auth 신원과 연결된 경우에만 통과한다 -- DEFECT-001
+    (MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-REMEDIATION-001).
+    `/api/account-context`/Wagle이 이미 쓰는 것과 동일한 dual-credential
+    bridge이며, 새 권한 체계나 새 role을 도입하지 않는다. Import is local
+    to avoid a module-load-order dependency between this low-level module
+    and the domain layer.
+    """
+    if user.get("role") == "admin":
+        return user
+    from app.domains.family.service import is_account_linked_to_admin
+
+    if await is_account_linked_to_admin(db, user):
+        return user
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="관리자 권한이 필요합니다",
+    )
 
 
 async def get_current_player(user: dict = Depends(get_current_user)) -> dict:

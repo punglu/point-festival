@@ -231,7 +231,15 @@ async def account_context(user: dict = Depends(get_current_user), db: AsyncSessi
     for membership in await service.active_memberships_for_account(db, account.id):
         family = await service.get_family(db, membership.family_group_id)
         families.append(await _family_summary(db, family, membership))
-    return AccountContextResponse(account_id=account.id, display_name=account.display_name, families=families)
+    # DEFECT-001: real for both credential systems -- a legacy admin token
+    # is already `is_admin` by definition; an Account-native token is
+    # resolved through the same LegacyIdentityMapping bridge `service.
+    # is_account_linked_to_admin` uses for the /admin route guard, so the
+    # signal this response carries always matches what that guard decides.
+    is_admin = user.get("role") == "admin" or await service.is_account_linked_to_admin(db, user)
+    return AccountContextResponse(
+        account_id=account.id, display_name=account.display_name, families=families, is_admin=is_admin,
+    )
 
 
 @router.post("/api/families", response_model=FamilyResponse, status_code=status.HTTP_201_CREATED)

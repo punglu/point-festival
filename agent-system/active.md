@@ -3,6 +3,424 @@
 Only open tasks belong here. Lifecycle, decision, verification, and execution
 are separate axes.
 
+## MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-REMEDIATION-001
+
+- Task ID: MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-REMEDIATION-001
+- Kind: Developer Agent focused remediation — DEFECT-001 (`/admin`
+  unreachable for a genuine Account-native Admin identity) and DEFECT-002
+  (legacy Admin JWT with null `player_id` crashes `/api/account-context`)
+  only, as raised by `MONGLE-W7-4-CROSS-DOMAIN-PRODUCT-INTEGRATION-
+  INDEPENDENT-QA-001`. DEFECT-003 (Wagle), Auth/Family/Markpoint policy
+  blockers, and W7.6 explicitly out of scope.
+- Lifecycle: IN_PROGRESS (awaiting PM review / Independent QA)
+- Decision: NOT_REVIEWED
+- Verification: DEVELOPER_SELF_CHECK_COMPLETE / INDEPENDENT_QA_PENDING —
+  both defects freshly REPRODUCED before any edit (disposable seed data,
+  matches the QA task's own findings exactly). FIXED: DEFECT-002 by
+  reordering `_legacy_identity` to check `role=="admin"` before the
+  `"player_id" in user` presence test (backend/app/domains/family/
+  service.py). DEFECT-001 by widening `require_admin`
+  (backend/app/dependencies.py) **and** a second, independently-duplicated
+  `/api/admin/*` guard `get_current_admin` (backend/app/domains/auth/
+  dependencies.py) discovered mid-task — `/api/admin/*` never actually
+  routed through `require_admin` — both now accept an Account-native token
+  whose account resolves via the existing `LegacyIdentityMapping` bridge
+  to a linked `admin_auth` row; added `AccountContextResponse.is_admin`
+  (additive field) so the frontend has a real signal instead of decoding a
+  JWT role Account tokens never carry; `AdminProtectedRoute`
+  (frontend/src/App.tsx) consults it with a real loading state (no
+  admin-content flash), and the non-admin Account-session redirect target
+  fixed from the 404-prone `/dashboard` to the real `/family` home
+  (`AuthPage`'s own `isLoggedIn` redirect corrected the same way; legacy
+  non-admin player sessions keep their existing, correct `/dashboard`
+  redirect unchanged). A third, previously-unknown blocker surfaced only
+  once the route guard became reachable: `AdminDashboard`'s `MobileHeader`
+  unconditionally polls `/api/chat/unread` (legacy-only), and the global
+  401-interceptor in `httpClient.ts` read that 401 as session-expired and
+  force-logged-out an otherwise-correctly-authorized Account-native Admin
+  within ~1s — fixed with a 1-line addition to the existing
+  `OPTIONAL_ACCOUNT_ENDPOINTS` precedent (same mechanism already used for
+  `/api/me/wagle/`, not a new one). RUNTIME_VERIFIED: all 5 required
+  scenarios (Account-native Admin linked / legacy Admin valid-player /
+  legacy Admin null-player / authenticated non-Admin / unauthenticated)
+  pass via real UI-driven login — deep-link (`/admin/players`) and
+  session-restore-on-reload hold for A/B/C, logout clears the session
+  correctly for A/B, 3-viewport (390×844/820×1180/1180×820) check on
+  `/admin` clean (0 overflow, 0 page errors), regression smoke across
+  `/login`,`/`,`/family`,`/markpoint`,`/wagle`,`/admin` clean. `pnpm run
+  lint`/`build` clean; `git diff --check` clean; `check_all.py` clean
+  (report-only, 0 new warnings under this Task ID). Backend pytest suite
+  BLOCKED — this WSL session has no Docker, the isolated test DB
+  (`docker-compose.phase2.yml`, port 15435) is unreachable; a pre-existing
+  environment constraint, not something this task could fix within scope
+  — substituted with extensive live-`curl` verification against the
+  running dev backend across every identity permutation. One new,
+  pre-existing, out-of-scope defect found and explicitly NOT fixed:
+  `GET /api/daily-points/range` 403s for every Admin session (legacy or
+  Account-native alike, confirmed identical before/after this task's
+  changes) because it requires `role=="player"` literally — leaves the
+  Admin dashboard's weekly point-chart widget empty; does not block
+  `/admin` access or cause logout; tracked as
+  `API-W7-4-ADMIN-DASHBOARD-DAILY-POINTS-RANGE-PLAYER-ONLY-GAP-001`.
+  Deep-link-return-to-original-destination-after-login checked and found
+  absent for *every* protected route in the app (not just Admin, not
+  introduced now) — systemic, pre-existing, out of this task's minimal
+  scope. This is a developer self-check per Invariant 6 — NOT self-declared
+  as `INDEPENDENT_QA_PASS`, `W7_4_CLOSED`, or `W7_6_READY`.
+- Execution: SUCCEEDED (developer self-check execution; both defects
+  fixed and runtime-verified within declared scope; substantive verdict
+  is DEVELOPER_SELF_CHECK_COMPLETE, not INDEPENDENT_QA_PASS)
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-REMEDIATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-REMEDIATION-001.md
+- Constraints: DEFECT-001/002 identity-resolution/route-guard/redirect
+  contract only; no RBAC change, no new admin role, no DB schema/migration
+  change, no family-scoped permission invented, no rewiring of the legacy
+  `/api/admin/*` business-logic layer itself; DEFECT-003/Auth/Family/
+  Markpoint policy blockers/W7.6 untouched; all QA-owned seed data
+  (3 disposable accounts, 2 family groups, 3 `admin_auth` rows, 1
+  `legacy_identity_mappings` row, 1 disposable player, 1 service
+  subscription) additive-only, fully cleaned up by ID-scoped `DELETE`,
+  final row counts independently re-verified against the true pre-task
+  baseline; the 2 pre-existing real `admin_auth` rows (`dad`/`mom`) and 4
+  pre-existing real `players` rows read-only, confirmed unaffected; all
+  disposable `*.local.py`/`*.local.mjs` scripts removed, confirmed via
+  final `git status`; persistent dev stack reused (backend restarted
+  twice, only to pick up its own code edits — required since `uvicorn`
+  runs without `--reload` in this WSL native stack).
+- Next Action: (1) a genuinely independent (separate session) QA pass
+  should re-verify DEFECT-001/002's fix per
+  `MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-FOCUSED-INDEPENDENT-QA-001`,
+  since this task's own results are disclosed self-verification only,
+  per Invariant 6; (2) `API-W7-4-ADMIN-DASHBOARD-DAILY-POINTS-RANGE-
+  PLAYER-ONLY-GAP-001` (this task's own new finding) needs a dedicated
+  follow-up task; (3) DEFECT-003 (Wagle) remains open, out of this task's
+  scope; (4) W7.6 should not start until this task's own Independent QA
+  lands and the DEFECT-003/Auth/Family/Markpoint policy-blocker list is
+  reviewed.
+
+## MONGLE-W7-4-CROSS-DOMAIN-PRODUCT-INTEGRATION-INDEPENDENT-QA-001
+
+- Task ID: MONGLE-W7-4-CROSS-DOMAIN-PRODUCT-INTEGRATION-INDEPENDENT-QA-001
+- Kind: Independent (partial) QA of the whole W7.4 Wagle/Admin/Auth/Family/
+  Markpoint single-source lineage. Read-only — no product code changed.
+- Lifecycle: IN_PROGRESS (awaiting PM review; DEFECT-001/002 remediation
+  needed before this axis can close)
+- Decision: NOT_REVIEWED
+- Verification: **CONDITIONAL** — see full reasoning in this task's own QA
+  evidence §16. **Independence qualification (headline finding)**: Wagle
+  and Admin were already committed at this session's own starting HEAD
+  (implemented by a genuinely separate prior session) — real independence
+  holds. Auth/Family/Markpoint were implemented by this exact session
+  earlier in the same conversation — their results here are disclosed
+  self-verification, not Independent QA, per `agent-system/rules.md`
+  Invariant 6.
+  **Wagle**: first-ever real browser runtime check for this integration
+  (implementer's own handoff disclosed none was possible for them) — a
+  real room+message created via the actual HTTP API rendered correctly
+  through canonical `1d`; board nav, 3 viewports, Preview regression all
+  clean. Found and disclosed 1 real backend defect (below).
+  **Admin**: also the first real runtime attempt, but blocked by **2 real,
+  high-severity, pre-existing defects** (confirmed untouched by any of the
+  5 W7.4 domain tasks' own diffs) that make `/admin` currently unreachable
+  for any session with the standard admin-account shape — see DEFECT-001/
+  002 below. Fell back to code-level verification (all 10 canonical
+  Screens confirmed imported with 0 fixture leakage except the
+  already-disclosed `2o` blocker), which supports the implementer's own
+  claims.
+  **Auth**: reproduced the previously-never-verified locked-profile guard
+  live (disposable locked test player, cleaned up) — genuinely closes that
+  disclosed gap. `1a` real-data flow re-confirmed.
+  **Family/Markpoint**: denominators re-confirmed (32/8); `2f`/`2p`/`3i`
+  re-confirmed still fixture, `2y` re-confirmed genuinely real (matches
+  the implementer's own correction, no new stale classification found);
+  Markpoint's CSS-bug fix re-verified holding, the protected weekly-list
+  DOM contract JSX re-confirmed 0-diff.
+  **Cross-domain**: all 55 extracted canonical Screens independently
+  re-confirmed at exactly 2 real consumers (Product+Preview) each, 0
+  orphans, 0 Product→Preview imports, `AdminDataGrid` genuinely
+  screen-local (1 real consumer). Matrix: 64/64 rows, 0 duplicates,
+  write-once columns re-diffed byte-unchanged against HEAD (fresh script,
+  not the implementers' own claim).
+  **3 defects found, disclosed, not fixed** (read-only QA):
+  DEFECT-001 (HIGH) — `AdminProtectedRoute` accepts only the legacy
+  `isAdmin` flag, which real `accountLogin` never sets; DEFECT-002 (HIGH)
+  — legacy admin JWTs fail `/api/account-context` resolution whenever
+  `admin_auth.player_id` is null (the normal case), due to
+  `_legacy_identity`'s `"player_id" in user` presence-only check;
+  DEFECT-003 (MEDIUM) — Wagle's `_require_permission` crashes
+  (`500 MultipleResultsFound`) when a membership holds 2+ roles granting
+  the same permission. All 3 pre-existing, not regressions from this
+  wave's work.
+- Execution: SUCCEEDED (QA execution; substantive verdict is CONDITIONAL,
+  not PASS)
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-CROSS-DOMAIN-PRODUCT-INTEGRATION-INDEPENDENT-QA-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-CROSS-DOMAIN-PRODUCT-INTEGRATION-INDEPENDENT-QA-001.md
+- Constraints: read-only — no product/backend/CSS/test/fixture/migration
+  change; no test skip/relaxation; defects disclosed, not fixed; no
+  commit/push/merge/rebase; existing dirty (Auth/Family/Markpoint's own
+  uncommitted output) left exactly as found; persistent dev stack never
+  restarted; all QA-owned DB seeding additive-only and fully cleaned up
+  (independently re-verified 0-row/unchanged counts).
+- Next Action: (1) open a dedicated remediation task for DEFECT-001/002 —
+  likely highest priority, since it blocks real Admin usability entirely,
+  independent of any Screen's own correctness; (2) fold DEFECT-003 into
+  Wagle's existing hardening lineage or a new task; (3) a genuinely
+  independent (separate session) QA pass should still re-verify Auth/
+  Family/Markpoint, since this pass's own results for those three are
+  disclosed self-verification only; (4) W7.6 should not start until
+  DEFECT-001/002 are resolved or explicitly triaged and the already-open
+  PM/design/infrastructure decision list is reviewed. W7.5 overall
+  remains `CONDITIONAL`/`HUMAN_GATE`; W7.6 remains `BLOCKED`.
+
+## MONGLE-W7-4-MARKPOINT-SINGLE-SOURCE-PRODUCT-INTEGRATION-001
+
+- Task ID: MONGLE-W7-4-MARKPOINT-SINGLE-SOURCE-PRODUCT-INTEGRATION-001
+- Kind: Developer Agent implementation task — re-derive the Markpoint
+  domain's full canonical denominator from current code, verify `1x`'s real
+  ownership, and single-source every implementation-ready Markpoint screen
+  into the real product. Same lineage as the Wagle/Admin/Auth/Family
+  single-source integration tasks above.
+- Lifecycle: IN_PROGRESS (awaiting PM review / Independent QA)
+- Decision: NOT_REVIEWED
+- Verification: DEVELOPER_SELF_CHECK_COMPLETE / INDEPENDENT_QA_PENDING —
+  Markpoint denominator re-derived from `find frontend/src/screens/
+  markpoint` (6 pre-existing directories) + `1c` (newly extracted this
+  task, had none before — same "static ui-only stub, never live-wired"
+  shape found for `1j`/`1j-1` and `1b`) + `1x` (investigated per this
+  task's own data/screen/navigation/container ownership-axis instruction:
+  grep-confirmed zero real Product Entry/Container/navigation exists
+  anywhere for it in either frontend or backend, so it's counted by data
+  ownership only, deferred, not force-implemented) = **8**.
+  **`1c` (포인트 잔치) — root screen, same pattern as Family Home**:
+  `/markpoint` (`MarkpointUser.tsx`) is a real 550-line page whose own
+  docblock is explicit about never re-deriving balance/mission-status
+  client-side and about keeping spendable `current_balance` visually
+  separate from EXP `lifetime_earned`. The frozen canonical visual only
+  partially overlaps its structure. Resolved by composing only the
+  canonical Screen's header+profile-card zones
+  (`showWeeklySection={false}`, a new prop added for exactly this) into
+  the real page — real weekly day-list, deductions list, and all 6 real
+  overlay flows (mission detail/reject, level-up, 3 reward flows) are
+  byte-identical to before, confirmed by diff. Two concrete constraints,
+  found *before* writing layout code, ruled out adopting the canonical
+  Screen's own week-picker/cheer-message/single-day-list/history zones
+  into the Product: no backend "family cheer message" capability exists
+  anywhere (would be fabricating user content), and a committed E2E spec
+  (`tests/e2e/specs-mongle/03-target-ui.spec.ts`) already has a DOM
+  contract on the real always-expanded weekly day-list
+  (`<ol>/<li>`/`data-today`/`submit-mission-*`) the canonical single-day
+  picker does not reproduce — reading that spec first, not discovering the
+  conflict after breaking it. The Preview renders the **full** canonical
+  Screen via its own fixture; only the Product's own composition uses a
+  subset. **Real CSS bug found and fixed during composition**: an invalid
+  `font: 700 12px/normal inherit` shorthand (carried over verbatim from
+  the original Preview) was silently dropped by the browser, letting an
+  unrelated, pre-existing, unscoped `header button{font-size:24px}` rule
+  from a different stylesheet elsewhere in the repo leak onto this
+  canonical `<header><button>` and inflate it to 144×48px, starving the
+  sibling title text into a 21px column that wrapped one character per
+  line. Fixed with real longhand CSS properties plus a strengthened
+  `.header .logout` selector, confined to this task's own new file.
+  **`1k`/`1l`/`1s`/`2c`/`2h`/`2j`**: grep found all 6 already imported and
+  real-wired inside `MarkpointUser.tsx`'s own overlay logic; direct source
+  read re-confirmed each one's own already-disclosed real-vs-static
+  boundary (`1k`'s static photo-evidence notice, `2c`'s disclosed
+  `bonusPoints:0`/manual-only trigger — both real infrastructure/business-
+  rule gaps, not wiring gaps) — none modified. 1 implemented + 6 preserved
+  + 1 deferred = 8 = denominator.
+  Static validation clean (`pnpm lint`/`build`, `git diff --check`). Real
+  runtime verification executed: real login via a disposable, additive-
+  only synthetic seed account (never the repository's own blanket-delete
+  `phase1_seed_synthetic.py`), full cleanup independently re-verified at
+  exactly 0 rows; canonical `1c` header/profile render with real (honest
+  zero-state) data, `markpoint-balance`/`-level`/`-remaining` test-ids
+  exact-text-verified against the same contract the committed spec
+  asserts, reward-shop overlay + real logout both exercised live, 3
+  responsive viewports on both Product and Preview, Preview regression
+  (full Screen still renders). Not independently re-run this task: the
+  committed `03-target-ui.spec.ts`/`04-w75-data-wiring.spec.ts` suites
+  themselves (their own seeded accounts absent from this DB; provisioning
+  them safely was declined — see this task's own handoff) — their DOM
+  contract is preserved by 0-diff non-modification of the code they
+  depend on, not re-proven by execution; disclosed, not silently skipped.
+- Execution: SUCCEEDED (for the 1 implementation-ready target and the 6
+  confirmed-already-real rows; 1 row correctly deferred with fresh
+  evidence, not forced through)
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-MARKPOINT-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-MARKPOINT-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- Constraints: no backend/migration/policy/KST-UTC change; no Auth/Family/
+  Admin/Wagle code touched; no Preview deletion; no Product → Preview
+  import; no fabricating cheer-message data; no breaking the committed
+  weekly-day-list E2E contract; no W7.6 start; no commit/push/merge/
+  rebase; this Developer session does not self-declare Independent QA
+  PASS.
+- Next Action: PM review + a focused Independent QA pass — ideally
+  including an actual run of `03-target-ui.spec.ts`/`04-w75-data-wiring.
+  spec.ts` in an environment where the proper seeded synthetic accounts
+  can be provisioned without a blanket-delete risk (a genuinely isolated/
+  disposable database, as `tests/README.md` already specifies elsewhere).
+  `1x` remains open pending a genuine PM/design decision on whether and
+  where a weekly-report feature should be surfaced — no new decision item
+  introduced. W7.6 remains out of this task's scope, untouched.
+
+## MONGLE-W7-4-FAMILY-HOME-AND-DOMAIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001
+
+- Task ID: MONGLE-W7-4-FAMILY-HOME-AND-DOMAIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001
+- Kind: Developer Agent implementation task — re-derive the Family domain's
+  full canonical denominator from current code, prioritize Family Home
+  (`1b`), and single-source every implementation-ready Family screen into
+  the real product. Same lineage as the Wagle/Admin/Auth single-source
+  integration tasks above/below.
+- Lifecycle: IN_PROGRESS (awaiting PM review / Independent QA)
+- Decision: NOT_REVIEWED
+- Verification: DEVELOPER_SELF_CHECK_COMPLETE / INDEPENDENT_QA_PENDING —
+  Family denominator re-derived from `find frontend/src/screens/family`
+  (31 pre-existing directories) + `1b` (newly extracted this task, had none
+  before — same "static ui-only stub, never live-wired" shape the Auth
+  task found for `1j`/`1j-1`) = **32**. `1c/1k/1l/1s/2c/2h/2j` (Markpoint),
+  `1d/1t/2b/2g/3c/3d/3e` (Wagle), 11 Admin rows, the 5 Auth rows (this
+  session's own prior task), `1z` (specimen), and `1x` (주간 리포트, a
+  Markpoint-shaped unbuilt stub) all confirmed `NOT_FAMILY_DOMAIN` by
+  directory/file read.
+  **`1b` (Family Home) — top priority per task brief**: `/family`
+  (`platform/pages/FamilyLanding.tsx`) is a real, richly-reasoned page
+  (multi-family selector, family-admin-vs-service-admin badge separation,
+  7 feature links, permission list) that the frozen canonical visual only
+  partially overlaps. Resolved by composition, not force-fit: extracted
+  `screens/family/FamilyHome/FamilyHomeScreen.tsx` (zones 1-4 only; the
+  bottom dock stayed Preview-only, DEVICE_CHROME-equivalent since the real
+  route already has `MongleAppShell`'s own nav there), built a new
+  `FamilyHomeContainer` Product Adapter that mounts the canonical Screen
+  **above** every pre-existing real section (unmodified, not replaced).
+  Widened the tile contract (`highlighted`/`available` split) so 가족
+  일정/앨범/할 일 correctly show real/available instead of the frozen
+  mockup's stale "준비중" (all three are live product features today).
+  Real data: greeting name from existing `useAuthStore`, "가족 최근 활동"
+  from the existing real `family_activity_log` API (2r's own, filtered to
+  positive-tone events — no red/neutral slot exists in the frozen 3-tone
+  visual), notification-bell unread from a real API check. Extracted the
+  activity-log→display mapping into `shared/family/activityLogFormat.ts`
+  for reuse (2nd real consumer now exists), 0 behavior change to `2r`
+  itself (confirmed by diff).
+  **31 pre-existing Family sub-screens**: a grep across every real Family
+  feature page found **all 31 already imported and rendered** — the
+  structural single-sourcing work was already done by
+  `MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001`; this task's own contribution
+  is re-deriving that from current code (not trusting the claim) and
+  sorting real-vs-blocked with fresh evidence, since the W7.4 Matrix's own
+  readiness column predates that later work. Result: **15 preserved**
+  (`1f,1g,1h,1n,1o,1p,1q,1r,1w,2k,2n,2q,2r,2u,2y` — confirmed real by
+  direct source read + runtime spot-check), **16 deferred**
+  (`1i,1u,1v,2f,2p,2v,2w,2z,3a,3f,3g,3h,3i,3j,3k,3l` — each re-confirmed by
+  fresh source read, not force-integrated). Two corrections found via
+  direct code read overriding staler prose: `2f/2p/3i` (Matrix said
+  `READY_FOR_WIRING`; current code confirms a later W7.5 note — still
+  fixture-only, invitation-model `POLICY_BLOCKED`) and `2y` (a W7.5 note
+  grouped it under a missing-input-control gap; current code's own
+  docblock says "2y real" — the newer evidence, taken as authoritative,
+  reclassified to preserved). 1 + 15 + 16 = 32 = denominator.
+  Static validation clean (`pnpm lint`/`build`, `git diff --check`). Real
+  runtime verification executed: real login via a disposable, additive-only
+  synthetic seed account (never the repository's own blanket-delete
+  `phase1_seed_synthetic.py`, whose own docstring restricts it to isolated
+  DBs), full cleanup independently re-verified at exactly 0 rows across
+  every touched table; canonical `1b` render + tile navigation + 3
+  responsive viewports + Preview regression, plus a 9-route spot-check
+  across the rest of the Family domain, all clean, 0 console/page errors.
+- Execution: SUCCEEDED (for the 1 implementation-ready target and the 15
+  confirmed-already-real rows; 16 rows correctly deferred with fresh
+  evidence, not forced through)
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-FAMILY-HOME-AND-DOMAIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-FAMILY-HOME-AND-DOMAIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- Constraints: no backend/migration/RBAC change; no Auth code touched; no
+  Admin/Wagle/Markpoint feature change; no Preview deletion; no Product →
+  Preview import; no forcing any of the 16 deferred rows through their real
+  blockers; no W7.6 start; no commit/push/merge/rebase; this Developer
+  session does not self-declare Independent QA PASS.
+- Next Action: PM review + a focused Independent QA pass. The 16 deferred
+  rows require already-open PM/design/infrastructure decisions prior tasks
+  surfaced (invitation-model policy, missing input controls, storage/
+  calendar-sync infrastructure, account-deletion policy, settings-policy
+  decisions, the PIN-digit mismatch shared with the Auth task) — no new
+  decision item introduced. Markpoint domain and W7.6 remain untouched,
+  out of this task's scope.
+
+## MONGLE-W7-4-AUTH-SINGLE-SOURCE-PRODUCT-INTEGRATION-001
+
+- Task ID: MONGLE-W7-4-AUTH-SINGLE-SOURCE-PRODUCT-INTEGRATION-001
+- Kind: Developer Agent implementation task — bind the Auth-owned canonical
+  Screen(s) the latest `MONGLE_W7_4_LIVE_CONSUMER_INTEGRATION_AUDIT_MATRIX.csv`
+  marks implementation-ready into the real product, single-source with the
+  Detached Preview. Same pattern as the graduated Wagle/Admin single-source
+  integration tasks (`MONGLE-W7-4-WAGLE-SINGLE-SOURCE-PRODUCT-INTEGRATION-001`,
+  `MONGLE-W7-4-ADMIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001`), applied to Auth.
+- Lifecycle: IN_PROGRESS (awaiting PM review / Independent QA)
+- Decision: NOT_REVIEWED
+- Verification: DEVELOPER_SELF_CHECK_COMPLETE / INDEPENDENT_QA_PENDING —
+  Auth denominator re-derived from the existing 64-row Live Consumer Audit
+  Matrix (not a keyword search) at **5**: `1a`, `1a-1`, `1j`, `1j-1`, `2s`.
+  `1r`/`1u`/`2w` considered and excluded `NOT_AUTH_DOMAIN` — all three
+  live under `screens/family/*` in the actual codebase, confirmed by
+  direct directory read, despite Auth-sounding labels. Of the 5: `1a`
+  (profile-select step of the real, fully-functional legacy `/` flow)
+  implemented via a new `ProfileSelectorContainer` Product Adapter
+  consuming the canonical `ProfileSelectorScreen`, scoped to the select
+  step only — PIN entry and admin login (the flow's other two modes) left
+  byte-for-byte untouched, since their own canonical Screens don't exist
+  yet and merging with `/login`'s separate Account-model login is a real
+  design decision out of this task's authority. `1a-1` already complete,
+  regression-reviewed only (0 diff). `1j`/`1j-1` deferred —
+  `DESIGN_DECISION_REQUIRED`, confirmed by direct code read: only static
+  `ui-only` stubs exist, no canonical Screen contract, undefined "PIN
+  찾기" behavior, and the frozen `1j-1` visual's attempt-count/retry-timer
+  copy has no backing real API field (`/api/players` returns only
+  `is_locked: boolean`, confirmed via live curl). `2s` deferred — re-cites,
+  does not reopen, the pre-existing `DESIGN_CONTRACT_MISMATCH`/
+  `HUMAN_GATE` (4-digit Screen vs. 6-digit backend PIN) from
+  `MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001` Phase B. Prop contract
+  widened additively (`ProfileSelectorProfile.id?`, `onSelect` payload
+  prefers id, falls back to name) — Preview fixture unaffected (0 diff,
+  no `id` in fixture, same no-op callback as before). Locked-profile guard
+  reproduced at the Container level (mirrors legacy `PlayerCard`'s
+  `disabled`), not in the frozen Screen visual. Static validation clean
+  (`pnpm lint`/`build`, `git diff --check`). **Real runtime verification
+  executed** (not disclosed as pending, unlike the Wagle/Admin
+  predecessors) — native `./dev.sh` stack (uvicorn + Vite + local
+  PostgreSQL, no Docker), a throwaway Playwright script confirmed the
+  canonical `1a` Screen renders real backend player data, selecting a
+  real profile correctly navigates to the untouched real PIN screen with
+  correct context, and back-navigation returns cleanly; 0 DB mutation; 3
+  responsive viewports (390×844/820×1180/1180×820) 0 horizontal overflow.
+  **Self-caught correction this session**: a first CSV-column-update pass
+  accidentally reformatted all 64 rows' line endings (`csv.writer`
+  default `\r\n` vs. the file's own `\n`) even though only 5 rows'
+  content changed; caught via `git diff --stat` before proceeding,
+  reverted, redone with the correct line terminator — final diff exactly
+  5 rows.
+- Execution: SUCCEEDED (for the 1 implementation-ready target; 3 rows
+  correctly deferred with evidence, not forced through)
+- Closeout Contract: v1
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-AUTH-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-AUTH-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md
+- Constraints: no backend/migration/DB/RBAC/PIN-policy/session-storage
+  change of any kind; no touching `PinInputView`/`PinInput`/
+  `AdminLoginView`/`pages/A1AccountLogin/**`/`useAuthStore`; no forcing
+  `1j`/`1j-1`/`2s` through their real blockers; no W7.6 start; no
+  commit/push/merge/rebase; this Developer session does not self-declare
+  Independent QA PASS.
+- Next Action: PM review + a focused Independent QA pass (per
+  `.claude/agents/test-agent.md`) of this task's own claims, particularly
+  the widened `ProfileSelectorProfile`/`onSelect` prop contract and the
+  container-level locked-profile guard (verified by code inspection only,
+  no live-locked-account exercise this session). `1j`/`1j-1`/`2s` remain
+  genuinely open pending PM/design decisions already surfaced by prior
+  tasks — this task introduces no new decision item. W7.5 overall remains
+  `CONDITIONAL`/`HUMAN_GATE`; W7.6 remains `BLOCKED`.
+
 ## MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-AUDIT-001
 
 - Task ID: MONGLE-W7-4-LIVE-CONSUMER-INTEGRATION-AUDIT-001

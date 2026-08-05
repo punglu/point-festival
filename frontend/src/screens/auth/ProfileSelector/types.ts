@@ -1,5 +1,8 @@
 export type ProfileSelectorProfile = {
   name: string;
+  /** Real product identity key (e.g. player id). Falls back to `name` when absent, so the
+   * fixture-driven Preview (which has no id) keeps its prior behavior unchanged. */
+  id?: string;
   level?: string;
   points?: string;
   locked?: boolean;
@@ -18,6 +21,7 @@ export type ProfileSelectorScreenModel = {
 
 export type ProfileSelectorScreenProps = {
   model: ProfileSelectorScreenModel;
-  onSelect?: (name: string) => void;
+  /** Receives `profile.id` when present, else `profile.name` — see `ProfileSelectorProfile.id`. */
+  onSelect?: (key: string) => void;
   onAdminLogin?: () => void;
 };

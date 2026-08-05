@@ -14,7 +14,7 @@ export function ProfileSelectorScreen({ model, onSelect, onAdminLogin }: Profile
         <h3>{model.heading}</h3>
         {model.profiles.map((profile) =>
           profile.locked ? (
-            <button className={styles.profileLocked} type="button" key={profile.name} onClick={() => onSelect?.(profile.name)}>
+            <button className={styles.profileLocked} type="button" key={profile.name} onClick={() => onSelect?.(profile.id ?? profile.name)}>
               <span className={styles.avatarWrap}>
                 <i className={styles.avatarLocked}>{profile.name.slice(0, 1)}</i>
                 <em className={styles.lockBadge}>🔒</em>
@@ -27,7 +27,7 @@ export function ProfileSelectorScreen({ model, onSelect, onAdminLogin }: Profile
               <i className={styles.chevronMuted}>›</i>
             </button>
           ) : (
-            <button className={styles.profile} type="button" key={profile.name} onClick={() => onSelect?.(profile.name)}>
+            <button className={styles.profile} type="button" key={profile.name} onClick={() => onSelect?.(profile.id ?? profile.name)}>
               <span className={styles.avatarWrap}>
                 <i className={styles.avatar}>{profile.name.slice(0, 1)}</i>
                 <em className={styles.onlineDot} />

@@ -17,6 +17,7 @@
  * contract is written to prevent.
  */
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import {
   getDeductionHistory,
@@ -36,7 +37,9 @@ import {
 
 type WeeklyMission = MarkpointWeeklyDay['missions'][number];
 import { useFamilyContextStore } from '../../shared/stores/useFamilyContextStore';
+import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { AccessBoundary } from '../access/AccessBoundary';
+import { PointFestivalScreen } from '../../screens/markpoint/PointFestival';
 import { MissionDetailScreen, missionDetailFixture } from '../../screens/markpoint/MissionDetail';
 import { MissionRejectScreen, missionRejectFixture } from '../../screens/markpoint/MissionReject';
 import { LevelUpScreen } from '../../screens/markpoint/LevelUp';
@@ -63,7 +66,10 @@ function MissionStatusBadge({ status }: { status: MissionStatus }) {
 }
 
 export function MarkpointUser() {
+  const navigate = useNavigate();
   const activeFamilyId = useFamilyContextStore((s) => s.activeFamilyId);
+  const accountDisplayName = useAuthStore((s) => s.accountDisplayName);
+  const authLogout = useAuthStore((s) => s.logout);
   const [state, setState] = useState<LoadState>('idle');
   const [projection, setProjection] = useState<MarkpointProjection | null>(null);
   const [weekly, setWeekly] = useState<MarkpointWeekly | null>(null);
@@ -208,91 +214,71 @@ export function MarkpointUser() {
   }
 
   const today = todayIso();
+  const nextThresholdGap = Math.max(0, (level?.next_threshold ?? 0) - (projection?.lifetime_earned ?? 0));
 
   return (
     <section className={styles.page} aria-labelledby="markpoint-title">
-      <header className={styles.header}>
-        <p className={styles.eyebrow}>몽글 · 마크포인트</p>
-        <h1 id="markpoint-title">마크포인트</h1>
-        <div className={styles.headerActions}>
-          <button type="button" className={styles.secondary} onClick={() => setRewardOverlay('exchange')} data-testid="open-reward-exchange">
-            보상 교환
-          </button>
-          <button type="button" className={styles.secondary} onClick={() => setRewardOverlay('shop')} data-testid="open-reward-shop">
-            리워드샵
-          </button>
-        </div>
-      </header>
+      {/* canonical 1c (포인트 잔치) — header + profile-card zones only. The
+          week-picker/missions/history zones of the same canonical Screen are
+          deliberately not used here (`showWeeklySection={false}`): this
+          page's own existing weekly day-list below has a committed E2E
+          contract (`tests/e2e/specs-mongle/03-target-ui.spec.ts` — an
+          `<ol>/<li>` list with every cycle day always expanded, a
+          `data-today` marker, and a direct per-mission submit button) that
+          the canonical Screen's single-selected-day picker does not
+          reproduce; duplicating both would also show the same missions
+          twice in two different shapes. See this task's own handoff. */}
+      <PointFestivalScreen
+        model={{
+          playerName: accountDisplayName ?? '회원',
+          level: level?.level ?? 1,
+          levelProgressPercent: level?.progress_percent ?? 0,
+          earnedLabel: `${projection?.lifetime_earned ?? 0}P / ${level?.next_threshold ?? 0}P`,
+          levelHint: `다음 레벨까지 ${nextThresholdGap}P 남았어요`,
+          todayEarned: projection?.today_earned ?? 0,
+          remainingMissions: projection?.remaining_missions ?? 0,
+          currentBalance: projection?.current_balance ?? 0,
+        }}
+        showWeeklySection={false}
+        onLogout={() => { authLogout(); navigate('/'); }}
+      />
 
       {/* Balance and EXP are deliberately separate cards. They are different
           numbers with different rules, and one card would invite reading a
-          spend as a level loss. */}
-      <div className={styles.cards}>
-        <article className={styles.card} aria-labelledby="mp-balance">
-          <h2 id="mp-balance" className={styles.cardTitle}>
-            현재 포인트
-          </h2>
-          <p className={styles.bigNumber} data-testid="markpoint-balance">
-            {projection?.current_balance ?? 0}
-          </p>
-          <dl className={styles.subStats}>
-            <div>
-              <dt>오늘 획득</dt>
-              <dd data-testid="markpoint-today-earned">{projection?.today_earned ?? 0}</dd>
-            </div>
-            <div>
-              <dt>오늘 차감</dt>
-              <dd data-testid="markpoint-today-deducted">{projection?.today_deducted ?? 0}</dd>
-            </div>
-            <div>
-              <dt>기간 획득</dt>
-              <dd data-testid="markpoint-period-earned">{projection?.weekly_earned ?? 0}</dd>
-            </div>
-            <div>
-              <dt>기간 차감</dt>
-              <dd data-testid="markpoint-period-deducted">{projection?.weekly_deducted ?? 0}</dd>
-            </div>
-          </dl>
-        </article>
-
-        <article className={styles.card} aria-labelledby="mp-level">
-          <h2 id="mp-level" className={styles.cardTitle}>
-            레벨
-            <button type="button" className={styles.levelUpTrigger} onClick={() => setShowLevelUp(true)} aria-label="레벨업 축하 보기" data-testid="open-level-up">
-              🎉
-            </button>
-          </h2>
-          <p className={styles.bigNumber} data-testid="markpoint-level">
-            Lv.{level?.level ?? 1}
-          </p>
-          <p className={styles.levelTitle}>{level?.title ?? ''}</p>
-          <div
-            className={styles.progressTrack}
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={level?.progress_percent ?? 0}
-            aria-label="다음 레벨까지 진행도"
-          >
-            <div className={styles.progressFill} style={{ width: `${level?.progress_percent ?? 0}%` }} />
-          </div>
-          {/* Labelled "누적" on purpose: this is lifetime_earned, and it is not
-              the spendable balance above. */}
-          <p className={styles.muted}>
-            누적 획득 {projection?.lifetime_earned ?? 0} · 다음 {level?.next_threshold ?? 0}
-          </p>
-        </article>
-
-        <article className={styles.card} aria-labelledby="mp-remaining">
-          <h2 id="mp-remaining" className={styles.cardTitle}>
-            남은 미션
-          </h2>
-          <p className={styles.bigNumber} data-testid="markpoint-remaining">
-            {projection?.remaining_missions ?? 0}
-          </p>
-          <p className={styles.muted}>예상 {projection?.expected_points ?? 0}포인트</p>
-        </article>
+          spend as a level loss. The canonical profile card above already
+          shows current_balance ("현재 보유") and lifetime_earned/next_threshold
+          ("OOOP / OOOP") separately for the same reason; these sub-stats and
+          the reward-entry buttons are real capabilities canonical's frozen
+          header had no slot for, kept as their own real, tested row. */}
+      <div className={styles.headerActions} data-visual-zone="reward-entry-row">
+        <button type="button" className={styles.secondary} onClick={() => setRewardOverlay('exchange')} data-testid="open-reward-exchange">
+          보상 교환
+        </button>
+        <button type="button" className={styles.secondary} onClick={() => setRewardOverlay('shop')} data-testid="open-reward-shop">
+          리워드샵
+        </button>
+        <button type="button" className={styles.levelUpTrigger} onClick={() => setShowLevelUp(true)} aria-label="레벨업 축하 보기" data-testid="open-level-up">
+          🎉 레벨업
+        </button>
       </div>
+      <dl className={styles.subStats} data-visual-zone="markpoint-sub-stats">
+        <div>
+          <dt>오늘 차감</dt>
+          <dd data-testid="markpoint-today-deducted">{projection?.today_deducted ?? 0}</dd>
+        </div>
+        <div>
+          <dt>기간 획득</dt>
+          <dd data-testid="markpoint-period-earned">{projection?.weekly_earned ?? 0}</dd>
+        </div>
+        <div>
+          <dt>기간 차감</dt>
+          <dd data-testid="markpoint-period-deducted">{projection?.weekly_deducted ?? 0}</dd>
+        </div>
+        <div>
+          <dt>예상 포인트</dt>
+          <dd>{projection?.expected_points ?? 0}</dd>
+        </div>
+      </dl>
 
       <section className={styles.block} aria-labelledby="mp-weekly">
         <h2 id="mp-weekly">

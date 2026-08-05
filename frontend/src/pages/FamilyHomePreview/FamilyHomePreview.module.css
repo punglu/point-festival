@@ -1,229 +1,38 @@
-/* MONGLE-W6-PARALLEL-A2-FAMILY-HOME-MOBILE-VISUAL-001
- * Canonical screen 1b (가족 홈). Every value below is a literal from the
- * canonical `1b` block — see MONGLE_W6_A2_FAMILY_HOME_MEASUREMENT.md §5/§6.
- * No @media, no clamp(), no vw: one fluid layout, exactly as the passed 1c
- * preview does. The 480px design canvas is a design-artifact frame and is
- * never treated as a breakpoint.
- */
-
-/* The canonical source declares box-sizing exactly zero times, so every literal
- * in it is authored against the browser default, content-box. The app's global
- * reset.css sets border-box globally. Reproducing the canonical literals under
- * border-box silently changes what they mean — measured: the hero's
- * `min-height:196px` renders 226px tall in canonical (196 content + 15+15
- * padding) but 196px here, which pushed every zone below it up by exactly 30px.
- * Restoring content-box for this preview's subtree makes each canonical literal
- * mean what it means in the canonical source. This overrides the global reset
- * locally; it does not modify it.
+/* Preview-only wrapper + Zone 5 (bottom dock). Zones 1-4 (profile/hero/
+ * activity/services) moved to screens/family/FamilyHome/FamilyHomeScreen —
+ * see that module's own CSS for the canonical-fidelity provenance comments.
+ * The dock stays preview-local: it is DEVICE_CHROME-equivalent, only needed
+ * because this Preview has no real app shell around it (the live product
+ * route already renders MongleAppShell's own real nav in this position).
  */
 .page,
 .page *,
 .page *::before,
 .page *::after { box-sizing: content-box; }
 
-/* The canonical source builds every affordance from <div>/<span>, which inherit
- * `text-align: start`. This preview uses real <button>s so the affordances stay
- * keyboard-reachable, but the UA stylesheet gives buttons `text-align: center`.
- * Measured: that recentred every wrapped tile sublabel against the canonical
- * render. Neutralised here so element choice cannot alter canonical layout. */
 .page button { text-align: start; }
 
 .page {
-  --fh-brand: #5a35df;
-  --fh-ink: #17103a;
-  --fh-tertiary: #8a83a8;
-  --fh-disabled: #a8a5b6;
-  --fh-hairline: #f0eef7;
-  --fh-canvas: #f7f6fc;
-
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  /* 4.3 Approved-PNG canvas gradient. The PNG's page background is not flat; a
-   * card-free strip (x 5..30) samples (247,245,252) at y=50, (248,247,252) at
-   * y=600, (250,249,253) at y=1200 and (253,253,254) at y=1550. Reproduced
-   * page-locally; no global token is touched. */
-  background: linear-gradient(180deg, #f7f5fc 0%, #f8f7fc 38%, #faf9fd 74%, #fdfdfe 100%);
-  background-attachment: local;
-  color: var(--fh-ink);
   font-family: "Noto Sans KR", system-ui, sans-serif;
-
-  /* global.css sets `text-rendering: optimizeLegibility` on body; the canonical
-   * source leaves it at `auto`. optimizeLegibility changes kerning and ligature
-   * shaping, which measurably moved glyphs against the canonical render (the
-   * residual pixel difference was concentrated on text rows, not on geometry).
-   * Restored to the canonical value for this preview subtree only. */
   text-rendering: auto;
 }
 
-/* APPROVED_PNG_OVERRIDE on the section gap. The canonical HTML uses 10px. The
- * approved PNG's measured inter-section gaps are larger and consistent:
- * profile->hero 34 PNG px (17 CSS) and hero->activity 41 PNG px (20.5 CSS) at
- * the fitted 2.0x scale. 17px is used — the measured lower bound — which brings
- * hero, activity and dock all within a few px of the PNG instead of drifting. */
-.content { flex: 1 0 auto; display: flex; flex-direction: column; gap: 17px; padding: 10px 18px 6px; }   /* 4.5/4.6: content bottom padding trimmed 12->6 so the dock lands on the approved PNG without any dock-local patch */
-
-/* ---------- Zone 1 — family identity / profile ---------- */
-.profile { display: flex; align-items: center; gap: 10px; }
-/* Avatar sized from the approved PNG: the photo measures 92 PNG px at the fitted
- * 2.0x design scale, i.e. 46 CSS px — not the canonical HTML's 52. */
-.avatarWrap { position: relative; width: 46px; height: 46px; flex: none; }
-.avatar {
-  width: 46px; height: 46px; display: block; object-fit: cover;
-  border: 2px solid #fff; border-radius: 50%;
-  box-shadow: 0 3px 10px rgba(60, 30, 120, .14);
-}
-.presence {
-  position: absolute; right: 0; bottom: 0; width: 13px; height: 13px;
-  border: 2.5px solid #fff; border-radius: 50%; background: #22c55e;
-}
-.greeting { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.greetingTitle { color: var(--fh-ink); font-size: 17px; font-weight: 900; line-height: normal; white-space: nowrap; }
-.greetingSub { color: var(--fh-tertiary); font-size: 12px; line-height: normal; }
-.bell {
-  position: relative; width: 28px; height: 28px; flex: none;
-  display: flex; align-items: center; justify-content: center;
-}
-/* 49x52 PNG px crop shown at the fitted 2.0x design scale. */
-.bellIcon { width: 24.5px; height: 26px; display: block; object-fit: contain; }
-.bellDot {
-  position: absolute; right: 0; top: 1px; width: 9px; height: 9px;
-  border: 2px solid var(--fh-canvas); border-radius: 50%; background: var(--fh-brand);
-}
-
-/* ---------- Zone 2 — hero 가족 대화 ---------- */
-.hero {
-  position: relative; display: flex; overflow: hidden;
-  /* APPROVED_PNG_OVERRIDE. The canonical HTML declares min-height:196px, which
-   * under content-box renders 226px tall. The approved PNG's hero measures
-   * y 226..642 = 417 PNG px, consistently across ten sampled columns, i.e.
-   * 208.5 CSS px at the fitted 2.0x design scale — 17.5px shorter. The approved
-   * PNG is visual-final authority, so 196 - 17.5 ~= 178 content-box is used,
-   * giving 208px total. (An earlier reading of 467px came from the greeting
-   * row's purple heart emoji being picked up by the hero colour mask.) */
-  min-height: 178px; padding: 15px 20px; border-radius: 28px;
-  background: linear-gradient(135deg, #d9cbf8 0%, #c3aaf3 55%, #b79af0 100%);
-}
-.heroCopy { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 8px; }
-.heroTitle { color: var(--fh-ink); font-size: 28px; font-weight: 900; line-height: normal; }
-.heroBody { color: #3a3060; font-size: 13px; font-weight: 500; line-height: 1.5; }
-.heroCta {
-  margin-top: 4px; align-self: flex-start;
-  display: flex; align-items: center; gap: 7px;
-  padding: 9px 22px; border: 0; border-radius: 999px;
-  background: var(--fh-brand); box-shadow: 0 8px 18px rgba(70, 35, 180, .30);
-  color: #fff; font-family: inherit; font-size: 14px; font-weight: 700; line-height: normal;
-}
-/* 4.1 Hero mascot uses the byte-exact canonical asset
- * family-platform-mascot.png (sha dd5c48b3...). No crop from the approved PNG
- * was made. Offsets tightened from -26/-30 so the character's visible size and
- * seating match the approved PNG's mascot group instead of being clipped. */
-.heroMascot {
-  position: absolute; right: -16px; bottom: -18px;
-  width: 200px; height: 200px; object-fit: contain; opacity: .95;
-}
-.typing {
-  position: absolute; right: 22px; top: 26px; display: flex; gap: 3px;
-  padding: 7px 14px; border-radius: 20px 20px 6px 20px; background: #fff;
-  box-shadow: 0 6px 14px rgba(50, 25, 110, .16);
-}
-.typing i { display: block; width: 7px; height: 7px; border-radius: 50%; background: var(--fh-tertiary); }
-
-/* ---------- Zone 3 — recent activity ---------- */
-.activity {
-  display: flex; flex-direction: column; gap: 8px;
-  padding: 12px; border-radius: 26px; background: #fff;
-  box-shadow: 0 6px 18px rgba(60, 30, 120, .06);
-}
-.activityHead { display: flex; align-items: center; justify-content: space-between; }
-.activityTitle { color: var(--fh-ink); font-size: 16px; font-weight: 700; line-height: normal; }
-.activityMore {
-  padding: 0; border: 0; background: transparent;
-  color: var(--fh-tertiary); font-family: inherit; font-size: 12px; font-weight: 400; line-height: normal;
-}
-.activityRow { display: flex; align-items: center; gap: 10px; }
-.activityDivider { padding-bottom: 8px; border-bottom: 1px solid var(--fh-hairline); }
-.activityIcon {
-  width: 44px; height: 44px; flex: none;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%; color: #fff; line-height: normal;
-}
-.star { background: linear-gradient(160deg, #ffe9a8, #f7cd5c); font-size: 17px; }
-.level { background: linear-gradient(160deg, #8b63f3, #5a35df); font-size: 15px; }
-.gift { background: linear-gradient(160deg, #ff9dbb, #ef4665); font-size: 15px; }
-.activityCopy { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.activityName { color: var(--fh-ink); font-size: 13px; font-weight: 700; line-height: normal; }
-.activityPoint { color: var(--fh-brand); font-size: 12px; font-weight: 700; line-height: normal; }
-.activityMeta { color: var(--fh-tertiary); font-size: 12px; line-height: normal; }
-.activityTime { flex: none; color: var(--fh-disabled); font-size: 11px; line-height: normal; }
-
-/* ---------- Zone 4 — service tiles ---------- */
-/* D-A2-1, PM_DECISION: IMPLEMENT / AUTHORITY: APPROVED_PNG.
- * The approved PNG places 우리 서비스 and its tile grid on a white card; the
- * canonical HTML puts them straight on the page background. The PNG is the
- * visual-final authority, so the card is implemented.
- * Measured from the approved PNG: the card's left/right edges (x 41 / 898) are
- * the same as the activity card's, i.e. full content width, no extra margin;
- * tile 1's border starts at x 57, giving a 16 px inset at PNG scale — 7 CSS px
- * against the page-padding ruler (41.5 PNG px == 18 CSS px). Radius, background
- * and shadow inherit the activity card's contract, the only px-level card
- * contract this screen has. */
-.services {
-  /* 4.5 measured deltas were top -15px and height +18.5px: the block sat too
-   * high and too tall. Corrected only through shared box properties — the gap
-   * before the section, the wrapper padding and the tile row height. No tile
-   * carries a transform or a positional patch. */
-  margin-top: 15px;
-  display: flex; flex-direction: column; gap: 5px;
-  padding: 5px 7px 3px; border-radius: 26px; background: #fff;
-  box-shadow: 0 6px 18px rgba(60, 30, 120, .06);
-}
-.servicesTitle { color: var(--fh-ink); font-size: 16px; font-weight: 700; line-height: normal; }
-.tileGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
-.tile {
-  position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 14px 8px 8px; border: 1px solid #efecf8; border-radius: 20px;
-  background: #fff; font-family: inherit;
-}
-.tileActive { border: 2px solid var(--fh-brand); }
-.tileBadge {
-  position: absolute; top: 7px; right: 7px;
-  padding: 2px 6px; border-radius: 999px;
-  background: #eee8ff; color: #7c5aef; font-size: 9px; font-weight: 700; line-height: normal;
-}
-.tileImage { width: 52px; height: 52px; object-fit: contain; }
-.tileGlyph {
-  width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
-  border-radius: 14px; background: #ede7fb;
-}
-.tileGlyph svg {
-  width: 22px; height: 22px; fill: none; stroke: #7c5aef;
-  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
-}
-.tileLabel { color: var(--fh-ink); font-size: 11px; font-weight: 700; line-height: normal; }
-.tileSub { color: var(--fh-tertiary); font-size: 9px; font-weight: 400; line-height: normal; }
+.page > :global(.screen) { flex: 1 0 auto; }
 
 /* ---------- Zone 5 — bottom dock ---------- */
 .dock {
   display: grid; grid-template-columns: repeat(4, 1fr);
-  /* 4.6 The dock is bottom-anchored by `.content { flex: 1 0 auto }`, so its top
-   * edge is (viewport height - dock height). The +11px delta was therefore a
-   * HEIGHT difference, not a position one: the approved PNG's dock spans
-   * y 1511..1641 = 130 PNG px = 65 CSS at the fitted 2.0x scale, against 54 here.
-   * Corrected through the dock's own padding — icons sit 31 PNG px (15.5 CSS)
-   * below the top border in the PNG. No `top` or `transform` patch is used. */
-  padding: 15px 20px 9px; border-top: 1px solid var(--fh-hairline); background: #fdfdff;
+  padding: 15px 20px 9px; border-top: 1px solid #f0eef7; background: #fdfdff;
 }
 .dock button {
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   padding: 0; border: 0; background: transparent;
-  color: #636b88; font-family: inherit;   /* 4.4 approved PNG rgb(99,107,136) */
+  color: #636b88; font-family: inherit;
 }
 .dock svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .dock span { font-size: 10px; font-weight: 400; line-height: normal; }
-/* Must be `.dock .dockActive`: `.dock button` above is (0,1,1) and would
- * otherwise out-specify a bare `.dockActive` (0,1,0), leaving the active item
- * grey. Caught by sampling the rendered dock — implementation (167,164,182)
- * against the approved PNG's (82,42,223). */
-.dock .dockActive { color: var(--fh-brand); }
+.dock .dockActive { color: #5a35df; }
 .dock .dockActive span { font-weight: 700; }

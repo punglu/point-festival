@@ -1,5 +1,318 @@
 # Current Relay
 
+## MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-REMEDIATION-001 (developer, current)
+
+- Authority finding (re-derived this task, before any edit): `/admin`'s
+  real backend surface (`/api/admin/*` plus `require_admin`-gated routes in
+  `mission`/`deduction`/`config`/`cheer`/`daily_point`) recognizes **only**
+  a legacy `role=="admin"` JWT (`backend/app/dependencies.py::require_
+  admin`) — there is no family-scoped RBAC permission concept involved at
+  all for this specific console (confirmed: `useAdminData`/`adminApi.ts`
+  call exclusively `/api/admin/*`, 0 family-scoped/Account-native calls
+  anywhere in `AdminDashboard`'s own data layer). DEFECT-001's "Account-
+  native user with real Admin authority" therefore can only mean: the same
+  real person as an existing `admin_auth` identity, now signed in through
+  the newer Account-native login — resolvable only via the same
+  `LegacyIdentityMapping` bridge `resolve_current_account` already uses
+  for `/api/account-context` and Wagle. No family-scoped "service-admin
+  permission" is being invented or consulted; this is not a new authority
+  source, it is the existing legacy admin_auth identity accessed through a
+  second, already-established credential bridge.
+- Both pre-existing real `admin_auth` rows (`dad`/`mom`, ids 1/2, real
+  non-null `player_id` 3/4) were read-only inspected: `legacy_identity_
+  mappings` is currently empty (0 rows) — neither has any Account link
+  today, so this task's fix does not change their own current real
+  behavior (both already get a 403 "계정 매핑이 필요합니다" on account-
+  context today, via a different code path than the fix produces — same
+  outcome, more accurate categorization). Provisioning a real mapping for
+  either of them is a data/business decision, out of this task's scope;
+  not performed.
+- Intended edits: `backend/app/domains/family/service.py`
+  (`_legacy_identity`: reorder so `role=="admin"` is checked before the
+  `"player_id" in user` presence test — DEFECT-002's direct fix);
+  `backend/app/dependencies.py` (`require_admin`: additionally accept an
+  Account-native token whose account resolves, via the same
+  `LegacyIdentityMapping` bridge, to a linked `admin_auth` row —
+  DEFECT-001's backend half); `backend/app/domains/family/schema.py`
+  (`AccountContextResponse`: additive `is_admin: bool` field, computed the
+  same way, so the frontend has a real signal instead of decoding a JWT
+  role that Account tokens never carry); `backend/app/domains/family/
+  router.py` (`account_context`: populate the new field);
+  `frontend/src/generated/openapi.d.ts` (regenerated via the existing
+  `pnpm run generate:api` script only, not hand-edited);
+  `frontend/src/shared/stores/useFamilyContextStore.ts` (expose the new
+  field); `frontend/src/App.tsx` (`AdminProtectedRoute`: accept either
+  legacy `isAdmin` or the new Account-native `is_admin` signal, with a
+  real loading state while family-context resolves — no admin-content
+  flash; fix the non-admin Account-session redirect target from the
+  404-prone `/dashboard` to the real `/family` home; legacy non-admin
+  player sessions keep their own existing, already-correct `/dashboard`
+  redirect unchanged; `AuthPage`'s own `isLoggedIn` redirect similarly
+  corrected for Account sessions); this task's own new report/handoff/QA
+  evidence; `active.md` (new entry); `agent-system/qa/COVERAGE_MAP.md`
+  (append-only status update on the 2 existing GAP rows); Matrix
+  append-only columns; this relay.
+- Scope: DEFECT-001 + DEFECT-002 only, and only the identity-resolution/
+  route-guard/redirect contract they share. No RBAC change, no new admin
+  role, no DB schema/migration change (`LegacyIdentityMapping` table
+  already exists), no family-scoped permission invented, no rewiring of
+  the legacy `/api/admin/*` data layer itself (out of proportion — those
+  endpoints have no family-scoping concept at all; widening `require_
+  admin`'s identity check is sufficient and does not touch what each
+  endpoint's own business logic does once authorized). DEFECT-003, Auth/
+  Family/Markpoint policy blockers, and W7.6 untouched.
+- Protected: every other domain's files; the persistent dev stack (reused,
+  not restarted); the 2 pre-existing real `admin_auth` rows and 4
+  pre-existing real legacy `players` rows (read-only); all prior tasks'
+  own uncommitted output.
+- **Closeout update (same-day continuation)**: both defects fixed as
+  declared above and RUNTIME_VERIFIED via all 5 required scenarios, real
+  UI-driven login, including deep-link/session-restore/logout/3-viewport/
+  regression-smoke — full detail in `agent-system/active.md`'s own entry
+  and the QA evidence file. One correction to the "Intended edits" list
+  above: `frontend/src/shared/stores/useFamilyContextStore.ts` was
+  **not** actually edited — `AccountFamilyContext` is a direct type alias
+  to the generated OpenAPI schema (`components['schemas']
+  ['AccountContextResponse']`), so the new `is_admin` field flowed through
+  automatically once `openapi.d.ts` was regenerated; no manual exposure
+  needed. One additional file edited beyond the original list, discovered
+  necessary only once the route guard was reachable and testable:
+  `frontend/src/shared/api/httpClient.ts` (`OPTIONAL_ACCOUNT_ENDPOINTS`:
+  added `/api/chat/unread`, same existing pattern already used for
+  `/api/me/wagle/` — see `agent-system/active.md` for the full reasoning).
+  A new, pre-existing, out-of-scope defect was found and NOT fixed:
+  `API-W7-4-ADMIN-DASHBOARD-DAILY-POINTS-RANGE-PLAYER-ONLY-GAP-001`
+  (new Coverage Map row). All QA seed data cleaned up, final row counts
+  independently re-verified against the true pre-task baseline. Backend
+  pytest BLOCKED (no Docker in this WSL session — pre-existing, unrelated
+  to this task); substituted with extensive live-curl verification.
+  Status: DEVELOPER_SELF_CHECK_COMPLETE, Independent QA pending. NOT
+  self-declared as INDEPENDENT_QA_PASS/W7_4_CLOSED/W7_6_READY.
+
+## MONGLE-W7-4-CROSS-DOMAIN-PRODUCT-INTEGRATION-INDEPENDENT-QA-001 (QA, current)
+
+- Intended edits (QA-owned only, 0 product code):
+  `MONGLE_W7_4_LIVE_CONSUMER_INTEGRATION_AUDIT_MATRIX.csv` (4 new
+  append-only `Cross_Domain_QA_*` columns, all 64 rows; write-once columns
+  re-verified byte-unchanged both before and after against HEAD);
+  `agent-system/qa/COVERAGE_MAP.md` (3 new rows: 2 defect-tracking GAP
+  rows, 1 summary COVERED row); this task's own new report/handoff/QA
+  evidence; `active.md` (new entry); this relay.
+- Scope: read-only Independent (partial — see below) QA of the whole W7.4
+  Wagle/Admin/Auth/Family/Markpoint single-source lineage. No product/
+  backend/CSS/test/fixture/migration change; defects disclosed, not
+  fixed; no commit/push.
+- **Independence disclosure**: Wagle/Admin were already committed at this
+  session's own starting HEAD (separate prior session) — genuinely
+  independent. Auth/Family/Markpoint were implemented earlier in this same
+  session/conversation — this QA's own results for those three are
+  self-verification, not Independent QA, disclosed throughout rather than
+  silently claimed.
+- Protected: every product file in every domain (0 changes, confirmed by
+  `git status --short` matching the pre-QA baseline exactly plus only this
+  task's own governance-doc changes); the persistent dev stack (reused,
+  never restarted); the 2 pre-existing real `admin_auth` rows and 4
+  pre-existing real legacy `players` rows (read-only, never modified); all
+  prior tasks' own uncommitted output (untouched).
+- Status: complete. Verdict **CONDITIONAL** (not PASS) — see this task's
+  own QA evidence §16 for full reasoning. 3 real defects found and
+  disclosed (2 HIGH: Admin route-guard + legacy-admin-JWT account-context
+  resolution, both make real Admin access currently broken regardless of
+  any Screen's own correctness; 1 MEDIUM: Wagle permission-check crash on
+  overlapping role grants) — all pre-existing, not regressions from this
+  wave's own work. Previously-disclosed-as-never-verified gaps closed this
+  task: Auth's locked-profile guard (now reproduced live, PASS), and
+  Wagle/Admin's total absence of prior browser runtime checking (now
+  attempted for both — Wagle succeeded fully, Admin blocked by the 2
+  defects above). Full detail: `agent-system/handoffs/active/
+  MONGLE-W7-4-CROSS-DOMAIN-PRODUCT-INTEGRATION-INDEPENDENT-QA-001.md`.
+
+## MONGLE-W7-4-MARKPOINT-SINGLE-SOURCE-PRODUCT-INTEGRATION-001 (developer, current)
+
+- Intended edits: `frontend/src/screens/markpoint/PointFestival/**` (new
+  canonical Screen, extracted from the previously never-live-wired
+  `PointFestivalPreview`); `frontend/src/pages/PointFestivalPreview/
+  {index.tsx,PointFestivalPreview.module.css}` (rewritten to consume it,
+  full Screen + preview-local dock); `frontend/src/platform/markpoint/
+  MarkpointUser.tsx` (header/3-card zone replaced by the canonical Screen
+  composed with `showWeeklySection={false}`; reward-entry buttons/level-up
+  trigger/4 sub-stats relocated into their own real row, same test-ids/
+  handlers; weekly day-list/deductions/all 6 overlays untouched);
+  `MONGLE_W7_4_LIVE_CONSUMER_INTEGRATION_AUDIT_MATRIX.csv` (8 additive
+  columns for the Markpoint rows, chained after the existing Wagle/Admin/
+  Auth/Family columns); this task's own new report/handoff/QA evidence;
+  `active.md` (new entry); `agent-system/qa/COVERAGE_MAP.md` (new row);
+  this relay.
+- Scope: re-derive the Markpoint canonical denominator from current code
+  (8: `1c` + 6 pre-existing `screens/markpoint/*` + `1x`), implement `1c`
+  (header+profile-card zones only, composed above existing real sections),
+  confirm the other 6 rows' real-wired status with fresh source evidence,
+  defer `1x` with grep-confirmed evidence of zero real ownership anywhere.
+  No backend/migration/policy/KST-UTC/Auth/Family/Admin/Wagle edit, no
+  W7.6 start, no commit/push.
+- Protected: the real weekly day-list (with its own committed E2E DOM
+  contract in `tests/e2e/specs-mongle/03-target-ui.spec.ts`), the full
+  deductions list, and all 6 real overlay blocks (mission detail/reject,
+  level-up, reward shop/exchange, exchange confirm) in
+  `MarkpointUser.tsx` — 0 lines changed, confirmed by diff; every other
+  domain; the Auth/Family tasks' own uncommitted output (this session's
+  only pre-existing dirty state, left exactly as written).
+- Status: implementation complete for the 1/1 implementation-ready
+  Markpoint target (`1c`, header+profile zones), plus confirmation
+  (regression-reviewed, not re-implemented) of 6 already-real overlay
+  screens and correct deferral (with fresh grep evidence) of `1x`. Static
+  validation clean. Real runtime verification executed: real login via a
+  disposable additive-only synthetic seed account (fully cleaned up,
+  independently re-verified at 0 rows); canonical `1c` header/profile
+  render with real data, exact-text-verified test-ids matching the
+  pre-existing committed spec's own contract, reward-shop overlay + real
+  logout both exercised live, 3 responsive viewports on Product + Preview,
+  Preview regression clean. A real CSS bug (invalid `font` shorthand
+  combined with a pre-existing, unrelated, unscoped global `header
+  button{}` leak from a different stylesheet) was found and fixed,
+  self-contained to this task's own new file. Verdict:
+  DEVELOPER_SELF_CHECK_COMPLETE / INDEPENDENT_QA_PENDING. Full detail:
+  `agent-system/handoffs/active/MONGLE-W7-4-MARKPOINT-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md`.
+
+## MONGLE-W7-4-FAMILY-HOME-AND-DOMAIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001 (developer, current)
+
+- Intended edits: `frontend/src/screens/family/FamilyHome/**` (new
+  canonical Screen, extracted from the previously never-live-wired
+  `FamilyHomePreview`); `frontend/src/platform/pages/FamilyHomeContainer.tsx`
+  (new Product Adapter); `frontend/src/platform/pages/FamilyLanding.tsx`
+  (+3 lines: import + one mount, composed above all pre-existing real
+  sections, nothing else touched); `frontend/src/pages/FamilyHomePreview/
+  {index.tsx,FamilyHomePreview.module.css}` (rewritten to consume the
+  extracted Screen, dock kept preview-local); `frontend/src/shared/family/
+  activityLogFormat.ts` (new, extracted shared helper); `frontend/src/
+  features/family-members/FamilyMembersPage.tsx` (local helper definitions
+  replaced with the shared import, 0 behavior change);
+  `MONGLE_W7_4_LIVE_CONSUMER_INTEGRATION_AUDIT_MATRIX.csv` (32 additive
+  columns for the Family rows, chained after the existing Wagle/Admin/Auth
+  columns); this task's own new report/handoff/QA evidence; `active.md`
+  (new entry); `agent-system/qa/COVERAGE_MAP.md` (new row); this relay.
+- Scope: re-derive the Family canonical denominator from current code (32:
+  `1b` + 31 pre-existing `screens/family/*`), prioritize and implement
+  Family Home (`1b`, composed above existing real sections, not a
+  replacement), confirm the other 31 rows' real-vs-blocked status with
+  fresh source evidence (15 preserved, 16 deferred). No backend/migration/
+  RBAC/Auth/Admin/Wagle/Markpoint edit, no W7.6 start, no commit/push.
+- Protected: `PinInputView`/`AdminLoginView`/`pages/A1AccountLogin/**`/
+  `useAuthStore` and every other Auth file (this session's own prior task,
+  untouched by this one); `FamilyLanding.tsx`'s own family-switcher/
+  admin-badge/feature-link/permission-list JSX and its no-active-family
+  selector branch (0 lines changed, confirmed by diff); every already-real
+  nested view this task did not modify (`FamilyMembersScreen`,
+  `FamilySchedule`/`FamilyAlbum`/`FamilyTodo`/`FamilyRules`/
+  `NotificationList`/`SearchAll`/`MyProfile`/etc.'s own real wiring, all
+  confirmed unchanged); the 16 deferred rows' own real code (not touched,
+  deferred with evidence); every other domain; the Auth task's own
+  uncommitted output (this session's only pre-existing dirty state, left
+  exactly as written).
+- Status: implementation complete for the 1/1 implementation-ready Family
+  Home target, plus confirmation (regression-tested, not re-implemented) of
+  15 already-real sub-screens and correct deferral (with fresh evidence) of
+  16 genuinely-blocked ones. Static validation clean (`pnpm run lint`/
+  `build`, `git diff --check`). Real runtime verification executed: real
+  login via a disposable additive-only synthetic seed account (created and
+  fully cleaned up, independently re-verified at exactly 0 rows across
+  every touched table — never the repository's own blanket-delete seed
+  script, which is restricted to isolated DBs by its own docstring);
+  canonical `1b` render with real data + tile navigation + 3 responsive
+  viewports + Preview regression, plus a 9-route spot-check across the rest
+  of the Family domain, all clean, 0 console/page errors. Verdict:
+  DEVELOPER_SELF_CHECK_COMPLETE / INDEPENDENT_QA_PENDING. Full detail:
+  `agent-system/handoffs/active/MONGLE-W7-4-FAMILY-HOME-AND-DOMAIN-SINGLE-SOURCE-PRODUCT-INTEGRATION-001.md`.
+
+## MONGLE-W7-4-AUTH-SINGLE-SOURCE-PRODUCT-INTEGRATION-001 (developer, current)
+
+- Environment transition (2026-08-05): prior host assumption was MacBook/
+  Docker; this task runs in the existing WSL session (frontend `pnpm`,
+  backend `uvicorn`, no Docker here — matches this session's own prior
+  Start Gate findings in `[Mongle project status]` memory). Not a new
+  environment build-out; no Docker/system reconfiguration performed.
+- Re-derivation, not a loose keyword search: the Auth target set was taken
+  from the already-existing, independently-remediated
+  `MONGLE_W7_4_LIVE_CONSUMER_INTEGRATION_AUDIT_MATRIX.csv` (64/64,
+  `Implementation_Readiness` populated), filtered to rows whose *real code
+  ownership* (route/guard/redirect/session/onboarding-step/screens-
+  directory) is Auth — not by scanning for words like "PIN"/"계정"/"잠금".
+  `1r` (온보딩), `1u` (PIN 변경), `2w` (가족 초대 수락) were considered and
+  excluded as `NOT_AUTH_DOMAIN`: all three live under `screens/family/*`
+  in the actual codebase (`Onboarding`, `PinChange`, `FamilyInviteAcceptance`
+  respectively), not `screens/auth/*` — confirmed by direct directory read,
+  not assumed from the label text. Auth denominator: **5** —
+  `1a`, `1a-1`, `1j`, `1j-1`, `2s`.
+- Per-row disposition (full evidence in this task's own handoff):
+  - `1a` (로그인/프로필 선택, live at `/`): `REPLACE_LEGACY_WITH_CANONICAL`,
+    **scoped to the profile-select step only**. `/` currently runs a real,
+    fully-functional 3-mode legacy flow (`pages/Auth/index.tsx`: select →
+    PIN → admin), not a stub. The canonical `1a` Screen
+    (`screens/auth/ProfileSelector`) only covers the select step; `1j`/
+    `1j-1` (the flow's own next steps) have no extracted canonical Screen
+    at all, and `/login`'s separate Account-model login is a different auth
+    paradigm entirely (username/password vs. player+PIN) — unifying the two
+    is a real design decision this task does not make. So only the
+    'select' mode's `PlayerSelectView` is replaced by a new
+    `ProfileSelectorContainer` Product Adapter consuming the canonical
+    `ProfileSelectorScreen`; PIN entry (`PinInputView`) and admin login
+    (`AdminLoginView`) are left byte-for-byte untouched, preserving 100% of
+    existing guard/redirect/session/lockout logic.
+  - `1a-1` (로그인 폼, `/login`): `ALREADY_COMPLETE` per Matrix —
+    `PRESERVE_AND_REGRESSION_TEST` only, not modified.
+  - `1j`/`1j-1` (PIN 입력/계정 잠금): `DEFER_CONFIRMED_BLOCKER` — no
+    canonical Screen component exists (only static `ui-only` preview
+    stubs, never live-wired, no props/model contract); `1j`'s "PIN 찾기"
+    affordance and `1j-1`'s lock-countdown copy have no backing real data
+    or defined behavior (`/api/players` returns only `is_locked: boolean`,
+    no attempt count or retry timer) — a genuine `DESIGN_DECISION_REQUIRED`
+    gap, not manufactured here.
+  - `2s` (PIN 최초 설정): `DEFER_CONFIRMED_BLOCKER` — already-confirmed
+    `DESIGN_CONTRACT_MISMATCH`/`HUMAN_GATE` (4-digit Screen vs. 6-digit
+    backend PIN) from `MONGLE-W7-5-DATA-AND-BEHAVIOR-WIRING-001` Phase B;
+    re-confirmed unchanged, not reopened, not forced through.
+- Intended edits: `frontend/src/screens/auth/ProfileSelector/types.ts` and
+  `ProfileSelectorScreen.tsx` (additive prop-contract widening only — an
+  optional `id` on each profile plus an `onSelect` payload that prefers
+  `id` and falls back to `name`, so the existing Preview fixture, which has
+  no `id`, is unaffected); new
+  `frontend/src/pages/Auth/components/ProfileSelectorContainer.tsx` (Auth
+  feature-local Product Adapter: fetches real players + level thresholds
+  via the existing `authApi`, maps to the canonical ViewModel, guards
+  locked profiles at the container level exactly as `PlayerCard`'s
+  `disabled` prop did — no `onSelect` fires for a locked profile, so no
+  behavior change reaches the backend); `frontend/src/pages/Auth/index.tsx`
+  (swap `PlayerSelectView` for `ProfileSelectorContainer`, same
+  `onPlayerSelect`/`onAdminClick` props, no other line touched); deletion
+  of the now-fully-orphaned `pages/Auth/components/PlayerSelectView.tsx`
+  and `PlayerCard.tsx` (confirmed via grep: no other importer anywhere in
+  the repo); `MONGLE_W7_4_LIVE_CONSUMER_INTEGRATION_AUDIT_MATRIX.csv`
+  (additive columns for the 5 Auth rows, chained after the existing
+  Wagle/Admin task columns, not overwriting them); this task's own new
+  report/handoff/QA evidence; `agent-system/active.md` (new entry); this
+  relay.
+- Protected: `pages/Auth/components/{PinInputView,PinInput,AdminLoginView}.tsx`
+  (not touched — preserves PIN submit, 423-lock handling, admin login,
+  session establishment exactly as-is); `pages/A1AccountLogin/**`
+  (`/login`'s Account-model login, not touched — a different, unmerged
+  auth paradigm, out of this task's authority to unify); `useAuthStore`
+  and every backend Auth endpoint (not touched — no policy/session-storage/
+  RBAC/PIN-policy change of any kind); `1j`/`1j-1`/`2s`'s own preview
+  stubs (not touched, deferred with evidence, not force-implemented);
+  every other domain; all prior tasks' own uncommitted output.
+- Status: implementation complete for the 1/1 implementation-ready Auth
+  target (`1a`, select step only). Static validation clean (`pnpm run
+  lint`/`build`, `git diff --check`). Real runtime verification executed
+  against the native `./dev.sh` stack (uvicorn + Vite + local PostgreSQL,
+  no Docker): canonical `1a` renders real backend player data, select ->
+  PIN navigation and back-navigation both verified via a throwaway
+  Playwright script, 0 DB mutation, 3-viewport responsive check clean.
+  `1a-1` regression-reviewed (0 diff). `1j`/`1j-1`/`2s` deferred with
+  code-level evidence, not forced through. Verdict:
+  DEVELOPER_SELF_CHECK_COMPLETE / INDEPENDENT_QA_PENDING. Full detail:
+  `agent-system/handoffs/active/MONGLE-W7-4-AUTH-SINGLE-SOURCE-PRODUCT-
+  INTEGRATION-001.md`.
+
 ## MONGLE-W7-4-ADMIN-CANONICAL-CONTRACT-EXPANSION-001 (developer, current)
 
 - Intended edits: `frontend/src/screens/admin/MissionManagement/**` (new

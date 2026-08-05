@@ -38,8 +38,17 @@ const AUTH_ENDPOINTS = ['/api/auth/login', '/api/auth/admin/login', '/api/auth/a
  * Without this list the global handler treated that 401 as an expired session
  * and logged the user out on entering the Wagle screen. An optional feature
  * must never be able to end a session; probing for it must be free.
+ *
+ * `/api/chat/unread` (MONGLE-W7-4-ADMIN-ACCOUNT-AUTH-ACCESS-CONTRACT-
+ * REMEDIATION-001): AdminDashboard's MobileHeader polls this decorative
+ * unread-chat badge for any logged-in Admin. The endpoint is legacy-only
+ * (`get_current_chat_user` needs a `player_id`, which an Account-native
+ * session never has) — a pre-existing gap that DEFECT-001's fix newly
+ * exposed by making `/admin` reachable for Account-native Admins for the
+ * first time. Same shape as the Wagle case: a decorative feature 401 must
+ * not be able to end a freshly-granted, otherwise-valid Admin session.
  */
-const OPTIONAL_ACCOUNT_ENDPOINTS = ['/api/me/wagle/'];
+const OPTIONAL_ACCOUNT_ENDPOINTS = ['/api/me/wagle/', '/api/chat/unread'];
 
 httpClient.interceptors.response.use(
   (res) => res,

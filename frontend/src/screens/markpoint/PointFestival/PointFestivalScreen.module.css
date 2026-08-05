@@ -1,0 +1,86 @@
+/* Canonical screen 1c (포인트 잔치), zones minus the bottom dock (Zone 5,
+ * kept preview-local — see PointFestivalPreview.module.css). Every value
+ * below is carried over verbatim from the original PointFestivalPreview.module.css
+ * this Screen was extracted from.
+ */
+.screen {
+  --pf-purple: #5a35df;
+  --pf-ink: #17103a;
+  --pf-copy: #4a3f72;
+  --pf-muted: #8a83a8;
+  --pf-surface: #fbfafe;
+  min-height: 100dvh;
+  background: #f7f6fc;
+  color: var(--pf-ink);
+  font-family: "Noto Sans KR", system-ui, sans-serif;
+}
+
+.content { display: flex; flex-direction: column; gap: 9px; padding: 4px 16px 11px; }
+.header { display: flex; align-items: center; gap: 4px; }
+.logo { width: 96px; height: 96px; flex: none; object-fit: contain; }
+.headerCopy { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.headerCopy h1 { margin: 0; white-space: nowrap; color: var(--pf-ink); font-size: 27px; font-weight: 900; line-height: normal; }
+.headerCopy p { margin: 0; color: var(--pf-muted); font-size: 12px; line-height: normal; }
+/* Two real bugs found and fixed here while composing this Screen into the
+ * live product (both harmless in the original, never-live-wired Preview but
+ * measurably broken once real):
+ * 1. Scoped as `.header .logout` (specificity 0,2,0), not a bare `.logout`
+ *    class: several other stylesheets in this repo declare an unscoped
+ *    `header button {...}` element selector, which CSS Modules does not
+ *    scope (only class/id selectors get hashed) and therefore leaks
+ *    globally onto any `<header><button>` in the whole app.
+ * 2. `font: 700 12px/normal inherit` (the original literal value, carried
+ *    over verbatim during extraction) is invalid CSS — the `font` shorthand
+ *    requires a real font-family as its last component, and `inherit` is
+ *    only valid as the shorthand's *entire* value, not one part of it. A
+ *    browser drops an invalid shorthand declaration entirely, so font-size
+ *    was never actually set here at all. Combined with bug 1, the leaking
+ *    `header button{font-size:24px}` rule applied uncontested: the button
+ *    rendered at 144x48px, which starved the sibling headerCopy flex item
+ *    down to ~21px and wrapped its text one character per line. Rewritten
+ *    as real longhand properties below. Both fixes are self-contained to
+ *    this file; no other stylesheet was touched. */
+.header .logout {
+  flex: none;
+  align-self: center;
+  padding: 7px 14px;
+  border: 1px solid #d9d2f3;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--pf-purple);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.profileCard { padding: 11px; border: 1px solid #d6c9f6; border-radius: 26px; background: linear-gradient(160deg, #e7dffb, #dcd0f8); }
+.profileTop { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 70px; height: 70px; display: flex; flex: none; align-items: center; justify-content: center; border-radius: 50%; background: linear-gradient(160deg, #7b4bee, #5a35df); color: #fff; font-size: 24px; font-weight: 700; }
+.levelInfo { flex: 1; display: flex; min-width: 0; flex-direction: column; gap: 6px; }
+.levelInfo > div:first-child { display: flex; align-items: center; gap: 7px; }.levelInfo strong { font-size: 19px; font-weight: 900; line-height: normal; }.level { padding: 2px 12px; border: 1px solid #b49cf0; border-radius: 999px; color: var(--pf-purple); font-size: 11px; font-weight: 700; line-height: normal; }
+.track { height: 11px; overflow: hidden; border-radius: 6px; background: #ede8fa; }.track i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6b46f2, #5a35df); }
+.points { display: flex; flex: none; flex-direction: column; align-items: flex-end; gap: 3px; }.points strong { font-size: 16px; font-weight: 900; line-height: normal; white-space: nowrap; }.points em { color: var(--pf-muted); font-size: 12px; font-style: normal; font-weight: 500; }.points span { color: var(--pf-muted); font-size: 10px; line-height: normal; white-space: nowrap; }
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 10px; padding: 10px 8px; border-radius: 18px; background: #fff; }.metrics div { display: flex; flex-direction: column; align-items: center; gap: 3px; }.metrics div + div { border-left: 1px solid #f0eef7; }.metrics span { color: var(--pf-muted); font-size: 11px; line-height: normal; }.metrics strong { color: var(--pf-purple); font-size: 20px; font-weight: 900; line-height: normal; }.metrics .darkMetric { color: var(--pf-ink); }
+
+.weekCard, .surface { padding: 10px 12px; border-radius: 22px; background: #fff; box-shadow: 0 5px 16px rgba(60,30,120,.05); }.weekTitle { display: block; margin: 0 4px 7px; color: var(--pf-ink); font-size: 14px; font-weight: 700; line-height: 19px; }.surface h2 { margin: 0 4px 7px; color: var(--pf-ink); font-size: 14px; font-weight: 700; line-height: normal; }.weekTitle b { color: var(--pf-muted); font-size: 16px; }.days { display: grid; grid-template-columns: repeat(7,1fr); text-align: center; }.days button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0; border: 0; background: transparent; color: var(--pf-muted); font: inherit; }.days button span { font-size: 11px; line-height: normal; }.days button i { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: var(--pf-copy); font-size: 13px; font-style: normal; line-height: normal; }.days .selectedDay span { color: var(--pf-purple); font-weight: 700; }.days .selectedDay i { border-radius: 50%; background: var(--pf-purple); color: #fff; font-weight: 700; }
+
+.surface { padding: 10px; }.surface h2 { margin-left: 0; }.cheers { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }.cheers article { display: flex; gap: 7px; padding: 8px; border: 1px solid #f0eef7; border-radius: 16px; background: var(--pf-surface); }.cheers i { width: 34px; height: 34px; display: flex; flex: none; align-items: center; justify-content: center; border-radius: 50%; font-size: 11px; font-style: normal; font-weight: 700; }.mom { background: #fbe3ec; color: #d9527a; }.dad { background: #dcebfb; color: #3c7bc4; }.cheers article div { display: flex; min-width: 0; flex-direction: column; gap: 3px; }.cheers p { margin: 0; color: var(--pf-ink); font-size: 12px; font-weight: 500; line-height: 1.5; white-space: pre-line; }.cheers span { color: #a8a5b6; font-size: 10px; line-height: normal; }
+
+.missions { display: flex; flex-direction: column; gap: 7px; }
+.missionsEmpty { margin: 0; padding: 8px 2px; color: var(--pf-muted); font-size: 12px; }
+.mission, .historyRow { width: 100%; gap: 8px; padding: 8px; border: 1px solid #f0eef7; border-radius: 18px; background: var(--pf-surface); color: inherit; font: inherit; text-align: left; }
+.mission { display: flex; flex-direction: column; gap: 5px; }
+.missionMain, .missionProgress { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.missionProgress { gap: 7px; }
+.historyRow { display: flex; align-items: center; }
+.missionIcon { width: 42px; height: 42px; display: flex; flex: none; align-items: center; justify-content: center; border-radius: 14px; font-size: 17px; }
+.clean { background: #dcf4e8; }.study { background: #e7dffb; }.kind { background: #fdefcf; }.historyIcon { background: #fbe0e6; }
+.missionCopy { display: flex; min-width: 0; flex: 1 1 auto; flex-direction: column; gap: 2px; white-space: nowrap; }
+.missionCopy strong { color: var(--pf-ink); font-size: 13px; font-weight: 700; line-height: normal; }
+.missionCopy small { color: var(--pf-muted); font-size: 11px; line-height: normal; }
+.reward { flex: 0 0 auto; color: var(--pf-purple); font-size: 14px; font-weight: 900; line-height: normal; }
+.status, .action { flex: 0 0 auto; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; line-height: normal; white-space: nowrap; }
+.complete { background: #dcf4e8; color: #1f9d62; }.progress { background: #eee8ff; color: var(--pf-purple); }.pending { background: #fdefcf; color: #b4791a; }.action { border: 1px solid #d9d2f3; color: var(--pf-purple); }
+.progressLine { flex: 1; height: 8px; overflow: hidden; border-radius: 5px; background: #edebf5; }.progressLine i { display: block; height: 100%; background: #6b46f2; }.mission:has(.complete) .progressLine i { background: #2fbe78; }.progressCount { color: var(--pf-muted); font-size: 10px; line-height: normal; }.historyRow { margin-top: 7px; }.historyAmount { display: flex; flex: none; flex-direction: column; align-items: flex-end; gap: 2px; }.historyAmount strong { color: #ef4665; font-size: 14px; font-weight: 900; line-height: normal; }.historyAmount small { color: #a8a5b6; font-size: 10px; line-height: normal; }
