@@ -47,8 +47,16 @@ const AUTH_ENDPOINTS = ['/api/auth/login', '/api/auth/admin/login', '/api/auth/a
  * exposed by making `/admin` reachable for Account-native Admins for the
  * first time. Same shape as the Wagle case: a decorative feature 401 must
  * not be able to end a freshly-granted, otherwise-valid Admin session.
+ *
+ * `/api/me/notifications` (MONGLE-W7-4-MARKPOINT-ADMIN-ROUTE-AND-LEGACY-
+ * NOTIFICATION-SESSION-REMEDIATION-001): a legacy-PIN-bridged session that
+ * selects a Family on a multi-family Account gets a 401 from this endpoint
+ * specifically — every other API on the same legacy token still works. Same
+ * shape again: whether legacy-bridge sessions get real notification data is
+ * a separate, undecided product question; this endpoint's 401 must not be
+ * able to end an otherwise-valid session either way.
  */
-const OPTIONAL_ACCOUNT_ENDPOINTS = ['/api/me/wagle/', '/api/chat/unread'];
+const OPTIONAL_ACCOUNT_ENDPOINTS = ['/api/me/wagle/', '/api/chat/unread', '/api/me/notifications'];
 
 httpClient.interceptors.response.use(
   (res) => res,

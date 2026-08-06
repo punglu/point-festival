@@ -119,6 +119,55 @@ test.describe('Mongle platform shell', () => {
     await expect(page.getByText('계정 연결이 필요해요')).toBeVisible();
   });
 
+  // DEFECT-002 (MONGLE-W7-4-MARKPOINT-ADMIN-ROUTE-AND-LEGACY-NOTIFICATION-
+  // SESSION-REMEDIATION-001): a legacy-PIN-bridged session (player 1, seeded
+  // as owner.a's linked legacy identity, a member of both Synthetic Family
+  // Alpha and Beta) gets a real, unmocked 401 from GET /api/me/notifications
+  // specifically -- every other API on the same token still works, including
+  // /family itself. Before the fix the global 401 interceptor read that as
+  // "session expired" and force-cleared it; after the fix, the endpoint is in
+  // OPTIONAL_ACCOUNT_ENDPOINTS and the 401 is swallowed by the caller.
+  test('a legacy-PIN multi-family session survives a notifications-only 401', async ({ page }) => {
+    await loginAsFirstPlayer(page);
+    const familySelect = page.getByLabel('활성 가족 선택');
+    await familySelect.selectOption({ label: 'Synthetic Family Alpha' });
+
+    const notificationsResponse = page.waitForResponse(
+      (res) => res.url().includes('/api/me/notifications') && res.request().method() === 'GET',
+    );
+    await page.goto('/family');
+    const res = await notificationsResponse;
+    expect(res.status(), 'this endpoint is expected to 401 for a legacy-bridged token').toBe(401);
+
+    // The 401 above must not have triggered the global session-clear path.
+    await expect(page).toHaveURL(/\/family$/);
+    await expect(page.getByTestId('family-name')).toBeVisible({ timeout: 10000 });
+    expect(await page.evaluate(() => sessionStorage.getItem('accessToken'))).toBeTruthy();
+    expect(await page.evaluate(() => sessionStorage.getItem('mc_session_expired'))).toBeNull();
+
+    // Family context survives, and a real, unrelated protected route is
+    // still reachable on the same, still-live session.
+    await page.goto('/markpoint');
+    await expect(page).toHaveURL(/\/markpoint$/);
+    await expect(page.getByRole('heading', { name: '마크포인트' })).toBeVisible({ timeout: 15000 });
+  });
+
+  // Regression guard for the fix above: a 401 from an endpoint that is *not*
+  // in OPTIONAL_ACCOUNT_ENDPOINTS must still behave exactly as before --
+  // full session clear and redirect to '/'. Mocked because provoking a real
+  // 401 on a normal protected endpoint (as opposed to the notifications
+  // endpoint's real, product-caused one above) has no product trigger to
+  // hang off of.
+  test('a genuine protected-endpoint 401 still clears the session', async ({ page }) => {
+    await loginAsFirstPlayer(page);
+    await page.route('**/api/players', async (route) => {
+      await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ detail: 'token expired' }) });
+    });
+    await page.reload();
+    await expect(page).toHaveURL(/^http:\/\/[^/]+\/$/, { timeout: 10000 });
+    expect(await page.evaluate(() => sessionStorage.getItem('accessToken'))).toBeNull();
+  });
+
   test('shows a safe not-found page instead of a blank screen for an unregistered path', async ({ page }) => {
     await page.goto('/this-path-does-not-exist');
     await expect(page.getByRole('heading', { name: '페이지를 찾을 수 없어요' })).toBeVisible();

@@ -9,6 +9,7 @@ import { FamilyContextLoader } from './shared/family/FamilyContextLoader';
 import { MongleAppShell } from './platform/shell/MongleAppShell';
 import { FamilyLandingPage } from './platform/pages/FamilyLanding';
 import { MarkpointUserPage } from './platform/markpoint/MarkpointUser';
+import { MarkpointAdmin } from './platform/markpoint/MarkpointAdmin';
 import { WagleLanding } from './platform/pages/WagleLanding';
 import { WagleBoardPage } from './platform/wagle/board/WagleBoardPage';
 import { OnboardingFlowPage } from './features/family-onboarding/OnboardingFlowPage';
@@ -200,6 +201,23 @@ export default function App() {
             element={
               <ProductContext><ProtectedRoute>
                 <MongleAppShell><div data-domain="markpoint"><MarkpointUserPage /></div></MongleAppShell>
+              </ProtectedRoute></ProductContext>
+            }
+          />
+          {/* DEFECT-001 (MONGLE-W7-4-MARKPOINT-ADMIN-ROUTE-AND-LEGACY-NOTIFICATION-
+              SESSION-REMEDIATION-001): MongleAppShell has linked its nav to
+              /markpoint/admin since the Target UI multi-family journey work, and
+              MarkpointAdmin.tsx has been fully built since; only the <Route>
+              registration was missing, so direct/nav access 404'd. Same
+              ProtectedRoute (login-only) pattern as /markpoint — permission
+              gating between markpoint.missions.manage / markpoint.points.adjust
+              happens inside MarkpointAdmin itself, per MongleAppShell's own
+              comment on the nav item. */}
+          <Route
+            path="/markpoint/admin"
+            element={
+              <ProductContext><ProtectedRoute>
+                <MongleAppShell><div data-domain="markpoint"><MarkpointAdmin /></div></MongleAppShell>
               </ProtectedRoute></ProductContext>
             }
           />
