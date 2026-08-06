@@ -2628,3 +2628,188 @@ that anything implementing it exists.
   decision); a separate future Independent QA session re-verifies both
   before either axis is claimed PASS again; a Branch Integration task
   commits this evidence/handoff pair.
+
+## MONGLE-W7-4-MARKPOINT-SESSION-ACTIVEFAMILY-COMBINED-FOCUSED-INDEPENDENT-RE-QA-001
+
+- Task ID: MONGLE-W7-4-MARKPOINT-SESSION-ACTIVEFAMILY-COMBINED-FOCUSED-INDEPENDENT-RE-QA-001
+- Lifecycle: COMPLETED
+- Decision: NOT_REVIEWED
+- Verification: FAIL (Markpoint Admin PASS, Notification Session FAIL,
+  ActiveFamily PASS, Cross-domain FAIL)
+- Execution: SUCCEEDED
+- Phase Note: Fresh, independent session verifying the still-undocumented
+  uncommitted remediation of the prior Combined QA's two FAIL findings
+  (route registration + notification 401), plus a third, previously
+  unverified contract (multi-family activeFamily persistence) whose own
+  fix lives in the same uncommitted diff. No Docker in this WSL session;
+  used the repo's own native (no-Docker) launcher pattern against a
+  disposable database on the already-running local Postgres cluster.
+  Markpoint Admin axis PASS: real owner/mission_manager and admin/
+  point_admin direct navigation and desktop-nav-CTA access to real admin
+  content, member and unauthenticated denial, reload and back/forward
+  persistence, and zero cross-family leakage in the admin mission table,
+  all via genuine browser flows at 3 viewports (the mobile bottom dock has
+  no admin nav item at all -- confirmed pre-existing, unrelated to this
+  remediation). ActiveFamily axis PASS: the remediation's new Journey 1b
+  (8 cases in 03-target-ui.spec.ts) passed cleanly at all 3 viewports --
+  picker, localStorage write, reload restore, persistence across
+  /family-/markpoint-/markpoint/admin-/wagle-back/forward, account
+  isolation, stale/malformed-value handling, and single-family regression
+  all confirmed. Notification Session / Cross-domain axes FAIL: the
+  /api/me/notifications fix itself is correct and verified (a
+  legacy-PIN-bridged multi-family session survives that specific 401 with
+  its token intact), but this task's own required next step ("Markpoint
+  이동") independently fails -- all four /api/me/markpoint/* endpoints
+  (projection/weekly/level/deductions/history) also 401 for the same
+  legacy-bridged token, confirmed via direct backend curl (100% repeatable)
+  and via an isolated 3x Playwright re-run, because those routes'
+  dependency chain uses a different, Account-native-only identity resolver
+  (get_current_account in family/dependencies.py) than the
+  legacy-bridge-aware one /api/account-context uses. None of the four is a
+  decorative/optional feature, so none belongs in OPTIONAL_ACCOUNT_ENDPOINTS
+  as a workaround -- the global interceptor correctly (per its own existing
+  rule) clears the session when they 401, reproducing the exact symptom
+  class this remediation was meant to close, one screen later. This is a
+  new, previously-undisclosed finding, not something either remediation's
+  stated scope covered. Also discovered and separately confirmed
+  not-a-defect: 01-shell.spec.ts's pre-existing loginAsFirstPlayer() helper
+  uses a stale, unrelated locator (blocks all 20 tests in that file,
+  including this remediation's own 2 new ones -- worked around with a
+  disposable scratch spec using the current selector, deleted at cleanup);
+  a family-switcher false-positive in this session's own cross-family
+  scratch assertion; and one committed test's page.reload()-vs-interceptor-
+  redirect race (product behavior confirmed correct via a non-reload-based
+  recheck). Backend targeted pytest (12 files): 213/213, identical to the
+  prior report. Frontend lint/build clean. Zero product/test changes; zero
+  commits/pushes. All disposable databases, processes, and scratch files
+  torn down; one unrelated pre-existing database on the shared native
+  cluster (mc_qa_markpoint_reqa_001) was observed but never touched.
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-MARKPOINT-SESSION-ACTIVEFAMILY-COMBINED-FOCUSED-INDEPENDENT-RE-QA-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-MARKPOINT-SESSION-ACTIVEFAMILY-COMBINED-FOCUSED-INDEPENDENT-RE-QA-001.md
+- Independent QA: this task IS the independent QA (independent from implementer: true)
+- Next Action: a dedicated implementation task extends the identity-
+  resolution fix to /api/me/markpoint/*'s own _me dependency (or provides a
+  graceful non-logout denial), a PM/architecture decision on intended
+  legacy-bridge behavior first; a separate future Independent QA session
+  re-verifies Notification Session and Cross-domain once that lands;
+  01-shell.spec.ts's loginAsFirstPlayer() locator and its new
+  page.reload()-based 401 test are separate test-maintenance items; PM
+  should confirm the origin of the untouched mc_qa_markpoint_reqa_001
+  database on the shared native Postgres cluster.
+
+## MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-REMEDIATION-001
+
+- Task ID: MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-REMEDIATION-001
+- Lifecycle: COMPLETED (Developer self-check)
+- Decision: NOT_REVIEWED
+- Verification: DEVELOPER_SELF_CHECK_PASS (own scope only; does not
+  overwrite the prior Independent Re-QA's FAIL verdict for Notification
+  Session / Cross-domain -- see that verdict's own entry above)
+- Execution: SUCCEEDED
+- Phase Note: Fixes the root cause the immediately preceding Independent
+  Re-QA found: all nine /api/me/markpoint/* GET routes (missions/ledger/
+  balance/level/summary/deductions/weekly/projection/deductions-history)
+  shared a private `_me` dependency using the strict, Account-native-only
+  get_current_account (family/dependencies.py) -- the same resolver Wagle's
+  realtime gateway deliberately depends on staying legacy-exclusive (D3) --
+  so a legacy-PIN session 401'd on real, core Markpoint data one screen
+  past the already-fixed /api/me/notifications, and the global interceptor
+  force-cleared the session again. Root-caused via direct code trace
+  (STRICT_ACCOUNT_NATIVE_DEPENDENCY + DUPLICATED_IDENTITY_RESOLVER: the
+  repo already has a working legacy-bridge-aware resolver, get_current_user
+  + family_service.resolve_current_account, the same pair
+  /api/account-context and three sibling routes in the same file already
+  use). Reproduced twice via direct backend curl on the true pre-fix
+  baseline (git stash of only the one target file, popped back before any
+  edit) -- 401 on all nine for a real legacy-PIN token, 200 for an
+  Account-native comparison token. Fix: swapped _me's resolver to the
+  canonical bridge; get_family_membership (shared by many other domains)
+  and get_current_account itself left untouched, confirmed both by the
+  diff and by two new dedicated regression tests. Post-fix: same nine
+  routes 200 twice for the legacy token, Account-native regression clean,
+  and an identity-parity check proved the legacy bridge and a native login
+  for the same person return byte-identical real data, not a divergent or
+  fabricated result. 28 new focused backend tests (endpoint inventory,
+  mapping-missing, membership-missing, cross-family, inactive-subscription,
+  unauthenticated, forged-token, two blast-radius guards) all passed. Full
+  Backend pytest (not a subset, since backend code changed): 439/439.
+  Frontend lint/typecheck/build clean (frontend untouched by this task).
+  Real, unmocked Playwright browser run at all 3 required viewports
+  (390x844/820x1180/1180x820), workers=1: 18/18 -- the full legacy flow
+  (notification-401-survives -> Markpoint core APIs all real 200 -> real
+  DOM, no forced logout), Account-native regression, a genuine unrelated
+  401 still clearing the session, and Markpoint Admin / ActiveFamily
+  regression smoke (both prior PASS axes untouched and reconfirmed). Zero
+  product/test changes beyond the one router file and the one new test
+  file; zero commits/pushes. All disposable databases, processes, and
+  scratch files torn down; the unexplained mc_qa_markpoint_reqa_001
+  database was not touched.
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-REMEDIATION-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-REMEDIATION-001.md
+- Independent QA: this task is NOT independent QA (Developer self-check
+  only; independent from implementer: false)
+- Next Action: a separate, fresh Independent QA session (not this one, not
+  the implementer) verifies this fix and re-confirms Notification
+  Session/Cross-domain before either axis is claimed PASS in governance;
+  suggested next Task ID
+  MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-FOCUSED-INDEPENDENT-RE-QA-001.
+
+## MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-FOCUSED-INDEPENDENT-RE-QA-001
+
+- Task ID: MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-FOCUSED-INDEPENDENT-RE-QA-001
+- Lifecycle: COMPLETED
+- Decision: NOT_REVIEWED
+- Verification: PASS (Legacy Markpoint Bridge PASS, Notification Session
+  PASS, Cross-domain PASS, Prior-PASS Regression PASS)
+- Execution: SUCCEEDED
+- Phase Note: Fresh, independent session verifying the immediately
+  preceding Developer self-check
+  (MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-REMEDIATION-001). Runtime
+  and browser verification were carried out by a delegated sub-session
+  under this session's direct specification (no Docker in this WSL
+  session; native Postgres cluster + backend/.venv, disposable DB
+  mc_w74_indqa_r7x9*). Axis A (real backend HTTP, bypassing the browser):
+  all 9 /api/me/markpoint/* GET routes 200 for a legacy-bridged token with
+  correct family scope, Account-native regression clean, safe rejection
+  for no-mapping/not-linked/no-membership/no-permission, 403+zero-leak for
+  cross-family, 401 for unauthenticated/forged token, both blast-radius
+  guards (admin route via get_family_membership, Wagle realtime via
+  get_current_account) confirmed still legacy-exclusive, identity-parity
+  confirmed between legacy and native logins for the same person. Axis B
+  (real, unmocked Chromium browser): notification-only 401 still preserves
+  the session (prior fix, re-confirmed), and the real next step --
+  navigating to /markpoint -- now succeeds with real 200s and a real
+  rendered DOM instead of the previously-reported forced logout; a genuine
+  unrelated 401 still correctly destroys the session. Axis C: the full
+  legacy cross-domain flow (login -> family select -> notification 401 ->
+  Markpoint -> reload -> back/forward -> logout) completed end to end with
+  no cross-family leakage at all 3 required viewports (390x844, 820x1180,
+  1180x820). Markpoint Admin and ActiveFamily regression smoke both clean.
+  New focused backend test (test_markpoint_legacy_account_bridge_wave7.py)
+  28/28 passed twice. Full backend pytest (backend code changed, so full
+  suite was required, not a subset): 439/439. Frontend lint/build clean.
+  One item not independently confirmed as a standalone run: a per-file
+  breakdown of 9 "related targeted backend" test files was interrupted
+  mid-run by this session's own stop-and-cleanup order (issued after the
+  delegated sub-session twice ended its turn on an ambiguous
+  "waiting for pytest" status instead of a real result) -- reported as
+  NOT RUN standalone rather than backfilled as PASS; still proven by the
+  completed 439/439 full-suite run, which includes all 9 of those files.
+  This session independently re-verified the delegated sub-session's own
+  cleanup claims (git status, process list, disposable-DB listing, scratch
+  directory listing, stash list) before trusting them, rather than taking
+  its self-report at face value. Zero product/test changes; zero
+  commits/pushes. Minor finding, not blocking: tests/README.md still
+  documents npm for the frontend; it migrated to pnpm in commit 0319940.
+- Handoff: agent-system/handoffs/active/MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-FOCUSED-INDEPENDENT-RE-QA-001.md
+- QA Evidence: agent-system/qa/MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-FOCUSED-INDEPENDENT-RE-QA-001.md
+- Independent QA: this task IS the independent QA (independent from implementer: true)
+- Next Action: a Branch Integration task commits the now-fully-
+  independently-PASS-verified bundle (this task's router.py fix + new
+  test, plus the two prior remediations it built on), subject to PM
+  commit-scope review; 01-shell.spec.ts's loginAsFirstPlayer() stale
+  locator and its genuine-401 test's page.reload() race remain open
+  test-maintenance items; tests/README.md's npm->pnpm drift is a separate
+  doc-maintenance item; PM should confirm the origin of the still
+  unexplained mc_qa_markpoint_reqa_001 database, observed and left
+  untouched by three consecutive independent QA sessions now.

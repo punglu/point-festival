@@ -1427,3 +1427,88 @@ Auth/Family/Markpoint pytest subset 213/213. Frontend lint/build clean.
 Zero product/test changes, zero commits/pushes. All scratch
 containers/files torn down; pre-existing runtime confirmed untouched. No
 further occupancy held by this session.
+
+## MONGLE-W7-4-MARKPOINT-SESSION-ACTIVEFAMILY-COMBINED-FOCUSED-INDEPENDENT-RE-QA-001 (2026-08-07)
+
+Independent QA (fresh session, not the implementer) of the still-undocumented
+uncommitted remediation of the two W7.4 Combined QA FAIL findings
+(/markpoint/admin route, notification-only 401) plus a third contract
+(multi-family activeFamily persistence) fixed in the same diff. No Docker in
+this WSL session; used the repo's own native no-Docker launcher pattern
+against a disposable database on the already-running local Postgres cluster.
+Markpoint Admin: PASS (real owner/admin nav+direct access, member/
+unauthenticated denial, reload, back/forward, zero cross-family leakage, 3
+viewports; mobile bottom dock has no admin nav item at all, confirmed
+pre-existing and unrelated). ActiveFamily: PASS (the remediation's new
+Journey 1b, 8 cases, clean at all 3 viewports). Notification Session /
+Cross-domain: FAIL -- the notifications fix itself is correct and verified,
+but the very next real step ("Markpoint 이동") independently 401s on all
+four /api/me/markpoint/* endpoints for the same legacy-bridged token
+(confirmed via direct backend curl, 100% repeatable, plus an isolated 3x
+Playwright re-run), because those routes use a different, Account-native-
+only identity resolver than /api/account-context does -- reproducing the
+same class of session-destroying symptom one screen later. New finding, not
+covered by either remediation's stated scope. Backend targeted pytest
+213/213 (identical to the prior report). Frontend lint/build clean. Zero
+product/test changes, zero commits/pushes. All disposable databases,
+processes, and scratch files torn down; one unrelated pre-existing database
+on the shared cluster was observed but never touched. No further occupancy
+held by this session.
+
+## MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-REMEDIATION-001 (developer, 2026-08-07)
+
+Fixes the root cause the immediately preceding Independent Re-QA found: all
+nine /api/me/markpoint/* GET routes used the strict, Account-native-only
+get_current_account (the same resolver Wagle's realtime gateway
+deliberately depends on staying legacy-exclusive, D3), so a legacy-PIN
+session 401'd on real Markpoint data one screen past the already-fixed
+/api/me/notifications. Minimal one-file fix: the router's private _me
+dependency now resolves through get_current_user +
+family_service.resolve_current_account -- the same legacy-bridge-aware
+pair /api/account-context already uses -- reused as-is, not duplicated.
+get_family_membership and get_current_account itself both confirmed
+untouched. Reproduced twice pre-fix via direct backend curl (401 on all
+nine for a real legacy token), confirmed twice post-fix (200 on all nine,
+Account-native regression clean, identity-parity verified real and
+byte-identical between both credential paths for the same person). 28 new
+focused backend tests + full Backend pytest 439/439 (not a subset, backend
+code changed) + 18/18 real unmocked Playwright browser run at all 3
+required viewports (full legacy flow, Account-native regression, genuine
+401 still clears session, Markpoint Admin/ActiveFamily regression smoke).
+Zero product/test changes beyond the one router file + one new test file;
+zero commits/pushes. Developer self-check only -- does NOT overwrite the
+prior Independent Re-QA's FAIL verdict for Notification Session/
+Cross-domain; those await a separate, fresh Independent QA session. All
+disposable databases, processes, and scratch files torn down; the
+unexplained mc_qa_markpoint_reqa_001 database was not touched. No further
+occupancy held by this session.
+
+## MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-FOCUSED-INDEPENDENT-RE-QA-001 (2026-08-07)
+
+Independent QA (fresh session, not the implementer) of the immediately preceding
+Developer self-check fixing the /api/me/markpoint/* legacy-bridge gap. No Docker
+in this WSL session; native Postgres cluster + backend/.venv, disposable DB
+mc_w74_indqa_r7x9*. Axis A (real backend HTTP): all 9 endpoints 200 for a legacy
+token with correct family scope, native regression clean, safe rejection for
+no-mapping/not-linked/no-membership/no-permission, 403+zero-leak cross-family,
+401 unauthenticated/forged, both blast-radius guards (admin route,
+Wagle realtime) confirmed still legacy-exclusive, identity-parity confirmed.
+Axis B (real unmocked Chromium): notification-only 401 still preserves the
+session, and the real next step -- navigating to /markpoint -- now succeeds
+with real 200s and a real rendered DOM instead of the previously-reported
+forced logout; a genuine unrelated 401 still destroys the session. Axis C: full
+legacy cross-domain flow completed end to end with no cross-family leakage at
+all 3 required viewports. Markpoint Admin / ActiveFamily regression smoke
+clean. New focused backend test 28/28 passed twice. Full backend pytest (code
+changed, full suite required): 439/439. Frontend lint/build clean. One item not
+independently confirmed standalone: a per-file breakdown of 9 "related
+targeted backend" test files was interrupted mid-run by this session's own
+stop-and-cleanup order (the delegated sub-session twice ended its turn on an
+ambiguous "waiting for pytest" status instead of a real result) -- reported as
+NOT RUN standalone, not backfilled as PASS; still proven by the completed
+439/439 full-suite run covering the same 9 files. This session independently
+re-verified the delegated sub-session's own cleanup claims (git status,
+process list, disposable-DB listing, scratch directory listing, stash list)
+before trusting them. Zero product/test changes, zero commits/pushes. Minor
+finding: tests/README.md still documents npm for the frontend; it migrated to
+pnpm in commit 0319940. No further occupancy held by this session.

@@ -2,8 +2,9 @@ from datetime import date
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
-from app.domains.family.dependencies import get_current_account, get_family_membership
-from app.domains.family.models import Account, FamilyMembership
+from app.dependencies import get_current_user
+from app.domains.family.dependencies import get_family_membership
+from app.domains.family.models import FamilyMembership
 from app.domains.family import service as family_service
 from . import service
 from .schemas import (
@@ -14,7 +15,20 @@ from .schemas import (
 
 router=APIRouter(tags=["markpoint"])
 
-async def _me(family_id:int, account:Account=Depends(get_current_account), db:AsyncSession=Depends(get_db)):
+# MONGLE-W7-4-LEGACY-MARKPOINT-ACCOUNT-BRIDGE-REMEDIATION-001: this was
+# `Depends(get_current_account)` (family.dependencies), the strict
+# Account-native-only resolver Wagle's realtime gateway deliberately relies
+# on rejecting legacy-PIN tokens for (D3). Every `/api/me/markpoint/*` route
+# below is core product surface, not an optional feature, so a legacy-PIN
+# session with a real, mapped canonical Account and an active Family
+# membership must not 401 here. `get_current_user` + `resolve_current_account`
+# is the same legacy-bridge-aware pair `/api/account-context` and the
+# `/admin` legacy-JWT bridge already use (see `family/service.py`'s own
+# docstring on `resolve_current_account`) -- reused as-is, not duplicated.
+# `get_family_membership` (shared by many other domains' routers) and
+# `get_current_account` itself are both untouched.
+async def _me(family_id:int, user:dict=Depends(get_current_user), db:AsyncSession=Depends(get_db)):
+    account = await family_service.resolve_current_account(db, user)
     return await family_service.get_active_membership(db, account.id, family_id)
 
 @router.post("/api/families/{family_id}/markpoint/missions", response_model=MissionOut, status_code=status.HTTP_201_CREATED)
