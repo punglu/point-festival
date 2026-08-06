@@ -103,6 +103,143 @@ test.describe('Journey 1 — Multi-Family', () => {
 });
 
 // ===========================================================================
+// Journey 1b — ActiveFamily persistence
+// (MONGLE-W7-4-MULTI-FAMILY-ACTIVEFAMILY-PERSISTENCE-REMEDIATION-001)
+//
+// Root cause: `FamilyLandingPage` wrapped its own family-picker in
+// `AccessBoundary`'s default "no active Family yet" gate — the one screen
+// that exists to *create* the first selection required one to already exist,
+// a deadlock with no way out (its own fallback link pointed back at itself).
+// `selectFamily`'s write and `load`'s hydration/validation were already
+// correct; the picker just never rendered for a multi-family Account with no
+// prior selection, so the write was never triggered. Fixed via an explicit
+// `allowFamilySelection` opt-out on `AccessBoundary`, used only by
+// `FamilyLandingPage`.
+// ===========================================================================
+
+test.describe('Journey 1b — ActiveFamily persistence', () => {
+  async function accountId(page: Page): Promise<number> {
+    const response = await page.request.get('/api/account-context', {
+      headers: { Authorization: `Bearer ${await token(page)}` },
+    });
+    const body = await response.json();
+    return body.account_id as number;
+  }
+
+  test('Case 1+2 — selecting a Family persists it and survives a reload', async ({ page }) => {
+    await signIn(page, 'owner.a');
+    const before = await page.getByTestId('family-name').textContent();
+
+    const other = page.locator('[data-testid^="family-switch-"]').filter({ hasNotText: before ?? '' });
+    await other.first().click();
+    const after = await page.getByTestId('family-name').textContent();
+    expect(after).not.toBe(before);
+
+    const acctId = await accountId(page);
+    const stored = await page.evaluate(
+      (key) => localStorage.getItem(key),
+      `mongle.activeFamily.${acctId}`,
+    );
+    expect(stored).toBeTruthy();
+
+    await page.reload();
+    await expect(page.getByTestId('family-name')).toHaveText(after ?? '', { timeout: 10000 });
+  });
+
+  test('Case 3 — the selected Family survives navigation across /family, /markpoint, /markpoint/admin, /wagle, and back/forward', async ({ page }) => {
+    await signIn(page, 'owner.a');
+    const other = page.locator('[data-testid^="family-switch-"]').nth(1);
+    await other.click();
+    const chosen = await page.getByTestId('family-name').textContent();
+
+    await page.goto('/markpoint');
+    await page.goto('/markpoint/admin');
+    await page.goto('/wagle');
+    await page.goto('/family');
+    await expect(page.getByTestId('family-name')).toHaveText(chosen ?? '', { timeout: 10000 });
+
+    await page.goBack();
+    await page.goForward();
+    await expect(page.getByTestId('family-name')).toHaveText(chosen ?? '', { timeout: 10000 });
+  });
+
+  test('Case 4 — one Account never inherits another Account\'s stored selection', async ({ page }) => {
+    await signIn(page, 'owner.a');
+    const acctIdA = await accountId(page);
+    const other = page.locator('[data-testid^="family-switch-"]').nth(1);
+    await other.click();
+    const storedA = await page.evaluate(
+      (key) => localStorage.getItem(key),
+      `mongle.activeFamily.${acctIdA}`,
+    );
+    expect(storedA).toBeTruthy();
+
+    await page.getByRole('button', { name: '로그아웃' }).click();
+    await signIn(page, 'member.a');
+    const acctIdB = await accountId(page);
+    expect(acctIdB).not.toBe(acctIdA);
+
+    // member.a has exactly one Family, so it always auto-selects that one --
+    // Account A's stored key (a different namespace) must have no bearing on it.
+    const response = await page.request.get('/api/account-context', {
+      headers: { Authorization: `Bearer ${await token(page)}` },
+    });
+    const body = await response.json();
+    await expect(page.getByTestId('family-name')).toHaveText(body.families[0].name);
+  });
+
+  test('Case 5 — a stored Family the Account can no longer reach is ignored, not restored', async ({ page }) => {
+    await signIn(page, 'owner.a');
+    const acctId = await accountId(page);
+    await page.evaluate(
+      ({ key, value }) => localStorage.setItem(key, value),
+      { key: `mongle.activeFamily.${acctId}`, value: '999999' },
+    );
+    await page.reload();
+    // No crash, and the invalid id is not silently trusted -- back to the
+    // picker rather than a phantom "active" Family.
+    await expect(page.getByTestId('family-list')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByTestId('family-name')).toHaveCount(0);
+  });
+
+  test('Case 6 — a malformed stored value does not crash the app', async ({ page }) => {
+    await signIn(page, 'owner.a');
+    const acctId = await accountId(page);
+    await page.evaluate(
+      ({ key, value }) => localStorage.setItem(key, value),
+      { key: `mongle.activeFamily.${acctId}`, value: 'not-a-number' },
+    );
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(String(e)));
+    await page.reload();
+    await expect(page.getByTestId('family-list')).toBeVisible({ timeout: 10000 });
+    expect(errors).toHaveLength(0);
+  });
+
+  test('Case 7 — a single-family Account still auto-selects with no regression', async ({ page }) => {
+    await signIn(page, 'member.a');
+    await expect(page.getByTestId('family-name')).toBeVisible();
+    const name = await page.getByTestId('family-name').textContent();
+    await page.reload();
+    await expect(page.getByTestId('family-name')).toHaveText(name ?? '', { timeout: 10000 });
+    await page.goto('/markpoint');
+    await expect(page).toHaveURL(/\/markpoint$/);
+  });
+
+  test('Case 8 — a multi-family owner reaches real Markpoint Admin content after a reload', async ({ page }) => {
+    await signIn(page, 'owner.a');
+    const other = page.locator('[data-testid^="family-switch-"]').nth(0);
+    await other.click();
+    await expect(page.getByTestId('family-name')).toBeVisible();
+
+    await page.reload();
+    await page.goto('/markpoint/admin');
+    await expect(page.getByRole('heading', { name: '마크포인트 관리' })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: '가족을 선택해주세요' })).toHaveCount(0);
+  });
+});
+
+// ===========================================================================
 // Journey 2 — Markpoint user
 // ===========================================================================
 

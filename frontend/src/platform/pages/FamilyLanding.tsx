@@ -238,10 +238,13 @@ export function FamilyLanding() {
 /** Route entry point (`/family`). `family.read` matches the same permission
  *  MongleAppShell already gates the nav link on — a member linked to this
  *  family only through another service (e.g. Markpoint) reaches the shared
- *  AccessBoundary "권한이 없어요" state instead of this screen. */
+ *  AccessBoundary "권한이 없어요" state instead of this screen once a Family
+ *  is active. `allowFamilySelection`: this is the one screen responsible for
+ *  producing that first selection, so it must stay reachable with none yet
+ *  active — see AccessBoundary's own doc on the flag. */
 export function FamilyLandingPage() {
   return (
-    <AccessBoundary permission="family.read">
+    <AccessBoundary permission="family.read" allowFamilySelection>
       <FamilyLanding />
     </AccessBoundary>
   );
